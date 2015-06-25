@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.shouyang.syazs.core.dao.DsRestrictions;
-import com.shouyang.syazs.core.dao.GenericDaoFull;
+import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 import com.shouyang.syazs.core.util.DsBeanFactory;
@@ -43,7 +43,7 @@ public class CustomerService extends GenericServiceFull<Customer> {
 	}
 
 	@Override
-	protected GenericDaoFull<Customer> getDao() {
+	protected GenericDao<Customer> getDao() {
 		// TODO Auto-generated method stub
 		return dao;
 	}

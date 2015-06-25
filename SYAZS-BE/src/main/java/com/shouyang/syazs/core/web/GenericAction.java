@@ -14,23 +14,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.entity.GenericEntitySerNo;
+import com.shouyang.syazs.core.entity.Entity;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
 
 /**
- * GenericActionSerNo
+ * GenericAction
  * 
  * @author Roderick
- * @version 2014/10/15
+ * @version 2014/11/21
  */
-public abstract class GenericActionSerNo<T extends GenericEntitySerNo> extends
+public abstract class GenericAction<T extends Entity> extends
 		ActionSupport implements Action<T> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2903731758217722594L;
+	private static final long serialVersionUID = 8461510694567060010L;
 
 	protected final transient Logger log = Logger.getLogger(getClass());
 

@@ -11,6 +11,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.shouyang.syazs.core.dao.DsRestrictions;
+
 /**
  * Hibernate Restrictions
  * 

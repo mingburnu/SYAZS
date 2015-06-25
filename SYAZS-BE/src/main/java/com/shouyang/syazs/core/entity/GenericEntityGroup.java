@@ -23,7 +23,7 @@ import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
  * 
  */
 @MappedSuperclass
-public abstract class GenericEntityFull implements Entity {
+public abstract class GenericEntityGroup implements Entity {
 
 	/**
 	 * 
@@ -39,18 +39,6 @@ public abstract class GenericEntityFull implements Entity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "serNo", unique = true, nullable = false, insertable = true, updatable = false, precision = 20)
 	private Long serNo;
-
-	/** The created by. */
-	@Column(name = "cUid", updatable = false)
-	private String cUid;
-
-	@Transient
-	private AccountNumber createdUser;
-
-	/** The created date. */
-	@Column(name = "cDTime", updatable = false)
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
-	private LocalDateTime cDTime;
 
 	/** The last modified by. */
 	@Column(name = "uUid")
@@ -80,36 +68,6 @@ public abstract class GenericEntityFull implements Entity {
 	}
 
 	/**
-	 * @return the cUid
-	 */
-	public String getcUid() {
-		return cUid;
-	}
-
-	/**
-	 * @param cUid
-	 *            the cUid to set
-	 */
-	public void setcUid(String cUid) {
-		this.cUid = cUid;
-	}
-
-	/**
-	 * @return the cDTime
-	 */
-	public LocalDateTime getcDTime() {
-		return cDTime;
-	}
-
-	/**
-	 * @param cDTime
-	 *            the cDTime to set
-	 */
-	public void setcDTime(LocalDateTime cDTime) {
-		this.cDTime = cDTime;
-	}
-
-	/**
 	 * @return the uUid
 	 */
 	public String getuUid() {
@@ -117,8 +75,7 @@ public abstract class GenericEntityFull implements Entity {
 	}
 
 	/**
-	 * @param uUid
-	 *            the uUid to set
+	 * @param uUid the uUid to set
 	 */
 	public void setuUid(String uUid) {
 		this.uUid = uUid;
@@ -132,25 +89,23 @@ public abstract class GenericEntityFull implements Entity {
 	}
 
 	/**
-	 * @param uDTime
-	 *            the uDTime to set
+	 * @param uDTime the uDTime to set
 	 */
 	public void setuDTime(LocalDateTime uDTime) {
 		this.uDTime = uDTime;
 	}
 
-	public AccountNumber getCreatedUser() {
-		return createdUser;
-	}
-
-	public void setCreatedUser(AccountNumber createdUser) {
-		this.createdUser = createdUser;
-	}
-
+	/**
+	 * @return the lastModifiedUser
+	 */
 	public AccountNumber getLastModifiedUser() {
 		return lastModifiedUser;
 	}
 
+	/**
+	 * @param lastModifiedUser
+	 *            the lastModifiedUser to set
+	 */
 	public void setLastModifiedUser(AccountNumber lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
@@ -163,7 +118,7 @@ public abstract class GenericEntityFull implements Entity {
 	public boolean isNew() {
 		return serNo == null;
 	}
-
+	
 	/**
 	 * initial insert
 	 * <p>
@@ -179,10 +134,8 @@ public abstract class GenericEntityFull implements Entity {
 	 *            the bpm id
 	 */
 	public void initInsert(AccountNumber user) {
-		this.setcUid(user.getUserId());
-		this.setcDTime(new LocalDateTime());
-		this.setuUid(getcUid());
-		this.setuDTime(getcDTime());
+		this.setuUid(user.getUserId());
+		this.setuDTime(new LocalDateTime());
 	}
 
 	/**

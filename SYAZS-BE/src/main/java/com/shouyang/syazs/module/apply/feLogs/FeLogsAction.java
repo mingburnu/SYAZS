@@ -26,11 +26,11 @@ import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.converter.JodaTimeConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
-import com.shouyang.syazs.core.web.GenericCRUDActionLog;
+import com.shouyang.syazs.core.web.GenericWebActionLog;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class FeLogsAction extends GenericCRUDActionLog<FeLogs> {
+public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 	/**
 	 * 

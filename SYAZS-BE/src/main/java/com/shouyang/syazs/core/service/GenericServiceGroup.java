@@ -8,16 +8,16 @@ import org.springframework.util.Assert;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumberDao;
 import com.shouyang.syazs.core.dao.GenericDao;
-import com.shouyang.syazs.core.entity.GenericEntityLog;
+import com.shouyang.syazs.core.entity.GenericEntityGroup;
 
 /**
  * GenericService
  * 
  * @author Roderick
- * @version 2015/01/19
+ * @version 2014/9/29
  */
-public abstract class GenericServiceLog<T extends GenericEntityLog> implements
-		Service<T> {
+public abstract class GenericServiceGroup<T extends GenericEntityGroup>
+		implements Service<T> {
 
 	protected final transient Logger log = Logger.getLogger(getClass());
 
@@ -33,6 +33,7 @@ public abstract class GenericServiceLog<T extends GenericEntityLog> implements
 		entity.initInsert(user);
 
 		T dbEntity = getDao().save(entity);
+		makeUserInfo(dbEntity);
 
 		return dbEntity;
 	}
@@ -42,6 +43,7 @@ public abstract class GenericServiceLog<T extends GenericEntityLog> implements
 		Assert.notNull(serNo);
 
 		T entity = getDao().findBySerNo(serNo);
+		makeUserInfo(entity);
 
 		return entity;
 	}
@@ -50,6 +52,8 @@ public abstract class GenericServiceLog<T extends GenericEntityLog> implements
 	public T update(T entity, AccountNumber user, String... ignoreProperties)
 			throws Exception {
 		Assert.notNull(entity);
+
+		entity.initUpdate(user);
 
 		T dbEntity = getDao().findBySerNo(entity.getSerNo());
 
@@ -60,6 +64,7 @@ public abstract class GenericServiceLog<T extends GenericEntityLog> implements
 		}
 
 		getDao().update(dbEntity);
+		makeUserInfo(dbEntity);
 
 		return dbEntity;
 	}
@@ -69,6 +74,32 @@ public abstract class GenericServiceLog<T extends GenericEntityLog> implements
 		Assert.notNull(serNo);
 
 		getDao().deleteBySerNo(serNo);
+	}
+
+	/**
+	 * 取得使用者資訊
+	 * 
+	 * @param serNo
+	 * @return
+	 * @throws Exception
+	 */
+	public void makeUserInfo(T entity) throws Exception {
+		if (entity.getuUid() != null) {
+			AccountNumber user = getUserInfo(entity.getuUid());
+			entity.setLastModifiedUser(user);
+		}
+	}
+
+	/**
+	 * 取得使用者資訊
+	 * 
+	 * @param serNo
+	 * @return
+	 * @throws Exception
+	 */
+	public AccountNumber getUserInfo(String userId) throws Exception {
+		Assert.notNull(userId);
+		return userDao.findByUserId(userId);
 	}
 
 }

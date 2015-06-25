@@ -64,10 +64,6 @@
 						<th width="130">電話</th>
 						<td><s:textfield name="entity.tel" cssClass="input_text" /></td>
 					</tr>
-					<tr>
-						<th width="130">Email</th>
-						<td><s:textfield name="entity.email" cssClass="input_text" /></td>
-					</tr>
 				</table>
 				<div class="button_box">
 					<div class="detail-func-button">
@@ -108,10 +104,6 @@
 					<tr>
 						<th width="130">電話</th>
 						<td><s:textfield name="entity.tel" cssClass="input_text" /></td>
-					</tr>
-					<tr>
-						<th width="130">Email</th>
-						<td><s:textfield name="entity.email" cssClass="input_text" /></td>
 					</tr>
 				</table>
 				<div class="button_box">

@@ -19,7 +19,7 @@ import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
 import com.shouyang.syazs.core.dao.DsRestrictions;
-import com.shouyang.syazs.core.dao.GenericDaoFull;
+import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 import com.shouyang.syazs.core.util.DsBeanFactory;
@@ -41,7 +41,7 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 	private CustomerService customerService;
 
 	@Override
-	protected GenericDaoFull<AccountNumber> getDao() {
+	protected GenericDao<AccountNumber> getDao() {
 		return dao;
 	}
 

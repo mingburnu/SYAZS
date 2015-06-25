@@ -2,6 +2,8 @@ package com.shouyang.syazs.core.dao;
 
 import java.util.List;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
+import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.entity.Entity;
 import com.shouyang.syazs.core.model.DataSet;
 

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -38,7 +39,7 @@ import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
-import com.shouyang.syazs.core.web.GenericCRUDActionFull;
+import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
@@ -48,7 +49,7 @@ import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class DatabaseAction extends GenericCRUDActionFull<Database> {
+public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	/**
 	 * 
@@ -1220,12 +1221,18 @@ public class DatabaseAction extends GenericCRUDActionFull<Database> {
 
 	// 判斷文件類型
 	public Workbook createWorkBook(InputStream is) throws IOException {
-		if (fileFileName[0].toLowerCase().endsWith("xls")) {
-			return new HSSFWorkbook(is);
+		try {
+			if (fileFileName[0].toLowerCase().endsWith("xls")) {
+				return new HSSFWorkbook(is);
+			}
+
+			if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
+				return new XSSFWorkbook(is);
+			}
+		} catch (InvalidOperationException e) {
+			return null;
 		}
-		if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
-			return new XSSFWorkbook(is);
-		}
+
 		return null;
 	}
 

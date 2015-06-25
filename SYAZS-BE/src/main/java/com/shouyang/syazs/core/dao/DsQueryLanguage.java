@@ -3,6 +3,8 @@ package com.shouyang.syazs.core.dao;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
+
 /**
  * DsQueryLanguage
  * @author Roderick

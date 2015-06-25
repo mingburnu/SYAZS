@@ -18,7 +18,10 @@ import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import com.shouyang.syazs.core.entity.GenericEntitySerNo;
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
+import com.shouyang.syazs.core.dao.DsRestrictions;
+import com.shouyang.syazs.core.dao.GenericDao;
+import com.shouyang.syazs.core.entity.Entity;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
 
@@ -26,10 +29,10 @@ import com.shouyang.syazs.core.model.Pager;
  * GenericHibernateDao
  * 
  * @author Roderick
- * @version 2014/11/6
+ * @version 2014/11/7
  */
-public abstract class GenericHibernateDaoSerNo<T extends GenericEntitySerNo>
-		extends GenericDaoSerNo<T> {
+public abstract class GenericHibernateDao<T extends Entity>
+		extends GenericDao<T> {
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -37,7 +40,7 @@ public abstract class GenericHibernateDaoSerNo<T extends GenericEntitySerNo>
 	private Class<T> entityClass;
 
 	@SuppressWarnings("unchecked")
-	public GenericHibernateDaoSerNo() {
+	public GenericHibernateDao() {
 		this.entityClass = null;
 		Class<?> c = getClass();
 		Type t = c.getGenericSuperclass();

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -41,7 +43,7 @@ import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
-import com.shouyang.syazs.core.web.GenericCRUDActionFull;
+import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 /**
  * 使用者
@@ -51,7 +53,7 @@ import com.shouyang.syazs.core.web.GenericCRUDActionFull;
  */
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class AccountNumberAction extends GenericCRUDActionFull<AccountNumber> {
+public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	/**
 	 * 
@@ -180,6 +182,12 @@ public class AccountNumberAction extends GenericCRUDActionFull<AccountNumber> {
 			}
 		}
 
+		if (StringUtils.isNotEmpty(getEntity().getEmail())) {
+			if (!isEmail(getEntity().getEmail())) {
+				errorMessages.add("email格式不正確");
+			}
+		}
+
 	}
 
 	@Override
@@ -264,6 +272,12 @@ public class AccountNumberAction extends GenericCRUDActionFull<AccountNumber> {
 						errorMessages.add("用戶名稱不正確");
 					}
 				}
+			}
+		}
+
+		if (StringUtils.isNotEmpty(getEntity().getEmail())) {
+			if (!isEmail(getEntity().getEmail())) {
+				errorMessages.add("email格式不正確");
 			}
 		}
 	}
@@ -882,6 +896,12 @@ public class AccountNumberAction extends GenericCRUDActionFull<AccountNumber> {
 					}
 				}
 
+				if (StringUtils.isNotEmpty(accountNumber.getEmail())) {
+					if (!isEmail(accountNumber.getEmail())) {
+						accountNumber.setEmail(null);
+					}
+				}
+
 				if (accountNumber.getExistStatus().equals("")) {
 					accountNumber.setExistStatus("正常");
 				}
@@ -1129,13 +1149,26 @@ public class AccountNumberAction extends GenericCRUDActionFull<AccountNumber> {
 
 	// 判斷文件類型
 	public Workbook createWorkBook(InputStream is) throws IOException {
-		if (fileFileName[0].toLowerCase().endsWith("xls")) {
-			return new HSSFWorkbook(is);
+		try {
+			if (fileFileName[0].toLowerCase().endsWith("xls")) {
+				return new HSSFWorkbook(is);
+			}
+
+			if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
+				return new XSSFWorkbook(is);
+			}
+		} catch (InvalidOperationException e) {
+			return null;
 		}
-		if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
-			return new XSSFWorkbook(is);
-		}
+
 		return null;
+	}
+
+	public boolean isEmail(String email) {
+		String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+		return Pattern.compile(emailPattern).matcher(email).matches();
 	}
 
 	/**

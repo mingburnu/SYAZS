@@ -201,9 +201,9 @@ public class Test {
 		properties.setProperty("hello", "world");
 		System.out.println(properties.get("hello"));
 		System.out.println(isDate("2010-02-31"));
-		
+
 		System.out.println(new LocalDate("2015/01/01").toString());
-		
+
 	}
 
 	public static boolean isLCC(String LCC) {
@@ -227,9 +227,10 @@ public class Test {
 	public static void dotString(String... strs) {
 		System.out.println(strs == null);
 	}
-	
+
 	public static boolean isDate(String date) {
-		Pattern pattern = Pattern.compile("((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])");
+		Pattern pattern = Pattern
+				.compile("((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])");
 		Matcher matcher = pattern.matcher(date);
 		return matcher.matches();
 	}

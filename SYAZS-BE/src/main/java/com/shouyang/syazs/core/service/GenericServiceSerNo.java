@@ -7,7 +7,7 @@ import org.springframework.util.Assert;
 
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumberDao;
-import com.shouyang.syazs.core.dao.GenericDaoSerNo;
+import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.entity.GenericEntitySerNo;
 
 /**
@@ -21,7 +21,7 @@ public abstract class GenericServiceSerNo<T extends GenericEntitySerNo>
 
 	protected final transient Logger log = Logger.getLogger(getClass());
 
-	protected abstract GenericDaoSerNo<T> getDao();
+	protected abstract GenericDao<T> getDao();
 
 	@Autowired
 	private AccountNumberDao userDao;

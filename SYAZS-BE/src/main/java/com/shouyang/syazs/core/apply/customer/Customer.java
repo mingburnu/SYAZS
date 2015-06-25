@@ -21,21 +21,17 @@ public class Customer extends GenericEntityFull {
 	 */
 	private static final long serialVersionUID = 5508975058661670537L;
 
-	// 姓名
+	// 名稱
 	@Column(name = "name", unique = true)
 	private String name;
 
-	// 英文姓名
+	// 英文名稱
 	@Column(name = "engName")
 	private String engName;
 
 	// 地址
 	@Column(name = "address")
 	private String address;
-
-	// email
-	@Column(name = "email")
-	private String email;
 
 	// 電話
 	@Column(name = "tel")
@@ -52,9 +48,6 @@ public class Customer extends GenericEntityFull {
 
 	@Transient
 	private String existStatus;
-
-	// @OneToMany(cascade=CascadeType.ALL, mappedBy="customer")
-	// private Set<AccountNumber> accountNumbers;
 
 	/**
 	 * @return the name
@@ -147,21 +140,6 @@ public class Customer extends GenericEntityFull {
 	}
 
 	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
-
-	/**
-	 * @param email
-	 *            the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	/**
 	 * @return the existStatus
 	 */
 	public String getExistStatus() {
@@ -181,13 +159,12 @@ public class Customer extends GenericEntityFull {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Customer(String name, String engName, String address, String email,
-			String tel, String contactUserName, String memo, String existStatus) {
+	public Customer(String name, String engName, String address, String tel,
+			String contactUserName, String memo, String existStatus) {
 		super();
 		this.name = name;
 		this.engName = engName;
 		this.address = address;
-		this.email = email;
 		this.tel = tel;
 		this.contactUserName = contactUserName;
 		this.memo = memo;

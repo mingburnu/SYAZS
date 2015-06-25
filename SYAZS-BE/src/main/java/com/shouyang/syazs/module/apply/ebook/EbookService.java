@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.shouyang.syazs.core.dao.DsRestrictions;
-import com.shouyang.syazs.core.dao.GenericDaoFull;
+import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 import com.shouyang.syazs.core.util.DsBeanFactory;
@@ -36,7 +36,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 	}
 
 	@Override
-	protected GenericDaoFull<Ebook> getDao() {
+	protected GenericDao<Ebook> getDao() {
 		// TODO Auto-generated method stub
 		return dao;
 	}

@@ -12,7 +12,7 @@ import com.shouyang.syazs.core.apply.accountNumber.AccountNumberService;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.core.web.GenericAction;
 
 /**
  * LoginAction
@@ -22,7 +22,7 @@ import com.shouyang.syazs.core.web.GenericWebActionFull;
  */
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class AuthorizationAction extends GenericWebActionFull<AccountNumber> {
+public class AuthorizationAction extends GenericAction<AccountNumber> {
 
 	/**
 	 * 

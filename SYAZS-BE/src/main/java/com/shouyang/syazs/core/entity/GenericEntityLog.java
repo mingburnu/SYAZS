@@ -11,7 +11,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.struts2.json.annotations.JSON;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -67,7 +66,6 @@ public abstract class GenericEntityLog implements Entity {
 	/**
 	 * @return the cDTime
 	 */
-	@JSON(serialize = false)
 	public LocalDateTime getcDTime() {
 		return cDTime;
 	}

@@ -3,6 +3,8 @@ package com.shouyang.syazs.core.dao;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
+
 /**
  * HQL
  * @author Roderick

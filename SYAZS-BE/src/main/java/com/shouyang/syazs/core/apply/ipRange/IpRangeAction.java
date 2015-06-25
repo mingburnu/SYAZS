@@ -13,11 +13,11 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
-import com.shouyang.syazs.core.web.GenericCRUDActionFull;
+import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class IpRangeAction extends GenericCRUDActionFull<IpRange> {
+public class IpRangeAction extends GenericWebActionFull<IpRange> {
 
 	/**
 	 * 

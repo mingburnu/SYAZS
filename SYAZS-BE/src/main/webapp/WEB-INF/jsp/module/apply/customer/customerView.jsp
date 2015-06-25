@@ -80,10 +80,6 @@
 						<th width="130">電話</th>
 						<td><c:out value="${entity.tel }" /></td>
 					</tr>
-					<tr>
-						<th width="130">E-Mail</th>
-						<td>${entity.email }</td>
-					</tr>
 				</tbody>
 			</table>
 		</c:when>

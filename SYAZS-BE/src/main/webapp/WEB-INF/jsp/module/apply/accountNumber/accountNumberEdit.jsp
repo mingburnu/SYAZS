@@ -116,6 +116,10 @@
 							</c:choose></td>
 					</tr>
 					<tr>
+						<th width="130">Email</th>
+						<td><s:textfield name="entity.email" cssClass="input_text" /></td>
+					</tr>
+					<tr>
 						<th width="130">帳戶角色</th>
 						<td><select name="role" id="apply_accountNumber_save_role"
 							class="input_text">
@@ -187,6 +191,10 @@
 									<option value="${item.role }">${item.role }</option>
 								</c:forEach>
 						</select></td>
+					</tr>
+					<tr>
+						<th width="130">Email</th>
+						<td><s:textfield name="entity.email" cssClass="input_text" /></td>
 					</tr>
 					<tr>
 						<th width="130">狀態</th>

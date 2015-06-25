@@ -72,8 +72,8 @@
 						<td><c:out value="${entity.customer.name }" /></td>
 					</tr>
 					<tr>
-						<th width="130">Email</th>
-						<td>${entity.customer.email }</td>
+						<th width="130">E-Mail</th>
+						<td>${entity.email }</td>
 					</tr>
 					<tr>
 						<th width="130">權限</th>

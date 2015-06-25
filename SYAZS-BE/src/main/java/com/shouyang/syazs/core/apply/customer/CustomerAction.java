@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
 
@@ -23,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -36,15 +36,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.enums.Role;
+import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
+import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
 import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.apply.ipRange.IpRangeService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
-import com.shouyang.syazs.core.web.GenericCRUDActionFull;
+import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class CustomerAction extends GenericCRUDActionFull<Customer> {
+public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	/**
 	 * 
@@ -67,6 +69,12 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 
 	@Autowired
 	private IpRange ipRange;
+
+//	@Autowired
+//	private GroupMapping groupMapping;
+//
+//	@Autowired
+//	private GroupMappingService groupMappingService;
 
 	@Autowired
 	private IpRangeService ipRangeService;
@@ -94,12 +102,6 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 			}
 		}
 
-		if (StringUtils.isNotEmpty(getEntity().getEmail())) {
-			if (!isEmail(getEntity().getEmail())) {
-				errorMessages.add("email格式不正確");
-			}
-		}
-
 		if (StringUtils.isNotEmpty(getEntity().getTel())) {
 			String tel = getEntity().getTel().replaceAll("[/()+-]", "")
 					.replace(" ", "");
@@ -113,12 +115,6 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 	protected void validateUpdate() throws Exception {
 		if (!hasEntity()) {
 			errorMessages.add("Target must not be null");
-		}
-
-		if (StringUtils.isNotEmpty(getEntity().getEmail())) {
-			if (!isEmail(getEntity().getEmail())) {
-				errorMessages.add("email格式不正確");
-			}
 		}
 
 		if (StringUtils.isNotEmpty(getEntity().getTel())) {
@@ -196,6 +192,8 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 
 		if (!hasActionErrors()) {
 			customer = customerService.save(getEntity(), getLoginUser());
+//			groupMapping = groupMappingService.save(new GroupMapping(null,
+//					customer.getName(), 0), getLoginUser());
 			setEntity(customer);
 
 			addActionMessage("新增成功");
@@ -214,6 +212,7 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 		if (!hasActionErrors()) {
 			customer = customerService.update(getEntity(), getLoginUser(),
 					"name");
+
 			setEntity(customer);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -442,8 +441,7 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 				}
 
 				customer = new Customer(rowValues[0], rowValues[1],
-						rowValues[2], rowValues[5], rowValues[4], rowValues[3],
-						"", "");
+						rowValues[2], rowValues[4], rowValues[3], "", "");
 
 				if (StringUtils.isBlank(customer.getName())) {
 					customer.setExistStatus("名稱空白");
@@ -457,12 +455,6 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 								.getCusSerNoByName(customer.getName());
 						if (cusSerNo != 0) {
 							customer.setExistStatus("已存在");
-						}
-
-						if (StringUtils.isNotEmpty(customer.getEmail())) {
-							if (!isEmail(customer.getEmail())) {
-								customer.setEmail(null);
-							}
 						}
 
 						if (StringUtils.isNotEmpty(customer.getTel())) {
@@ -658,6 +650,9 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 				int index = (Integer) iterator.next();
 				customer = (Customer) importList.get(index);
 				customerService.save(customer, getLoginUser());
+//				groupMappingService.save(
+//						new GroupMapping(null, customer.getName(), 0),
+//						getLoginUser());
 				++successCount;
 			}
 
@@ -681,10 +676,10 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 		empinfo.put("1", new Object[] { "name/姓名", "egName/英文姓名", "address/地址",
-				"tel/電話", "contactUserName/聯絡人", "emai/l電子信箱", "memo/備註" });
+				"tel/電話", "contactUserName/聯絡人" });
 
 		empinfo.put("2", new Object[] { "國防醫學中心", "ndmc", "台北市內湖區民權東路六段161號",
-				"886-2-87923100", "總機", "ndmc@ndmc.gmail.com", "" });
+				"886-2-87923100", "總機" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
@@ -706,13 +701,6 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 		return XLSX;
 	}
 
-	public boolean isEmail(String email) {
-		String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-		return Pattern.compile(emailPattern).matcher(email).matches();
-	}
-
 	public boolean hasEntity() throws Exception {
 		if (getEntity().getSerNo() == null) {
 			getEntity().setSerNo(-1L);
@@ -729,12 +717,18 @@ public class CustomerAction extends GenericCRUDActionFull<Customer> {
 
 	// 判斷文件類型
 	public Workbook createWorkBook(InputStream is) throws IOException {
-		if (fileFileName[0].toLowerCase().endsWith("xls")) {
-			return new HSSFWorkbook(is);
+		try {
+			if (fileFileName[0].toLowerCase().endsWith("xls")) {
+				return new HSSFWorkbook(is);
+			}
+
+			if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
+				return new XSSFWorkbook(is);
+			}
+		} catch (InvalidOperationException e) {
+			return null;
 		}
-		if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
-			return new XSSFWorkbook(is);
-		}
+
 		return null;
 	}
 

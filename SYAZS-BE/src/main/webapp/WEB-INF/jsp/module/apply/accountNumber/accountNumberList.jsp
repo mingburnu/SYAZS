@@ -236,7 +236,7 @@ function goImport(){
 							<td><c:out value="${item.userId }" /></td>
 							<td align="center"><c:out value="${item.userName }" /></td>
 							<td><c:out value="${item.customer.name }" /></td>
-							<td align="center">${item.customer.email }</td>
+							<td align="center">${item.email }</td>
 							<td>${item.role.role }</td>
 							<td align="center">${item.status.status }</td>
 							<td align="center"><a class="state-default2"

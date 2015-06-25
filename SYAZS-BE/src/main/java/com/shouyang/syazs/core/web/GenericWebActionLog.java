@@ -3,17 +3,17 @@ package com.shouyang.syazs.core.web;
 import com.shouyang.syazs.core.entity.GenericEntityLog;
 
 /**
- * GenericAction
+ * GenericCRUDAction
  * 
  * @author Roderick
- * @version 2015/01/19
+ * @version 2014/11/21
  */
 public abstract class GenericWebActionLog<T extends GenericEntityLog> extends
-		GenericActionLog<T> {
+		GenericCRUDAction<T> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2720759729402906265L;
+	private static final long serialVersionUID = -2906569110124794683L;
 
 }

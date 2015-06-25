@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.core.web.GenericAction;
 
 /**
  * CommonHomePageAction
@@ -15,7 +15,7 @@ import com.shouyang.syazs.core.web.GenericWebActionFull;
  */
 @Controller
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class CommonMainPageAction extends GenericWebActionFull<AccountNumber> {
+public class CommonMainPageAction extends GenericAction<AccountNumber> {
 
 	/**
 	 * 

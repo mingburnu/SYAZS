@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.shouyang.syazs.core.dao.DsRestrictions;
-import com.shouyang.syazs.core.dao.GenericDaoSerNo;
+import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceSerNo;
@@ -34,7 +34,7 @@ public class ResourcesUnionService extends GenericServiceSerNo<ResourcesUnion> {
 	}
 
 	@Override
-	protected GenericDaoSerNo<ResourcesUnion> getDao() {
+	protected GenericDao<ResourcesUnion> getDao() {
 		// TODO Auto-generated method stub
 		return dao;
 	}

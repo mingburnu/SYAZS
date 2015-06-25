@@ -8,7 +8,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.springframework.stereotype.Repository;
 
-import com.shouyang.syazs.core.dao.GenericHibernateDaoFull;
+import com.shouyang.syazs.core.dao.ModuleDaoFull;
 
 /**
  * 使用者 Dao
@@ -17,7 +17,7 @@ import com.shouyang.syazs.core.dao.GenericHibernateDaoFull;
  * @version 2014/9/29
  */
 @Repository
-public class AccountNumberDao extends GenericHibernateDaoFull<AccountNumber> {
+public class AccountNumberDao extends ModuleDaoFull<AccountNumber> {
 
 	public AccountNumber findByUserId(String userId) {
 		Criteria criteria = getSession().createCriteria(AccountNumber.class);

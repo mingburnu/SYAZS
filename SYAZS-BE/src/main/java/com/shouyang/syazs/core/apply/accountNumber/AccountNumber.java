@@ -54,6 +54,12 @@ public class AccountNumber extends GenericEntityFull {
 	private String userName;
 
 	/**
+	 * email
+	 */
+	@Column(name = "email")
+	private String email;
+
+	/**
 	 * user角色
 	 */
 	@Column(name = "role")
@@ -117,6 +123,20 @@ public class AccountNumber extends GenericEntityFull {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	/**
