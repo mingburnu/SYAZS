@@ -70,11 +70,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	@Autowired
 	private IpRange ipRange;
 
-//	@Autowired
-//	private GroupMapping groupMapping;
-//
-//	@Autowired
-//	private GroupMappingService groupMappingService;
+	@Autowired
+	private GroupMapping groupMapping;
+
+	@Autowired
+	private GroupMappingService groupMappingService;
 
 	@Autowired
 	private IpRangeService ipRangeService;
@@ -192,8 +192,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		if (!hasActionErrors()) {
 			customer = customerService.save(getEntity(), getLoginUser());
-//			groupMapping = groupMappingService.save(new GroupMapping(null,
-//					customer.getName(), 0), getLoginUser());
+			groupMappingService.save(new GroupMapping(null, customer.getName(),
+					0), getLoginUser());
 			setEntity(customer);
 
 			addActionMessage("新增成功");
@@ -240,6 +240,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 						Long.parseLong(checkItem[i])).getName();
 				if (customerService
 						.deleteOwnerObj(Long.parseLong(checkItem[i]))) {
+					groupMappingService.delByCustomerName(name);
 					customerService.deleteBySerNo(Long.parseLong(checkItem[i]));
 					addActionMessage(name + "刪除成功");
 				} else {
@@ -650,9 +651,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				int index = (Integer) iterator.next();
 				customer = (Customer) importList.get(index);
 				customerService.save(customer, getLoginUser());
-//				groupMappingService.save(
-//						new GroupMapping(null, customer.getName(), 0),
-//						getLoginUser());
+				groupMappingService.save(
+						new GroupMapping(null, customer.getName(), 0),
+						getLoginUser());
 				++successCount;
 			}
 

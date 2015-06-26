@@ -85,4 +85,12 @@ public interface Dao<T extends Entity> {
 	 */
 	public List<?> findByQL(DsQueryLanguage iQL);
 
+	/**
+	 * Turn on or off Foreign Key
+	 * 
+	 * @param constraint
+	 * @return
+	 */
+	public void switchFK(Boolean constraint);
+
 }

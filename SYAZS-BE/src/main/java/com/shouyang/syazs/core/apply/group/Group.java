@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -15,7 +16,7 @@ import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
 import com.shouyang.syazs.core.entity.GenericEntityGroup;
 
 @Entity
-@Table(name = "group")
+@Table(name = "groups")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Group extends GenericEntityGroup {
 
@@ -27,7 +28,7 @@ public class Group extends GenericEntityGroup {
 	/**
 	 * group mapping
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@OneToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "gro_m_serNo", nullable = false)
 	private GroupMapping groupMapping;
 

@@ -137,6 +137,16 @@ $(document).ready(function() {
 			}
 		}
 	
+	//群組管理
+	function goGroupManager(serNo){
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0){	  
+			var url = '<c:url value = '/'/>crud/apply.group.list.action';
+			var data = 'entity.customer.serNo='+serNo;
+			goDetail(url,'客戶-群組管理',data);
+			}
+		}
+	
 	//GoPage
 	function gotoPage(page){
 		var isNum = /^\d+$/.test(page);
@@ -287,6 +297,8 @@ $(document).ready(function() {
 										</c:if>
 										<a class="state-default2"
 											onclick="goIpRangeManager(${item.serNo});">IP Range管理</a>
+										<a class="state-default2"
+											onclick="goGroupManager(${item.serNo});">群組管理</a>
 									</c:otherwise>
 								</c:choose></td>
 					</c:forEach>

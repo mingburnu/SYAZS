@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -33,10 +32,8 @@ public class GroupMappingService extends GenericServiceSerNo<GroupMapping> {
 		return dao;
 	}
 
-	public GroupMapping getByCustomerName(Customer customer) throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
-		restrictions.eq("title", customer.getName());
-		return dao.findByRestrictions(restrictions).get(0);
+	public void delByCustomerName(String title) {
+		dao.deleteByTitle(title);
 	}
 
 }

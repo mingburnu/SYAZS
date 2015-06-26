@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -31,8 +32,8 @@ import com.shouyang.syazs.core.model.Pager;
  * @author Roderick
  * @version 2014/11/7
  */
-public abstract class GenericHibernateDao<T extends Entity>
-		extends GenericDao<T> {
+public abstract class GenericHibernateDao<T extends Entity> extends
+		GenericDao<T> {
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -148,6 +149,22 @@ public abstract class GenericHibernateDao<T extends Entity>
 		}
 
 		return query.list();
+	}
+
+	@Override
+	public void switchFK(Boolean constraint) {
+		if (constraint) {
+			// SET REFERENTIAL_INTEGRITY TRUE
+			SQLQuery fkAble = getSession().createSQLQuery(
+					"SET FOREIGN_KEY_CHECKS=1");
+			fkAble.executeUpdate();
+		} else {
+			// SET REFERENTIAL_INTEGRITY FALSE
+			SQLQuery fkDisable = getSession().createSQLQuery(
+					"SET FOREIGN_KEY_CHECKS=0");
+			fkDisable.executeUpdate();
+		}
+
 	}
 
 }

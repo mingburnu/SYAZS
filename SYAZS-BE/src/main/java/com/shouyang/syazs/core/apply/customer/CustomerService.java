@@ -38,7 +38,7 @@ public class CustomerService extends GenericServiceFull<Customer> {
 
 		restrictions.addOrderAsc("serNo");
 		restrictions.addOrderAsc("engName");
-
+		
 		return dao.findByRestrictions(restrictions, ds);
 	}
 

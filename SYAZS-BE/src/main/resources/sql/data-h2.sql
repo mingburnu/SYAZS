@@ -15,6 +15,33 @@ insert into customer(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUs
 insert into customer(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(14, 'admin', 'admin', sysdate(), sysdate(), '台灣大學附設醫院', 'NTUH', '王大明');
 insert into customer(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(15, 'admin', 'admin', sysdate(), sysdate(), '疾病管制署', 'CDC', '王小明');
 
+--groupMapping
+insert into group_mapping(serNo, parentGID, Title, Level) values(1, null, '長庚紀念醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(2, null, '國防醫學中心', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(3, null, '成功大學附設醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(4, null, '台北醫學院附屬醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(5, null, '恩主公醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(6, null, '中國醫藥大學附設醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(7, null, '宏恩醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(8, null, '馬偕紀念醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(9, null, '碩睿資訊公司', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(10, null, '佛教慈濟綜合醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(11, null, '高雄醫學院附設醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(12, null, '天主教耕莘醫療財團法人耕莘醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(13, null, '為恭紀念醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(14, null, '台灣大學附設醫院', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(15, null, '疾病管制署', 0);
+insert into group_mapping(serNo, parentGID, Title, Level) values(16, 15, '疾病管制署', 1);
+insert into group_mapping(serNo, parentGID, Title, Level) values(17, 16, '疾病管制署', 2);
+insert into group_mapping(serNo, parentGID, Title, Level) values(18, 17, '疾病管制署', 3);
+insert into group_mapping(serNo, parentGID, Title, Level) values(19, 2, '國防醫學中心', 1);
+
+--group
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(1, 'admin', sysdate(), 16, 15, '微生物組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(2, 'admin', sysdate(), 17, 15, '細菌組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(3, 'admin', sysdate(), 18, 15, '球菌組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(4, 'admin', sysdate(), 19, 2, '生理所');
+
 --accountNumber
 insert into accountNumber(serNo, cUid, uUid, cDTime, uDTime, cus_serNo, userID, userName, userPW, role, status) values(1, 'admin', 'admin', sysdate(), sysdate(), 5, 'user3', 'Default User', '8w5y4CYvLHP69kq5Wm2vHDVfPX1IOcrpskUugS/4KZN6budffcIYbfhpEL6HmNZ0', '使用者','生效');
 insert into accountNumber(serNo, cUid, uUid, cDTime, uDTime, cus_serNo, userID, userName, userPW, role, status) values(2, 'admin', 'admin', sysdate(), sysdate(), 2,'admin2', 'administer', '8w5y4CYvLHP69kq5Wm2vHDVfPX1IOcrpskUugS/4KZN6budffcIYbfhpEL6HmNZ0', '維護人員','生效');

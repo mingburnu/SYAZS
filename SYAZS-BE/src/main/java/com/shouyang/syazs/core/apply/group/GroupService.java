@@ -1,10 +1,11 @@
 package com.shouyang.syazs.core.apply.group;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -21,7 +22,14 @@ public class GroupService extends GenericServiceGroup<Group> {
 	public DataSet<Group> getByRestrictions(DataSet<Group> ds) throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
+		Group entity = ds.getEntity();
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+
+		if (entity.getCustomer().getSerNo() > 0) {
+			restrictions.eq("customer.serNo", entity.getCustomer().getSerNo());
+		}
+
+		restrictions.addOrderAsc("serNo");
 
 		return dao.findByRestrictions(restrictions, ds);
 	}
@@ -32,9 +40,9 @@ public class GroupService extends GenericServiceGroup<Group> {
 		return dao;
 	}
 
-	public Group getCustomerGroup(Customer entity) throws Exception {
+	public List<Group> getCustomerGroup(long cusSerNo) throws Exception {
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
-		restrictions.eq("customer.serNo", entity.getSerNo());
-		return dao.findByRestrictions(restrictions).get(0);
+		restrictions.eq("customer.serNo", cusSerNo);
+		return dao.findByRestrictions(restrictions);
 	}
 }

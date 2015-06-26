@@ -5,11 +5,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.core.apply.group.Group;
 import com.shouyang.syazs.core.entity.GenericEntitySerNo;
 
 @Entity
@@ -27,7 +29,7 @@ public class GroupMapping extends GenericEntitySerNo {
 	 */
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "parentGID", nullable = true)
-	private GroupMapping GroupMapping;
+	private GroupMapping parentGroupMapping;
 
 	/**
 	 * 名稱
@@ -41,19 +43,22 @@ public class GroupMapping extends GenericEntitySerNo {
 	@Column(name = "Level")
 	private Integer level;
 
+	@OneToOne(mappedBy="groupMapping")
+	private Group group;
+
 	/**
-	 * @return the groupMapping
+	 * @return the parentGroupMapping
 	 */
-	public GroupMapping getGroupMapping() {
-		return GroupMapping;
+	public GroupMapping getParentGroupMapping() {
+		return parentGroupMapping;
 	}
 
 	/**
-	 * @param groupMapping
-	 *            the groupMapping to set
+	 * @param parentGroupMapping
+	 *            the parentGroupMapping to set
 	 */
-	public void setGroupMapping(GroupMapping groupMapping) {
-		GroupMapping = groupMapping;
+	public void setParentGroupMapping(GroupMapping parentGroupMapping) {
+		this.parentGroupMapping = parentGroupMapping;
 	}
 
 	/**
@@ -86,10 +91,30 @@ public class GroupMapping extends GenericEntitySerNo {
 		this.level = level;
 	}
 
-	public GroupMapping(GroupMapping groupMapping, String title, Integer level) {
+	/**
+	 * @return the group
+	 */
+	public Group getGroup() {
+		return group;
+	}
+
+	/**
+	 * @param group the group to set
+	 */
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
+	public GroupMapping() {
 		super();
-		GroupMapping = groupMapping;
+		// TODO Auto-generated constructor stub
+	}
+
+	public GroupMapping(GroupMapping parentGroupMapping, String title,
+			Integer level) {
+		super();
+		this.parentGroupMapping = parentGroupMapping;
 		this.title = title;
 		this.level = level;
-	}	
+	}
 }

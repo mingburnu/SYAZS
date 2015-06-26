@@ -3,7 +3,6 @@ package com.shouyang.syazs.core.apply.customer;
 import java.util.Map;
 
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.metadata.ClassMetadata;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +22,8 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 			query.setMaxResults(1);
 
 			if (query.list().toString().contains("customer=")
-					&& !query.list().toString().contains("cDTime=")) {
+					&& !query.list().toString().contains("cDTime=")
+					&& !query.list().toString().contains("uDTime=")) {
 				Query resourceQuery = getSession().createQuery(
 						"SELECT COUNT(*) FROM " + entityName
 								+ " WHERE customer.serNo=?");
@@ -34,10 +34,7 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 			}
 		}
 
-		// SET REFERENTIAL_INTEGRITY FALSE
-		SQLQuery fkDisable = getSession().createSQLQuery(
-				"SET FOREIGN_KEY_CHECKS=0");
-		fkDisable.executeUpdate();
+		switchFK(false);
 
 		for (String entityName : map.keySet()) {
 			Query query = getSession().createQuery("FROM " + entityName);
@@ -53,10 +50,7 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 			}
 		}
 
-		// SET REFERENTIAL_INTEGRITY TRUE
-		SQLQuery fkAble = getSession().createSQLQuery(
-				"SET FOREIGN_KEY_CHECKS=1");
-		fkAble.executeUpdate();
+		switchFK(false);
 		return true;
 	}
 }
