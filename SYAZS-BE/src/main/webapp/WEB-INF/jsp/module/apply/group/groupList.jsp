@@ -30,16 +30,15 @@ $(document).ready(function() {
 	function goAdd_detail() {
 		var url = "<c:url value = '/'/>/crud/apply.group.edit.action";
 		var data ='entity.customer.serNo='+'${customerSerNo }';
-		goDetail_2(url, 'Group管理-新增', data);
+		goDetail_2(url, '客戶-群組新增', data);
 	}
 
 	//Group編輯
-	function goUpdate_detail(listNo,serNo) {
+	function goUpdate_detail(serNo) {
 		var isNum = /^\d+$/.test(serNo);
-		var islistNo = /^\d+$/.test(listNo);
-		if (isNum && islistNo &&parseInt(serNo) > 0){
+		if (isNum &&parseInt(serNo) > 0){
 		var url = "<c:url value = '/'/>crud/apply.group.edit.action";
-		var data = 'entity.serNo=' + serNo +'&entity.listNo='+listNo+'&entity.customer.serNo='+'${customerSerNo }';
+		var data = 'entity.serNo=' + serNo +'&entity.customer.serNo='+'${customerSerNo }';
 		goDetail_2(url, 'Group管理-修改', data); 
 		}
 	}

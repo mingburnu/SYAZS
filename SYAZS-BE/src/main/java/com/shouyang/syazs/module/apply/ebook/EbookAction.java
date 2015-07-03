@@ -91,10 +91,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	private String[] importSerNos;
 
-	private InputStream inputStream;
-
-	private String reportFile;
-
 	@Override
 	protected void validateSave() throws Exception {
 		List<Category> categoryList = new ArrayList<Category>(
@@ -1137,7 +1133,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	public String example() throws Exception {
-		reportFile = "ebook_sample.xlsx";
+		getEntity().setReportFile("ebook_sample.xlsx");
 
 		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -1340,39 +1336,4 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
 	}
-
-	/**
-	 * @return the inputStream
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	/**
-	 * @param inputStream
-	 *            the inputStream to set
-	 */
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
-
-	/**
-	 * @return the reportFile
-	 */
-	public String getReportFile() {
-		if (reportFile.equals("ebook_sample.xlsx")) {
-			return reportFile;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @param reportFile
-	 *            the reportFile to set
-	 */
-	public void setReportFile(String reportFile) {
-		this.reportFile = reportFile;
-	}
-
 }

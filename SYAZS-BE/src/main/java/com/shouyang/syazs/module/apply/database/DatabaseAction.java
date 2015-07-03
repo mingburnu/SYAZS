@@ -92,10 +92,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	private String[] importSerNos;
 
-	private InputStream inputStream;
-
-	private String reportFile;
-
 	@Override
 	protected void validateSave() throws Exception {
 		List<Category> categoryList = new ArrayList<Category>(
@@ -1157,7 +1153,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String example() throws Exception {
-		reportFile = "database_sample.xlsx";
+		getEntity().setReportFile("database_sample.xlsx");
 
 		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -1340,39 +1336,4 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
 	}
-
-	/**
-	 * @return the inputStream
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	/**
-	 * @param inputStream
-	 *            the inputStream to set
-	 */
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
-
-	/**
-	 * @return the reportFile
-	 */
-	public String getReportFile() {
-		if (reportFile.equals("database_sample.xlsx")) {
-			return reportFile;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @param reportFile
-	 *            the reportFile to set
-	 */
-	public void setReportFile(String reportFile) {
-		this.reportFile = reportFile;
-	}
-
 }

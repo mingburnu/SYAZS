@@ -84,7 +84,8 @@ public abstract class GenericServiceFull<T extends GenericEntityFull>
 	 * @throws Exception
 	 */
 	public void makeUserInfo(T entity) throws Exception {
-		if (entity.getcUid() != null && entity.getuUid() != null) {
+		if (entity != null && entity.getcUid() != null
+				&& entity.getuUid() != null) {
 			AccountNumber user = getUserInfo(entity.getcUid());
 			entity.setCreatedUser(user);
 

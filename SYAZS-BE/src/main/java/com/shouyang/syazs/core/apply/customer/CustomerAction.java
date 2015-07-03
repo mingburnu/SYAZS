@@ -81,12 +81,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	private String[] importSerNos;
 
-	private InputStream inputStream;
-
-	private String reportFile;
-
-	private String[] jsonString;
-
 	@Override
 	protected void validateSave() throws Exception {
 		if (StringUtils.isBlank(getEntity().getName())) {
@@ -307,8 +301,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			i++;
 		}
 
-		jsonString = new String[1];
-		jsonString[0] = objArray.toString();
+		getRequest().setAttribute("jsonString", objArray.toString());
 		return JSON;
 	}
 
@@ -666,8 +659,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String example() throws Exception {
-		reportFile = "customer_sample.xlsx";
-
+		// reportFile = "customer_sample.xlsx";
+		getEntity().setReportFile("customer_sample.xlsx");
 		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		// Create a blank sheet
@@ -807,54 +800,4 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
 	}
-
-	/**
-	 * @return the inputStream
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	/**
-	 * @param inputStream
-	 *            the inputStream to set
-	 */
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
-
-	/**
-	 * @return the reportFile
-	 */
-	public String getReportFile() {
-		if (reportFile.equals("customer_sample.xlsx")) {
-			return reportFile;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @param reportFile
-	 *            the reportFile to set
-	 */
-	public void setReportFile(String reportFile) {
-		this.reportFile = reportFile;
-	}
-
-	/**
-	 * @return the jsonString
-	 */
-	public String[] getJsonString() {
-		return jsonString;
-	}
-
-	/**
-	 * @param jsonString
-	 *            the jsonString to set
-	 */
-	public void setJsonString(String[] jsonString) {
-		this.jsonString = jsonString;
-	}
-
 }

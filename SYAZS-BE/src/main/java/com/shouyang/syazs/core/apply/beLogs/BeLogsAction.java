@@ -62,8 +62,6 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 	private InputStream inputStream;
 
-	private String reportFile;
-
 	@Override
 	protected void validateSave() throws Exception {
 		// TODO Auto-generated method stub
@@ -254,7 +252,7 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 			List<BeLogs> results = ds.getResults();
 
-			reportFile = "beLogs.xlsx";
+			getEntity().setReportFile("beLogs.xlsx");
 
 			// Create blank workbook
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -331,24 +329,5 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 	 */
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
-	}
-
-	/**
-	 * @return the reportFile
-	 */
-	public String getReportFile() {
-		if (reportFile.equals("beLogs.xlsx")) {
-			return reportFile;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @param reportFile
-	 *            the reportFile to set
-	 */
-	public void setReportFile(String reportFile) {
-		this.reportFile = reportFile;
 	}
 }

@@ -85,10 +85,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	private String[] importSerNos;
 
-	private InputStream inputStream;
-
-	private String reportFile;
-
 	@Override
 	protected void validateSave() throws Exception {
 		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
@@ -1097,7 +1093,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String example() throws Exception {
-		reportFile = "account_sample.xlsx";
+		getEntity().setReportFile("account_sample.xlsx");
 
 		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -1259,39 +1255,5 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	 */
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
-	}
-
-	/**
-	 * @return the inputStream
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	/**
-	 * @param inputStream
-	 *            the inputStream to set
-	 */
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
-
-	/**
-	 * @return the reportFile
-	 */
-	public String getReportFile() {
-		if (reportFile.equals("account_sample.xlsx")) {
-			return reportFile;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * @param reportFile
-	 *            the reportFile to set
-	 */
-	public void setReportFile(String reportFile) {
-		this.reportFile = reportFile;
 	}
 }

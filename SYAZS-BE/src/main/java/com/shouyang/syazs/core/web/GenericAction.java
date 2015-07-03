@@ -35,7 +35,7 @@ public abstract class GenericAction<T extends Entity> extends
 	protected final transient Logger log = Logger.getLogger(getClass());
 
 	protected final transient Set<String> errorMessages = new HashSet<String>();
-
+	
 	@Autowired
 	private T entity;
 

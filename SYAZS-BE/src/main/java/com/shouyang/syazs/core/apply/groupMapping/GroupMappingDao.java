@@ -9,12 +9,12 @@ import com.shouyang.syazs.core.dao.ModuleDaoSerNo;
 public class GroupMappingDao extends ModuleDaoSerNo<GroupMapping> {
 
 	public void deleteByTitle(String title) {
-		switchFK(false);
+		checkFK(false);
 
 		Query delQuery = getSession().createQuery(
 				"DELETE FROM GroupMapping WHERE title=?");
 		delQuery.setString(0, title).executeUpdate();
 
-		switchFK(true);
+		checkFK(true);
 	}
 }

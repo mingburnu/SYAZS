@@ -64,6 +64,9 @@ public abstract class GenericEntityFull implements Entity {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime uDTime;
 
+	@Transient
+	private String reportFile;
+
 	/**
 	 * @return the serNo
 	 */
@@ -153,6 +156,21 @@ public abstract class GenericEntityFull implements Entity {
 
 	public void setLastModifiedUser(AccountNumber lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	/**
+	 * @return the reportFile
+	 */
+	public String getReportFile() {
+		return reportFile;
+	}
+
+	/**
+	 * @param reportFile
+	 *            the reportFile to set
+	 */
+	public void setReportFile(String reportFile) {
+		this.reportFile = reportFile;
 	}
 
 	/**

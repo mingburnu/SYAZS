@@ -91,6 +91,6 @@ public interface Dao<T extends Entity> {
 	 * @param constraint
 	 * @return
 	 */
-	public void switchFK(Boolean constraint);
+	public void checkFK(Boolean constraint);
 
 }

@@ -48,6 +48,9 @@ public abstract class GenericEntityLog implements Entity {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime cDTime;
 
+	@Transient
+	private String reportFile;
+
 	/**
 	 * @return the serNo
 	 */
@@ -84,6 +87,21 @@ public abstract class GenericEntityLog implements Entity {
 
 	public void setCreatedUser(AccountNumber createdUser) {
 		this.createdUser = createdUser;
+	}
+
+	/**
+	 * @return the reportFile
+	 */
+	public String getReportFile() {
+		return reportFile;
+	}
+
+	/**
+	 * @param reportFile
+	 *            the reportFile to set
+	 */
+	public void setReportFile(String reportFile) {
+		this.reportFile = reportFile;
 	}
 
 	/**

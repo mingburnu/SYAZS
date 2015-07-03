@@ -93,10 +93,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	private String[] importSerNos;
 
-	private InputStream inputStream;
-
-	private String reportFile;
-
 	@Override
 	protected void validateSave() throws Exception {
 		List<Category> categoryList = new ArrayList<Category>(
@@ -1119,7 +1115,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	public String example() throws Exception {
-		reportFile = "journal_sample.xlsx";
+		getEntity().setReportFile("journal_sample.xlsx");
 
 		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -1343,39 +1339,5 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	 */
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
-	}
-
-	/**
-	 * @return the inputStream
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	/**
-	 * @param inputStream
-	 *            the inputStream to set
-	 */
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
-
-	/**
-	 * @return the reportFile
-	 */
-	public String getReportFile() {
-		if (reportFile.equals("journal_sample.xlsx")) {
-			return reportFile;
-		} else {
-			return reportFile;
-		}
-	}
-
-	/**
-	 * @param reportFile
-	 *            the reportFile to set
-	 */
-	public void setReportFile(String reportFile) {
-		this.reportFile = reportFile;
 	}
 }

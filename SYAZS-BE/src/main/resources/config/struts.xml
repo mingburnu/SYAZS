@@ -104,6 +104,8 @@
 		<action name="apply.*.*" class="{1}Action" method="{2}">
 			<exception-mapping exception="java.lang.NoSuchMethodException"
 				result="error" />
+			<exception-mapping exception="java.lang.ClassCastException"
+				result="error" />
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 			<result name="list">/WEB-INF/jsp/module/apply/{1}/{1}List.jsp
 			</result>
@@ -120,7 +122,7 @@
 			<result name="import">/WEB-INF/jsp/module/apply/{1}/{1}Import.jsp
 			</result>
 			<result name="xlsx" type="stream">
-				<param name="contentDisposition">attachment;filename="${reportFile}"</param>
+				<param name="contentDisposition">attachment;filename="${entity.reportFile}"</param>
 				<param name="contentType">application/vnd.ms-excel</param>
 				<param name="inputName">inputStream</param>
 				<param name="bufferSize">1024</param>

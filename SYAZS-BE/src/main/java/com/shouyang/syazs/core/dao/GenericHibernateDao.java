@@ -152,7 +152,7 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 	}
 
 	@Override
-	public void switchFK(Boolean constraint) {
+	public void checkFK(Boolean constraint) {
 		if (constraint) {
 			// SET REFERENTIAL_INTEGRITY TRUE
 			SQLQuery fkAble = getSession().createSQLQuery(

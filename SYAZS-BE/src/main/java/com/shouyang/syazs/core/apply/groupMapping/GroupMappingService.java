@@ -35,5 +35,4 @@ public class GroupMappingService extends GenericServiceSerNo<GroupMapping> {
 	public void delByCustomerName(String title) {
 		dao.deleteByTitle(title);
 	}
-
 }

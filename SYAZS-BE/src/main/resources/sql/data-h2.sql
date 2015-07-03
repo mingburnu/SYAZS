@@ -34,13 +34,21 @@ insert into group_mapping(serNo, parentGID, Title, Level) values(15, null, '疾�
 insert into group_mapping(serNo, parentGID, Title, Level) values(16, 15, '疾病管制署', 1);
 insert into group_mapping(serNo, parentGID, Title, Level) values(17, 16, '疾病管制署', 2);
 insert into group_mapping(serNo, parentGID, Title, Level) values(18, 17, '疾病管制署', 3);
-insert into group_mapping(serNo, parentGID, Title, Level) values(19, 2, '國防醫學中心', 1);
+insert into group_mapping(serNo, parentGID, Title, Level) values(19, 16, '疾病管制署', 2);
+insert into group_mapping(serNo, parentGID, Title, Level) values(20, 2, '國防醫學中心', 1);
+insert into group_mapping(serNo, parentGID, Title, Level) values(21, 15, '疾病管制署', 1);
+insert into group_mapping(serNo, parentGID, Title, Level) values(22, 21, '疾病管制署', 2);
+insert into group_mapping(serNo, parentGID, Title, Level) values(23, 21, '疾病管制署', 2);
 
 --group
 insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(1, 'admin', sysdate(), 16, 15, '微生物組');
 insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(2, 'admin', sysdate(), 17, 15, '細菌組');
 insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(3, 'admin', sysdate(), 18, 15, '球菌組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(4, 'admin', sysdate(), 19, 2, '生理所');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(4, 'admin', sysdate(), 19, 15, '病毒組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(5, 'admin', sysdate(), 20, 2, '生理所');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(6, 'admin', sysdate(), 21, 15, '寄生蟲組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(7, 'admin', sysdate(), 22, 15, '外寄生蟲組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(8, 'admin', sysdate(), 23, 15, '內寄生蟲組');
 
 --accountNumber
 insert into accountNumber(serNo, cUid, uUid, cDTime, uDTime, cus_serNo, userID, userName, userPW, role, status) values(1, 'admin', 'admin', sysdate(), sysdate(), 5, 'user3', 'Default User', '8w5y4CYvLHP69kq5Wm2vHDVfPX1IOcrpskUugS/4KZN6budffcIYbfhpEL6HmNZ0', '使用者','生效');

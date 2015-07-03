@@ -84,7 +84,7 @@ public abstract class GenericServiceGroup<T extends GenericEntityGroup>
 	 * @throws Exception
 	 */
 	public void makeUserInfo(T entity) throws Exception {
-		if (entity.getuUid() != null) {
+		if (entity != null && entity.getuUid() != null) {
 			AccountNumber user = getUserInfo(entity.getuUid());
 			entity.setLastModifiedUser(user);
 		}

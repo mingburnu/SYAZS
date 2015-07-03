@@ -34,7 +34,7 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 			}
 		}
 
-		switchFK(false);
+		checkFK(false);
 
 		for (String entityName : map.keySet()) {
 			Query query = getSession().createQuery("FROM " + entityName);
@@ -50,7 +50,7 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 			}
 		}
 
-		switchFK(false);
+		checkFK(false);
 		return true;
 	}
 }

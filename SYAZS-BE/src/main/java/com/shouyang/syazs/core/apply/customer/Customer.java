@@ -170,5 +170,5 @@ public class Customer extends GenericEntityFull {
 		this.memo = memo;
 		this.existStatus = existStatus;
 	}
-	
+
 }
