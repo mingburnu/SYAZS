@@ -52,6 +52,22 @@ public abstract class GenericEntityGroup implements Entity {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime uDTime;
 
+	/** set struts action dispatcher location */
+	@Transient
+	private String location;
+
+	public String getLocation() {
+		StringBuilder locationBuilder = new StringBuilder("/WEB-INF/jsp/");
+
+		String className = getClass().getCanonicalName();
+		String packageName = className.substring(0, className.lastIndexOf("."));
+
+		location = locationBuilder
+				.append(packageName.substring(0, packageName.lastIndexOf(".")))
+				.append("/").toString();
+		return location;
+	}
+
 	/**
 	 * @return the serNo
 	 */
@@ -75,7 +91,8 @@ public abstract class GenericEntityGroup implements Entity {
 	}
 
 	/**
-	 * @param uUid the uUid to set
+	 * @param uUid
+	 *            the uUid to set
 	 */
 	public void setuUid(String uUid) {
 		this.uUid = uUid;
@@ -89,7 +106,8 @@ public abstract class GenericEntityGroup implements Entity {
 	}
 
 	/**
-	 * @param uDTime the uDTime to set
+	 * @param uDTime
+	 *            the uDTime to set
 	 */
 	public void setuDTime(LocalDateTime uDTime) {
 		this.uDTime = uDTime;
@@ -118,7 +136,7 @@ public abstract class GenericEntityGroup implements Entity {
 	public boolean isNew() {
 		return serNo == null;
 	}
-	
+
 	/**
 	 * initial insert
 	 * <p>

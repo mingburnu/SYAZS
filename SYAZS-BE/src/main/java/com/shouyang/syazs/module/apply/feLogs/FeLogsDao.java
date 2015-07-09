@@ -21,7 +21,7 @@ public class FeLogsDao extends ModuleDaoLog<FeLogs> {
 
 	@Autowired
 	private FeLogs feLogs;
-	
+
 	@Autowired
 	private JodaTimeConverter converter;
 
@@ -33,11 +33,11 @@ public class FeLogsDao extends ModuleDaoLog<FeLogs> {
 		String start = "";
 		String end = "";
 		if (entity.getStart() != null) {
-			start = converter.convertToString(entity.getStart());
+			start = converter.convertToString(null, entity.getStart());
 		}
 
 		if (entity.getEnd() != null) {
-			end = converter.convertToString(entity.getEnd().plusDays(1));
+			end = converter.convertToString(null, entity.getEnd().plusDays(1));
 		}
 
 		Query listQuery = null;

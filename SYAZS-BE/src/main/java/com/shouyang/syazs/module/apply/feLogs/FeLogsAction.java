@@ -73,6 +73,12 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 	}
 
 	@Override
+	public String add() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String edit() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
@@ -297,9 +303,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 	}
 
 	public LocalDateTime getLocalDateTime(String date) {
-		LocalDateTime dateTime = (LocalDateTime) converter
-				.convertFromString(date);
-
+		LocalDateTime dateTime = (LocalDateTime) converter.convertFromString(
+				null, new String[] { date }, LocalDateTime.class);
 		return dateTime;
 	}
 

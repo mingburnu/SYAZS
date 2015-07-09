@@ -11,6 +11,8 @@ import com.shouyang.syazs.core.entity.Entity;
 public interface Action<T extends Entity> {
 
 	public final static String INDEX = "index";
+	
+	public final static String ADD = "add";
 
 	public final static String EDIT = "edit";
 

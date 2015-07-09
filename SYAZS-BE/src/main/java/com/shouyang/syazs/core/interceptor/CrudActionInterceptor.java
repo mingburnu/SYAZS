@@ -14,6 +14,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
+import com.shouyang.syazs.core.apply.enums.Role;
 
 /**
  * CRUD Action Interceptor
@@ -59,7 +60,7 @@ public class CrudActionInterceptor extends AbstractInterceptor {
 					.getSession();
 			accountNumber = (AccountNumber) session.get("login");
 
-			if (accountNumber.getRole().getRole().equals("管理員")) {
+			if (accountNumber.getRole().equals(Role.管理員)) {
 				HttpServletResponse response = ServletActionContext
 						.getResponse();
 				response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -71,7 +72,7 @@ public class CrudActionInterceptor extends AbstractInterceptor {
 					.getSession();
 			accountNumber = (AccountNumber) session.get("login");
 
-			if (accountNumber.getRole().getRole().equals("管理員")) {
+			if (accountNumber.getRole().equals(Role.管理員)) {
 				String method = invocation.getProxy().getMethod();
 
 				if (!method.equals("json") && !method.equals("ajax")) {

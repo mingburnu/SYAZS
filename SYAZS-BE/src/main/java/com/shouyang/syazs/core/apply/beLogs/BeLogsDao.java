@@ -22,7 +22,7 @@ public class BeLogsDao extends ModuleDaoLog<BeLogs> {
 
 	@Autowired
 	private BeLogs beLogs;
-	
+
 	@Autowired
 	private JodaTimeConverter converter;
 
@@ -34,11 +34,11 @@ public class BeLogsDao extends ModuleDaoLog<BeLogs> {
 		String start = "";
 		String end = "";
 		if (entity.getStart() != null) {
-			start = converter.convertToString(entity.getStart());
+			start = converter.convertToString(null, entity.getStart());
 		}
 
 		if (entity.getEnd() != null) {
-			end = converter.convertToString(entity.getEnd().plusDays(1));
+			end = converter.convertToString(null, entity.getEnd().plusDays(1));
 		}
 
 		Query listQuery = null;

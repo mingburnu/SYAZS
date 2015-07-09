@@ -23,7 +23,7 @@ function goSearch(){
 
 //新增
 function goAdd(){
-    goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.edit.action','帳戶-新增');
+    goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.add.action','帳戶-新增');
 }
 
 //失效多筆資料之函式
@@ -97,7 +97,7 @@ function goView(serNo){
 	var isNum = /^\d+$/.test(serNo);
 	if (isNum && parseInt(serNo) > 0){
         var url = "<c:url value = '/'/>crud/apply.accountNumber.view.action";
-        var data = 'viewSerNo='+serNo;
+        var data = 'entity.serNo='+serNo;
         goDetail(url,'帳戶-檢視',data);
 	}
 }

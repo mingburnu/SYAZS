@@ -1,6 +1,8 @@
 package com.shouyang.syazs.test;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,11 +17,12 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 public class Test {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 
 		String[] sql = {
 				"	INSERT INTO ip_range(serNo, cDTime, cUid, uDTime, uUid, ipRangeEnd, ipRangeStart, cusSerNo) VALUES	(	1	,	sysdate()	,	'admin'	,	sysdate()	,	'admin'	,	'	59.120.245.198	'	,	'	59.120.245.193	'	,	9	);	",
@@ -202,8 +205,30 @@ public class Test {
 		System.out.println(properties.get("hello"));
 		System.out.println(isDate("2010-02-31"));
 
-		System.out.println(new LocalDate("2015/01/01").toString());
+		System.out.println("xentity=".contains("entity"));
 
+//		 try {
+//		AccountNumber accountNumber = new AccountNumber("", "", "", "", "", "",
+//				"");
+//		 } catch (Exception e) {
+//		 System.out.println(e);
+//		 System.out.println("Error");
+//		 }
+
+		System.out.println("Hello");
+		
+		LocalDateTime dateTime = LocalDateTime.parse("2012-12-12",
+				DateTimeFormat.forPattern("yyyy-MM-dd"));
+		System.out.println(dateTime);
+		
+		String numStr =""+Long.MAX_VALUE;
+		System.out.println(NumberUtils.isDigits(numStr));
+		System.out.println(numStr);
+		Number number1 =NumberFormat.getInstance().parse(numStr);
+		System.out.println(number1);
+		System.out.println(NumberFormat.getInstance().parse("-9.4"));
+		System.out.println(NumberUtils.isNumber("9."));
+		System.out.println("9".split("\\.").length);
 	}
 
 	public static boolean isLCC(String LCC) {

@@ -181,7 +181,7 @@ function goCustomers(argURL, argTitle) {
 			closeLoading();
 		},
 		success : function(msg) {
-			$("#div_Customers").show();
+			//$("#div_Customers").show();
 			$(window).scrollTop(0);
 			$("#div_Customers .content > .contain").html(msg);
 			closeLoading();

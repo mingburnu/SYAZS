@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletResponse;
+
 import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -108,17 +110,16 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	@Override
 	protected void validateUpdate() throws Exception {
 		if (!hasEntity()) {
-			errorMessages.add("Target must not be null");
-		}
-
-		if (StringUtils.isNotEmpty(getEntity().getTel())) {
-			String tel = getEntity().getTel().replaceAll("[/()+-]", "")
-					.replace(" ", "");
-			if (!NumberUtils.isDigits(tel)) {
-				errorMessages.add("電話格式不正確");
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		} else {
+			if (StringUtils.isNotEmpty(getEntity().getTel())) {
+				String tel = getEntity().getTel().replaceAll("[/()+-]", "")
+						.replace(" ", "");
+				if (!NumberUtils.isDigits(tel)) {
+					errorMessages.add("電話格式不正確");
+				}
 			}
 		}
-
 	}
 
 	@Override
@@ -142,6 +143,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		} else {
 			errorMessages.add("權限不足");
 		}
+	}
+
+	@Override
+	public String add() throws Exception {
+		return ADD;
 	}
 
 	@Override
@@ -194,7 +200,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			return VIEW;
 		} else {
 			setEntity(getEntity());
-			return EDIT;
+			return ADD;
 		}
 	}
 
@@ -265,17 +271,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String view() throws Exception {
-		getRequest().setAttribute("viewSerNo",
-				getRequest().getParameter("viewSerNo"));
-
-		if (StringUtils.isNotBlank(getRequest().getParameter("viewSerNo"))
-				&& NumberUtils.isDigits(getRequest().getParameter("viewSerNo"))) {
-
-			customer = customerService.getBySerNo(Long.parseLong(getRequest()
-					.getParameter("viewSerNo")));
-			if (customer != null) {
-				setEntity(customer);
-			}
+		if (hasEntity()) {
+			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
+			setEntity(customer);
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		return VIEW;
 	}

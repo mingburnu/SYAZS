@@ -26,7 +26,32 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-
+	<filter>
+		<display-name>ClassNotFoundFilter</display-name>
+		<filter-name>ClassNotFoundFilter</filter-name>
+		<filter-class>com.shouyang.syazs.core.filter.ClassNotFoundFilter</filter-class>
+		<init-param>
+			<param-name>moduleEntityPackage</param-name>
+			<param-value>com.shouyang.syazs.module.apply</param-value>
+		</init-param>
+		<init-param>
+			<param-name>coreEntityPackage</param-name>
+			<param-value>com.shouyang.syazs.core.apply</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>ClassNotFoundFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<display-name>ParameterFilter</display-name>
+		<filter-name>ParameterFilter</filter-name>
+		<filter-class>com.shouyang.syazs.core.filter.ParameterFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ParameterFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 	<filter>
 		<filter-name>struts2</filter-name>
 		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
@@ -48,7 +73,6 @@
 		<url-pattern>*.jsp</url-pattern>
 		<url-pattern>*.action</url-pattern>
 	</filter-mapping>
-
 	<filter>
 		<filter-name>characterEncodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -65,7 +89,6 @@
 		<filter-name>characterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
 	<filter>
 		<display-name>ClickjackFilter</display-name>
 		<filter-name>ClickjackFilter</filter-name>
@@ -79,16 +102,9 @@
 		<filter-name>ClickjackFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
-	<error-page>
-		<exception-type>java.lang.Exception</exception-type>
-		<location>/WEB-INF/jsp/exception.jsp</location>
-	</error-page>
-
 	<session-config>
 		<session-timeout>1440</session-timeout>
 	</session-config>
-
 	<welcome-file-list>
 		<welcome-file>login.jsp</welcome-file>
 		<welcome-file>index.jsp</welcome-file>

@@ -119,7 +119,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				isLegalStatus = true;
 			}
 		}
-
+		
 		if (isLegalRole) {
 			getEntity()
 					.setRole(Role.valueOf(getRequest().getParameter("role")));
@@ -188,92 +188,97 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	protected void validateUpdate() throws Exception {
-		List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
-				.values()));
-		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
-		List<Role> tempList = new ArrayList<Role>();
-		roleList.remove(roleList.size() - 1);
-
-		int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-		for (int i = 0; i < roleCode; i++) {
-			tempList.add(roleList.get(i));
-		}
-
-		roleList.removeAll(tempList);
-
 		if (!hasEntity()) {
-			errorMessages.add("Target must not be null");
-
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
+			List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
+					.values()));
+			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
+			List<Role> tempList = new ArrayList<Role>();
+			roleList.remove(roleList.size() - 1);
+
+			int roleCode = roleList.indexOf(getLoginUser().getRole());
+
+			for (int i = 0; i < roleCode; i++) {
+				tempList.add(roleList.get(i));
+			}
+
+			roleList.removeAll(tempList);
+			
 			if (!roleList.contains(accountNumberService.getBySerNo(
 					getEntity().getSerNo()).getRole())) {
 				errorMessages.add("權限不足");
 				getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
 			}
-		}
-
-		if (errorMessages.size() == 0) {
-			boolean isLegalRole = false;
-			for (int i = 0; i < roleList.size(); i++) {
-				if (StringUtils.isNotBlank(getRequest().getParameter("role"))
-						&& getRequest().getParameter("role").equals(
-								roleList.get(i).getRole())) {
-					isLegalRole = true;
+			
+			if (errorMessages.size() == 0) {
+				boolean isLegalRole = false;
+				for (int i = 0; i < roleList.size(); i++) {
+					if (StringUtils.isNotBlank(getRequest()
+							.getParameter("role"))
+							&& getRequest().getParameter("role").equals(
+									roleList.get(i).getRole())) {
+						isLegalRole = true;
+					}
 				}
-			}
 
-			boolean isLegalStatus = false;
-			for (int i = 0; i < statusList.size(); i++) {
-				if (StringUtils.isNotBlank(getRequest().getParameter("status"))
-						&& getRequest().getParameter("status").equals(
-								statusList.get(i).getStatus())) {
-					isLegalStatus = true;
+				boolean isLegalStatus = false;
+				for (int i = 0; i < statusList.size(); i++) {
+					if (StringUtils.isNotBlank(getRequest().getParameter(
+							"status"))
+							&& getRequest().getParameter("status").equals(
+									statusList.get(i).getStatus())) {
+						isLegalStatus = true;
+					}
 				}
-			}
 
-			if (isLegalRole) {
-				getEntity().setRole(
-						Role.valueOf(getRequest().getParameter("role")));
-			} else {
-				errorMessages.add("角色錯誤");
-			}
+				if (isLegalRole) {
+					getEntity().setRole(
+							Role.valueOf(getRequest().getParameter("role")));
+				} else {
+					errorMessages.add("角色錯誤");
+				}
 
-			if (isLegalStatus) {
-				getEntity().setStatus(
-						Status.valueOf(getRequest().getParameter("status")));
-			} else {
-				errorMessages.add("狀態錯誤");
-			}
+				if (isLegalStatus) {
+					getEntity()
+							.setStatus(
+									Status.valueOf(getRequest().getParameter(
+											"status")));
+				} else {
+					errorMessages.add("狀態錯誤");
+				}
 
-			if (StringUtils.isBlank(getEntity().getUserName())) {
-				errorMessages.add("用戶姓名不得空白");
-			}
+				if (StringUtils.isBlank(getEntity().getUserName())) {
+					errorMessages.add("用戶姓名不得空白");
+				}
 
-			if (StringUtils.isBlank(getRequest().getParameter("cusSerNo"))
-					|| !NumberUtils.isDigits(getRequest().getParameter(
-							"cusSerNo"))
-					|| Long.parseLong(getRequest().getParameter("cusSerNo")) < 1
-					|| customerService.getBySerNo(Long.parseLong(getRequest()
-							.getParameter("cusSerNo"))) == null) {
-				errorMessages.add("用戶名稱必選");
-			} else {
-				getEntity().setCustomer(
-						customerService.getBySerNo(Long.parseLong(getRequest()
-								.getParameter("cusSerNo"))));
+				if (StringUtils.isBlank(getRequest().getParameter("cusSerNo"))
+						|| !NumberUtils.isDigits(getRequest().getParameter(
+								"cusSerNo"))
+						|| Long.parseLong(getRequest().getParameter("cusSerNo")) < 1
+						|| customerService.getBySerNo(Long
+								.parseLong(getRequest()
+										.getParameter("cusSerNo"))) == null) {
+					errorMessages.add("用戶名稱必選");
+				} else {
+					getEntity().setCustomer(
+							customerService.getBySerNo(Long
+									.parseLong(getRequest().getParameter(
+											"cusSerNo"))));
 
-				if (getLoginUser().getRole().equals(Role.管理員)) {
-					if (getLoginUser().getCustomer().getSerNo() != getEntity()
-							.getCustomer().getSerNo()) {
-						errorMessages.add("用戶名稱不正確");
+					if (getLoginUser().getRole().equals(Role.管理員)) {
+						if (getLoginUser().getCustomer().getSerNo() != getEntity()
+								.getCustomer().getSerNo()) {
+							errorMessages.add("用戶名稱不正確");
+						}
 					}
 				}
 			}
-		}
 
-		if (StringUtils.isNotEmpty(getEntity().getEmail())) {
-			if (!isEmail(getEntity().getEmail())) {
-				errorMessages.add("email格式不正確");
+			if (StringUtils.isNotEmpty(getEntity().getEmail())) {
+				if (!isEmail(getEntity().getEmail())) {
+					errorMessages.add("email格式不正確");
+				}
 			}
 		}
 	}
@@ -285,7 +290,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	@Override
-	public String edit() throws Exception {
+	public String add() throws Exception {
 		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
 		List<Role> tempList = new ArrayList<Role>();
 		roleList.remove(roleList.size() - 1);
@@ -312,15 +317,42 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		dsCustomer.setEntity(customer);
 		dsCustomer = customerService.getByRestrictions(dsCustomer);
 
-		if (getEntity().getSerNo() != null) {
-			boolean isLegalRole = false;
-			accountNumber = accountNumberService.getBySerNo(getEntity()
-					.getSerNo());
+		return ADD;
+	}
 
-			if (accountNumber != null) {
-				if (roleList.contains(accountNumber.getRole())) {
-					isLegalRole = true;
-				}
+	@Override
+	public String edit() throws Exception {
+		if (hasEntity()) {
+			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
+			List<Role> tempList = new ArrayList<Role>();
+			roleList.remove(roleList.size() - 1);
+
+			int roleCode = roleList.indexOf(getLoginUser().getRole());
+
+			for (int i = 0; i < roleCode; i++) {
+				tempList.add(roleList.get(i));
+			}
+
+			roleList.removeAll(tempList);
+
+			getRequest().setAttribute("roleList", roleList);
+
+			List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
+					.values()));
+			getRequest().setAttribute("statusList", statusList);
+
+			if (getLoginUser().getRole().equals(Role.管理員)) {
+				customer.setSerNo(getLoginUser().getCustomer().getSerNo());
+
+			}
+
+			dsCustomer.setEntity(customer);
+			dsCustomer = customerService.getByRestrictions(dsCustomer);
+			
+			boolean isLegalRole = false;
+
+			if (roleList.contains(accountNumber.getRole())) {
+				isLegalRole = true;
 			}
 
 			if (isLegalRole) {
@@ -339,6 +371,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			} else {
 				getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
 			}
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 
 		return EDIT;
@@ -397,7 +431,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			dsCustomer.setEntity(customer);
 			dsCustomer = customerService.getByRestrictions(dsCustomer);
 			setEntity(getEntity());
-			return EDIT;
+			return ADD;
 		}
 	}
 
@@ -623,12 +657,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String view() throws Exception {
-		getRequest().setAttribute("viewSerNo",
-				getRequest().getParameter("viewSerNo"));
-
-		if (StringUtils.isNotBlank(getRequest().getParameter("viewSerNo"))
-				&& NumberUtils.isDigits(getRequest().getParameter("viewSerNo"))) {
-
+		if (hasEntity()) {
 			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
 					.values()));
 			List<Role> tempList = new ArrayList<Role>();
@@ -644,20 +673,20 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			roleList.removeAll(tempList);
 
 			boolean isLegalRole = false;
-			accountNumber = accountNumberService.getBySerNo(Long
-					.parseLong(getRequest().getParameter("viewSerNo")));
-			if (accountNumber != null
-					&& roleList.contains(accountNumber.getRole())) {
+			if (roleList.contains(accountNumber.getRole())) {
 				isLegalRole = true;
 			}
 
 			if (isLegalRole) {
+				getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
 				setEntity(accountNumber);
 			} else {
 				if (accountNumber != null) {
 					getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
 				}
 			}
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		return VIEW;
 	}

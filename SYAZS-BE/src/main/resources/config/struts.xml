@@ -60,7 +60,7 @@
 		<action name="logout" class="authorizationAction" method="logout" />
 	</package>
 
-	<package name="pageAction" extends="global">
+	<package name="pageAction" namespace="/page" extends="global">
 		<interceptors>
 			<interceptor name="loginSessionInterceptor"
 				class="com.shouyang.syazs.core.interceptor.LoginSessionInterceptor" />
@@ -79,8 +79,8 @@
 			<result name="success">/WEB-INF/jsp/index.jsp</result>
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 		</action>
-		<action name="*" class="commonMainPageAction">
-			<result name="success">/WEB-INF/jsp/module/apply/{1}/{1}List.jsp
+		<action name="*" class="{1}Action">
+			<result name="success">${entity.location}{1}/{1}List.jsp
 			</result>
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 		</action>
@@ -107,19 +107,21 @@
 			<exception-mapping exception="java.lang.ClassCastException"
 				result="error" />
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
-			<result name="list">/WEB-INF/jsp/module/apply/{1}/{1}List.jsp
+			<result name="list">${entity.location}{1}/{1}List.jsp
 			</result>
-			<result name="edit">/WEB-INF/jsp/module/apply/{1}/{1}Edit.jsp
+			<result name="add">${entity.location}{1}/{1}Add.jsp
 			</result>
-			<result name="view">/WEB-INF/jsp/module/apply/{1}/{1}View.jsp
+			<result name="edit">${entity.location}{1}/{1}Edit.jsp
 			</result>
-			<result name="ajax">/WEB-INF/jsp/module/apply/{1}/{1}Ajax.jsp
+			<result name="view">${entity.location}{1}/{1}View.jsp
 			</result>
-			<result name="queue">/WEB-INF/jsp/module/apply/{1}/{1}Queue.jsp
+			<result name="ajax">${entity.location}{1}/{1}Ajax.jsp
 			</result>
-			<result name="json">/WEB-INF/jsp/module/apply/{1}/{1}Json.jsp
+			<result name="queue">${entity.location}{1}/{1}Queue.jsp
 			</result>
-			<result name="import">/WEB-INF/jsp/module/apply/{1}/{1}Import.jsp
+			<result name="json">${entity.location}{1}/{1}Json.jsp
+			</result>
+			<result name="import">${entity.location}{1}/{1}Import.jsp
 			</result>
 			<result name="xlsx" type="stream">
 				<param name="contentDisposition">attachment;filename="${entity.reportFile}"</param>
@@ -130,6 +132,5 @@
 			<result name="*"></result>
 		</action>
 	</package>
-
 </struts>
 

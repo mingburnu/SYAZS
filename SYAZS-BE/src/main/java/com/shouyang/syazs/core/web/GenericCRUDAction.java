@@ -25,6 +25,13 @@ public abstract class GenericCRUDAction<T extends Entity> extends
 	protected abstract void validateDelete() throws Exception;
 
 	/**
+	 * 新增頁
+	 * 
+	 * @return
+	 */
+	public abstract String add() throws Exception;
+
+	/**
 	 * 編輯頁
 	 * 
 	 * @return

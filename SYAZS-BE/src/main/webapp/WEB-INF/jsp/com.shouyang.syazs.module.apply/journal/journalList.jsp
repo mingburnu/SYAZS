@@ -28,13 +28,13 @@ $(document).ready(function() {
 });
 
 function goSearch(){
-    goMain("<%=request.getContextPath()%>/crud/apply.database.list.action",
-			"#apply_database_list", "");
+    goMain("<%=request.getContextPath()%>/crud/apply.journal.list.action",
+			"#apply_journal_list", "");
 }
 
 //新增
 function goAdd(){
-        goDetail('<%=request.getContextPath()%>/crud/apply.database.edit.action','資料庫-新增');
+        goDetail('<%=request.getContextPath()%>/crud/apply.journal.add.action','期刊-新增');
 }
 
 //刪除多筆資料之函式
@@ -56,8 +56,8 @@ function goDelete() {
 		var f = {
                 trueText:'是',
                 trueFunc:function(){
-                        var url = "<c:url value='/crud/apply.database.delete.action'/>";
-                        var data = $('#apply_database_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
+                        var url = "<c:url value='/crud/apply.journal.delete.action'/>";
+                        var data = $('#apply_journal_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
                         goMain(url,'',data);
                 },
                 falseText:'否',
@@ -73,20 +73,14 @@ function goDelete() {
 
 //資料檢視
 function goView(serNo){
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-        var url = "<c:url value = '/'/>crud/apply.database.view.action";
-        var data = 'viewSerNo='+serNo;
-        goDetail(url,'資料庫-檢視',data);
-        }        
+        var url = "<c:url value = '/'/>crud/apply.journal.view.action";
+        var data = 'entity.serNo='+serNo;
+        goDetail(url,'期刊-檢視',data);
 }
 
 //更新資料
 function goUpdate(serNo) {
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-	goDetail('<%=request.getContextPath()%>/crud/apply.database.edit.action?'+'entity.serNo='+serNo,'資料庫-修改');
-	}
+	goDetail('<%=request.getContextPath()%>/crud/apply.journal.edit.action?'+'entity.serNo='+serNo,'期刊-修改');
 }
 
 //GoPage
@@ -110,22 +104,23 @@ function gotoPage(page){
 			offset=parseInt(recordPerPage)*(parseInt(page)-1);
 			} 
 		}
-    goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&pager.offset='+offset+'&pager.currentPage='+page);
+    goMain('<c:url value = '/'/>crud/apply.journal.list.action','#apply_journal_list','&pager.offset='+offset+'&pager.currentPage='+page);
 }
 
 //變更顯示筆數
 function chagePageSize(recordPerPage,recordPoint){
-        goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
+        goMain('<c:url value = '/'/>crud/apply.journal.list.action','#apply_journal_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
 }
 
 //批次匯入
 function goImport(){
-	goDetail('<%=request.getContextPath()%>/crud/apply.database.imports.action','資料庫-匯入');
+	goDetail('<%=request.getContextPath()%>/crud/apply.journal.imports.action','期刊-匯入');
 }
 </script>
+
 </head>
 <body>
-	<s:form action="apply.database.list" namespace="/crud" method="post"
+	<s:form action="apply.journal.list" namespace="/crud" method="post"
 		onsubmit="return false;">
 		<div class="tabs-box">
 			<div>
@@ -139,8 +134,9 @@ function goImport(){
 						<tr>
 							<td align="left"><select name="option"
 								id="listForm_searchCondition">
-									<option value="entity.dbChtTitle">資料庫中文題名</option>
-									<option value="entity.dbEngTitle">資料庫英文題名</option>
+									<option value="entity.chineseTitle">中文刊名</option>
+									<option value="entity.englishTitle">英文刊名</option>
+									<option value="entity.issn">ISSN</option>
 							</select></td>
 							<c:set var="option">
 								<c:out value="${option }" />
@@ -158,33 +154,33 @@ function goImport(){
 								</c:when>
 								<c:otherwise>
 									<td align="left"><input type="text"
-										name="entity.dbChtTitle" maxlength="20" id="search"
+										name="entity.chineseTitle" maxlength="20" id="search"
 										class="input_text"></td>
 								</c:otherwise>
 							</c:choose>
 							<td align="left"><a class="state-default"
-								onclick="goSearch();">查詢</a></td>
+								onclick="goSearch()">查詢</a>&nbsp;&nbsp;</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 		</div>
 		<div id="div_nav">
-			目前位置：<span>帳戶管理</span> &gt; <span>資料庫</span>
+			目前位置：<span>書目資料管理</span> &gt; <span>期刊</span>
 		</div>
 		<div class="list-box">
 			<div class="list-buttons">
 				<c:choose>
 					<c:when
 						test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
-						<a class="state-default" onclick="allSelect(1);">全選</a>
-						<a class="state-default" onclick="allSelect(0);">取消</a>
-						<a class="state-default" onclick="goAdd();">新增</a>
-						<a class="state-default" onclick="goDelete();">刪除</a>
+						<a class="state-default" onclick="allSelect(1)">全選</a>
+						<a class="state-default" onclick="allSelect(0)">取消</a>
+						<a class="state-default" onclick="goAdd()">新增</a>
+						<a class="state-default" onclick="goDelete()">刪除</a>
 						<a class="state-default" onclick="goImport()">批次匯入</a>
 					</c:when>
 					<c:otherwise>
-						<a class="state-default" onclick="goAdd();">新增</a>
+						<a class="state-default" onclick="goAdd()">新增</a>
 						<a class="state-default" onclick="goImport()">批次匯入</a>
 					</c:otherwise>
 				</c:choose>
@@ -207,21 +203,14 @@ function goImport(){
 							<td align="center" class="td_first" nowrap><input
 								type="checkbox" class="checkbox" name="checkItem"
 								value="${item.serNo}"></td>
-							<td><c:choose>
-									<c:when test="${not empty item.dbEngTitle }">
-										<c:out value="${item.dbEngTitle }" />
-									</c:when>
-									<c:otherwise>
-										<c:out value="${item.dbChtTitle }" />
-									</c:otherwise>
-								</c:choose></td>
+							<td><c:out value="${item.englishTitle }" /></td>
 							<td align="center">${item.resourcesBuyers.rType.type }</td>
 							<td><c:out value="${item.cUid }" /></td>
 							<td align="center"><c:out value="${item.uUid }" /></td>
 							<td align="center"><a class="state-default2"
-								onclick="goView(${item.serNo });"><span
+								onclick="goView(${item.serNo })"><span
 									class="icon-default icon-view"></span>檢視</a> <a
-								class="state-default2" onclick="goUpdate(${item.serNo});"><span
+								class="state-default2" onclick="goUpdate(${item.serNo})"><span
 									class="icon-default icon-edit"></span>修改</a></td>
 						</tr>
 					</c:forEach>
@@ -235,7 +224,7 @@ function goImport(){
 							<tr>
 								<td><jsp:include page="/WEB-INF/jsp/layout/pagination.jsp">
 										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.list" />
+										<jsp:param name="action" value="apply.journal.list" />
 										<jsp:param name="pager" value="${ds.pager}" />
 										<jsp:param name="recordPerPage"
 											value="${ds.pager.recordPerPage}" />
@@ -272,6 +261,23 @@ function goImport(){
 			</div>
 		</div>
 	</s:form>
-	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
+
+	<s:if test="hasActionMessages()">
+		<script language="javascript" type="text/javascript">
+            var msg = "";
+            <s:iterator value="actionMessages">msg += '<s:property escape="true"/><br>';
+            </s:iterator>;
+            goAlert('訊息', msg);
+        </script>
+	</s:if>
+	<s:if test="hasActionErrors()">
+		<script language="javascript" type="text/javascript">
+			var msg = "";
+			<s:iterator value="actionErrors">
+			msg += '<s:property escape="true"/><br>';
+			</s:iterator>;
+			goAlert('訊息', msg);
+		</script>
+	</s:if>
 </body>
 </html>

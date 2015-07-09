@@ -28,7 +28,7 @@ $(document).ready(function() {
 	
 	//新增IP Range
 	function goAdd_detail() {
-		var url = "<c:url value = '/'/>/crud/apply.ipRange.edit.action";
+		var url = "<c:url value = '/'/>/crud/apply.ipRange.add.action";
 		var data ='entity.customer.serNo='+'${customerSerNo }';
 		goDetail_2(url, 'IP Range管理-新增', data);
 	}

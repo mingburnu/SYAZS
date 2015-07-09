@@ -21,4 +21,5 @@ public class CommonMainPageAction extends GenericAction<AccountNumber> {
 	 * 
 	 */
 	private static final long serialVersionUID = 8307378612623091026L;
+	
 }

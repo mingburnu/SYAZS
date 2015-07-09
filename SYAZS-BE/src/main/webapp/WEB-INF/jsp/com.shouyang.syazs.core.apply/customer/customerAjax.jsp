@@ -83,6 +83,15 @@
 			}
 		});
 	}
+
+	function addCustomer() {
+		$("#div_Customers").show();
+	}
+	
+	function clearCustomers() {
+		$("#div_Customers .content .header .title").html("");
+		$("#div_Customers .content .contain").html("");
+	}
 </script>
 <style type="text/css">
 #unit_div {

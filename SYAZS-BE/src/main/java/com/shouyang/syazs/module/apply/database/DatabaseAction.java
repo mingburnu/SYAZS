@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -172,84 +174,85 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	protected void validateUpdate() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		if (!hasEntity()) {
-			errorMessages.add("Target must not be null");
-		}
-
-		if (StringUtils.isBlank(getEntity().getDbChtTitle())
-				&& StringUtils.isBlank(getEntity().getDbEngTitle())) {
-			errorMessages.add("沒有資料庫名稱");
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			long datSerNo = databaseService.getDatSerNoByChtName(getEntity()
-					.getDbChtTitle());
-			if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
-				errorMessages.add("資料庫中文名稱已存在");
-			}
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
 
-			datSerNo = databaseService.getDatSerNoByEngName(getEntity()
-					.getDbEngTitle());
-			if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
-				errorMessages.add("資料庫英文文名稱已存在");
-			}
-		}
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
 
-		if (StringUtils.isNotEmpty(getEntity().getUrl())) {
-			if (!isURL(getEntity().getUrl())) {
-				errorMessages.add("URL格式不正確");
-			}
-		}
-
-		if (ArrayUtils.isEmpty(cusSerNo)) {
-			errorMessages.add("至少選擇一筆以上購買單位");
-		} else {
-			int i = 0;
-			while (i < cusSerNo.length) {
-				if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
-						|| Long.parseLong(cusSerNo[i]) < 1
-						|| customerService.getBySerNo(Long
-								.parseLong(cusSerNo[i])) == null) {
-					errorMessages.add(cusSerNo[i] + "為不可利用的流水號");
+			if (StringUtils.isBlank(getEntity().getDbChtTitle())
+					&& StringUtils.isBlank(getEntity().getDbEngTitle())) {
+				errorMessages.add("沒有資料庫名稱");
+			} else {
+				long datSerNo = databaseService
+						.getDatSerNoByChtName(getEntity().getDbChtTitle());
+				if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
+					errorMessages.add("資料庫中文名稱已存在");
 				}
-				i++;
+
+				datSerNo = databaseService.getDatSerNoByEngName(getEntity()
+						.getDbEngTitle());
+				if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
+					errorMessages.add("資料庫英文文名稱已存在");
+				}
 			}
-		}
 
-		boolean isLegalCategory = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rCategory") != null
-					&& getRequest().getParameter("rCategory").equals(
-							categoryList.get(i).getCategory())) {
-				isLegalCategory = true;
+			if (StringUtils.isNotEmpty(getEntity().getUrl())) {
+				if (!isURL(getEntity().getUrl())) {
+					errorMessages.add("URL格式不正確");
+				}
 			}
-		}
 
-		if (isLegalCategory) {
-			getRequest().setAttribute("rCategory",
-					getRequest().getParameter("rCategory"));
-		} else {
-			errorMessages.add("資源類型錯誤");
-		}
-
-		boolean isLegalType = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rType") != null
-					&& getRequest().getParameter("rType").equals(
-							typeList.get(i).getType())) {
-				isLegalType = true;
+			if (ArrayUtils.isEmpty(cusSerNo)) {
+				errorMessages.add("至少選擇一筆以上購買單位");
+			} else {
+				int i = 0;
+				while (i < cusSerNo.length) {
+					if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
+							|| Long.parseLong(cusSerNo[i]) < 1
+							|| customerService.getBySerNo(Long
+									.parseLong(cusSerNo[i])) == null) {
+						errorMessages.add(cusSerNo[i] + "為不可利用的流水號");
+					}
+					i++;
+				}
 			}
-		}
 
-		if (isLegalType) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rType"));
-		} else {
-			errorMessages.add("資源種類錯誤");
+			boolean isLegalCategory = false;
+			for (int i = 0; i < categoryList.size(); i++) {
+				if (getRequest().getParameter("rCategory") != null
+						&& getRequest().getParameter("rCategory").equals(
+								categoryList.get(i).getCategory())) {
+					isLegalCategory = true;
+				}
+			}
+
+			if (isLegalCategory) {
+				getRequest().setAttribute("rCategory",
+						getRequest().getParameter("rCategory"));
+			} else {
+				errorMessages.add("資源類型錯誤");
+			}
+
+			boolean isLegalType = false;
+			for (int i = 0; i < categoryList.size(); i++) {
+				if (getRequest().getParameter("rType") != null
+						&& getRequest().getParameter("rType").equals(
+								typeList.get(i).getType())) {
+					isLegalType = true;
+				}
+			}
+
+			if (isLegalType) {
+				getRequest().setAttribute("rType",
+						getRequest().getParameter("rType"));
+			} else {
+				errorMessages.add("資源種類錯誤");
+			}
 		}
 	}
 
@@ -272,7 +275,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	@Override
-	public String edit() throws Exception {
+	public String add() throws Exception {
 		List<Category> categoryList = new ArrayList<Category>(
 				Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
@@ -283,37 +286,53 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
-		if (getEntity().getSerNo() != null) {
-			database = databaseService.getBySerNo(getEntity().getSerNo());
 
-			if (database != null) {
-				Iterator<ResourcesUnion> iterator = resourcesUnionService
-						.getResourcesUnionsByObj(getEntity(), Database.class)
-						.iterator();
+		List<Customer> customers = new ArrayList<Customer>();
+		database.setCustomers(customers);
+		setEntity(database);
 
-				List<Customer> customers = new ArrayList<Customer>();
+		return ADD;
+	}
 
-				while (iterator.hasNext()) {
-					resourcesUnion = iterator.next();
-					customer = resourcesUnion.getCustomer();
-					if (customer != null) {
-						customers.add(customer);
-					}
+	@Override
+	public String edit() throws Exception {
+		if (hasEntity()) {
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+			getRequest().setAttribute("categoryList", categoryList);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+			getRequest().setAttribute("typeList", typeList);
+
+			getRequest().setAttribute("allCustomers",
+					customerService.getAllCustomers());
+
+			Iterator<ResourcesUnion> iterator = resourcesUnionService
+					.getResourcesUnionsByObj(getEntity(), Database.class)
+					.iterator();
+
+			List<Customer> customers = new ArrayList<Customer>();
+
+			while (iterator.hasNext()) {
+				resourcesUnion = iterator.next();
+				customer = resourcesUnion.getCustomer();
+				if (customer != null) {
+					customers.add(customer);
 				}
-
-				resourcesBuyers = resourcesUnion.getResourcesBuyers();
-				getRequest().setAttribute("rCategory",
-						resourcesBuyers.getrCategory().getCategory());
-				getRequest().setAttribute("rType",
-						resourcesBuyers.getrType().getType());
-				database.setCustomers(customers);
 			}
+
+			resourcesBuyers = resourcesUnion.getResourcesBuyers();
+			getRequest().setAttribute("rCategory",
+					resourcesBuyers.getrCategory().getCategory());
+			getRequest().setAttribute("rType",
+					resourcesBuyers.getrType().getType());
+			database.setCustomers(customers);
 
 			setEntity(database);
 		} else {
-			List<Customer> customers = new ArrayList<Customer>();
-			database.setCustomers(customers);
-			setEntity(database);
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		return EDIT;
 	}
@@ -360,12 +379,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	public String save() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		validateSave();
 		setActionErrors(errorMessages);
 
@@ -418,6 +431,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			setEntity(database);
 			return VIEW;
 		} else {
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+
 			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("allCustomers",
@@ -436,18 +456,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			database = getEntity();
 			database.setCustomers(customers);
 			setEntity(database);
-			return EDIT;
+			return ADD;
 		}
 	}
 
 	@Override
 	public String update() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		validateUpdate();
 		setActionErrors(errorMessages);
 
@@ -527,6 +541,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			setEntity(database);
 			return VIEW;
 		} else {
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+
 			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("allCustomers",
@@ -613,33 +634,27 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String view() throws NumberFormatException, Exception {
-		getRequest().setAttribute("viewSerNo",
-				getRequest().getParameter("viewSerNo"));
+		if (hasEntity()) {
+			resourcesUnion = resourcesUnionService.getByObjSerNo(
+					database.getSerNo(), Database.class);
 
-		if (StringUtils.isNotBlank(getRequest().getParameter("viewSerNo"))
-				&& NumberUtils.isDigits(getRequest().getParameter("viewSerNo"))) {
+			database.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
-			database = databaseService.getBySerNo(Long.parseLong(getRequest()
-					.getParameter("viewSerNo")));
-			if (database != null) {
-				resourcesUnion = resourcesUnionService.getByObjSerNo(
-						database.getSerNo(), Database.class);
+			List<ResourcesUnion> resourceUnions = resourcesUnionService
+					.getResourcesUnionsByObj(database, Database.class);
+			List<Customer> customers = new ArrayList<Customer>();
 
-				database.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
-
-				List<ResourcesUnion> resourceUnions = resourcesUnionService
-						.getResourcesUnionsByObj(database, Database.class);
-				List<Customer> customers = new ArrayList<Customer>();
-
-				Iterator<ResourcesUnion> iterator = resourceUnions.iterator();
-				while (iterator.hasNext()) {
-					resourcesUnion = iterator.next();
-					customers.add(resourcesUnion.getCustomer());
-				}
-
-				database.setCustomers(customers);
-				setEntity(database);
+			Iterator<ResourcesUnion> iterator = resourceUnions.iterator();
+			while (iterator.hasNext()) {
+				resourcesUnion = iterator.next();
+				customers.add(resourcesUnion.getCustomer());
 			}
+
+			database.setCustomers(customers);
+			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
+			setEntity(database);
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 
 		return VIEW;

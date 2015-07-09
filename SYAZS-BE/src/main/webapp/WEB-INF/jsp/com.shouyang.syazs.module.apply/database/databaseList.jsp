@@ -28,13 +28,13 @@ $(document).ready(function() {
 });
 
 function goSearch(){
-    goMain("<%=request.getContextPath()%>/crud/apply.ebook.list.action",
-			"#apply_ebook_list", "");
+    goMain("<%=request.getContextPath()%>/crud/apply.database.list.action",
+			"#apply_database_list", "");
 }
 
 //新增
 function goAdd(){
-        goDetail('<%=request.getContextPath()%>/crud/apply.ebook.edit.action','電子書-新增');
+        goDetail('<%=request.getContextPath()%>/crud/apply.database.add.action','資料庫-新增');
 }
 
 //刪除多筆資料之函式
@@ -56,8 +56,8 @@ function goDelete() {
 		var f = {
                 trueText:'是',
                 trueFunc:function(){
-                        var url = "<c:url value='/crud/apply.ebook.delete.action'/>";
-                        var data = $('#apply_ebook_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
+                        var url = "<c:url value='/crud/apply.database.delete.action'/>";
+                        var data = $('#apply_database_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
                         goMain(url,'',data);
                 },
                 falseText:'否',
@@ -75,17 +75,17 @@ function goDelete() {
 function goView(serNo){
 	var isNum = /^\d+$/.test(serNo);
 	if (isNum && parseInt(serNo) > 0){
-        var url = "<c:url value = '/'/>crud/apply.ebook.view.action";
-        var data = 'viewSerNo='+serNo;
-        goDetail(url,'電子書-檢視',data);
-	}
+        var url = "<c:url value = '/'/>crud/apply.database.view.action";
+        var data = 'entity.serNo='+serNo;
+        goDetail(url,'資料庫-檢視',data);
+        }        
 }
 
 //更新資料
 function goUpdate(serNo) {
 	var isNum = /^\d+$/.test(serNo);
 	if (isNum && parseInt(serNo) > 0){
-		goDetail('<%=request.getContextPath()%>/crud/apply.ebook.edit.action?'+'entity.serNo='+serNo,'電子書-修改');
+	goDetail('<%=request.getContextPath()%>/crud/apply.database.edit.action?'+'entity.serNo='+serNo,'資料庫-修改');
 	}
 }
 
@@ -110,23 +110,22 @@ function gotoPage(page){
 			offset=parseInt(recordPerPage)*(parseInt(page)-1);
 			} 
 		}
-    goMain('<c:url value = '/'/>crud/apply.ebook.list.action','#apply_ebook_list','&pager.offset='+offset+'&pager.currentPage='+page);
+    goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&pager.offset='+offset+'&pager.currentPage='+page);
 }
 
 //變更顯示筆數
 function chagePageSize(recordPerPage,recordPoint){
-        goMain('<c:url value = '/'/>crud/apply.ebook.list.action','#apply_ebook_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
+        goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
 }
 
 //批次匯入
 function goImport(){
-	goDetail('<%=request.getContextPath()%>/crud/apply.ebook.imports.action','電子書-匯入');
+	goDetail('<%=request.getContextPath()%>/crud/apply.database.imports.action','資料庫-匯入');
 }
-
 </script>
 </head>
 <body>
-	<s:form action="apply.ebook.list" namespace="/crud" method="post"
+	<s:form action="apply.database.list" namespace="/crud" method="post"
 		onsubmit="return false;">
 		<div class="tabs-box">
 			<div>
@@ -140,8 +139,8 @@ function goImport(){
 						<tr>
 							<td align="left"><select name="option"
 								id="listForm_searchCondition">
-									<option value="entity.bookName">書名</option>
-									<option value="isbn">ISBN</option>
+									<option value="entity.dbChtTitle">資料庫中文題名</option>
+									<option value="entity.dbEngTitle">資料庫英文題名</option>
 							</select></td>
 							<c:set var="option">
 								<c:out value="${option }" />
@@ -158,8 +157,9 @@ function goImport(){
 									</td>
 								</c:when>
 								<c:otherwise>
-									<td align="left"><input type="text" name="entity.bookName"
-										maxlength="20" id="search" class="input_text"></td>
+									<td align="left"><input type="text"
+										name="entity.dbChtTitle" maxlength="20" id="search"
+										class="input_text"></td>
 								</c:otherwise>
 							</c:choose>
 							<td align="left"><a class="state-default"
@@ -170,7 +170,7 @@ function goImport(){
 			</div>
 		</div>
 		<div id="div_nav">
-			目前位置：<span>帳戶管理</span> &gt; <span>電子書</span>
+			目前位置：<span>帳戶管理</span> &gt; <span>資料庫</span>
 		</div>
 		<div class="list-box">
 			<div class="list-buttons">
@@ -207,7 +207,14 @@ function goImport(){
 							<td align="center" class="td_first" nowrap><input
 								type="checkbox" class="checkbox" name="checkItem"
 								value="${item.serNo}"></td>
-							<td><c:out value="${item.bookName }" /></td>
+							<td><c:choose>
+									<c:when test="${not empty item.dbEngTitle }">
+										<c:out value="${item.dbEngTitle }" />
+									</c:when>
+									<c:otherwise>
+										<c:out value="${item.dbChtTitle }" />
+									</c:otherwise>
+								</c:choose></td>
 							<td align="center">${item.resourcesBuyers.rType.type }</td>
 							<td><c:out value="${item.cUid }" /></td>
 							<td align="center"><c:out value="${item.uUid }" /></td>
@@ -228,7 +235,7 @@ function goImport(){
 							<tr>
 								<td><jsp:include page="/WEB-INF/jsp/layout/pagination.jsp">
 										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.ebook.list" />
+										<jsp:param name="action" value="apply.database.list" />
 										<jsp:param name="pager" value="${ds.pager}" />
 										<jsp:param name="recordPerPage"
 											value="${ds.pager.recordPerPage}" />

@@ -5,16 +5,18 @@
 <div id="div-menu">
 	<div id="div-menu-top"></div>
 	<div id="div-menu-contain">
-	<c:if test="${login.role.role != '管理員'}">
-		<div id="menu-titles_1" class="menu-titles">
-			<a onclick="showMenuItems('1');"><span
-				class="menu-icon menu-icon-site">客戶管理</span></a>
-		</div>
-		<div id="menu_items_1" style="">
-			<div class="menu-items">
-				<a onclick="goURL('<%=request.getContextPath()%>/customer.action');">基本設定</a>
+		<c:if test="${login.role.role != '管理員'}">
+			<div id="menu-titles_1" class="menu-titles">
+				<a onclick="showMenuItems('1');"><span
+					class="menu-icon menu-icon-site">客戶管理</span></a>
 			</div>
-		</div></c:if>
+			<div id="menu_items_1" style="">
+				<div class="menu-items">
+					<a
+						onclick="goURL('<%=request.getContextPath()%>/page/customer.action');">基本設定</a>
+				</div>
+			</div>
+		</c:if>
 
 
 		<div id="menu-titles_2" class="menu-titles">
@@ -23,7 +25,7 @@
 		<div id="menu_items_2" style="display: none;">
 			<div class="menu-items">
 				<a
-					onclick="goURL('<%=request.getContextPath()%>/accountNumber.action');">帳戶設定</a>
+					onclick="goURL('<%=request.getContextPath()%>/page/accountNumber.action');">帳戶設定</a>
 			</div>
 		</div>
 
@@ -33,15 +35,18 @@
 		</div>
 		<div id="menu_items_3" style="display: none;">
 			<div class="menu-items">
-				<a onclick="goURL('<%=request.getContextPath()%>/journal.action');">期刊</a>
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/journal.action');">期刊</a>
 			</div>
 
 			<div class="menu-items">
-				<a onclick="goURL('<%=request.getContextPath()%>/ebook.action');">電子書</a>
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/ebook.action');">電子書</a>
 			</div>
 
 			<div class="menu-items">
-				<a onclick="goURL('<%=request.getContextPath()%>/database.action');">資料庫</a>
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/database.action');">資料庫</a>
 			</div>
 		</div>
 
@@ -50,33 +55,13 @@
 		</div>
 		<div id="menu_items_5" style="display: none;">
 			<div class="menu-items">
-				<a onclick="goURL('<%=request.getContextPath()%>/beLogs.action');">登入次數統計</a>
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/beLogs.action');">登入次數統計</a>
 			</div>
 			<div class="menu-items">
-				<a onclick="goURL('<%=request.getContextPath()%>/feLogs.action');">關鍵字檢索統計</a>
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action');">關鍵字檢索統計</a>
 			</div>
 		</div>
-
-		<%--
-		<div id="menu_items_6" style="display: none;">
-			<div class="menu-items">
-				<a onclick="goURL('/TWBE/viewcount_init.action');">款目點閱次數統計</a>
-			</div>
-			<div class="menu-items">
-				<a onclick="goURL('/TWBE/loginCountStatics_init.action');">登入次數統計</a>
-			</div>
-			<div class="menu-items">
-				<a onclick="goURL('/TWBE/keywordStatics_initQuery.action');">關鍵字檢索統計</a>
-			</div>
-			<div class="menu-items">
-				<a onclick="goURL('/TWBE/mainSubjectStatics_init.action');">主題點閱次數統計</a>
-			</div>
-
-			<div class="menu-items">
-				<a onclick="goURL('/TWBE/articleCollectStatics_init.action');">款目收藏次數統計</a>
-			</div>
-
-		</div>--%>
-
 	</div>
 </div>

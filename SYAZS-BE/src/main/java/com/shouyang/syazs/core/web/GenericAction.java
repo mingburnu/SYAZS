@@ -24,8 +24,8 @@ import com.shouyang.syazs.core.model.Pager;
  * @author Roderick
  * @version 2014/11/21
  */
-public abstract class GenericAction<T extends Entity> extends
-		ActionSupport implements Action<T> {
+public abstract class GenericAction<T extends Entity> extends ActionSupport
+		implements Action<T> {
 
 	/**
 	 * 
@@ -35,7 +35,7 @@ public abstract class GenericAction<T extends Entity> extends
 	protected final transient Logger log = Logger.getLogger(getClass());
 
 	protected final transient Set<String> errorMessages = new HashSet<String>();
-	
+
 	@Autowired
 	private T entity;
 
@@ -44,6 +44,10 @@ public abstract class GenericAction<T extends Entity> extends
 
 	@Autowired
 	private Pager pager;
+
+	private int numI;
+	
+	private Long numL;
 
 	/**
 	 * Get Http Session
@@ -115,6 +119,34 @@ public abstract class GenericAction<T extends Entity> extends
 
 	public void setPager(Pager pager) {
 		this.pager = pager;
+	}
+
+	/**
+	 * @return the numI
+	 */
+	public int getNumI() {
+		return numI;
+	}
+
+	/**
+	 * @param numI the numI to set
+	 */
+	public void setNumI(int numI) {
+		this.numI = numI;
+	}
+
+	/**
+	 * @return the numL
+	 */
+	public Long getNumL() {
+		return numL;
+	}
+
+	/**
+	 * @param numL the numL to set
+	 */
+	public void setNumL(Long numL) {
+		this.numL = numL;
 	}
 
 }

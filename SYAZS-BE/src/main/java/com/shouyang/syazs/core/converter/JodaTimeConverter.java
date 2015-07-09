@@ -1,7 +1,9 @@
 package com.shouyang.syazs.core.converter;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,31 +16,53 @@ import org.springframework.stereotype.Component;
  * @version 2014/3/17
  */
 @Component
-public class JodaTimeConverter {
+public class JodaTimeConverter extends TypeConverter {
 
-	protected final transient Logger log = Logger.getLogger(getClass());
+	@Value("#{systemConfigurer['y4MinusM2Minusd2']}")
+	private String y4MinusM2Minusd2;
 
-	@Value("#{systemConfigurer['dateTime.pattern']}")
-	private String pattern;
+	@Value("#{systemConfigurer['y4DivisionM2Divisiond2']}")
+	private String y4DivisionM2Divisiond2;
 
-	public LocalDateTime convertFromString(String date) {
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Object convertFromString(Map context, String[] values, Class toClass) {
 		LocalDateTime dateTime = null;
-		if (StringUtils.isNotBlank(date)) {
+
+		if (StringUtils.isNotBlank(values[0])) {
 			try {
-				dateTime = LocalDateTime.parse(date,
-						DateTimeFormat.forPattern(pattern));
+				log.debug("input date: " + values[0]);
+				dateTime = LocalDateTime.parse(values[0],
+						DateTimeFormat.forPattern(y4MinusM2Minusd2));
+			} catch (IllegalArgumentException e) {
+				log.debug("IllegalArgumentException for this pattern, change use another datePattern");
+				try {
+					dateTime = LocalDateTime.parse(values[0],
+							DateTimeFormat.forPattern(y4DivisionM2Divisiond2));
+				} catch (Exception e2) {
+					log.error(ExceptionUtils.getStackTrace(e));
+				}
 			} catch (Exception e) {
-				return null;
+				log.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
+
 		return dateTime;
 	}
 
-	public String convertToString(LocalDateTime dateTime) {
-		String formattedTime = dateTime.toString(DateTimeFormat
-				.forPattern(pattern));
-		return formattedTime;
+	@SuppressWarnings("rawtypes")
+	@Override
+	public String convertToString(Map context, Object o) {
 
+		if (o instanceof LocalDateTime) {
+			LocalDateTime dateTime = (LocalDateTime) o;
+			String formattedTime = dateTime.toString(DateTimeFormat
+					.forPattern(y4MinusM2Minusd2));
+			log.info(formattedTime);
+			return formattedTime;
+		}
+
+		return (String) o;
 	}
 
 }

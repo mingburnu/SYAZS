@@ -18,6 +18,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -148,7 +150,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (isLegalCategory) {
-			getRequest().setAttribute("rType",
+			getRequest().setAttribute("rCategory",
 					getRequest().getParameter("rCategory"));
 		} else {
 			errorMessages.add("資源類型錯誤");
@@ -173,85 +175,87 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	protected void validateUpdate() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		if (!hasEntity()) {
-			errorMessages.add("Target must not be null");
-		}
-
-		if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
-			errorMessages.add("英文刊名不得空白");
-		}
-
-		if (StringUtils.isBlank(getEntity().getIssn())) {
-			errorMessages.add("ISSN不得空白");
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			if (!isIssn(getEntity().getIssn())) {
-				errorMessages.add("ISSN不正確");
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+
+			if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
+				errorMessages.add("英文刊名不得空白");
+			}
+
+			if (StringUtils.isBlank(getEntity().getIssn())) {
+				errorMessages.add("ISSN不得空白");
 			} else {
-				long jouSerNo = journalService.getJouSerNoByIssn(getEntity()
-						.getIssn().trim().replace("-", ""));
-				if (jouSerNo != 0 && jouSerNo != getEntity().getSerNo()) {
-					errorMessages.add("ISSN不可重複");
+				if (!isIssn(getEntity().getIssn())) {
+					errorMessages.add("ISSN不正確");
+				} else {
+					long jouSerNo = journalService
+							.getJouSerNoByIssn(getEntity().getIssn().trim()
+									.replace("-", ""));
+					if (jouSerNo != 0 && jouSerNo != getEntity().getSerNo()) {
+						errorMessages.add("ISSN不可重複");
+					}
 				}
 			}
-		}
 
-		if (StringUtils.isNotEmpty(getEntity().getCongressClassification())) {
-			if (!isLCC(getEntity().getCongressClassification())) {
-				errorMessages.add("國會分類號格式不正確");
-			}
-		}
-
-		if (ArrayUtils.isEmpty(cusSerNo)) {
-			errorMessages.add("至少選擇一筆以上購買單位");
-		} else {
-			int i = 0;
-			while (i < cusSerNo.length) {
-				if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
-						|| Long.parseLong(cusSerNo[i]) < 1
-						|| customerService.getBySerNo(Long
-								.parseLong(cusSerNo[i])) == null) {
-					errorMessages.add(cusSerNo[i] + "為不可利用的流水號");
+			if (StringUtils.isNotEmpty(getEntity().getCongressClassification())) {
+				if (!isLCC(getEntity().getCongressClassification())) {
+					errorMessages.add("國會分類號格式不正確");
 				}
-				i++;
 			}
-		}
 
-		boolean isLegalCategory = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rCategory") != null
-					&& getRequest().getParameter("rCategory").equals(
-							categoryList.get(i).getCategory())) {
-				isLegalCategory = true;
+			if (ArrayUtils.isEmpty(cusSerNo)) {
+				errorMessages.add("至少選擇一筆以上購買單位");
+			} else {
+				int i = 0;
+				while (i < cusSerNo.length) {
+					if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
+							|| Long.parseLong(cusSerNo[i]) < 1
+							|| customerService.getBySerNo(Long
+									.parseLong(cusSerNo[i])) == null) {
+						errorMessages.add(cusSerNo[i] + "為不可利用的流水號");
+					}
+					i++;
+				}
 			}
-		}
 
-		if (isLegalCategory) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rCategory"));
-		} else {
-			errorMessages.add("資源類型錯誤");
-		}
-
-		boolean isLegalType = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rType") != null
-					&& getRequest().getParameter("rType").equals(
-							typeList.get(i).getType())) {
-				isLegalType = true;
+			boolean isLegalCategory = false;
+			for (int i = 0; i < categoryList.size(); i++) {
+				if (getRequest().getParameter("rCategory") != null
+						&& getRequest().getParameter("rCategory").equals(
+								categoryList.get(i).getCategory())) {
+					isLegalCategory = true;
+				}
 			}
-		}
 
-		if (isLegalType) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rType"));
-		} else {
-			errorMessages.add("資源種類錯誤");
+			if (isLegalCategory) {
+				getRequest().setAttribute("rType",
+						getRequest().getParameter("rCategory"));
+			} else {
+				errorMessages.add("資源類型錯誤");
+			}
+
+			boolean isLegalType = false;
+			for (int i = 0; i < categoryList.size(); i++) {
+				if (getRequest().getParameter("rType") != null
+						&& getRequest().getParameter("rType").equals(
+								typeList.get(i).getType())) {
+					isLegalType = true;
+				}
+			}
+
+			if (isLegalType) {
+				getRequest().setAttribute("rType",
+						getRequest().getParameter("rType"));
+			} else {
+				errorMessages.add("資源種類錯誤");
+			}
 		}
 	}
 
@@ -274,7 +278,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	@Override
-	public String edit() throws Exception {
+	public String add() throws Exception {
 		List<Category> categoryList = new ArrayList<Category>(
 				Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
@@ -285,37 +289,53 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
-		if (getEntity().getSerNo() != null) {
-			journal = journalService.getBySerNo(getEntity().getSerNo());
 
-			if (journal != null) {
-				Iterator<ResourcesUnion> iterator = resourcesUnionService
-						.getResourcesUnionsByObj(getEntity(), Journal.class)
-						.iterator();
+		List<Customer> customers = new ArrayList<Customer>();
+		journal.setCustomers(customers);
+		setEntity(journal);
 
-				List<Customer> customers = new ArrayList<Customer>();
+		return ADD;
+	}
 
-				while (iterator.hasNext()) {
-					resourcesUnion = iterator.next();
-					customer = resourcesUnion.getCustomer();
-					if (customer != null) {
-						customers.add(customer);
-					}
+	@Override
+	public String edit() throws Exception {
+		if (hasEntity()) {
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+			getRequest().setAttribute("categoryList", categoryList);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+			getRequest().setAttribute("typeList", typeList);
+
+			getRequest().setAttribute("allCustomers",
+					customerService.getAllCustomers());
+
+			Iterator<ResourcesUnion> iterator = resourcesUnionService
+					.getResourcesUnionsByObj(getEntity(), Journal.class)
+					.iterator();
+
+			List<Customer> customers = new ArrayList<Customer>();
+
+			while (iterator.hasNext()) {
+				resourcesUnion = iterator.next();
+				customer = resourcesUnion.getCustomer();
+				if (customer != null) {
+					customers.add(customer);
 				}
-
-				resourcesBuyers = resourcesUnion.getResourcesBuyers();
-				getRequest().setAttribute("rCategory",
-						resourcesBuyers.getrCategory().getCategory());
-				getRequest().setAttribute("rType",
-						resourcesBuyers.getrType().getType());
-				journal.setCustomers(customers);
 			}
+
+			resourcesBuyers = resourcesUnion.getResourcesBuyers();
+			getRequest().setAttribute("rCategory",
+					resourcesBuyers.getrCategory().getCategory());
+			getRequest().setAttribute("rType",
+					resourcesBuyers.getrType().getType());
+			journal.setCustomers(customers);
 
 			setEntity(journal);
 		} else {
-			List<Customer> customers = new ArrayList<Customer>();
-			journal.setCustomers(customers);
-			setEntity(journal);
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		return EDIT;
 	}
@@ -365,12 +385,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	public String save() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		validateSave();
 		setActionErrors(errorMessages);
 
@@ -417,6 +431,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+
 			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("allCustomers",
@@ -441,46 +462,12 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			journal = getEntity();
 			journal.setCustomers(customers);
 			setEntity(journal);
-			return EDIT;
+			return ADD;
 		}
 	}
 
 	@Override
 	public String update() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
-		boolean isLegalCategory = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rCategory") != null
-					&& getRequest().getParameter("rCategory").equals(
-							categoryList.get(i).getCategory())) {
-				isLegalCategory = true;
-			}
-		}
-
-		if (isLegalCategory) {
-			getRequest().setAttribute("rCategory",
-					getRequest().getParameter("rCategory"));
-		}
-
-		boolean isLegalType = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rType") != null
-					&& getRequest().getParameter("rType").equals(
-							typeList.get(i).getType())) {
-				isLegalType = true;
-			}
-		}
-
-		if (isLegalType) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rType"));
-		}
-
 		validateUpdate();
 		setActionErrors(errorMessages);
 
@@ -557,6 +544,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
+			List<Category> categoryList = new ArrayList<Category>(
+					Arrays.asList(Category.values()));
+			categoryList.remove(categoryList.size() - 1);
+
+			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+					.values()));
+
 			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("allCustomers",
@@ -642,32 +636,27 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	public String view() throws NumberFormatException, Exception {
-		getRequest().setAttribute("viewSerNo",
-				getRequest().getParameter("viewSerNo"));
+		if (hasEntity()) {
+			resourcesUnion = resourcesUnionService.getByObjSerNo(
+					journal.getSerNo(), Journal.class);
 
-		if (StringUtils.isNotBlank(getRequest().getParameter("viewSerNo"))
-				&& NumberUtils.isDigits(getRequest().getParameter("viewSerNo"))) {
-			journal = journalService.getBySerNo(Long.parseLong(getRequest()
-					.getParameter("viewSerNo")));
-			if (journal != null) {
-				resourcesUnion = resourcesUnionService.getByObjSerNo(
-						journal.getSerNo(), Journal.class);
+			journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
-				journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
+			List<ResourcesUnion> resourceUnions = resourcesUnionService
+					.getResourcesUnionsByObj(journal, Journal.class);
+			List<Customer> customers = new ArrayList<Customer>();
 
-				List<ResourcesUnion> resourceUnions = resourcesUnionService
-						.getResourcesUnionsByObj(journal, Journal.class);
-				List<Customer> customers = new ArrayList<Customer>();
-
-				Iterator<ResourcesUnion> iterator = resourceUnions.iterator();
-				while (iterator.hasNext()) {
-					resourcesUnion = iterator.next();
-					customers.add(resourcesUnion.getCustomer());
-				}
-
-				journal.setCustomers(customers);
-				setEntity(journal);
+			Iterator<ResourcesUnion> iterator = resourceUnions.iterator();
+			while (iterator.hasNext()) {
+				resourcesUnion = iterator.next();
+				customers.add(resourcesUnion.getCustomer());
 			}
+
+			journal.setCustomers(customers);
+			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
+			setEntity(journal);
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 
 		return VIEW;

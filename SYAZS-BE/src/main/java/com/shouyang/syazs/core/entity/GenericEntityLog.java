@@ -51,6 +51,22 @@ public abstract class GenericEntityLog implements Entity {
 	@Transient
 	private String reportFile;
 
+	/** set struts action dispatcher location */
+	@Transient
+	private String location;
+
+	public String getLocation() {
+		StringBuilder locationBuilder = new StringBuilder("/WEB-INF/jsp/");
+
+		String className = getClass().getCanonicalName();
+		String packageName = className.substring(0, className.lastIndexOf("."));
+
+		location = locationBuilder
+				.append(packageName.substring(0, packageName.lastIndexOf(".")))
+				.append("/").toString();
+		return location;
+	}
+
 	/**
 	 * @return the serNo
 	 */

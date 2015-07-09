@@ -35,7 +35,7 @@ public abstract class GenericEntitySerNo implements Entity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "serNo", unique = true, nullable = false, insertable = true, updatable = false, precision = 20)
 	private Long serNo;
-
+	
 	/**
 	 * @return the serNo
 	 */
