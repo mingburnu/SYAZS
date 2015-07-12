@@ -32,12 +32,12 @@ public class JodaTimeConverter extends TypeConverter {
 		if (StringUtils.isNotBlank(values[0])) {
 			try {
 				log.debug("input date: " + values[0]);
-				dateTime = LocalDateTime.parse(values[0],
+				dateTime = LocalDateTime.parse(values[0].trim(),
 						DateTimeFormat.forPattern(y4MinusM2Minusd2));
 			} catch (IllegalArgumentException e) {
 				log.debug("IllegalArgumentException for this pattern, change use another datePattern");
 				try {
-					dateTime = LocalDateTime.parse(values[0],
+					dateTime = LocalDateTime.parse(values[0].trim(),
 							DateTimeFormat.forPattern(y4DivisionM2Divisiond2));
 				} catch (Exception e2) {
 					log.error(ExceptionUtils.getStackTrace(e));
@@ -60,9 +60,8 @@ public class JodaTimeConverter extends TypeConverter {
 					.forPattern(y4MinusM2Minusd2));
 			log.info(formattedTime);
 			return formattedTime;
+		} else {
+			return "";
 		}
-
-		return (String) o;
 	}
-
 }

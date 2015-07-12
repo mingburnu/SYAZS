@@ -17,8 +17,7 @@ $(document).ready(function() {
 });
 
 function goSearch(){
-    goMain("<%=request.getContextPath()%>/crud/apply.accountNumber.list.action",
-			"#apply_accountNumber_list", "");
+    goMain("<%=request.getContextPath()%>/crud/apply.accountNumber.list.action","#apply_accountNumber_list", "");
 }
 
 //新增
@@ -30,13 +29,10 @@ function goAdd(){
 function goDeauthorize(){
     //檢查資料是否已被勾選
     var IsSelected = false;
-    var serNoStr = "";
-    var checkbox_checked_num = 0;
     for(var i=0;i<$(".checkbox").length;i++){
         if($(".checkbox").get(i).checked){
-            serNoStr = serNoStr + $(".checkbox").get(i).value + "；；";
             IsSelected = true;
-            checkbox_checked_num++;
+            break;
         }
     }
     //進行失效動作
@@ -45,7 +41,7 @@ function goDeauthorize(){
                 trueText:'是',
                 trueFunc:function(){
                         var url = '<%=request.getContextPath()%>/crud/apply.accountNumber.deauthorize.action';
-                        var data = $('#apply_accountNumber_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
+                        var data = $('#apply_accountNumber_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
                         goMain(url,'',data);
                 },
                 falseText:'否',
@@ -63,13 +59,10 @@ function goDeauthorize(){
 function goAuthorize(){
     //檢查資料是否已被勾選
     var IsSelected = false;
-    var serNoStr = "";
-    var checkbox_checked_num = 0;
     for(var i=0;i<$(".checkbox").length;i++){
         if($(".checkbox").get(i).checked){
-            serNoStr = serNoStr + $(".checkbox").get(i).value + "；；";
             IsSelected = true;
-            checkbox_checked_num++;
+            break;
         }
     }
     //進行生效動作
@@ -78,12 +71,12 @@ function goAuthorize(){
                 trueText:'是',
                 trueFunc:function(){
                         var url = '<%=request.getContextPath()%>/crud/apply.accountNumber.authorize.action';
-                        var data = $('#apply_accountNumber_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
+                        var data = $('#apply_accountNumber_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
                         goMain(url,'',data);
                 },
                 falseText:'否',
                 falseFunc:function(){
-                        //不進行刪除...
+                	//不進行刪除...
                 }
         };
     	goAlert('提醒','您確定要生效所勾選的帳戶嗎?',f);
@@ -114,29 +107,24 @@ function goUpdate(serNo) {
 function gotoPage(page){
 	var isNum = /^\d+$/.test(page);
 	var totalPage = $("span.totalNum:eq(0)").html();
-	var recordPerPage="${ds.pager.recordPerPage}";
-	var offset=parseInt(recordPerPage)*(parseInt(page)-1);
 	
 	if(!isNum){
 		page="${ds.pager.currentPage}";
-		offset=parseInt(recordPerPage)*(parseInt(page)-1);
 	} else {
 		if (parseInt(page) < 1){
 			page=1;
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
 			}		
 		
 		if (parseInt(page) > parseInt(totalPage)){
 			page=totalPage;
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
 			} 
 		}
-    goMain('<c:url value = '/'/>crud/apply.accountNumber.list.action','#apply_accountNumber_list','&pager.offset='+offset+'&pager.currentPage='+page);
+    goMain('<c:url value = '/'/>crud/apply.accountNumber.list.action','#apply_accountNumber_list','&pager.currentPage='+page);
 }
 
 //變更顯示筆數
-function chagePageSize(recordPerPage,recordPoint){
-        goMain('<c:url value = '/'/>crud/apply.accountNumber.list.action','#apply_accountNumber_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
+function chagePageSize(){
+        goMain('<c:url value = '/'/>crud/apply.accountNumber.list.action','#apply_accountNumber_list','&pager.recordPoint='+'${ds.pager.recordPoint }');
 }
 
 //批次匯入
@@ -168,12 +156,9 @@ function goImport(){
 								id="search" class="input_text" value="${userId }">&nbsp;
 								<c:choose>
 									<c:when test="${login.role.role != '管理員' }">
-										<c:set var="customerName">
-											<c:out value="${entity.customerName }">
-											</c:out>
-										</c:set>
-										<input type="text" name="entity.customerName" maxlength="20"
-											id="search" class="input_text" value="${customerName }">
+										<input type="text" name="entity.customer.name" maxlength="20"
+											id="search" class="input_text"
+											value="${entity.customer.name }">
 									</c:when>
 									<c:otherwise>
 										<input type="text" maxlength="20" id="search"
@@ -267,8 +252,8 @@ function goImport(){
 										var="totalPage">
 										<fmt:formatNumber type="number" pattern="#"
 											value="${pageFactor+(1-(pageFactor%1))%1}" />
-									</c:set> 每頁顯示 <select name="recordPerPage" id="listForm_pageSize"
-									onchange="chagePageSize(this.value,${ds.pager.recordPoint })">
+									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
+									onchange="chagePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>

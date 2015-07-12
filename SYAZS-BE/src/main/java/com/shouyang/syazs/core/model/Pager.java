@@ -2,7 +2,6 @@ package com.shouyang.syazs.core.model;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -72,13 +71,8 @@ public class Pager implements Serializable {
 	}
 
 	public Integer getOffset() {
+		this.offset = getRecordPerPage() * (getCurrentPage() - 1);
 		return offset;
-	}
-
-	public void setOffset(Integer offset) {
-		if (offset >= 0) {
-			this.offset = offset;
-		}
 	}
 
 	/**
@@ -96,49 +90,43 @@ public class Pager implements Serializable {
 		this.recordPoint = recordPoint;
 	}
 
-	public static Pager getChangedPager(String recordPerPage,
-			String recordPoint, Pager pager) {
-		if (recordPerPage != null && NumberUtils.isDigits(recordPerPage)
-				&& Integer.parseInt(recordPerPage) > 0 && recordPoint != null
-				&& NumberUtils.isDigits(recordPoint)
-				&& Integer.parseInt(recordPoint) >= 0) {
+	public static Pager getChangedPager(Integer recordPerPage,
+			Integer recordPoint, Pager pager) {
+		if (recordPerPage != null && recordPerPage > 0 && recordPoint != null
+				&& recordPoint >= 0) {
 
-			if (Integer.parseInt(recordPerPage) <= 50) {
-				pager.setRecordPerPage(Integer.parseInt(recordPerPage));
+			if (recordPerPage <= 50) {
+				pager.setRecordPerPage(recordPerPage);
 			} else {
 				pager.setRecordPerPage(50);
 			}
 
-			pager.setCurrentPage(Integer.parseInt(recordPoint)
-					/ Integer.parseInt(recordPerPage) + 1);
-			pager.setOffset(Integer.parseInt(recordPerPage)
-					* (pager.getCurrentPage() - 1));
-			pager.setRecordPoint(Integer.parseInt(recordPoint));
+			pager.setCurrentPage(recordPoint / recordPerPage + 1);
+			pager.setRecordPoint(recordPoint);
 
 			return pager;
-		} else if (recordPerPage != null && NumberUtils.isDigits(recordPerPage)
-				&& Integer.parseInt(recordPerPage) > 0 && recordPoint != null
-				&& !NumberUtils.isDigits(recordPoint)) {
+		} else if (recordPerPage != null && recordPerPage > 0
+				&& recordPoint != null) {
 
-			if (Integer.parseInt(recordPerPage) <= 50) {
-				pager.setRecordPerPage(Integer.parseInt(recordPerPage));
+			if (recordPerPage <= 50) {
+				pager.setRecordPerPage(recordPerPage);
 			} else {
 				pager.setRecordPerPage(50);
 			}
 
-			pager.setRecordPerPage(Integer.parseInt(recordPerPage));
+			pager.setRecordPerPage(recordPerPage);
 			pager.setRecordPoint(pager.getOffset());
 			return pager;
-		} else if (recordPerPage != null && NumberUtils.isDigits(recordPerPage)
-				&& Integer.parseInt(recordPerPage) > 0 && recordPoint == null) {
+		} else if (recordPerPage != null && recordPerPage > 0
+				&& recordPoint == null) {
 
-			if (Integer.parseInt(recordPerPage) <= 50) {
-				pager.setRecordPerPage(Integer.parseInt(recordPerPage));
+			if (recordPerPage <= 50) {
+				pager.setRecordPerPage(recordPerPage);
 			} else {
 				pager.setRecordPerPage(50);
 			}
 
-			pager.setRecordPerPage(Integer.parseInt(recordPerPage));
+			pager.setRecordPerPage(recordPerPage);
 			pager.setRecordPoint(pager.getOffset());
 			return pager;
 		} else {

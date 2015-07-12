@@ -45,10 +45,6 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 	@Autowired
 	private Pager pager;
 
-	private int numI;
-	
-	private Long numL;
-
 	/**
 	 * Get Http Session
 	 * 
@@ -93,7 +89,8 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 	 */
 	protected DataSet<T> initDataSet() {
 		ds.setEntity(entity);
-		ds.setPager(pager);
+		ds.setPager(Pager.getChangedPager(getPager().getRecordPerPage(),
+				getPager().getRecordPoint(), getPager()));
 		return ds;
 	}
 
@@ -120,33 +117,4 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 	public void setPager(Pager pager) {
 		this.pager = pager;
 	}
-
-	/**
-	 * @return the numI
-	 */
-	public int getNumI() {
-		return numI;
-	}
-
-	/**
-	 * @param numI the numI to set
-	 */
-	public void setNumI(int numI) {
-		this.numI = numI;
-	}
-
-	/**
-	 * @return the numL
-	 */
-	public Long getNumL() {
-		return numL;
-	}
-
-	/**
-	 * @param numL the numL to set
-	 */
-	public void setNumL(Long numL) {
-		this.numL = numL;
-	}
-
 }

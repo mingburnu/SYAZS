@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -39,7 +40,6 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
@@ -95,6 +95,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Override
 	protected void validateSave() throws Exception {
+		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
+		cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+		
 		List<Category> categoryList = new ArrayList<Category>(
 				Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
@@ -105,21 +108,32 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			errorMessages.add("書名不得空白");
 		}
 
-		String isbn = getRequest().getParameter("isbn");
-		if (StringUtils.isBlank(isbn)
-				|| !NumberUtils.isDigits(isbn.trim().replace("-", ""))) {
-			errorMessages.add("ISBN必須填寫數字");
-		} else {
-			if (!isIsbn(Long.parseLong(isbn.trim().replace("-", "")))) {
+		if (getEntity().getIsbn() != null) {
+			if (!isIsbn(getEntity().getIsbn())) {
 				errorMessages.add("ISBN不正確");
 			} else {
-				if (ebookService.getEbkSerNoByIsbn(Long.parseLong(isbn.trim()
-						.replace("-", ""))) != 0) {
+				if (ebookService.getEbkSerNoByIsbn(getEntity().getIsbn()) != 0) {
 					errorMessages.add("ISBN不可重複");
 				}
-
 			}
-
+		} else {
+			if (StringUtils.isBlank(getRequest().getParameter("entity.isbn"))
+					|| !NumberUtils.isDigits(getRequest()
+							.getParameter("entity.isbn").trim()
+							.replace("-", ""))) {
+				errorMessages.add("ISBN必須正確填寫");
+			} else {
+				if (!isIsbn(Long.parseLong(getRequest()
+						.getParameter("entity.isbn").trim().replace("-", "")))) {
+					errorMessages.add("ISBN不正確");
+				} else {
+					if (ebookService.getEbkSerNoByIsbn(Long
+							.parseLong(getRequest().getParameter("entity.isbn")
+									.trim().replace("-", ""))) != 0) {
+						errorMessages.add("ISBN不可重複");
+					}
+				}
+			}
 		}
 
 		if (StringUtils.isNotEmpty(getEntity().getCnClassBzStr())) {
@@ -189,6 +203,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
+			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+			
 			List<Category> categoryList = new ArrayList<Category>(
 					Arrays.asList(Category.values()));
 			categoryList.remove(categoryList.size() - 1);
@@ -200,18 +217,36 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				errorMessages.add("書名不得空白");
 			}
 
-			String isbn = getRequest().getParameter("isbn");
-			if (StringUtils.isBlank(isbn)
-					|| !NumberUtils.isDigits(isbn.trim().replace("-", ""))) {
-				errorMessages.add("ISBN必須填寫數字");
-			} else {
-				if (!isIsbn(Long.parseLong(isbn.trim().replace("-", "")))) {
+			if (getEntity().getIsbn() != null) {
+				if (!isIsbn(getEntity().getIsbn())) {
 					errorMessages.add("ISBN不正確");
 				} else {
-					long ebkSerNo = ebookService.getEbkSerNoByIsbn(Long
-							.parseLong(isbn.trim().replace("-", "")));
+					long ebkSerNo = ebookService.getEbkSerNoByIsbn(getEntity()
+							.getIsbn());
 					if (ebkSerNo != 0 && ebkSerNo != getEntity().getSerNo()) {
 						errorMessages.add("ISBN不可重複");
+					}
+				}
+			} else {
+				if (StringUtils.isBlank(getRequest()
+						.getParameter("entity.isbn"))
+						|| !NumberUtils.isDigits(getRequest()
+								.getParameter("entity.isbn").trim()
+								.replace("-", ""))) {
+					errorMessages.add("ISBN必須正確填寫");
+				} else {
+					if (!isIsbn(Long.parseLong(getRequest()
+							.getParameter("entity.isbn").trim()
+							.replace("-", "")))) {
+						errorMessages.add("ISBN不正確");
+					} else {
+						long ebkSerNo = ebookService.getEbkSerNoByIsbn(Long
+								.parseLong(getRequest()
+										.getParameter("entity.isbn").trim()
+										.replace("-", "")));
+						if (ebkSerNo != 0 && ebkSerNo != getEntity().getSerNo()) {
+							errorMessages.add("ISBN不可重複");
+						}
 					}
 				}
 			}
@@ -281,6 +316,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Override
 	protected void validateDelete() throws Exception {
+		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
+		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 		if (ArrayUtils.isEmpty(checkItem)) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
@@ -366,47 +404,56 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String list() throws Exception {
 		if (StringUtils.isNotEmpty(getRequest().getParameter("option"))) {
 			if (getRequest().getParameter("option").equals("entity.bookName")
-					|| getRequest().getParameter("option").equals("isbn")) {
+					|| getRequest().getParameter("option")
+							.equals("entity.isbn")) {
 				getRequest().setAttribute("option",
 						getRequest().getParameter("option"));
 
 			} else {
 				getRequest().setAttribute("option", "entity.bookName");
 			}
-
 		} else {
 			getRequest().setAttribute("option", "entity.bookName");
-
 		}
 
-		if (StringUtils.isNotEmpty(getRequest().getParameter("isbn"))) {
-			if (!NumberUtils.isDigits(getRequest().getParameter("isbn")
-					.replace("-", ""))) {
-				getEntity().setIsbn(0L);
-			} else {
-				getEntity().setIsbn(
-						Long.parseLong(getRequest().getParameter("isbn")));
+		if (getRequest().getAttribute("option").toString()
+				.equals("entity.isbn")) {
+			if (getEntity().getIsbn() == null) {
+				if (getRequest().getParameter("entity.isbn") != null) {
+					if (NumberUtils.isDigits(getRequest()
+							.getParameter("entity.isbn").trim()
+							.replaceAll("-", ""))) {
+						getEntity().setIsbn(
+								Long.parseLong(getRequest()
+										.getParameter("entity.isbn").trim()
+										.replaceAll("-", "")));
+					}
+				}
 			}
 		}
 
-		DataSet<Ebook> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
-		ds = ebookService.getByRestrictions(ds);
+		DataSet<Ebook> ds = ebookService.getByRestrictions(initDataSet());
 
-		List<Ebook> results = ds.getResults();
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			ds = ebookService.getByRestrictions(ds);
+		}
 
 		int i = 0;
-		while (i < results.size()) {
-			results.get(i).setResourcesBuyers(
-					resourcesUnionService.getByObjSerNo(
-							results.get(i).getSerNo(), Ebook.class)
-							.getResourcesBuyers());
+		while (i < ds.getResults().size()) {
+			ds.getResults()
+					.get(i)
+					.setResourcesBuyers(
+							resourcesUnionService.getByObjSerNo(
+									ds.getResults().get(i).getSerNo(),
+									Ebook.class).getResourcesBuyers());
 			i++;
 		}
 
-		ds.setResults(results);
+		getRequest().setAttribute("isbn",
+				getRequest().getParameter("entity.isbn"));
 		setDs(ds);
 		return LIST;
 	}
@@ -418,8 +465,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 		if (!hasActionErrors()) {
 			getEntity().setIsbn(
-					Long.parseLong(getRequest().getParameter("isbn").trim()
-							.replace("-", "")));
+					Long.parseLong(getRequest().getParameter("entity.isbn")
+							.trim().replace("-", "")));
 			ebook = ebookService.save(getEntity(), getLoginUser());
 
 			resourcesBuyers = resourcesBuyersService.save(new ResourcesBuyers(
@@ -484,6 +531,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
+			getRequest().setAttribute("isbn",
+					getRequest().getParameter("entity.isbn"));
 			ebook = getEntity();
 			ebook.setCustomers(customers);
 			setEntity(ebook);
@@ -498,8 +547,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 		if (!hasActionErrors()) {
 			getEntity().setIsbn(
-					Long.parseLong(getRequest().getParameter("isbn").trim()
-							.replace("-", "")));
+					Long.parseLong(getRequest().getParameter("entity.isbn")
+							.trim().replace("-", "")));
 			ebook = ebookService.update(getEntity(), getLoginUser());
 
 			resourcesBuyers = resourcesUnionService.getByObjSerNo(
@@ -593,6 +642,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
+			getRequest().setAttribute("isbn",
+					getRequest().getParameter("entity.isbn"));
 			ebook = getEntity();
 			ebook.setCustomers(customers);
 			setEntity(ebook);
@@ -627,35 +678,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				j++;
 			}
 
-			DataSet<Ebook> ds = ebookService.getByRestrictions(initDataSet());
-			List<Ebook> results = ds.getResults();
-
-			int i = 0;
-			while (i < results.size()) {
-				results.get(i).setResourcesBuyers(
-						resourcesUnionService.getByObjSerNo(
-								results.get(i).getSerNo(), Ebook.class)
-								.getResourcesBuyers());
-				i++;
-			}
-
-			setDs(ds);
+			list();
 			addActionMessage("刪除成功");
 			return LIST;
 		} else {
-			DataSet<Ebook> ds = ebookService.getByRestrictions(initDataSet());
-			List<Ebook> results = ds.getResults();
-
-			int i = 0;
-			while (i < results.size()) {
-				results.get(i).setResourcesBuyers(
-						resourcesUnionService.getByObjSerNo(
-								results.get(i).getSerNo(), Ebook.class)
-								.getResourcesBuyers());
-				i++;
-			}
-
-			setDs(ds);
+			list();
 			return LIST;
 		}
 	}
@@ -961,21 +988,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			List<Ebook> excelData = new ArrayList<Ebook>(originalData);
 
 			DataSet<Ebook> ds = initDataSet();
-			List<Ebook> results = ds.getResults();
-
 			ds.getPager().setTotalRecord((long) excelData.size());
-			ds.getPager().setRecordPoint(0);
 
 			if (excelData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
 				while (i < excelData.size()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			}
@@ -1000,26 +1024,36 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		clearCheckedItem();
 
 		DataSet<Ebook> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
 		ds.getPager().setTotalRecord((long) importList.size());
 
-		int first = ds.getPager().getRecordPerPage()
-				* (ds.getPager().getCurrentPage() - 1);
+		int first = ds.getPager().getOffset();
 		int last = first + ds.getPager().getRecordPerPage();
-
-		List<Ebook> results = new ArrayList<Ebook>();
 
 		int i = 0;
 		while (i < importList.size()) {
 			if (i >= first && i < last) {
-				results.add((Ebook) importList.get(i));
+				ds.getResults().add((Ebook) importList.get(i));
 			}
 			i++;
 		}
 
-		ds.setResults(results);
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
+
+			int j = 0;
+			while (j < importList.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add((Ebook) importList.get(j));
+				}
+				j++;
+			}
+
+		}
+
 		setDs(ds);
 		return QUEUE;
 	}
@@ -1062,6 +1096,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		Set<String> deRepeatSet = new HashSet<String>(
+				Arrays.asList(importSerNos));
+		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
 			int i = 0;

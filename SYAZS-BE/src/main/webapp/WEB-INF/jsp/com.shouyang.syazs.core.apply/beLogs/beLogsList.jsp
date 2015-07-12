@@ -28,66 +28,64 @@ $(document).ready(function() {
 		$('input[name="cusSerNo"]:eq(1)').attr( "checked", true );
 	});
 });
-	
-function goSearch(){
-	if($("input#customerSerno").attr("checked")){
-	var customerSerno=$("input#customerSerno").val();
-	if(customerSerno!=null&&customerSerno>0){
-		goMain("<%=request.getContextPath()%>/crud/apply.beLogs.list.action",
-				"#apply_beLogs_list", "");
-	}else{
-		goAlert("訊息", "請正確填寫機構名稱");
-	}
-	}else{
-		goMain("<%=request.getContextPath()%>/crud/apply.beLogs.list.action",
-				"#apply_beLogs_list", "");	
-	}
-}
 
-//GoPage
-function gotoPage(page){
-	var isNum = /^\d+$/.test(page);
-	var totalPage = $("span.totalNum:eq(0)").html();
-    var recordPerPage="${ds.pager.recordPerPage}";
-    var offset=parseInt(recordPerPage)*(parseInt(page)-1);
-    if(!isNum){
-		page="${ds.pager.currentPage}";
-		offset=parseInt(recordPerPage)*(parseInt(page)-1);
-	} else {
-		if (parseInt(page) < 1){
-			page=1;
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
-			}		
-		
-		if (parseInt(page) > parseInt(totalPage)){
-			page=totalPage;
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
-			} 
-		}
-    goMain('<c:url value = '/'/>crud/apply.beLogs.list.action','#apply_beLogs_list','&pager.offset='+offset+'&pager.currentPage='+page);
-}
-
-//變更顯示筆數
-function changePageSize(recordPerPage,recordPoint){
-        goMain('<c:url value = '/'/>crud/apply.beLogs.list.action','#apply_beLogs_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
-}
-
-//匯出
-function goExport(){
-	var data=$("#apply_beLogs_list").serialize();
-	var url='<%=request.getContextPath()%>/crud/apply.beLogs.exports.action?'+ data;
-	if($("input#customerSerno").attr("checked")){
+	function goSearch(){
+		if($("input#customerSerno").attr("checked")){
 		var customerSerno=$("input#customerSerno").val();
-		if(customerSerno!=null && customerSerno>0){
-			window.open(url, "_top");
-		} else {
+		if(customerSerno!=null&&customerSerno>0){
+			goMain("<%=request.getContextPath()%>/crud/apply.beLogs.list.action",
+					"#apply_beLogs_list", "");
+		}else{
 			goAlert("訊息", "請正確填寫機構名稱");
 		}
-	} else {
-		window.open(url, "_top");
-	}
-}
+		}else{
+			goMain("<%=request.getContextPath()%>/crud/apply.beLogs.list.action","#apply_beLogs_list", "");
+			}
+		}
+	
+	//GoPage
+	function gotoPage(page) {
+		var isNum = /^\d+$/.test(page);
+		var totalPage = $("span.totalNum:eq(0)").html();
 
+		if (!isNum) {
+			page = "${ds.pager.currentPage}";
+		} else {
+			if (parseInt(page) < 1) {
+				page = 1;
+			}
+
+			if (parseInt(page) > parseInt(totalPage)) {
+				page = totalPage;
+			}
+		}
+		goMain('<c:url value = '/'/>crud/apply.beLogs.list.action',
+				'#apply_beLogs_list', '&pager.currentPage=' + page);
+	}
+
+	//變更顯示筆數
+	function changePageSize() {
+		goMain('<c:url value = '/'/>crud/apply.beLogs.list.action',
+				'#apply_beLogs_list', '&pager.recordPoint='
+						+ '${ds.pager.recordPoint }');
+	}
+	
+	//匯出
+	function goExport(){
+		var data=$("#apply_beLogs_list").serialize();
+		var url='<%=request.getContextPath()%>/crud/apply.beLogs.exports.action?'
+				+ data;
+		if ($("input#customerSerno").attr("checked")) {
+			var customerSerno = $("input#customerSerno").val();
+			if (customerSerno != null && customerSerno > 0) {
+				window.open(url, "_top");
+			} else {
+				goAlert("訊息", "請正確填寫機構名稱");
+			}
+		} else {
+			window.open(url, "_top");
+		}
+	}
 </script>
 </head>
 <body>
@@ -103,18 +101,18 @@ function goExport(){
 					<tbody>
 						<tr>
 							<th align="right">查詢統計範圍：</th>
-							<td align="left"><input type="text" name="start"
-								class="input_text" id="cal-field1"
-								value='<c:out value="${startDate }"></c:out>'> <script
+							<td align="left"><s:textfield name="entity.start"
+									class="input_text" id="cal-field1" /> <script
 									type="text/javascript">
-	 Calendar.setup({
-         inputField    : "cal-field1"
-       });</script> 至&nbsp;&nbsp;<input type="text" name="end" class="input_text"
-								id="cal-field2" value='<c:out value="${endDate }"></c:out>'>
-								<script type="text/javascript">
-	 Calendar.setup({
-         inputField    : "cal-field2"
-       });</script></td>
+										Calendar.setup({
+											inputField : "cal-field1"
+										});
+									</script> 至&nbsp;&nbsp;<s:textfield name="entity.end" class="input_text"
+									id="cal-field2" /> <script type="text/javascript">
+										Calendar.setup({
+											inputField : "cal-field2"
+										});
+									</script></td>
 						</tr>
 						<c:if test="${login.role.role != '管理員'}">
 							<tr>
@@ -197,8 +195,8 @@ function goExport(){
 					</tr>
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
-							<td><c:out value="${startDate }" />~<c:out
-									value="${endDate }" /></td>
+							<td><s:property value="entity.start" />~<s:property
+									value="entity.end" /></td>
 							<td align="center">${item.rank }</td>
 							<td>${item.accountNumber.userId }</td>
 							<td align="center"><c:out
@@ -230,8 +228,8 @@ function goExport(){
 										var="totalPage">
 										<fmt:formatNumber type="number" pattern="#"
 											value="${pageFactor+(1-(pageFactor%1))%1}" />
-									</c:set> 每頁顯示 <select name="recordPerPage" id="listForm_pageSize"
-									onchange="changePageSize(this.value,${ds.pager.recordPoint })">
+									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
+									onchange="chagePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>

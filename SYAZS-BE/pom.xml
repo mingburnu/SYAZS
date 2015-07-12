@@ -352,6 +352,13 @@
 			<artifactId>xmlbeans</artifactId>
 			<version>2.5.0</version>
 		</dependency>
+
+		<!-- ESAPI -->
+		<dependency>
+			<groupId>org.owasp.esapi</groupId>
+			<artifactId>esapi</artifactId>
+			<version>2.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

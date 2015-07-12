@@ -10,13 +10,6 @@
 <script type="text/javascript">
 	$(document).ready(
 			function() {
-				$("select#apply_accountNumber_update_cusSerNo").children()
-						.each(function() {
-							if ($(this).val() == "${entity.customer.serNo}") {
-								this.selected = true;
-							}
-						});
-
 				$("select#apply_accountNumber_update_role").children().each(
 						function() {
 							if ($(this).text() == "${entity.role.role}") {
@@ -67,13 +60,13 @@
 				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
 				<td><c:choose>
 						<c:when test="${login.role.role == '管理員' }">
-							<s:select name="cusSerNo" cssClass="input_text"
-								list="dsCustomer.results" listKey="serNo" listValue="name" />
+							<s:select name="entity.customer.serNo" cssClass="input_text"
+								list="ds.datas" listKey="value" listValue="key" />
 						</c:when>
 						<c:otherwise>
-							<s:select headerValue="--用戶名稱--" headerKey="0" name="cusSerNo"
-								cssClass="input_text" list="dsCustomer.results" listKey="serNo"
-								listValue="name" />
+							<s:select headerValue="--用戶名稱--" headerKey="0"
+								name="entity.customer.serNo" cssClass="input_text"
+								list="ds.datas" listKey="value" listValue="key" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>
@@ -92,8 +85,8 @@
 			</tr>
 			<tr>
 				<th width="130">狀態</th>
-				<td><select name="status" id="apply_accountNumber_update_status"
-					class="input_text">
+				<td><select name="status"
+					id="apply_accountNumber_update_status" class="input_text">
 						<c:forEach var="item" items="${statusList}" varStatus="status">
 							<option value="${item.status }">${item.status }</option>
 						</c:forEach>

@@ -26,15 +26,15 @@ $(document).ready(function() {
 	});
 });
 	
-	//新增IP Range
-	function goAdd_detail() {
-		var url = "<c:url value = '/'/>/crud/apply.ipRange.add.action";
-		var data ='entity.customer.serNo='+'${customerSerNo }';
-		goDetail_2(url, 'IP Range管理-新增', data);
-	}
+//新增IP Range
+function goAdd_detail() {
+	var url = "<c:url value = '/'/>/crud/apply.ipRange.add.action";
+	var data ='entity.customer.serNo='+'${customerSerNo }';
+	goDetail_2(url, 'IP Range管理-新增', data);
+}
 
-	//IP Range編輯
-	function goUpdate_detail(listNo,serNo) {
+//IP Range編輯
+function goUpdate_detail(listNo,serNo) {
 		var isNum = /^\d+$/.test(serNo);
 		var islistNo = /^\d+$/.test(listNo);
 		if (isNum && islistNo &&parseInt(serNo) > 0){
@@ -44,64 +44,59 @@ $(document).ready(function() {
 		}
 	}
 
-	//單筆刪除
-	function goDel_detail(serNo) {
-		 var f = {
-			        trueText:'是',
-			        trueFunc:function(){
-			            var url = "<c:url value = '/'/>crud/apply.ipRange.delete.action";
-			            var data = $('#apply_ipRange_list').serialize()+'&entity.serNo='+serNo+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
-			            goDetail_Main(url,'',data);
-			        },
-			        falseText:'否',
-			        falseFunc:function(){
-			            //不進行刪除...
-			        }
-			    };
+//單筆刪除
+function goDel_detail(serNo) {
+	 var f = {
+			 trueText:'是',
+			 trueFunc:function(){
+				 var url = "<c:url value = '/'/>crud/apply.ipRange.delete.action";
+				 var data = $('#apply_ipRange_list').serialize()+'&entity.serNo='+serNo+'&pager.currentPage='+'${ds.pager.currentPage}';
+				 goDetail_Main(url,'',data);
+			     },
+			  falseText:'否',
+			  falseFunc:function(){
+				  //不進行刪除...
+			  }
+	 };
 
-		 var isNum = /^\d+$/.test(serNo);
-		 if (isNum && parseInt(serNo) > 0){
-			 goAlert('提醒','確定要刪除此筆資料嗎?',f);
-			 } else {
-				 goAlert('提醒','錯誤','');
-			 }
+	 var isNum = /^\d+$/.test(serNo);
+	 if (isNum && parseInt(serNo) > 0){
+		 goAlert('提醒','確定要刪除此筆資料嗎?',f);
+		 } else {
+			 goAlert('提醒','錯誤','');
 		 }
+	 }
 
-	//GoPage
-	function gotoPage_detail(page) {
-		var isNum = /^\d+$/.test(page);
-		var totalPage = $("span.totalNum:eq(1)").html();
-		var recordPerPage = "${ds.pager.recordPerPage}";
-		var offset = parseInt(recordPerPage) * (parseInt(page) - 1);
-		if(!isNum){
-			page="${ds.pager.currentPage}";
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
+//GoPage
+function gotoPage_detail(page) {
+	var isNum = /^\d+$/.test(page);
+	var totalPage = $("span.totalNum:eq(1)").html();
+	var recordPerPage = "${ds.pager.recordPerPage}";
+	var offset = parseInt(recordPerPage) * (parseInt(page) - 1);
+	if(!isNum){
+		page="${ds.pager.currentPage}";
 		} else {
 			if (parseInt(page) < 1){
 				page=1;
-				offset=parseInt(recordPerPage)*(parseInt(page)-1);
-				}		
+			}		
 			
 			if (parseInt(page) > parseInt(totalPage)){
 				page=totalPage;
-				offset=parseInt(recordPerPage)*(parseInt(page)-1);
-				} 
-			}
-		goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action',
-				'#apply_ipRange_list', '&pager.offset='+offset+'&pager.currentPage='+page);
+			} 
+		}
+		goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action','#apply_ipRange_list', '&pager.currentPage='+page);
 	}
 
-	//變更顯示筆數
-	function changePageSize_detail(recordPerPage,recordPoint) {
-		goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action',
-				'#apply_ipRange_list', '&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
+//變更顯示筆數
+function changePageSize_detail() {
+	goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action','#apply_ipRange_list', '&pager.recordPoint='+'${ds.pager.recordPoint }');
 	}
 	
-	function closeDetail() {
-		$("#div_Detail").hide();
-		UI_Resize();
-		$("#div_Detail .content > .header > .title").empty();
-		$("#div_Detail .content > .contain").empty();
+function closeDetail() {
+	$("#div_Detail").hide();
+	UI_Resize();
+	$("#div_Detail .content > .header > .title").empty();
+	$("#div_Detail .content > .contain").empty();
 	}
 </script>
 </head>
@@ -156,8 +151,8 @@ $(document).ready(function() {
 									var="totalPage">
 									<fmt:formatNumber type="number" pattern="#"
 										value="${pageFactor+(1-(pageFactor%1))%1}" />
-								</c:set> 每頁顯示 <select name="recordPerPage" id="listForm_pageSize"
-								onchange="changePageSize_detail(this.value,${ds.pager.recordPoint })">
+								</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
+								onchange="changePageSize_detail()">
 									<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 									<option value="5">5</option>
 									<option value="10">10</option>

@@ -41,13 +41,10 @@ function goAdd(){
 function goDelete() {
 	//檢查資料是否已被勾選
 	var IsSelected = false;
-	var serNoStr = "";
-	var checkbox_checked_num = 0;
 	for (var i = 0; i < $(".checkbox").length; i++) {
 		if ($(".checkbox").get(i).checked) {
-			serNoStr = serNoStr + $(".checkbox").get(i).value + "；；";
 			IsSelected = true;
-			checkbox_checked_num++;
+			break;
 		}
 	}
 	
@@ -57,7 +54,7 @@ function goDelete() {
                 trueText:'是',
                 trueFunc:function(){
                         var url = "<c:url value='/crud/apply.database.delete.action'/>";
-                        var data = $('#apply_database_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint'+'${ds.pager.offset}';
+                        var data = $('#apply_database_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
                         goMain(url,'',data);
                 },
                 falseText:'否',
@@ -93,29 +90,24 @@ function goUpdate(serNo) {
 function gotoPage(page){
 	var isNum = /^\d+$/.test(page);
 	var totalPage = $("span.totalNum:eq(0)").html();
-	var recordPerPage="${ds.pager.recordPerPage}";
-	var offset=parseInt(recordPerPage)*(parseInt(page)-1);
 	
 	if(!isNum){
 		page="${ds.pager.currentPage}";
-		offset=parseInt(recordPerPage)*(parseInt(page)-1);
 	} else {
 		if (parseInt(page) < 1){
 			page=1;
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
 			}		
 		
 		if (parseInt(page) > parseInt(totalPage)){
 			page=totalPage;
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
 			} 
 		}
-    goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&pager.offset='+offset+'&pager.currentPage='+page);
+    goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&pager.currentPage='+page);
 }
 
 //變更顯示筆數
-function chagePageSize(recordPerPage,recordPoint){
-        goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
+function chagePageSize(){
+        goMain('<c:url value = '/'/>crud/apply.database.list.action','#apply_database_list','&pager.recordPoint='+'${ds.pager.recordPoint }');
 }
 
 //批次匯入
@@ -246,8 +238,8 @@ function goImport(){
 										var="totalPage">
 										<fmt:formatNumber type="number" pattern="#"
 											value="${pageFactor+(1-(pageFactor%1))%1}" />
-									</c:set> 每頁顯示 <select name="recordPerPage" id="listForm_pageSize"
-									onchange="chagePageSize(this.value,${ds.pager.recordPoint })">
+									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
+									onchange="chagePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>

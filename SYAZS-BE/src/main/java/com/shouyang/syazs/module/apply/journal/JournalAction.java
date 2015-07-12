@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -41,7 +42,6 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
@@ -97,6 +97,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	protected void validateSave() throws Exception {
+		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
+		cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+		
 		List<Category> categoryList = new ArrayList<Category>(
 				Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
@@ -178,6 +181,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
+			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+			
 			List<Category> categoryList = new ArrayList<Category>(
 					Arrays.asList(Category.values()));
 			categoryList.remove(categoryList.size() - 1);
@@ -261,6 +267,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	protected void validateDelete() throws Exception {
+		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
+		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 		if (ArrayUtils.isEmpty(checkItem)) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
@@ -361,24 +370,26 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		}
 
-		DataSet<Journal> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
-		ds = journalService.getByRestrictions(ds);
+		DataSet<Journal> ds = journalService.getByRestrictions(initDataSet());
 
-		List<Journal> results = ds.getResults();
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			ds = journalService.getByRestrictions(ds);
+		}
 
 		int i = 0;
-		while (i < results.size()) {
-			results.get(i).setResourcesBuyers(
-					resourcesUnionService.getByObjSerNo(
-							results.get(i).getSerNo(), Journal.class)
-							.getResourcesBuyers());
+		while (i < ds.getResults().size()) {
+			ds.getResults()
+					.get(i)
+					.setResourcesBuyers(
+							resourcesUnionService.getByObjSerNo(
+									ds.getResults().get(i).getSerNo(),
+									Journal.class).getResourcesBuyers());
 			i++;
 		}
 
-		ds.setResults(results);
 		setDs(ds);
 		return LIST;
 	}
@@ -600,37 +611,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				j++;
 			}
 
-			DataSet<Journal> ds = journalService
-					.getByRestrictions(initDataSet());
-			List<Journal> results = ds.getResults();
-
-			int i = 0;
-			while (i < results.size()) {
-				results.get(i).setResourcesBuyers(
-						resourcesUnionService.getByObjSerNo(
-								results.get(i).getSerNo(), Journal.class)
-								.getResourcesBuyers());
-				i++;
-			}
-
-			setDs(ds);
+			list();
 			addActionMessage("刪除成功");
 			return LIST;
 		} else {
-			DataSet<Journal> ds = journalService
-					.getByRestrictions(initDataSet());
-			List<Journal> results = ds.getResults();
-
-			int i = 0;
-			while (i < results.size()) {
-				results.get(i).setResourcesBuyers(
-						resourcesUnionService.getByObjSerNo(
-								results.get(i).getSerNo(), Journal.class)
-								.getResourcesBuyers());
-				i++;
-			}
-
-			setDs(ds);
+			list();
 			return LIST;
 		}
 	}
@@ -913,21 +898,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			List<Journal> excelData = new ArrayList<Journal>(originalData);
 
 			DataSet<Journal> ds = initDataSet();
-			List<Journal> results = ds.getResults();
-
 			ds.getPager().setTotalRecord((long) excelData.size());
-			ds.getPager().setRecordPoint(0);
 
 			if (excelData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
 				while (i < excelData.size()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			}
@@ -952,26 +934,36 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		clearCheckedItem();
 
 		DataSet<Journal> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
 		ds.getPager().setTotalRecord((long) importList.size());
 
-		int first = ds.getPager().getRecordPerPage()
-				* (ds.getPager().getCurrentPage() - 1);
+		int first = ds.getPager().getOffset();
 		int last = first + ds.getPager().getRecordPerPage();
-
-		List<Journal> results = new ArrayList<Journal>();
 
 		int i = 0;
 		while (i < importList.size()) {
 			if (i >= first && i < last) {
-				results.add((Journal) importList.get(i));
+				ds.getResults().add((Journal) importList.get(i));
 			}
 			i++;
 		}
 
-		ds.setResults(results);
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
+
+			int j = 0;
+			while (j < importList.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add((Journal) importList.get(j));
+				}
+				j++;
+			}
+
+		}
+
 		setDs(ds);
 		return QUEUE;
 	}
@@ -1014,6 +1006,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		Set<String> deRepeatSet = new HashSet<String>(
+				Arrays.asList(importSerNos));
+		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
 			int i = 0;

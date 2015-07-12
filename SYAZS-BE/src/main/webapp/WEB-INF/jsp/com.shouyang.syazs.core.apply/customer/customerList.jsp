@@ -32,86 +32,72 @@ $(document).ready(function() {
 	});
 });
 
-//刪除後引導頁面
-$(document).ready(function() {
-	if($("table.list-table:eq(0) tbody tr").length==2&&$("form#apply_customer_list input#listForm_currentPageHeader").val()>1){
-		 gotoPage($("form#apply_customer_list input#listForm_currentPageHeader").val()-1);
-	};
-});
+function goSearch(){
+	goMain("<%=request.getContextPath()%>/crud/apply.customer.list.action",	"#apply_customer_list", "");
+}
 
-	function goSearch(){
-	    goMain("<%=request.getContextPath()%>/crud/apply.customer.list.action",
-				"#apply_customer_list", "");
-	}
-	
-	//新增
-	function goAdd(){
-	        goDetail('<%=request.getContextPath()%>/crud/apply.customer.edit.action','客戶-新增');
-	}
-	
-	
-	//刪除多筆資料之函式
-	function goDelete() {
-		//檢查資料是否已被勾選
-		var IsSelected = false;
-		var serNoStr = "";
-		var checkbox_checked_num = 0;
-		for (var i = 0; i < $(".checkbox").length; i++) {
-			if ($(".checkbox").get(i).checked) {
-				serNoStr = serNoStr + $(".checkbox").get(i).value + "；；";
-				IsSelected = true;
-				checkbox_checked_num++;
-			}
+//新增
+function goAdd(){
+	goDetail('<%=request.getContextPath()%>/crud/apply.customer.add.action','客戶-新增');
+}
+
+//刪除多筆資料之函式
+function goDelete() {
+	//檢查資料是否已被勾選
+	var IsSelected = false;
+	for (var i = 0; i < $(".checkbox").length; i++) {
+		if ($(".checkbox").get(i).checked) {
+			IsSelected = true;
+			break;
 		}
+	}
 		
-		//進行刪除動作
-		if (IsSelected) {
-			var f = {
-                    trueText:'是',
-                    trueFunc:function(){
-                            var url = '<c:url value="/crud/apply.customer.delete.action"/>';
-                            var data = $('#apply_customer_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint='+'${ds.pager.offset}';
-                            console.log(data);
-                            goMain(url,'',data);
+	//進行刪除動作
+	if (IsSelected) {
+		var f = {
+				trueText:'是',
+				trueFunc:function(){
+					var url = '<c:url value="/crud/apply.customer.delete.action"/>';    
+					var data = $('#apply_customer_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
+					goMain(url,'',data);
                     },
                     falseText:'否',
                     falseFunc:function(){
-                            //不進行刪除...
-                    }
-            };
-			goAlert('提醒','您確定要刪除所勾選的資料嗎?',f);
-		} else {
-			goAlert("提醒","請選擇一筆或一筆以上的資料");
-		}
+                    	//不進行刪除...
+                   }
+		};
+		goAlert('提醒','您確定要刪除所勾選的資料嗎?',f);
+	} else {
+		goAlert("提醒","請選擇一筆或一筆以上的資料");
 	}
+}
 	
-	//資料檢視
-	function goView(serNo){
-		var isNum = /^\d+$/.test(serNo);
-		if (isNum && parseInt(serNo) > 0){
-	        var url = "<c:url value = '/'/>crud/apply.customer.view.action";
-	        var data = 'viewSerNo='+serNo;
-	        goDetail(url,'用戶-檢視',data);
-		}
+//資料檢視
+function goView(serNo){
+	var isNum = /^\d+$/.test(serNo);
+	if (isNum && parseInt(serNo) > 0){
+        var url = "<c:url value = '/'/>crud/apply.customer.view.action";
+        var data = 'entity.serNo='+serNo;
+        goDetail(url,'用戶-檢視',data);
 	}
+}
 	
-	//更新資料
-	function goUpdate(serNo) {
-		var isNum = /^\d+$/.test(serNo);
-		if (isNum && parseInt(serNo) > 0){
-			goDetail('<%=request.getContextPath()%>/crud/apply.customer.edit.action?'+'entity.serNo='+serNo,'客戶-修改');
-		}
+//更新資料
+function goUpdate(serNo) {
+	var isNum = /^\d+$/.test(serNo);
+	if (isNum && parseInt(serNo) > 0){
+		goDetail('<%=request.getContextPath()%>/crud/apply.customer.edit.action?'+'entity.serNo='+serNo,'客戶-修改');
 	}
+}
 	
-	//單筆刪除
-	function goDel(serNo){
-		var f = {
-			trueText:'是',
-			trueFunc:function(){
-	                        var url = '<c:url value = "/crud/apply.customer.delete.action"/>';
-	                        var data =$('#apply_customer_list').serialize()+'&pager.offset='+'${ds.pager.offset}'+'&pager.currentPage='+'${ds.pager.currentPage}'+'&pager.offsetPoint='+'${ds.pager.offset}'+'&checkItem='+serNo;
-	                        console.log(data);
-	                        goMain(url,'',data);
+//單筆刪除
+function goDel(serNo){
+	var f = {
+		trueText:'是',
+		trueFunc:function(){
+			var url = '<c:url value = "/crud/apply.customer.delete.action"/>';
+			var data =$('#apply_customer_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}'+'&checkItem='+serNo;
+			goMain(url,'',data);
 			},
 			falseText:'否',
 			falseFunc:function(){
@@ -119,67 +105,62 @@ $(document).ready(function() {
 			}
 		};
 		
-		var isNum = /^\d+$/.test(serNo);
-		if (isNum && parseInt(serNo) > 0){
-			goAlert('提醒','確定要刪除此筆資料嗎?',f);
-		} else {
-			goAlert('提醒','錯誤','');	
-		}
+	var isNum = /^\d+$/.test(serNo);
+	if (isNum && parseInt(serNo) > 0){
+		goAlert('提醒','確定要刪除此筆資料嗎?',f);
+	} else {
+		goAlert('提醒','錯誤','');
 	}
+}
 	
-	//IP Range管理
-	function goIpRangeManager(serNo){
-		var isNum = /^\d+$/.test(serNo);
-		if (isNum && parseInt(serNo) > 0){	  
-			var url = '<c:url value = '/'/>crud/apply.ipRange.list.action';
-			var data = 'entity.customer.serNo='+serNo;
-			goDetail(url,'客戶-IP Range管理',data);
-			}
-		}
+//IP Range管理
+function goIpRangeManager(serNo){
+	var isNum = /^\d+$/.test(serNo);
+	if (isNum && parseInt(serNo) > 0){	  
+		var url = '<c:url value = '/'/>crud/apply.ipRange.list.action';
+		var data = 'entity.customer.serNo='+serNo;
+		goDetail(url,'客戶-IP Range管理',data);
+	}
+}
 	
-	//群組管理
-	function goGroupManager(serNo){
-		var isNum = /^\d+$/.test(serNo);
-		if (isNum && parseInt(serNo) > 0){	  
-			var url = '<c:url value = '/'/>crud/apply.group.list.action';
-			var data = 'entity.customer.serNo='+serNo;
-			goDetail(url,'客戶-群組管理',data);
-			}
-		}
+//群組管理
+function goGroupManager(serNo){
+	var isNum = /^\d+$/.test(serNo);
+	if (isNum && parseInt(serNo) > 0){	  
+		var url = '<c:url value = '/'/>crud/apply.group.list.action';
+		var data = 'entity.customer.serNo='+serNo;
+		goDetail(url,'客戶-群組管理',data);
+	}
+}
 	
-	//GoPage
-	function gotoPage(page){
-		var isNum = /^\d+$/.test(page);
-		var totalPage = $("span.totalNum:eq(0)").html();
-		var recordPerPage="${ds.pager.recordPerPage}";
-		var offset=parseInt(recordPerPage)*(parseInt(page)-1);
+//GoPage
+function gotoPage(page){
+	var isNum = /^\d+$/.test(page);
+	var totalPage = $("span.totalNum:eq(0)").html();
 		
-		if(!isNum){
-			page="${ds.pager.currentPage}";
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
-		} else {
-			if (parseInt(page) < 1){
-				page=1;
-				offset=parseInt(recordPerPage)*(parseInt(page)-1);
-				}		
+	if(!isNum){
+		page="${ds.pager.currentPage}";
+	} else {
+		if (parseInt(page) < 1){
+			page=1;
+		}		
 			
-			if (parseInt(page) > parseInt(totalPage)){
-				page=totalPage;
-				offset=parseInt(recordPerPage)*(parseInt(page)-1);
-				} 
-			}
-		goMain('<c:url value = '/'/>crud/apply.customer.list.action','#apply_customer_list','&pager.offset='+offset+'&pager.currentPage='+page);
+		if (parseInt(page) > parseInt(totalPage)){
+			page=totalPage;
 		}
+	}		
+	goMain('<c:url value = '/'/>crud/apply.customer.list.action','#apply_customer_list','&pager.currentPage='+page);
+}
 	
-	//變更顯示筆數
-    function chagePageSize(recordPerPage,recordPoint){
-            goMain('<c:url value = '/'/>crud/apply.customer.list.action','#apply_customer_list','&recordPerPage='+recordPerPage+'&recordPoint='+recordPoint);
-    }
-	
-  //批次匯入
-    function goImport(){
-    	goDetail('<%=request.getContextPath()%>/crud/apply.customer.imports.action?','客戶-匯入');
-    }
+//變更顯示筆數
+function chagePageSize(recordPoint){
+	goMain('<c:url value = '/'/>crud/apply.customer.list.action','#apply_customer_list','&pager.recordPoint='+recordPoint);
+}
+
+//批次匯入
+function goImport(){
+	goDetail('<%=request.getContextPath()%>/crud/apply.customer.imports.action?','客戶-匯入');
+}
 	
 </script>
 </head>
@@ -201,18 +182,12 @@ $(document).ready(function() {
 									<option value="entity.name">用戶名稱</option>
 									<option value="entity.engName">英文名稱</option>
 							</select></td>
-							<c:set var="option">
-								<c:out value="${option }" />
-							</c:set>
 							<c:choose>
 								<c:when test="${not empty option }">
-									<c:set var="find">
-										<c:out
-											value='<%=request.getParameter(request
-									.getAttribute("option").toString())%>' />
-									</c:set>
 									<td align="left"><input type="text" name="${option }"
-										maxlength="20" id="search" class="input_text" value="${find }">
+										maxlength="20" id="search" class="input_text"
+										value="<%=request.getParameter(request
+									.getAttribute("option").toString())%>">
 									</td>
 								</c:when>
 								<c:otherwise>
@@ -323,8 +298,8 @@ $(document).ready(function() {
 										var="totalPage">
 										<fmt:formatNumber type="number" pattern="#"
 											value="${pageFactor+(1-(pageFactor%1))%1}" />
-									</c:set> 每頁顯示 <select name="recordPerPage" id="listForm_pageSize"
-									onchange="chagePageSize(this.value,${ds.pager.recordPoint })">
+									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
+									onchange="changePageSize(${ds.pager.recordPoint })">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>

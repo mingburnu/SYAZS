@@ -4,11 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -25,7 +23,6 @@ import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.converter.JodaTimeConverter;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionLog;
 
 @Controller
@@ -86,17 +83,6 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 	@Override
 	public String list() throws Exception {
-		String startDate = getRequest().getParameter("start");
-		String endDate = getRequest().getParameter("end");
-
-		if (startDate != null) {
-			startDate = startDate.trim();
-		}
-
-		if (endDate != null) {
-			endDate = endDate.trim();
-		}
-
 		String customerName = getRequest().getParameter("customer");
 
 		String cusSerNo = getRequest().getParameter("cusSerNo");
@@ -114,31 +100,9 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 		}
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotBlank(startDate)
-					&& getLocalDateTime(startDate) != null) {
-				getEntity().setStart(getLocalDateTime(startDate));
-				getRequest().setAttribute("startDate", startDate);
-			} else {
+			if (getEntity().getStart() == null) {
 				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
-				getRequest().setAttribute("startDate", "2015-01-01");
 			}
-
-			if (StringUtils.isNotBlank(endDate)
-					&& getLocalDateTime(endDate) != null) {
-				getEntity().setEnd(getLocalDateTime(endDate));
-				getRequest().setAttribute("endDate", endDate);
-			} else {
-				getEntity().setEnd(null);
-				getRequest().setAttribute("endDate", "");
-			}
-
-			DataSet<FeLogs> ds = initDataSet();
-
-			ds.setPager(Pager.getChangedPager(
-					getRequest().getParameter("recordPerPage"), getRequest()
-							.getParameter("recordPoint"), ds.getPager()));
-
-			getRequest().setAttribute("endDate", endDate);
 
 			if (Long.parseLong(cusSerNo) > 0) {
 				getEntity().setCustomer(
@@ -153,14 +117,18 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 			getRequest().setAttribute("cusSerNo", cusSerNo);
 
-			ds = feLogsService.getByRestrictions(ds);
+			DataSet<FeLogs> ds = feLogsService.getByRestrictions(initDataSet());
+
+			while (ds.getResults().size() == 0
+					&& ds.getPager().getCurrentPage() > 1) {
+				ds.getPager()
+						.setCurrentPage(ds.getPager().getCurrentPage() - 1);
+				ds = feLogsService.getByRestrictions(ds);
+			}
 
 			setDs(ds);
-
 			return LIST;
 		} else {
-			getRequest().setAttribute("startDate", startDate);
-			getRequest().setAttribute("endDate", endDate);
 			getRequest().setAttribute("customer", customerName);
 			getRequest().setAttribute("cusSerNo", cusSerNo);
 			return LIST;
@@ -186,17 +154,6 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 	}
 
 	public String exports() throws Exception {
-		String startDate = getRequest().getParameter("start");
-		String endDate = getRequest().getParameter("end");
-
-		if (startDate != null) {
-			startDate = startDate.trim();
-		}
-
-		if (endDate != null) {
-			endDate = endDate.trim();
-		}
-
 		String customerName = getRequest().getParameter("customer");
 
 		String cusSerNo = getRequest().getParameter("cusSerNo");
@@ -214,23 +171,9 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 		}
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotBlank(startDate)
-					&& getLocalDateTime(startDate) != null) {
-				getEntity().setStart(getLocalDateTime(startDate));
-			} else {
+			if (getEntity().getStart() == null) {
 				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
-				startDate = "2015-01-01";
 			}
-
-			if (StringUtils.isNotBlank(endDate)
-					&& getLocalDateTime(endDate) != null) {
-				getEntity().setEnd(getLocalDateTime(endDate));
-			} else {
-				getEntity().setEnd(null);
-				endDate = "";
-			}
-
-			DataSet<FeLogs> ds = initDataSet();
 
 			if (Long.parseLong(cusSerNo) > 0) {
 				getEntity().setCustomer(
@@ -243,13 +186,11 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 				getEntity().setCustomer(customer);
 			}
 
-			Pager pager = ds.getPager();
-			pager.setRecordPerPage(Integer.MAX_VALUE);
-			ds.setPager(pager);
-
+			DataSet<FeLogs> ds = initDataSet();
+			ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
 			ds = feLogsService.getByRestrictions(ds);
 
-			List<FeLogs> results = ds.getResults();
+			ds = feLogsService.getByRestrictions(ds);
 
 			getEntity().setReportFile("feLogs.xlsx");
 
@@ -264,11 +205,13 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 			empinfo.put("1", new Object[] { "年月", "名次", "關鍵字", "次數" });
 
 			int i = 0;
-			while (i < results.size()) {
-				feLogs = results.get(i);
+			while (i < ds.getResults().size()) {
+				feLogs = ds.getResults().get(i);
 				empinfo.put(
 						String.valueOf(i + 2),
-						new Object[] { startDate + "~" + endDate,
+						new Object[] {
+								getDateString(getEntity().getStart()) + "~"
+										+ getDateString(getEntity().getEnd()),
 								String.valueOf(feLogs.getRank()),
 								feLogs.getKeyword(),
 								String.valueOf(feLogs.getCount()) });
@@ -294,18 +237,14 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 			return XLSX;
 		} else {
-			getRequest().setAttribute("startDate", startDate);
-			getRequest().setAttribute("endDate", endDate);
 			getRequest().setAttribute("customer", customerName);
 			getRequest().setAttribute("cusSerNo", cusSerNo);
 			return LIST;
 		}
 	}
 
-	public LocalDateTime getLocalDateTime(String date) {
-		LocalDateTime dateTime = (LocalDateTime) converter.convertFromString(
-				null, new String[] { date }, LocalDateTime.class);
-		return dateTime;
+	public String getDateString(LocalDateTime dateTime) {
+		return converter.convertToString(null, dateTime);
 	}
 
 	/**

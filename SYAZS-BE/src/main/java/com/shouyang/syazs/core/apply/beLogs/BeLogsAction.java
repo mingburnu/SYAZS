@@ -4,11 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -27,7 +25,6 @@ import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.converter.JodaTimeConverter;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionLog;
 
 @Controller
@@ -94,17 +91,6 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 	@Override
 	public String list() throws Exception {
-		String startDate = getRequest().getParameter("start");
-		String endDate = getRequest().getParameter("end");
-
-		if (startDate != null) {
-			startDate = startDate.trim();
-		}
-
-		if (endDate != null) {
-			endDate = endDate.trim();
-		}
-
 		String customerName = getRequest().getParameter("customer");
 
 		String cusSerNo = getRequest().getParameter("cusSerNo");
@@ -122,29 +108,9 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 		}
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotBlank(startDate)
-					&& getLocalDateTime(startDate) != null) {
-				getEntity().setStart(getLocalDateTime(startDate));
-				getRequest().setAttribute("startDate", startDate);
-			} else {
+			if (getEntity().getStart() == null) {
 				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
-				getRequest().setAttribute("startDate", "2015-01-01");
 			}
-
-			if (StringUtils.isNotBlank(endDate)
-					&& getLocalDateTime(endDate) != null) {
-				getEntity().setEnd(getLocalDateTime(endDate));
-				getRequest().setAttribute("endDate", endDate);
-			} else {
-				getEntity().setEnd(null);
-				getRequest().setAttribute("endDate", "");
-			}
-
-			DataSet<BeLogs> ds = initDataSet();
-
-			ds.setPager(Pager.getChangedPager(
-					getRequest().getParameter("recordPerPage"), getRequest()
-							.getParameter("recordPoint"), ds.getPager()));
 
 			if (Long.parseLong(cusSerNo) > 0) {
 				getEntity().setCustomer(
@@ -159,13 +125,19 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 			getRequest().setAttribute("cusSerNo", cusSerNo);
 
-			ds = beLogsService.getByRestrictions(ds);
+			DataSet<BeLogs> ds = beLogsService.getByRestrictions(initDataSet());
+
+			if (ds.getResults().size() == 0
+					&& ds.getPager().getCurrentPage() > 1) {
+				ds.getPager().setCurrentPage(
+						(int) (ds.getPager().getTotalRecord()
+								/ ds.getPager().getRecordPerPage() + 1));
+				ds = beLogsService.getByRestrictions(ds);
+			}
 
 			setDs(ds);
 			return LIST;
 		} else {
-			getRequest().setAttribute("startDate", startDate);
-			getRequest().setAttribute("endDate", endDate);
 			getRequest().setAttribute("customer", customerName);
 			getRequest().setAttribute("cusSerNo", cusSerNo);
 			return LIST;
@@ -192,17 +164,6 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 	}
 
 	public String exports() throws Exception {
-		String startDate = getRequest().getParameter("start");
-		String endDate = getRequest().getParameter("end");
-
-		if (startDate != null) {
-			startDate = startDate.trim();
-		}
-
-		if (endDate != null) {
-			endDate = endDate.trim();
-		}
-
 		String customerName = getRequest().getParameter("customer");
 
 		String cusSerNo = getRequest().getParameter("cusSerNo");
@@ -220,23 +181,9 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 		}
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotBlank(startDate)
-					&& getLocalDateTime(startDate) != null) {
-				getEntity().setStart(getLocalDateTime(startDate));
-			} else {
+			if (getEntity().getStart() == null) {
 				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
-				startDate = "2015-01-01";
 			}
-
-			if (StringUtils.isNotBlank(endDate)
-					&& getLocalDateTime(endDate) != null) {
-				getEntity().setEnd(getLocalDateTime(endDate));
-			} else {
-				getEntity().setEnd(null);
-				endDate = "";
-			}
-
-			DataSet<BeLogs> ds = initDataSet();
 
 			if (Long.parseLong(cusSerNo) > 0) {
 				getEntity().setCustomer(
@@ -249,14 +196,9 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 				getEntity().setCustomer(customer);
 			}
 
-			Pager pager = ds.getPager();
-			pager.setOffset(0);
-			pager.setRecordPerPage(Integer.MAX_VALUE);
-			ds.setPager(pager);
-
+			DataSet<BeLogs> ds = initDataSet();
+			ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
 			ds = beLogsService.getByRestrictions(ds);
-
-			List<BeLogs> results = ds.getResults();
 
 			getEntity().setReportFile("beLogs.xlsx");
 
@@ -272,12 +214,13 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 					"客戶名稱", "狀態", "次數" });
 
 			int i = 0;
-			while (i < results.size()) {
-				beLogs = results.get(i);
+			while (i < ds.getResults().size()) {
+				beLogs = ds.getResults().get(i);
 				empinfo.put(
 						String.valueOf(i + 2),
 						new Object[] {
-								startDate + "~" + endDate,
+								getDateString(getEntity().getStart()) + "~"
+										+ getDateString(getEntity().getEnd()),
 								String.valueOf(beLogs.getRank()),
 								beLogs.getAccountNumber().getUserId(),
 								beLogs.getAccountNumber().getUserName(),
@@ -308,8 +251,6 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 			setInputStream(new ByteArrayInputStream(boas.toByteArray()));
 			return XLSX;
 		} else {
-			getRequest().setAttribute("startDate", startDate);
-			getRequest().setAttribute("endDate", endDate);
 			getRequest().setAttribute("customer", customerName);
 			getRequest().setAttribute("cusSerNo", cusSerNo);
 			return LIST;
@@ -317,10 +258,8 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 	}
 
-	public LocalDateTime getLocalDateTime(String date) {
-		LocalDateTime dateTime = (LocalDateTime) converter.convertFromString(
-				null, new String[] { date }, LocalDateTime.class);
-		return dateTime;
+	public String getDateString(LocalDateTime dateTime) {
+		return converter.convertToString(null, dateTime);
 	}
 
 	/**

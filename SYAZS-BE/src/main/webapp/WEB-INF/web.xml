@@ -27,6 +27,35 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<filter>
+		<filter-name>characterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>characterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<display-name>ClickjackFilter</display-name>
+		<filter-name>ClickjackFilter</filter-name>
+		<filter-class>org.owasp.esapi.filters.ClickjackFilter</filter-class>
+		<init-param>
+			<param-name>mode</param-name>
+			<param-value>SAMEORIGIN</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>ClickjackFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
 		<display-name>ClassNotFoundFilter</display-name>
 		<filter-name>ClassNotFoundFilter</filter-name>
 		<filter-class>com.shouyang.syazs.core.filter.ClassNotFoundFilter</filter-class>
@@ -41,7 +70,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>ClassNotFoundFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>*.action</url-pattern>
 	</filter-mapping>
 	<filter>
 		<display-name>ParameterFilter</display-name>
@@ -50,7 +79,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>ParameterFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>*.action</url-pattern>
 	</filter-mapping>
 	<filter>
 		<filter-name>struts2</filter-name>
@@ -72,35 +101,6 @@
 		<filter-name>struts2</filter-name>
 		<url-pattern>*.jsp</url-pattern>
 		<url-pattern>*.action</url-pattern>
-	</filter-mapping>
-	<filter>
-		<filter-name>characterEncodingFilter</filter-name>
-		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<init-param>
-			<param-name>forceEncoding</param-name>
-			<param-value>true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>characterEncodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	<filter>
-		<display-name>ClickjackFilter</display-name>
-		<filter-name>ClickjackFilter</filter-name>
-		<filter-class>com.shouyang.syazs.core.filter.ClickjackFilter</filter-class>
-		<init-param>
-			<param-name>mode</param-name>
-			<param-value>SAMEORIGIN</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>ClickjackFilter</filter-name>
-		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<session-config>
 		<session-timeout>1440</session-timeout>

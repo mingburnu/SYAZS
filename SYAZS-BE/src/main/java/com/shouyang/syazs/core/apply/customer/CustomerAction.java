@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -43,7 +45,6 @@ import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
 import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.apply.ipRange.IpRangeService;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 @Controller
@@ -125,6 +126,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	@Override
 	protected void validateDelete() throws Exception {
 		if (getLoginUser().getRole().equals(Role.系統管理員)) {
+
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(checkItem));
+			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			if (ArrayUtils.isEmpty(checkItem)) {
 				errorMessages.add("請選擇一筆或一筆以上的資料");
 			} else {
@@ -175,11 +181,14 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			getRequest().setAttribute("option", "entity.name");
 		}
 
-		DataSet<Customer> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
-		ds = customerService.getByRestrictions(ds);
+		DataSet<Customer> ds = customerService.getByRestrictions(initDataSet());
+
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			ds = customerService.getByRestrictions(ds);
+		}
 
 		setDs(ds);
 		return LIST;
@@ -199,7 +208,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
-			setEntity(getEntity());
 			return ADD;
 		}
 	}
@@ -223,7 +231,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 								.getName());
 			}
 
-			setEntity(getEntity());
 			return EDIT;
 		}
 	}
@@ -250,22 +257,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				i++;
 			}
 
-			DataSet<Customer> ds = initDataSet();
-			ds.setPager(Pager.getChangedPager(
-					getRequest().getParameter("recordPerPage"), getRequest()
-							.getParameter("recordPoint"), ds.getPager()));
-			ds = customerService.getByRestrictions(ds);
-			setDs(ds);
-
+			list();
 			return LIST;
 		} else {
-			DataSet<Customer> ds = initDataSet();
-			ds.setPager(Pager.getChangedPager(
-					getRequest().getParameter("recordPerPage"), getRequest()
-							.getParameter("recordPoint"), ds.getPager()));
-			ds = customerService.getByRestrictions(ds);
-
-			setDs(ds);
+			list();
 			return LIST;
 		}
 	}
@@ -283,6 +278,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	public String ajax() throws Exception {
 		getRequest().setAttribute("customerUnits",
 				customerService.getAllCustomers());
+
 		return AJAX;
 	}
 
@@ -485,26 +481,21 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			List<Customer> excelData = new ArrayList<Customer>(originalData);
 
 			DataSet<Customer> ds = initDataSet();
-			List<Customer> results = ds.getResults();
-
 			ds.getPager().setTotalRecord((long) excelData.size());
-			ds.getPager().setRecordPoint(0);
 
 			if (excelData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
 				while (i < excelData.size()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			}
-
-			ds.setResults(results);
 
 			getSession().put("cellNames", cellNames);
 			getSession().put("importList", excelData);
@@ -527,26 +518,36 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		clearCheckedItem();
 
 		DataSet<Customer> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
 		ds.getPager().setTotalRecord((long) importList.size());
 
-		int first = ds.getPager().getRecordPerPage()
-				* (ds.getPager().getCurrentPage() - 1);
+		int first = ds.getPager().getOffset();
 		int last = first + ds.getPager().getRecordPerPage();
-
-		List<Customer> results = new ArrayList<Customer>();
 
 		int i = 0;
 		while (i < importList.size()) {
 			if (i >= first && i < last) {
-				results.add((Customer) importList.get(i));
+				ds.getResults().add((Customer) importList.get(i));
 			}
 			i++;
 		}
 
-		ds.setResults(results);
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
+
+			int j = 0;
+			while (j < importList.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add((Customer) importList.get(j));
+				}
+				j++;
+			}
+
+		}
+
 		setDs(ds);
 		return QUEUE;
 	}
@@ -589,6 +590,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		Set<String> deRepeatSet = new HashSet<String>(
+				Arrays.asList(importSerNos));
+		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
 			int i = 0;

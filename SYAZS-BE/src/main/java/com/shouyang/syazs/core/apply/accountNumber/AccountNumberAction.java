@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -42,7 +43,6 @@ import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 /**
@@ -80,9 +80,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Autowired
 	private CustomerService customerService;
 
-	@Autowired
-	private DataSet<Customer> dsCustomer;
-
 	private String[] importSerNos;
 
 	@Override
@@ -119,7 +116,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				isLegalStatus = true;
 			}
 		}
-		
+
 		if (isLegalRole) {
 			getEntity()
 					.setRole(Role.valueOf(getRequest().getParameter("role")));
@@ -159,20 +156,15 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			errorMessages.add("用戶姓名不得空白");
 		}
 
-		if (StringUtils.isBlank(getRequest().getParameter("cusSerNo"))
-				|| !NumberUtils.isDigits(getRequest().getParameter("cusSerNo"))
-				|| Long.parseLong(getRequest().getParameter("cusSerNo")) < 1
-				|| customerService.getBySerNo(Long.parseLong(getRequest()
-						.getParameter("cusSerNo"))) == null) {
+		if (getEntity().getCustomer().getSerNo() == null
+				|| getEntity().getCustomer().getSerNo() <= 0
+				|| customerService.getBySerNo(getEntity().getCustomer()
+						.getSerNo()) == null) {
 			errorMessages.add("用戶名稱必選");
 		} else {
-			getEntity().setCustomer(
-					customerService.getBySerNo(Long.parseLong(getRequest()
-							.getParameter("cusSerNo"))));
-
 			if (getLoginUser().getRole().equals(Role.管理員)) {
-				if (getLoginUser().getCustomer().getSerNo() != Long
-						.parseLong(getRequest().getParameter("cusSerNo"))) {
+				if (getLoginUser().getCustomer().getSerNo() != getEntity()
+						.getCustomer().getSerNo()) {
 					errorMessages.add("用戶名稱不正確");
 				}
 			}
@@ -191,9 +183,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
+			List<Status> statusList = new ArrayList<Status>(
+					Arrays.asList(Status.values()));
+			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
 					.values()));
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
 			List<Role> tempList = new ArrayList<Role>();
 			roleList.remove(roleList.size() - 1);
 
@@ -204,13 +197,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			}
 
 			roleList.removeAll(tempList);
-			
+
 			if (!roleList.contains(accountNumberService.getBySerNo(
 					getEntity().getSerNo()).getRole())) {
 				errorMessages.add("權限不足");
 				getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
 			}
-			
+
 			if (errorMessages.size() == 0) {
 				boolean isLegalRole = false;
 				for (int i = 0; i < roleList.size(); i++) {
@@ -252,20 +245,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					errorMessages.add("用戶姓名不得空白");
 				}
 
-				if (StringUtils.isBlank(getRequest().getParameter("cusSerNo"))
-						|| !NumberUtils.isDigits(getRequest().getParameter(
-								"cusSerNo"))
-						|| Long.parseLong(getRequest().getParameter("cusSerNo")) < 1
-						|| customerService.getBySerNo(Long
-								.parseLong(getRequest()
-										.getParameter("cusSerNo"))) == null) {
+				if (getEntity().getCustomer().getSerNo() == null
+						|| getEntity().getCustomer().getSerNo() <= 0
+						|| customerService.getBySerNo(getEntity().getCustomer()
+								.getSerNo()) == null) {
 					errorMessages.add("用戶名稱必選");
 				} else {
-					getEntity().setCustomer(
-							customerService.getBySerNo(Long
-									.parseLong(getRequest().getParameter(
-											"cusSerNo"))));
-
 					if (getLoginUser().getRole().equals(Role.管理員)) {
 						if (getLoginUser().getCustomer().getSerNo() != getEntity()
 								.getCustomer().getSerNo()) {
@@ -309,21 +294,23 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				.values()));
 		getRequest().setAttribute("statusList", statusList);
 
+		DataSet<AccountNumber> ds = initDataSet();
 		if (getLoginUser().getRole().equals(Role.管理員)) {
-			customer.setSerNo(getLoginUser().getCustomer().getSerNo());
-
+			ds.getDatas().put(getLoginUser().getCustomer().getName(),
+					getLoginUser().getCustomer().getSerNo());
+		} else {
+			ds.setDatas(customerService.getCusDatas());
 		}
 
-		dsCustomer.setEntity(customer);
-		dsCustomer = customerService.getByRestrictions(dsCustomer);
-
+		setDs(ds);
 		return ADD;
 	}
 
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
+			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
+					.values()));
 			List<Role> tempList = new ArrayList<Role>();
 			roleList.remove(roleList.size() - 1);
 
@@ -337,18 +324,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 			getRequest().setAttribute("roleList", roleList);
 
-			List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
-					.values()));
+			List<Status> statusList = new ArrayList<Status>(
+					Arrays.asList(Status.values()));
 			getRequest().setAttribute("statusList", statusList);
 
-			if (getLoginUser().getRole().equals(Role.管理員)) {
-				customer.setSerNo(getLoginUser().getCustomer().getSerNo());
-
-			}
-
-			dsCustomer.setEntity(customer);
-			dsCustomer = customerService.getByRestrictions(dsCustomer);
-			
 			boolean isLegalRole = false;
 
 			if (roleList.contains(accountNumber.getRole())) {
@@ -375,17 +354,29 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 
+		DataSet<AccountNumber> ds = initDataSet();
+		if (getLoginUser().getRole().equals(Role.管理員)) {
+			ds.getDatas().put(getLoginUser().getCustomer().getName(),
+					getLoginUser().getCustomer().getSerNo());
+		} else {
+			ds.setDatas(customerService.getCusDatas());
+		}
+
+		setDs(ds);
 		return EDIT;
 	}
 
 	@Override
 	public String list() throws Exception {
-		DataSet<AccountNumber> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
+		DataSet<AccountNumber> ds = accountNumberService.getByRestrictions(
+				initDataSet(), getLoginUser());
 
-		ds = accountNumberService.getByRestrictions(ds, getLoginUser());
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			ds = accountNumberService.getByRestrictions(ds, getLoginUser());
+		}
 
 		setDs(ds);
 		return LIST;
@@ -412,25 +403,24 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			getEntity().setUserId(getEntity().getUserId());
-			getEntity().setUserName(getEntity().getUserName());
 			accountNumber = accountNumberService.save(getEntity(),
 					getLoginUser());
-			accountNumber.setCustomer(accountNumber.getCustomer());
 			setEntity(accountNumber);
 			return VIEW;
 		} else {
 			getRequest().setAttribute("roleList", roleList);
 			getRequest().setAttribute("statusList", statusList);
 			setEntity(getEntity());
-			if (getLoginUser().getRole().equals(Role.管理員)) {
-				customer.setSerNo(getLoginUser().getCustomer().getSerNo());
 
+			DataSet<AccountNumber> ds = initDataSet();
+			if (getLoginUser().getRole().equals(Role.管理員)) {
+				ds.getDatas().put(getLoginUser().getCustomer().getName(),
+						getLoginUser().getCustomer().getSerNo());
+			} else {
+				ds.setDatas(customerService.getCusDatas());
 			}
 
-			dsCustomer.setEntity(customer);
-			dsCustomer = customerService.getByRestrictions(dsCustomer);
-			setEntity(getEntity());
+			setDs(ds);
 			return ADD;
 		}
 	}
@@ -479,13 +469,15 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 								.getUserId());
 			}
 
+			DataSet<AccountNumber> ds = initDataSet();
 			if (getLoginUser().getRole().equals(Role.管理員)) {
-				customer.setSerNo(getLoginUser().getCustomer().getSerNo());
-
+				ds.getDatas().put(getLoginUser().getCustomer().getName(),
+						getLoginUser().getCustomer().getSerNo());
+			} else {
+				ds.setDatas(customerService.getCusDatas());
 			}
 
-			dsCustomer.setEntity(customer);
-			dsCustomer = customerService.getByRestrictions(dsCustomer);
+			setDs(ds);
 			return EDIT;
 		}
 	}
@@ -497,6 +489,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String deauthorize() throws Exception {
+		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
+		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 		if (ArrayUtils.isEmpty(checkItem)) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
@@ -554,29 +549,19 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				j++;
 			}
 
-			DataSet<AccountNumber> ds = initDataSet();
-			ds.setPager(Pager.getChangedPager(
-					getRequest().getParameter("recordPerPage"), getRequest()
-							.getParameter("recordPoint"), ds.getPager()));
-
-			ds = accountNumberService.getByRestrictions(ds, getLoginUser());
-
-			setDs(ds);
+			list();
 			addActionMessage("更新成功");
 			return LIST;
 		} else {
-			DataSet<AccountNumber> ds = accountNumberService.getByRestrictions(
-					initDataSet(), getLoginUser());
-			List<AccountNumber> results = ds.getResults();
-
-			ds.setResults(results);
-
-			setDs(ds);
+			list();
 			return LIST;
 		}
 	}
 
 	public String authorize() throws Exception {
+		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
+		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 		if (ArrayUtils.isEmpty(checkItem)) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
@@ -634,24 +619,11 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				j++;
 			}
 
-			DataSet<AccountNumber> ds = initDataSet();
-			ds.setPager(Pager.getChangedPager(
-					getRequest().getParameter("recordPerPage"), getRequest()
-							.getParameter("recordPoint"), ds.getPager()));
-
-			ds = accountNumberService.getByRestrictions(ds, getLoginUser());
-
-			setDs(ds);
+			list();
 			addActionMessage("更新成功");
 			return LIST;
 		} else {
-			DataSet<AccountNumber> ds = accountNumberService.getByRestrictions(
-					initDataSet(), getLoginUser());
-			List<AccountNumber> results = ds.getResults();
-
-			ds.setResults(results);
-
-			setDs(ds);
+			list();
 			return LIST;
 		}
 	}
@@ -952,21 +924,18 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					originalData);
 
 			DataSet<AccountNumber> ds = initDataSet();
-			List<AccountNumber> results = ds.getResults();
-
 			ds.getPager().setTotalRecord((long) excelData.size());
-			ds.getPager().setRecordPoint(0);
 
 			if (excelData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
 				while (i < excelData.size()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					results.add(excelData.get(i));
+					ds.getResults().add(excelData.get(i));
 					i++;
 				}
 			}
@@ -992,26 +961,36 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		clearCheckedItem();
 
 		DataSet<AccountNumber> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
 		ds.getPager().setTotalRecord((long) importList.size());
 
-		int first = ds.getPager().getRecordPerPage()
-				* (ds.getPager().getCurrentPage() - 1);
+		int first = ds.getPager().getOffset();
 		int last = first + ds.getPager().getRecordPerPage();
-
-		List<AccountNumber> results = new ArrayList<AccountNumber>();
 
 		int i = 0;
 		while (i < importList.size()) {
 			if (i >= first && i < last) {
-				results.add((AccountNumber) importList.get(i));
+				ds.getResults().add((AccountNumber) importList.get(i));
 			}
 			i++;
 		}
 
-		ds.setResults(results);
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
+
+			int j = 0;
+			while (j < importList.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add((AccountNumber) importList.get(j));
+				}
+				j++;
+			}
+
+		}
+
 		setDs(ds);
 		return QUEUE;
 	}
@@ -1055,6 +1034,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		Set<String> deRepeatSet = new HashSet<String>(
+				Arrays.asList(importSerNos));
+		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
 			int i = 0;
@@ -1194,21 +1176,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
 		return Pattern.compile(emailPattern).matcher(email).matches();
-	}
-
-	/**
-	 * @return the dsCustomer
-	 */
-	public DataSet<Customer> getDsCustomer() {
-		return dsCustomer;
-	}
-
-	/**
-	 * @param dsCustomer
-	 *            the dsCustomer to set
-	 */
-	public void setDsCustomer(DataSet<Customer> dsCustomer) {
-		this.dsCustomer = dsCustomer;
 	}
 
 	/**

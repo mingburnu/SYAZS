@@ -8,29 +8,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
-	$(document).ready(
-			function() {
-				$("select#apply_accountNumber_save_cusSerNo").children().each(
-						function() {
-							if ($(this).val() == "${entity.customer.serNo}") {
-								this.selected = true;
-							}
-						});
+	$(document).ready(function() {
+		$("select#apply_accountNumber_save_role").children().each(function() {
+			if ($(this).text() == "${entity.role.role}") {
+				this.selected = true;
+			}
+		});
 
-				$("select#apply_accountNumber_save_role").children().each(
-						function() {
-							if ($(this).text() == "${entity.role.role}") {
-								this.selected = true;
-							}
-						});
-
-				$("select#apply_accountNumber_save_status").children().each(
-						function() {
-							if ($(this).text() == "${entity.status.status}") {
-								this.selected = true;
-							}
-						});
-			});
+		$("select#apply_accountNumber_save_status").children().each(function() {
+			if ($(this).text() == "${entity.status.status}") {
+				this.selected = true;
+			}
+		});
+	});
 
 	//重設所有欄位(清空)
 	function resetData() {
@@ -65,13 +55,13 @@
 				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
 				<td><c:choose>
 						<c:when test="${login.role.role == '管理員' }">
-							<s:select name="cusSerNo" cssClass="input_text"
-								list="dsCustomer.results" listKey="serNo" listValue="name" />
+							<s:select name="entity.customer.serNo" cssClass="input_text"
+								list="ds.datas" listKey="value" listValue="key" />
 						</c:when>
 						<c:otherwise>
-							<s:select headerValue="--用戶名稱--" headerKey="0" name="cusSerNo"
-								cssClass="input_text" list="dsCustomer.results" listKey="serNo"
-								listValue="name" />
+							<s:select headerValue="--用戶名稱--" headerKey="0"
+								name="entity.customer.serNo" cssClass="input_text"
+								list="ds.datas" listKey="value" listValue="key" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>

@@ -8,18 +8,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
-<c:choose>
-	<c:when test="${empty isbn}">
-		<c:set var="isbn">
-			<c:out value="${entity.isbn }"></c:out>
-		</c:set>
-	</c:when>
-	<c:otherwise>
-		<c:set var="isbn">
-			<c:out value="${isbn }"></c:out>
-		</c:set>
-	</c:otherwise>
-</c:choose>
+<c:if test="${not empty isbn }">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("input#apply_ebook_save_entity_isbn").val("${isbn}");
+		});
+	</script>
+</c:if>
 <script type="text/javascript">
 	$(document)
 			.ready(
@@ -152,7 +147,7 @@ input#customer_name {
 			</tr>
 			<tr>
 				<th width="130">ISBN<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="isbn" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.isbn" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>

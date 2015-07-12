@@ -83,9 +83,6 @@ public class AccountNumber extends GenericEntityFull {
 	@Transient
 	private String existStatus;
 
-	@Transient
-	private String customerName;
-
 	/**
 	 * @return the userId
 	 */
@@ -133,7 +130,8 @@ public class AccountNumber extends GenericEntityFull {
 	}
 
 	/**
-	 * @param email the email to set
+	 * @param email
+	 *            the email to set
 	 */
 	public void setEmail(String email) {
 		this.email = email;
@@ -197,21 +195,6 @@ public class AccountNumber extends GenericEntityFull {
 	 */
 	public void setExistStatus(String existStatus) {
 		this.existStatus = existStatus;
-	}
-
-	/**
-	 * @return the customerName
-	 */
-	public String getCustomerName() {
-		return customerName;
-	}
-
-	/**
-	 * @param customerName
-	 *            the customerName to set
-	 */
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
 	}
 
 	public AccountNumber() {

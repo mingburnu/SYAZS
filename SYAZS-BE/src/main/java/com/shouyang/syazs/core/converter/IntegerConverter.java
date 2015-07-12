@@ -1,26 +1,24 @@
 package com.shouyang.syazs.core.converter;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NumberConverter extends TypeConverter {
+public class IntegerConverter extends TypeConverter {
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object convertFromString(Map context, String[] values, Class toClass) {
-		Number number = null;
+		Integer number = null;
 
-		if (NumberUtils.isNumber(values[0])) {
-			try {
-				number = NumberFormat.getInstance().parse(values[0]);
-			} catch (ParseException e) {
-				e.printStackTrace();
+		try {
+			if (NumberUtils.isNumber(values[0])) {
+				number = Integer.parseInt(values[0]);
 			}
+		} catch (NumberFormatException e) {
+			return null;
 		}
 
 		return number;
@@ -29,7 +27,12 @@ public class NumberConverter extends TypeConverter {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public String convertToString(Map context, Object o) {
-		return o.toString();
+
+		if (o != null) {
+			return o.toString();
+		} else {
+			return "";
+		}
 	}
 
 }

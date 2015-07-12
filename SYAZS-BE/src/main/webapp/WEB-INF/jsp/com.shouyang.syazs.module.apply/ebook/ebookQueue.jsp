@@ -15,42 +15,38 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-//IE press Enter GoPage
-$(document).ready(function() {
-	$("input#listForm_currentPageHeader:(1)").keyup(function(e){
-		if(e.keyCode == 13){gotoPage_detail($(this).val());}
+	//IE press Enter GoPage
+	$(document).ready(function() {
+		$("input#listForm_currentPageHeader:(1)").keyup(function(e) {
+			if (e.keyCode == 13) {
+				gotoPage_detail($(this).val());
+			}
+		});
 	});
-});
 
 	function gotoPage_detail(page) {
 		var isNum = /^\d+$/.test(page);
 		var totalPage = "${totalPage}";
-		var recordPerPage = "${ds.pager.recordPerPage}";
-		var offset = parseInt(recordPerPage) * (parseInt(page) - 1);
-		if(!isNum){
-			page="${ds.pager.currentPage}";
-			offset=parseInt(recordPerPage)*(parseInt(page)-1);
+		if (!isNum) {
+			page = "${ds.pager.currentPage}";
 		} else {
-			if (parseInt(page) < 1){
-				page=1;
-				offset=parseInt(recordPerPage)*(parseInt(page)-1);
-				}		
-			
-			if (parseInt(page) > parseInt(totalPage)){
-				page=totalPage;
-				offset=parseInt(recordPerPage)*(parseInt(page)-1);
-				} 
+			if (parseInt(page) < 1) {
+				page = 1;
 			}
+
+			if (parseInt(page) > parseInt(totalPage)) {
+				page = totalPage;
+			}
+		}
 		goDetail_Main('<c:url value = '/'/>crud/apply.ebook.paginate.action',
-				'#apply_ebook_importData', '&pager.offset=' + offset
-						+ '&pager.currentPage=' + page);
+				'#apply_ebook_importData', '&pager.currentPage=' + page);
 	}
 
 	//變更顯示筆數
-	function changePageSize_detail(recordPerPage, recordPoint) {
+	function changePageSize_detail() {
 		goDetail_Main('<c:url value = '/'/>crud/apply.ebook.paginate.action',
-				'#apply_ebook_importData', '&recordPerPage=' + recordPerPage
-						+ '&recordPoint=' + recordPoint);
+				'#apply_ebook_importData', '&pager.recordPoint='
+						+ '${ds.pager.recordPoint }');
 	}
 
 	function allRow(action) {
@@ -83,30 +79,26 @@ $(document).ready(function() {
 	}
 
 	function getCheckedItem(index) {
-		$
-				.ajax({
-					type : "POST",
-					url : "<c:url value = '/'/>crud/apply.ebook.getCheckedItem.action",
-					dataType : "html",
-					data : "importSerNos=" + index,
-					success : function(message) {
+		$.ajax({
+			type : "POST",
+			url : "<c:url value = '/'/>crud/apply.ebook.getCheckedItem.action",
+			dataType : "html",
+			data : "importSerNos=" + index,
+			success : function(message) {
 
-					}
-				});
+			}
+		});
 	}
 
 	function checkData() {
 		//檢查資料是否已被勾選
 		//進行動作
 		if ($("input.checkbox.queue:checked").length > 0) {
-			var recordPoint = "${ds.pager.recordPoint}";
-			var recordPerPage = "${ds.pager.recordPerPage}";
 
 			goDetail_Main(
 					'<c:url value = '/'/>crud/apply.ebook.importData.action',
-					'#apply_ebook_importData', '&recordPerPage='
-							+ recordPerPage + '&recordPoint=' + recordPoint);
-
+					'#apply_ebook_importData', '&pager.currentPage='
+							+ '${ds.pager.currentPage}');
 		} else {
 			goAlert("訊息", "請選擇一筆或一筆以上的資料");
 		}
@@ -180,8 +172,8 @@ $(document).ready(function() {
 										value="${ds.pager.recordPerPage}" />
 									<jsp:param name="detail" value="1" />
 								</jsp:include></td>
-							<td>每頁顯示 <select name="recordPerPage" id="listForm_pageSize"
-								onchange="changePageSize_detail(this.value,${ds.pager.recordPoint })">
+							<td>每頁顯示 <select id="listForm_pageSize"
+								name="pager.recordPerPage" onchange="changePageSize_detail()">
 									<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 									<option value="5">5</option>
 									<option value="10">10</option>

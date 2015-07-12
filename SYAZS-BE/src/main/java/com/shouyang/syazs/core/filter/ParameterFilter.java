@@ -53,8 +53,14 @@ public class ParameterFilter implements Filter {
 				while (i < parameters.length) {
 					if (StringUtils.isNotBlank(parameters[i])) {
 						if (!parameters[i].startsWith("entity=")
-								&& !parameters[i].equals("entity")) {
-
+								&& !parameters[i].equals("entity")
+								&& !parameters[i].startsWith("pager=")
+								&& !parameters[i].equals("pager")
+								&& !parameters[i].startsWith("ds=")
+								&& !parameters[i].equals("ds")
+								&& !parameters[i].startsWith("file=")
+								&& !parameters[i].equals("file")
+								&& !parameters[i].startsWith("ds.")) {
 							parameterJoin.append(parameters[i]).append("&");
 							count++;
 						}
@@ -69,7 +75,6 @@ public class ParameterFilter implements Filter {
 							+ request.getServletPath() + "?"
 							+ parameterJoin.toString());
 				}
-
 			}
 		}
 

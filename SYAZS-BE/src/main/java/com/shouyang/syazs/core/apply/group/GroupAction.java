@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionGroup;
 
 @Controller
@@ -215,6 +214,12 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 	}
 
 	@Override
+	public String add() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String edit() throws Exception {
 		if (getEntity() != null
 				&& getEntity().getCustomer() != null
@@ -277,12 +282,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 	@Override
 	public String list() throws Exception {
-		DataSet<Group> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
+		DataSet<Group> ds = groupService.getByRestrictions(initDataSet());
 
-		ds = groupService.getByRestrictions(ds);
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			ds = groupService.getByRestrictions(ds);
+		}
 
 		setDs(ds);
 		return LIST;
@@ -295,7 +302,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 		if (!hasActionErrors()) {
 			if (getEntity().getFirstLevelOption().equals("new")) {
-				
+
 			}
 
 			return EDIT;

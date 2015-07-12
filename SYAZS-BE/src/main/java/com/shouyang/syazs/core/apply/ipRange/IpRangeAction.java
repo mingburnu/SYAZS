@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 @Controller
@@ -187,11 +186,14 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 
 	@Override
 	public String list() throws Exception {
-		DataSet<IpRange> ds = initDataSet();
-		ds.setPager(Pager.getChangedPager(
-				getRequest().getParameter("recordPerPage"), getRequest()
-						.getParameter("recordPoint"), ds.getPager()));
-		ds = ipRangeService.getByRestrictions(ds);
+		DataSet<IpRange> ds = ipRangeService.getByRestrictions(initDataSet());
+
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) (ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage() + 1));
+			ds = ipRangeService.getByRestrictions(ds);
+		}
 
 		setDs(ds);
 		return LIST;
@@ -235,14 +237,10 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 
 		if (!hasActionErrors()) {
 			ipRangeService.deleteBySerNo(getEntity().getSerNo());
-			DataSet<IpRange> ds = ipRangeService
-					.getByRestrictions(initDataSet());
-			setDs(ds);
+			list();
 			return LIST;
 		} else {
-			DataSet<IpRange> ds = ipRangeService
-					.getByRestrictions(initDataSet());
-			setDs(ds);
+			list();
 			return LIST;
 		}
 	}

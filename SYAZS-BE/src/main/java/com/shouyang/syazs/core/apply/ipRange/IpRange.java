@@ -32,15 +32,15 @@ public class IpRange extends GenericEntityFull {
 	private Customer customer;
 
 	// IP開始
-	@Column(name="ipRangeStart")
+	@Column(name = "ipRangeStart")
 	private String ipRangeStart;
 
 	// IP結束
-	@Column(name="ipRangeEnd")
+	@Column(name = "ipRangeEnd")
 	private String ipRangeEnd;
-	
+
 	@Transient
-	private int listNo;
+	private Integer listNo;
 
 	/**
 	 * @return the customer
@@ -50,7 +50,8 @@ public class IpRange extends GenericEntityFull {
 	}
 
 	/**
-	 * @param customer the customer to set
+	 * @param customer
+	 *            the customer to set
 	 */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
@@ -89,14 +90,15 @@ public class IpRange extends GenericEntityFull {
 	/**
 	 * @return the listNo
 	 */
-	public int getListNo() {
+	public Integer getListNo() {
 		return listNo;
 	}
 
 	/**
-	 * @param listNo the listNo to set
+	 * @param listNo
+	 *            the listNo to set
 	 */
-	public void setListNo(int listNo) {
+	public void setListNo(Integer listNo) {
 		this.listNo = listNo;
 	}
 

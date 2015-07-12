@@ -1,6 +1,8 @@
 package com.shouyang.syazs.core.apply.customer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
@@ -73,17 +75,13 @@ public class CustomerService extends GenericServiceFull<Customer> {
 		}
 	}
 
-	public List<Customer> getCustomersByName(String name) throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
-		restrictions.likeIgnoreCase("name", name.trim(), MatchMode.ANYWHERE);
-
-		return dao.findByRestrictions(restrictions);
-	}
-
 	public List<Customer> getAllCustomers() throws Exception {
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
-
 		return dao.findByRestrictions(restrictions);
+	}
+	
+	public Map<String, Object> getCusDatas() {
+		return dao.getMap(new HashMap<String,Object>());
 	}
 
 	public boolean deleteOwnerObj(long cusSerNo) {
