@@ -49,6 +49,8 @@ import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
+import com.shouyang.syazs.module.converter.CategoryConverter;
+import com.shouyang.syazs.module.converter.TypeConverter;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -93,19 +95,20 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	@Autowired
 	private CustomerService customerService;
 
+	@Autowired
+	private CategoryConverter categoryConverter;
+
+	@Autowired
+	private TypeConverter typeConverter;
+
 	private String[] importSerNos;
+
+	private List<Category> categoryList;
+
+	private List<Type> typeList;
 
 	@Override
 	protected void validateSave() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
-		cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-		
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
 			errorMessages.add("英文刊名不得空白");
 		}
@@ -116,7 +119,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			if (!isIssn(getEntity().getIssn())) {
 				errorMessages.add("ISSN不正確");
 			} else {
-				if (journalService.getJouSerNoByIssn(getEntity().getIssn()) != 0) {
+				if (journalService.getJouSerNoByIssn(getEntity().getIssn()
+						.replace("-", "").trim()) != 0) {
 					errorMessages.add("ISSN不可重複");
 				}
 			}
@@ -131,6 +135,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		if (ArrayUtils.isEmpty(cusSerNo)) {
 			errorMessages.add("至少選擇一筆以上購買單位");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(cusSerNo));
+			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < cusSerNo.length) {
 				if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
@@ -143,36 +151,20 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 		}
 
-		boolean isLegalCategory = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rCategory") != null
-					&& getRequest().getParameter("rCategory").equals(
-							categoryList.get(i).getCategory())) {
-				isLegalCategory = true;
-			}
+		if (getEntity().getResourcesBuyers() == null) {
+			getEntity().setResourcesBuyers(resourcesBuyers);
 		}
 
-		if (isLegalCategory) {
-			getRequest().setAttribute("rCategory",
-					getRequest().getParameter("rCategory"));
-		} else {
+		if (getEntity().getResourcesBuyers().getCategory() == null
+				|| getEntity().getResourcesBuyers().getCategory()
+						.equals(Category.不明)) {
 			errorMessages.add("資源類型錯誤");
+			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
-		boolean isLegalType = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rType") != null
-					&& getRequest().getParameter("rType").equals(
-							typeList.get(i).getType())) {
-				isLegalType = true;
-			}
-		}
-
-		if (isLegalType) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rType"));
-		} else {
+		if (getEntity().getResourcesBuyers().getType() == null) {
 			errorMessages.add("資源種類錯誤");
+			getEntity().getResourcesBuyers().setType(Type.期刊);
 		}
 	}
 
@@ -181,16 +173,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
-			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-			
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
-			categoryList.remove(categoryList.size() - 1);
-
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
-
 			if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
 				errorMessages.add("英文刊名不得空白");
 			}
@@ -219,6 +201,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			if (ArrayUtils.isEmpty(cusSerNo)) {
 				errorMessages.add("至少選擇一筆以上購買單位");
 			} else {
+				Set<String> deRepeatSet = new HashSet<String>(
+						Arrays.asList(cusSerNo));
+				cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 				int i = 0;
 				while (i < cusSerNo.length) {
 					if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
@@ -231,48 +217,33 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				}
 			}
 
-			boolean isLegalCategory = false;
-			for (int i = 0; i < categoryList.size(); i++) {
-				if (getRequest().getParameter("rCategory") != null
-						&& getRequest().getParameter("rCategory").equals(
-								categoryList.get(i).getCategory())) {
-					isLegalCategory = true;
-				}
+			if (getEntity().getResourcesBuyers() == null) {
+				getEntity().setResourcesBuyers(resourcesBuyers);
 			}
 
-			if (isLegalCategory) {
-				getRequest().setAttribute("rType",
-						getRequest().getParameter("rCategory"));
-			} else {
+			if (getEntity().getResourcesBuyers().getCategory() == null
+					|| getEntity().getResourcesBuyers().getCategory()
+							.equals(Category.不明)) {
 				errorMessages.add("資源類型錯誤");
+				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
-			boolean isLegalType = false;
-			for (int i = 0; i < categoryList.size(); i++) {
-				if (getRequest().getParameter("rType") != null
-						&& getRequest().getParameter("rType").equals(
-								typeList.get(i).getType())) {
-					isLegalType = true;
-				}
-			}
-
-			if (isLegalType) {
-				getRequest().setAttribute("rType",
-						getRequest().getParameter("rType"));
-			} else {
+			if (getEntity().getResourcesBuyers().getType() == null) {
 				errorMessages.add("資源種類錯誤");
+				getEntity().getResourcesBuyers().setType(Type.期刊);
 			}
 		}
 	}
 
 	@Override
 	protected void validateDelete() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
-		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-
 		if (ArrayUtils.isEmpty(checkItem)) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(checkItem));
+			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < checkItem.length) {
 				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
@@ -288,19 +259,19 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	public String add() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
+		categoryList = new ArrayList<Category>(Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
-		getRequest().setAttribute("categoryList", categoryList);
 
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-		getRequest().setAttribute("typeList", typeList);
+		typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
 		List<Customer> customers = new ArrayList<Customer>();
 		journal.setCustomers(customers);
+		journal.setResourcesBuyers(resourcesBuyers);
+		journal.getResourcesBuyers().setCategory(Category.未註明);
+		journal.getResourcesBuyers().setType(Type.期刊);
 		setEntity(journal);
 
 		return ADD;
@@ -309,14 +280,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
-			categoryList.remove(categoryList.size() - 1);
-			getRequest().setAttribute("categoryList", categoryList);
-
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
-			getRequest().setAttribute("typeList", typeList);
+			categoryList.remove(categoryList.size() - 1);
+
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -336,12 +304,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 
 			resourcesBuyers = resourcesUnion.getResourcesBuyers();
-			getRequest().setAttribute("rCategory",
-					resourcesBuyers.getrCategory().getCategory());
-			getRequest().setAttribute("rType",
-					resourcesBuyers.getrType().getType());
+			journal.setResourcesBuyers(resourcesBuyers);
 			journal.setCustomers(customers);
-
 			setEntity(journal);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -351,23 +315,22 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	public String list() throws Exception {
-		if (StringUtils.isNotEmpty(getRequest().getParameter("option"))) {
-			if (getRequest().getParameter("option").equals(
-					"entity.chineseTitle")
-					|| getRequest().getParameter("option").equals(
-							"entity.englishTitle")
-					|| getRequest().getParameter("option")
-							.equals("entity.issn")) {
-				getRequest().setAttribute("option",
-						getRequest().getParameter("option"));
-
-			} else {
-				getRequest().setAttribute("option", "entity.chineseTitle");
+		if (StringUtils.isNotEmpty(getEntity().getOption())) {
+			if (!getEntity().getOption().equals("entity.chineseTitle")
+					&& getEntity().getOption().equals("entity.englishTitle")
+					&& getEntity().getOption().equals("entity.issn")) {
+				getEntity().setOption("entity.chineseTitle");
 			}
-
 		} else {
-			getRequest().setAttribute("option", "entity.chineseTitle");
+			getEntity().setOption("entity.chineseTitle");
+		}
 
+		 if (getEntity().getOption().equals("entity.englishTitle")) {
+			getEntity().setChineseTitle(null);
+			getEntity().setIssn(null);
+		} else {
+			getEntity().setChineseTitle(null);
+			getEntity().setEnglishTitle(null);
 		}
 
 		DataSet<Journal> ds = journalService.getByRestrictions(initDataSet());
@@ -401,17 +364,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (!hasActionErrors()) {
 			journal = getEntity();
-			journal.setIssn(getEntity().getIssn().toUpperCase());
+			journal.setIssn(getEntity().getIssn().toUpperCase()
+					.replace("-", "").trim());
+
 			journal = journalService.save(journal, getLoginUser());
 
-			resourcesBuyers = resourcesBuyersService.save(new ResourcesBuyers(
-					getRequest().getParameter("resourcesBuyers.startDate"),
-					getRequest().getParameter("resourcesBuyers.maturityDate"),
-					Category.valueOf(getRequest().getParameter("rCategory")),
-					Type.valueOf(getRequest().getParameter("rType")),
-					getRequest().getParameter("resourcesBuyers.dbChtTitle"),
-					getRequest().getParameter("resourcesBuyers.dbEngTitle")),
-					getLoginUser());
+			resourcesBuyers = resourcesBuyersService.save(getEntity()
+					.getResourcesBuyers(), getLoginUser());
 
 			int i = 0;
 			while (i < cusSerNo.length) {
@@ -442,15 +401,12 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
+					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
-			getRequest().setAttribute("categoryList", categoryList);
-			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
 
@@ -484,23 +440,20 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (!hasActionErrors()) {
 			journal = getEntity();
-			journal.setIssn(getEntity().getIssn().toUpperCase());
+			journal.setIssn(getEntity().getIssn().toUpperCase()
+					.replace("-", "").trim());
 			journal = journalService.update(journal, getLoginUser());
 
-			resourcesBuyers = resourcesUnionService.getByObjSerNo(
-					journal.getSerNo(), Journal.class).getResourcesBuyers();
-			resourcesBuyers.setStartDate(getRequest().getParameter(
-					"resourcesBuyers.startDate"));
-			resourcesBuyers.setMaturityDate(getRequest().getParameter(
-					"resourcesBuyers.maturityDate"));
-			resourcesBuyers.setrCategory(Category.valueOf(getRequest()
-					.getParameter("rCategory")));
-			resourcesBuyers.setrType(Type.valueOf(getRequest().getParameter(
-					"rType")));
-			resourcesBuyers.setDbChtTitle(getRequest().getParameter(
-					"resourcesBuyers.dbChtTitle"));
-			resourcesBuyers.setDbEngTitle(getRequest().getParameter(
-					"resourcesBuyers.dbEngTitle"));
+			resourcesBuyers = new ResourcesBuyers(getEntity()
+					.getResourcesBuyers().getStartDate(), getEntity()
+					.getResourcesBuyers().getMaturityDate(), getEntity()
+					.getResourcesBuyers().getCategory(), getEntity()
+					.getResourcesBuyers().getType(), getEntity()
+					.getResourcesBuyers().getDbChtTitle(), getEntity()
+					.getResourcesBuyers().getDbEngTitle());
+			resourcesBuyers.setSerNo(resourcesUnionService
+					.getByObjSerNo(journal.getSerNo(), Journal.class)
+					.getResourcesBuyers().getSerNo());
 			resourcesBuyersService.update(resourcesBuyers, getLoginUser());
 
 			List<ResourcesUnion> resourcesUnions = resourcesUnionService
@@ -555,15 +508,12 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
+					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
-			getRequest().setAttribute("typeList", typeList);
-			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
 
@@ -778,45 +728,29 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					k++;
 				}
 
-				List<Category> categoryList = new ArrayList<Category>(
-						Arrays.asList(Category.values()));
-				categoryList.remove(categoryList.size() - 1);
-
 				String category = "";
-				if (rowValues[11] == null || rowValues[11].trim().equals("")) {
+				if (rowValues[13] == null || rowValues[13].trim().equals("")) {
 					category = Category.未註明.getCategory();
 				} else {
-					boolean isLegalCategory = false;
-					for (int j = 0; j < categoryList.size(); j++) {
-						if (rowValues[11].trim().equals(
-								categoryList.get(j).getCategory())) {
-							category = categoryList.get(j).getCategory();
-							isLegalCategory = true;
-						}
-					}
-
-					if (!isLegalCategory) {
+					Object object = getEnumCategory(new String[] { rowValues[13]
+							.trim() });
+					if (object != null) {
+						category = rowValues[13].trim();
+					} else {
 						category = Category.不明.getCategory();
 					}
 				}
 
-				List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-						.values()));
 				String type = "";
-				if (rowValues[12] == null || rowValues[12].trim().equals("")) {
-					type = Type.期刊.getType();
+				if (rowValues[14] == null || rowValues[14].trim().equals("")) {
+					type = Type.資料庫.getType();
 				} else {
-					boolean isLegalType = false;
-					for (int j = 0; j < typeList.size(); j++) {
-						if (rowValues[12].trim().equals(
-								typeList.get(j).getType())) {
-							type = typeList.get(j).getType();
-							isLegalType = true;
-						}
-					}
-
-					if (!isLegalType) {
-						type = Type.期刊.getType();
+					Object object = getEnumType(new String[] { rowValues[14]
+							.trim() });
+					if (object != null) {
+						type = rowValues[14].trim();
+					} else {
+						type = Type.資料庫.getType();
 					}
 				}
 
@@ -841,8 +775,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				journal.setCustomers(customers);
 
 				if (isIssn(issn)) {
-					long jouSerNo = journalService.getJouSerNoByIssn(issn
-							.toUpperCase());
+					long jouSerNo = journalService.getJouSerNoByIssn(issn);
 
 					long cusSerNo = customerService
 							.getCusSerNoByName(rowValues[15].trim());
@@ -855,7 +788,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 								journal.setExistStatus("已存在");
 							}
 						} else {
-							if (journal.getResourcesBuyers().getrCategory()
+							if (journal.getResourcesBuyers().getCategory()
 									.equals(Category.不明)) {
 								journal.setExistStatus("資源類型不明");
 							}
@@ -1006,11 +939,12 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
-		Set<String> deRepeatSet = new HashSet<String>(
-				Arrays.asList(importSerNos));
-		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(importSerNos));
+			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < importSerNos.length) {
 				if (NumberUtils.isDigits(importSerNos[i])) {
@@ -1143,9 +1077,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		return XLSX;
 	}
 
-	public boolean isIssn(String issn) {
+	protected boolean isIssn(String issn) {
 		String regex = "\\d{7}[\\dX]";
 		Pattern pattern = Pattern.compile(regex);
+		issn = issn.replace("-", "").trim();
 
 		Matcher matcher = pattern.matcher(issn.toUpperCase());
 		if (matcher.matches()) {
@@ -1183,14 +1118,14 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		return true;
 	}
 
-	public boolean isLCC(String LCC) {
+	protected boolean isLCC(String LCC) {
 		String LCCPattern = "([A-Z]{1,3})((\\d+)(\\.?)(\\d+))";
 
 		return Pattern.compile(LCCPattern).matcher(LCC).matches();
 	}
 
 	// 判斷文件類型
-	public Workbook createWorkBook(InputStream is) throws IOException {
+	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
 			if (fileFileName[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);
@@ -1206,9 +1141,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		return null;
 	}
 
-	public boolean hasEntity() throws Exception {
-		if (getEntity().getSerNo() == null) {
-			getEntity().setSerNo(-1L);
+	protected boolean hasEntity() throws Exception {
+		if (getEntity().isNew()) {
 			return false;
 		}
 
@@ -1218,6 +1152,14 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		return true;
+	}
+
+	protected Object getEnumCategory(String[] categorys) {
+		return categoryConverter.convertFromString(null, categorys, null);
+	}
+
+	protected Object getEnumType(String[] types) {
+		return typeConverter.convertFromString(null, types, null);
 	}
 
 	/**
@@ -1323,5 +1265,35 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	 */
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
+	}
+
+	/**
+	 * @return the categoryList
+	 */
+	public List<Category> getCategoryList() {
+		return categoryList;
+	}
+
+	/**
+	 * @param categoryList
+	 *            the categoryList to set
+	 */
+	public void setCategoryList(List<Category> categoryList) {
+		this.categoryList = categoryList;
+	}
+
+	/**
+	 * @return the typeList
+	 */
+	public List<Type> getTypeList() {
+		return typeList;
+	}
+
+	/**
+	 * @param typeList
+	 *            the typeList to set
+	 */
+	public void setTypeList(List<Type> typeList) {
+		this.typeList = typeList;
 	}
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @version 2015/7/7
  */
 @Component
-public class CommonConverter extends TypeConverter {
+public class CommonConverter extends RootConverter {
 
 	@SuppressWarnings("rawtypes")
 	@Override

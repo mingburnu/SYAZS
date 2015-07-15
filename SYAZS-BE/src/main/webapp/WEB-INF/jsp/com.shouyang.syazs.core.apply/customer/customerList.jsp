@@ -3,6 +3,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ page import="org.owasp.esapi.ESAPI"%>
 <c:if test="${login.role.role == '管理員'}">
 	<%
 		response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -19,10 +20,6 @@ $(document).ready(function() {
 	$("select#listForm_searchCondition").change(function() {
 		$("input#search").attr("name", $(this).val());
 	});
-});
-
-$(document).ready(function() {
-	$("select#listForm_searchCondition").val('${option }');
 });
 
 //IE press Enter GoPage
@@ -177,22 +174,18 @@ function goImport(){
 
 					<tbody>
 						<tr>
-							<td align="left"><select name="option"
-								id="listForm_searchCondition">
-									<option value="entity.name">用戶名稱</option>
-									<option value="entity.engName">英文名稱</option>
-							</select></td>
+							<td align="left"><s:select name="entity.option"
+									id="listForm_searchCondition"
+									list="#{'entity.name':'用戶名稱','entity.engName':'英文名稱'}"></s:select>
+							</td>
 							<c:choose>
-								<c:when test="${not empty option }">
-									<td align="left"><input type="text" name="${option }"
-										maxlength="20" id="search" class="input_text"
-										value="<%=request.getParameter(request
-									.getAttribute("option").toString())%>">
-									</td>
+								<c:when test="${entity.option=='entity.engName' }">
+									<td align="left"><s:textfield name="entity.engName"
+											id="search" cssClass="input_text" /></td>
 								</c:when>
 								<c:otherwise>
-									<td align="left"><input type="text" name="entity.name"
-										maxlength="20" id="search" class="input_text"></td>
+									<td align="left"><s:textfield name="entity.name"
+											id="search" cssClass="input_text" /></td>
 								</c:otherwise>
 							</c:choose>
 							<td align="left"><a class="state-default"

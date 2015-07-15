@@ -64,6 +64,9 @@ public abstract class GenericEntityFull implements Entity {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime uDTime;
 
+	@Transient
+	private String option;
+
 	/** export file name */
 	@Transient
 	private String reportFile;
@@ -188,6 +191,21 @@ public abstract class GenericEntityFull implements Entity {
 	 */
 	public void setReportFile(String reportFile) {
 		this.reportFile = reportFile;
+	}
+
+	/**
+	 * @return the option
+	 */
+	public String getOption() {
+		return option;
+	}
+
+	/**
+	 * @param option
+	 *            the option to set
+	 */
+	public void setOption(String option) {
+		this.option = option;
 	}
 
 	/**

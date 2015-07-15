@@ -30,11 +30,11 @@ public class ResourcesBuyers extends GenericEntityFull {
 
 	@Column(name = "Rcategory")
 	@Enumerated(EnumType.STRING)
-	private Category rCategory;
+	private Category category;
 
 	@Column(name = "Rtype")
 	@Enumerated(EnumType.STRING)
-	private Type rType;
+	private Type type;
 
 	@Column(name = "DBchttitle")
 	private String dbChtTitle;
@@ -73,33 +73,33 @@ public class ResourcesBuyers extends GenericEntityFull {
 	}
 
 	/**
-	 * @return the rCategory
+	 * @return the category
 	 */
-	public Category getrCategory() {
-		return rCategory;
+	public Category getCategory() {
+		return category;
 	}
 
 	/**
-	 * @param rCategory
-	 *            the rCategory to set
+	 * @param category
+	 *            the category to set
 	 */
-	public void setrCategory(Category rCategory) {
-		this.rCategory = rCategory;
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	/**
 	 * @return the rType
 	 */
-	public Type getrType() {
-		return rType;
+	public Type getType() {
+		return type;
 	}
 
 	/**
 	 * @param rType
 	 *            the rType to set
 	 */
-	public void setrType(Type rType) {
-		this.rType = rType;
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 	/**
@@ -138,13 +138,13 @@ public class ResourcesBuyers extends GenericEntityFull {
 	}
 
 	public ResourcesBuyers(String startDate, String maturityDate,
-			Category rCategory, Type rType, String dbChtTitle,
+			Category category, Type type, String dbChtTitle,
 			String dbEngTitle) {
 		super();
 		this.startDate = startDate;
 		this.maturityDate = maturityDate;
-		this.rCategory = rCategory;
-		this.rType = rType;
+		this.category = category;
+		this.type = type;
 		this.dbChtTitle = dbChtTitle;
 		this.dbEngTitle = dbEngTitle;
 	}

@@ -147,7 +147,7 @@
 							</c:choose></td>
 						<td><c:out value="${item.englishTitle }" /></td>
 						<td><c:out value="${item.issn }" /></td>
-						<td>${item.resourcesBuyers.rCategory.category }</td>
+						<td>${item.resourcesBuyers.category.category }</td>
 						<td align="center"><c:forEach var="customer"
 								items="${item.customers}" varStatus="status">
 								<c:out value="${customer.name }" />

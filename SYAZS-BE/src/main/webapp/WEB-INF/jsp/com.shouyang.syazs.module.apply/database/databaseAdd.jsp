@@ -43,56 +43,17 @@
 		});
 	});
 
-	$(document).ready(
-			function() {
-				$("input#apply_database_save_resourcesBuyers_rCategory").each(
-						function() {
-							if ($(this).val() == "未註明") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_database_save_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "資料庫") {
-								this.checked = true;
-							}
-						});
-			});
-
-	$(document).ready(
-			function() {
-				$("input#apply_database_save_resourcesBuyers_rCategory").each(
-						function() {
-							if ($(this).val() == "${rCategory}") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_database_save_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "${rType}") {
-								this.checked = true;
-							}
-						});
-			});
-
 	//重設所有欄位(清空)
 	function resetData() {
 		$("[id^='apply_database_save_entity']").val("");
 
-		$("input#apply_database_save_resourcesBuyers_rCategory").each(
-				function() {
-					if ($(this).val() == "未註明") {
-						this.checked = true;
-					}
-				});
+		for (var i = 0; i < $("input[type='radio']").length; i++) {
+			$("input[type='radio']:eq(" + i + ")").val(
+					$("input[type='radio']:eq(" + i + ")").next().html());
+		}
 
-		$("input#apply_database_save_resourcesBuyers_rType").each(function() {
-			if ($(this).val() == "資料庫") {
-				this.checked = true;
-			}
-		});
+		$("input[type='radio']:eq(2)").attr("checked", true);
+		$("input[type='radio']:eq(5)").attr("checked", true);
 
 		allSelect_customers(0);
 		checkData();
@@ -158,33 +119,23 @@ input#customer_name {
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
-				<td><s:textfield name="resourcesBuyers.startDate"
+				<td><s:textfield name="entity.resourcesBuyers.startDate"
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
-				<td><s:textfield name="resourcesBuyers.maturityDate"
+				<td><s:textfield name="entity.resourcesBuyers.maturityDate"
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>
-				<td><c:forEach var="item" items="${categoryList}"
-						varStatus="status">
-						<input type="radio" name="rCategory"
-							id="apply_database_save_resourcesBuyers_rCategory"
-							value="${item.category }">
-						<label for="apply_database_save_resourcesBuyers_rCategory">${item.category }</label>
-					</c:forEach></td>
+				<td><s:radio name="entity.resourcesBuyers.category"
+						list="categoryList" listKey="name()" listValue="category" /></td>
 			</tr>
 			<tr>
 				<th width="130">資源種類</th>
-				<td><c:forEach var="item" items="${typeList}"
-						varStatus="status">
-						<input type="radio" name="rType"
-							id="apply_database_save_resourcesBuyers_rType"
-							value="${item.type }">
-						<label for="apply_database_save_resourcesBuyers_rType">${item.type }</label>
-					</c:forEach></td>
+				<td><s:radio name="entity.resourcesBuyers.type" list="typeList"
+						listKey="name()" listValue="type" /></td>
 			</tr>
 			<tr>
 				<th width="130">購買單位<span class="required">(&#8226;)</span></th>

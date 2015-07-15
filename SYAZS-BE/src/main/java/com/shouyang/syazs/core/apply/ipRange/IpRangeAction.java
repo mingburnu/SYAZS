@@ -245,7 +245,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 		}
 	}
 
-	public boolean isIp(String ip) {
+	protected boolean isIp(String ip) {
 		String ipPattern = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 				+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 				+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
@@ -258,7 +258,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 		}
 	}
 
-	public boolean isPrivateIp(String ipStart, String ipEnd) {
+	protected boolean isPrivateIp(String ipStart, String ipEnd) {
 		String[] ipStartNum = ipStart.split("\\.");
 		String[] ipEndNum = ipEnd.split("\\.");
 
@@ -288,7 +288,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 		return false;
 	}
 
-	public IpRange checkRepeatIpRange(String ipStart, String ipEnd,
+	protected IpRange checkRepeatIpRange(String ipStart, String ipEnd,
 			List<IpRange> allIpList) {
 
 		String[] ipStartNum = ipStart.split("\\.");

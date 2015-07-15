@@ -127,13 +127,13 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	protected void validateDelete() throws Exception {
 		if (getLoginUser().getRole().equals(Role.系統管理員)) {
 
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(checkItem));
-			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-
 			if (ArrayUtils.isEmpty(checkItem)) {
 				errorMessages.add("請選擇一筆或一筆以上的資料");
 			} else {
+				Set<String> deRepeatSet = new HashSet<String>(
+						Arrays.asList(checkItem));
+				checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 				int i = 0;
 				while (i < checkItem.length) {
 					if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
@@ -168,17 +168,13 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	@Override
 	public String list() throws Exception {
-		if (StringUtils.isNotBlank(getRequest().getParameter("option"))) {
-			if (getRequest().getParameter("option").equals("entity.name")
-					|| getRequest().getParameter("option").equals(
-							"entity.engName")) {
-				getRequest().setAttribute("option",
-						getRequest().getParameter("option"));
-			} else {
-				getRequest().setAttribute("option", "entity.name");
+		if (StringUtils.isNotBlank(getEntity().getOption())) {
+			if (!getEntity().getOption().equals("entity.name")
+					&& !getEntity().getOption().equals("entity.engName")) {
+				getEntity().setOption("entity.name");
 			}
 		} else {
-			getRequest().setAttribute("option", "entity.name");
+			getEntity().setOption("entity.name");
 		}
 
 		DataSet<Customer> ds = customerService.getByRestrictions(initDataSet());
@@ -590,11 +586,12 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
-		Set<String> deRepeatSet = new HashSet<String>(
-				Arrays.asList(importSerNos));
-		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(importSerNos));
+			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < importSerNos.length) {
 				if (NumberUtils.isDigits(importSerNos[i])) {
@@ -699,9 +696,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		return XLSX;
 	}
 
-	public boolean hasEntity() throws Exception {
-		if (getEntity().getSerNo() == null) {
-			getEntity().setSerNo(-1L);
+	protected boolean hasEntity() throws Exception {
+		if (getEntity().isNew()) {
 			return false;
 		}
 
@@ -714,7 +710,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	// 判斷文件類型
-	public Workbook createWorkBook(InputStream is) throws IOException {
+	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
 			if (fileFileName[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);

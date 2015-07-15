@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @version 2014/3/17
  */
 @Component
-public class JodaTimeConverter extends TypeConverter {
+public class JodaTimeConverter extends RootConverter {
 
 	@Value("#{systemConfigurer['y4MinusM2Minusd2']}")
 	private String y4MinusM2Minusd2;

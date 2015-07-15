@@ -30,17 +30,23 @@ public class CustomerService extends GenericServiceFull<Customer> {
 		Customer entity = ds.getEntity();
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
 
-		if (StringUtils.isNotBlank(entity.getEngName())) {
-			restrictions.likeIgnoreCase("engName", entity.getEngName(),
-					MatchMode.ANYWHERE);
-		} else if (StringUtils.isNotBlank(entity.getName())) {
-			restrictions.likeIgnoreCase("name", entity.getName(),
-					MatchMode.ANYWHERE);
+		if (entity.getOption().equals("entity.engName")) {
+			if (StringUtils.isNotBlank(entity.getEngName())) {
+				restrictions.likeIgnoreCase("engName", entity.getEngName(),
+						MatchMode.ANYWHERE);
+			}
+		}
+
+		if (entity.getOption().equals("entity.name")) {
+			if (StringUtils.isNotBlank(entity.getName())) {
+				restrictions.likeIgnoreCase("name", entity.getName(),
+						MatchMode.ANYWHERE);
+			}
 		}
 
 		restrictions.addOrderAsc("serNo");
 		restrictions.addOrderAsc("engName");
-		
+
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
@@ -79,9 +85,9 @@ public class CustomerService extends GenericServiceFull<Customer> {
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
 		return dao.findByRestrictions(restrictions);
 	}
-	
+
 	public Map<String, Object> getCusDatas() {
-		return dao.getMap(new HashMap<String,Object>());
+		return dao.getMap(new HashMap<String, Object>());
 	}
 
 	public boolean deleteOwnerObj(long cusSerNo) {

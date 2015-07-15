@@ -47,6 +47,8 @@ import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
+import com.shouyang.syazs.module.converter.CategoryConverter;
+import com.shouyang.syazs.module.converter.TypeConverter;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -91,19 +93,20 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	@Autowired
 	private CustomerService customerService;
 
+	@Autowired
+	private CategoryConverter categoryConverter;
+
+	@Autowired
+	private TypeConverter typeConverter;
+
 	private String[] importSerNos;
+
+	private List<Category> categoryList;
+
+	private List<Type> typeList;
 
 	@Override
 	protected void validateSave() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
-		cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-		
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		if (StringUtils.isBlank(getEntity().getBookName())) {
 			errorMessages.add("書名不得空白");
 		}
@@ -153,6 +156,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		if (ArrayUtils.isEmpty(cusSerNo)) {
 			errorMessages.add("至少選擇一筆以上購買單位");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(cusSerNo));
+			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < cusSerNo.length) {
 				if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
@@ -165,36 +172,20 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		}
 
-		boolean isLegalCategory = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rCategory") != null
-					&& getRequest().getParameter("rCategory").equals(
-							categoryList.get(i).getCategory())) {
-				isLegalCategory = true;
-			}
+		if (getEntity().getResourcesBuyers() == null) {
+			getEntity().setResourcesBuyers(resourcesBuyers);
 		}
 
-		if (isLegalCategory) {
-			getRequest().setAttribute("rCategory",
-					getRequest().getParameter("rCategory"));
-		} else {
+		if (getEntity().getResourcesBuyers().getCategory() == null
+				|| getEntity().getResourcesBuyers().getCategory()
+						.equals(Category.不明)) {
 			errorMessages.add("資源類型錯誤");
+			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
-		boolean isLegalType = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rType") != null
-					&& getRequest().getParameter("rType").equals(
-							typeList.get(i).getType())) {
-				isLegalType = true;
-			}
-		}
-
-		if (isLegalType) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rType"));
-		} else {
+		if (getEntity().getResourcesBuyers().getType() == null) {
 			errorMessages.add("資源種類錯誤");
+			getEntity().getResourcesBuyers().setType(Type.電子書);
 		}
 	}
 
@@ -203,16 +194,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
-			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-			
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
-			categoryList.remove(categoryList.size() - 1);
-
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
-
 			if (StringUtils.isBlank(getEntity().getBookName())) {
 				errorMessages.add("書名不得空白");
 			}
@@ -268,6 +249,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			if (ArrayUtils.isEmpty(cusSerNo)) {
 				errorMessages.add("至少選擇一筆以上購買單位");
 			} else {
+				Set<String> deRepeatSet = new HashSet<String>(
+						Arrays.asList(cusSerNo));
+				cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 				int i = 0;
 				while (i < cusSerNo.length) {
 					if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
@@ -280,48 +265,33 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
-			boolean isLegalCategory = false;
-			for (int i = 0; i < categoryList.size(); i++) {
-				if (getRequest().getParameter("rCategory") != null
-						&& getRequest().getParameter("rCategory").equals(
-								categoryList.get(i).getCategory())) {
-					isLegalCategory = true;
-				}
+			if (getEntity().getResourcesBuyers() == null) {
+				getEntity().setResourcesBuyers(resourcesBuyers);
 			}
 
-			if (isLegalCategory) {
-				getRequest().setAttribute("rCategory",
-						getRequest().getParameter("rCategory"));
-			} else {
+			if (getEntity().getResourcesBuyers().getCategory() == null
+					|| getEntity().getResourcesBuyers().getCategory()
+							.equals(Category.不明)) {
 				errorMessages.add("資源類型錯誤");
+				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
-			boolean isLegalType = false;
-			for (int i = 0; i < categoryList.size(); i++) {
-				if (getRequest().getParameter("rType") != null
-						&& getRequest().getParameter("rType").equals(
-								typeList.get(i).getType())) {
-					isLegalType = true;
-				}
-			}
-
-			if (isLegalType) {
-				getRequest().setAttribute("rType",
-						getRequest().getParameter("rType"));
-			} else {
+			if (getEntity().getResourcesBuyers().getType() == null) {
 				errorMessages.add("資源種類錯誤");
+				getEntity().getResourcesBuyers().setType(Type.電子書);
 			}
 		}
 	}
 
 	@Override
 	protected void validateDelete() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
-		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-
 		if (ArrayUtils.isEmpty(checkItem)) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(checkItem));
+			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < checkItem.length) {
 				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
@@ -337,19 +307,19 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Override
 	public String add() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
+		categoryList = new ArrayList<Category>(Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
-		getRequest().setAttribute("categoryList", categoryList);
 
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-		getRequest().setAttribute("typeList", typeList);
+		typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
 		List<Customer> customers = new ArrayList<Customer>();
 		ebook.setCustomers(customers);
+		ebook.setResourcesBuyers(resourcesBuyers);
+		ebook.getResourcesBuyers().setCategory(Category.未註明);
+		ebook.getResourcesBuyers().setType(Type.電子書);
 		setEntity(ebook);
 
 		return ADD;
@@ -358,16 +328,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			ebook = ebookService.getBySerNo(getEntity().getSerNo());
-
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
-			categoryList.remove(categoryList.size() - 1);
-			getRequest().setAttribute("categoryList", categoryList);
-
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
-			getRequest().setAttribute("typeList", typeList);
+			categoryList.remove(categoryList.size() - 1);
+
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -387,12 +352,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 
 			resourcesBuyers = resourcesUnion.getResourcesBuyers();
-			getRequest().setAttribute("rCategory",
-					resourcesBuyers.getrCategory().getCategory());
-			getRequest().setAttribute("rType",
-					resourcesBuyers.getrType().getType());
+			ebook.setResourcesBuyers(resourcesBuyers);
 			ebook.setCustomers(customers);
-
 			setEntity(ebook);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -402,24 +363,19 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Override
 	public String list() throws Exception {
-		if (StringUtils.isNotEmpty(getRequest().getParameter("option"))) {
-			if (getRequest().getParameter("option").equals("entity.bookName")
-					|| getRequest().getParameter("option")
-							.equals("entity.isbn")) {
-				getRequest().setAttribute("option",
-						getRequest().getParameter("option"));
-
-			} else {
-				getRequest().setAttribute("option", "entity.bookName");
+		if (StringUtils.isNotBlank(getEntity().getOption())) {
+			if (!getEntity().getOption().equals("entity.bookName")
+					&& !getEntity().getOption().equals("entity.isbn")) {
+				getEntity().setOption("entity.bookName");
 			}
 		} else {
-			getRequest().setAttribute("option", "entity.bookName");
+			getEntity().setOption("entity.bookName");
 		}
 
-		if (getRequest().getAttribute("option").toString()
-				.equals("entity.isbn")) {
+		if (getEntity().getOption().equals("entity.isbn")) {
 			if (getEntity().getIsbn() == null) {
-				if (getRequest().getParameter("entity.isbn") != null) {
+				if (getRequest().getParameter("entity.isbn") != null
+						&& !getRequest().getParameter("entity.isbn").equals("")) {
 					if (NumberUtils.isDigits(getRequest()
 							.getParameter("entity.isbn").trim()
 							.replaceAll("-", ""))) {
@@ -427,6 +383,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 								Long.parseLong(getRequest()
 										.getParameter("entity.isbn").trim()
 										.replaceAll("-", "")));
+					} else {
+						getEntity().setIsbn(Long.MIN_VALUE);
 					}
 				}
 			}
@@ -452,8 +410,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			i++;
 		}
 
-		getRequest().setAttribute("isbn",
-				getRequest().getParameter("entity.isbn"));
 		setDs(ds);
 		return LIST;
 	}
@@ -469,14 +425,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							.trim().replace("-", "")));
 			ebook = ebookService.save(getEntity(), getLoginUser());
 
-			resourcesBuyers = resourcesBuyersService.save(new ResourcesBuyers(
-					getRequest().getParameter("resourcesBuyers.startDate"),
-					getRequest().getParameter("resourcesBuyers.maturityDate"),
-					Category.valueOf(getRequest().getParameter("rCategory")),
-					Type.valueOf(getRequest().getParameter("rType")),
-					getRequest().getParameter("resourcesBuyers.dbChtTitle"),
-					getRequest().getParameter("resourcesBuyers.dbEngTitle")),
-					getLoginUser());
+			resourcesBuyers = resourcesBuyersService.save(getEntity()
+					.getResourcesBuyers(), getLoginUser());
 
 			int i = 0;
 			while (i < cusSerNo.length) {
@@ -506,20 +456,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			setEntity(ebook);
 			return VIEW;
 		} else {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
+					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
-			getRequest().setAttribute("categoryList", categoryList);
-			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
-
-			getRequest()
-					.setAttribute("isbn", getRequest().getParameter("isbn"));
 
 			List<Customer> customers = new ArrayList<Customer>();
 			if (cusSerNo != null && cusSerNo.length != 0) {
@@ -531,8 +475,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
-			getRequest().setAttribute("isbn",
-					getRequest().getParameter("entity.isbn"));
 			ebook = getEntity();
 			ebook.setCustomers(customers);
 			setEntity(ebook);
@@ -551,20 +493,16 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							.trim().replace("-", "")));
 			ebook = ebookService.update(getEntity(), getLoginUser());
 
-			resourcesBuyers = resourcesUnionService.getByObjSerNo(
-					ebook.getSerNo(), Ebook.class).getResourcesBuyers();
-			resourcesBuyers.setStartDate(getRequest().getParameter(
-					"resourcesBuyers.startDate"));
-			resourcesBuyers.setMaturityDate(getRequest().getParameter(
-					"resourcesBuyers.maturityDate"));
-			resourcesBuyers.setrCategory(Category.valueOf(getRequest()
-					.getParameter("rCategory")));
-			resourcesBuyers.setrType(Type.valueOf(getRequest().getParameter(
-					"rType")));
-			resourcesBuyers.setDbChtTitle(getRequest().getParameter(
-					"resourcesBuyers.dbChtTitle"));
-			resourcesBuyers.setDbEngTitle(getRequest().getParameter(
-					"resourcesBuyers.dbEngTitle"));
+			resourcesBuyers = new ResourcesBuyers(getEntity()
+					.getResourcesBuyers().getStartDate(), getEntity()
+					.getResourcesBuyers().getMaturityDate(), getEntity()
+					.getResourcesBuyers().getCategory(), getEntity()
+					.getResourcesBuyers().getType(), getEntity()
+					.getResourcesBuyers().getDbChtTitle(), getEntity()
+					.getResourcesBuyers().getDbEngTitle());
+			resourcesBuyers.setSerNo(resourcesUnionService
+					.getByObjSerNo(ebook.getSerNo(), Ebook.class)
+					.getResourcesBuyers().getSerNo());
 			resourcesBuyersService.update(resourcesBuyers, getLoginUser());
 
 			List<ResourcesUnion> resourcesUnions = resourcesUnionService
@@ -617,20 +555,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			setEntity(ebook);
 			return VIEW;
 		} else {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
+					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
-			getRequest().setAttribute("typeList", typeList);
-			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
-
-			getRequest()
-					.setAttribute("isbn", getRequest().getParameter("isbn"));
 
 			List<Customer> customers = new ArrayList<Customer>();
 			if (cusSerNo != null && cusSerNo.length != 0) {
@@ -642,8 +574,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
-			getRequest().setAttribute("isbn",
-					getRequest().getParameter("entity.isbn"));
 			ebook = getEntity();
 			ebook.setCustomers(customers);
 			setEntity(ebook);
@@ -844,45 +774,29 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					k++;
 				}
 
-				List<Category> categoryList = new ArrayList<Category>(
-						Arrays.asList(Category.values()));
-				categoryList.remove(categoryList.size() - 1);
-
 				String category = "";
 				if (rowValues[13] == null || rowValues[13].trim().equals("")) {
 					category = Category.未註明.getCategory();
 				} else {
-					boolean isLegalCategory = false;
-					for (int j = 0; j < categoryList.size(); j++) {
-						if (rowValues[13].trim().equals(
-								categoryList.get(j).getCategory())) {
-							category = categoryList.get(j).getCategory();
-							isLegalCategory = true;
-						}
-					}
-
-					if (!isLegalCategory) {
+					Object object = getEnumCategory(new String[] { rowValues[13]
+							.trim() });
+					if (object != null) {
+						category = rowValues[13].trim();
+					} else {
 						category = Category.不明.getCategory();
 					}
 				}
 
-				List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-						.values()));
 				String type = "";
 				if (rowValues[14] == null || rowValues[14].trim().equals("")) {
-					type = Type.電子書.getType();
+					type = Type.資料庫.getType();
 				} else {
-					boolean isLegalType = false;
-					for (int j = 0; j < typeList.size(); j++) {
-						if (rowValues[14].trim().equals(
-								typeList.get(j).getType())) {
-							type = typeList.get(j).getType();
-							isLegalType = true;
-						}
-					}
-
-					if (!isLegalType) {
-						type = Type.電子書.getType();
+					Object object = getEnumType(new String[] { rowValues[14]
+							.trim() });
+					if (object != null) {
+						type = rowValues[14].trim();
+					} else {
+						type = Type.資料庫.getType();
 					}
 				}
 
@@ -935,7 +849,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 									ebook.setExistStatus("已存在");
 								}
 							} else {
-								if (ebook.getResourcesBuyers().getrCategory()
+								if (ebook.getResourcesBuyers().getCategory()
 										.equals(Category.不明)) {
 									ebook.setExistStatus("資源類型不明");
 								}
@@ -1096,11 +1010,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
-		Set<String> deRepeatSet = new HashSet<String>(
-				Arrays.asList(importSerNos));
-		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(importSerNos));
+			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < importSerNos.length) {
 				if (NumberUtils.isDigits(importSerNos[i])) {
@@ -1236,7 +1151,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		return XLSX;
 	}
 
-	public boolean isIsbn(long isbnNum) {
+	protected boolean isIsbn(long isbnNum) {
 		if (isbnNum >= 9780000000000l && isbnNum < 9800000000000l) {
 			String isbn = "" + isbnNum;
 			int sum = Integer.parseInt(isbn.substring(0, 1)) * 1
@@ -1271,7 +1186,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		return true;
 	}
 
-	public boolean hasEntity() throws Exception {
+	protected boolean hasEntity() throws Exception {
 		if (getEntity().getSerNo() == null) {
 			getEntity().setSerNo(-1L);
 			return false;
@@ -1286,7 +1201,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	// 判斷文件類型
-	public Workbook createWorkBook(InputStream is) throws IOException {
+	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
 			if (fileFileName[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);
@@ -1300,6 +1215,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		return null;
+	}
+
+	protected Object getEnumCategory(String[] categorys) {
+		return categoryConverter.convertFromString(null, categorys, null);
+	}
+
+	protected Object getEnumType(String[] types) {
+		return typeConverter.convertFromString(null, types, null);
 	}
 
 	/**
@@ -1390,5 +1313,35 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	 */
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
+	}
+
+	/**
+	 * @return the categoryList
+	 */
+	public List<Category> getCategoryList() {
+		return categoryList;
+	}
+
+	/**
+	 * @param categoryList
+	 *            the categoryList to set
+	 */
+	public void setCategoryList(List<Category> categoryList) {
+		this.categoryList = categoryList;
+	}
+
+	/**
+	 * @return the typeList
+	 */
+	public List<Type> getTypeList() {
+		return typeList;
+	}
+
+	/**
+	 * @param typeList
+	 *            the typeList to set
+	 */
+	public void setTypeList(List<Type> typeList) {
+		this.typeList = typeList;
 	}
 }

@@ -16,10 +16,6 @@ $(document).ready(function() {
 	});
 });
 
-$(document).ready(function() {
-	$("select#listForm_searchCondition").val('${option }');
-});
-
 //IE press Enter GoPage
 $(document).ready(function() {
 	$("input#listForm_currentPageHeader").keyup(function(e){
@@ -129,29 +125,18 @@ function goImport(){
 
 					<tbody>
 						<tr>
-							<td align="left"><select name="option"
-								id="listForm_searchCondition">
-									<option value="entity.dbChtTitle">資料庫中文題名</option>
-									<option value="entity.dbEngTitle">資料庫英文題名</option>
-							</select></td>
-							<c:set var="option">
-								<c:out value="${option }" />
-							</c:set>
+							<td align="left"><s:select name="entity.option"
+									id="listForm_searchCondition"
+									list="#{'entity.dbChtTitle':'資料庫中文題名','entity.dbEngTitle':'資料庫英文題名'}"></s:select>
+							</td>
 							<c:choose>
-								<c:when test="${not empty option }">
-									<c:set var="find">
-										<c:out
-											value='<%=request.getParameter(request
-									.getAttribute("option").toString())%>' />
-									</c:set>
-									<td align="left"><input type="text" name="${option }"
-										maxlength="20" id="search" class="input_text" value="${find }">
-									</td>
+								<c:when test="${entity.option=='entity.dbEngTitle' }">
+									<td align="left"><s:textfield name="entity.dbEngTitle"
+											id="search" cssClass="input_text" /></td>
 								</c:when>
 								<c:otherwise>
-									<td align="left"><input type="text"
-										name="entity.dbChtTitle" maxlength="20" id="search"
-										class="input_text"></td>
+									<td align="left"><s:textfield name="entity.dbChtTitle"
+											id="search" cssClass="input_text" /></td>
 								</c:otherwise>
 							</c:choose>
 							<td align="left"><a class="state-default"
@@ -207,7 +192,7 @@ function goImport(){
 										<c:out value="${item.dbChtTitle }" />
 									</c:otherwise>
 								</c:choose></td>
-							<td align="center">${item.resourcesBuyers.rType.type }</td>
+							<td align="center">${item.resourcesBuyers.type }</td>
 							<td><c:out value="${item.cUid }" /></td>
 							<td align="center"><c:out value="${item.uUid }" /></td>
 							<td align="center"><a class="state-default2"

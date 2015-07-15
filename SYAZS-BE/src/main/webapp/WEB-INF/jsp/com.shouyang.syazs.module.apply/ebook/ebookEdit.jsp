@@ -3,18 +3,13 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
-<c:if test="${not empty isbn}">
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("input#apply_ebook_update_entity_isbn").val("${isbn}");
-		});
-	</script>
-</c:if>
 <script type="text/javascript">
 	$(document)
 			.ready(
@@ -49,42 +44,6 @@
 			});
 		});
 	});
-
-	$(document).ready(
-			function() {
-				$("input#apply_ebook_update_resourcesBuyers_rCategory").each(
-						function() {
-							if ($(this).val() == "未註明") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_ebook_update_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "電子書") {
-								this.checked = true;
-							}
-						});
-			});
-
-	$(document).ready(
-			function() {
-				$("input#apply_ebook_update_resourcesBuyers_rCategory").each(
-						function() {
-							if ($(this).val() == "${rCategory}") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_ebook_update_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "${rType}") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_ebook_update_isbn").val("${isbn}");
-			});
 
 	//重設所有欄位(清空)
 	function resetData() {
@@ -144,7 +103,18 @@ input#customer_name {
 				</tr>
 				<tr>
 					<th width="130">ISBN<span class="required">(&#8226;)</span></th>
-					<td><s:textfield name="entity.isbn" cssClass="input_text" /></td>
+					<td><input type="text" name="entity.isbn" class="input_text"
+						id="apply_ebook_save_entity_isbn"
+						value="<esapi:encodeForHTMLAttribute><%if (request.getParameter("entity.isbn") != null) {
+							out.println(request.getParameter("entity.isbn"));
+						} else {
+							if (request.getAttribute("entity.isbn") != null) {
+								out.println(request.getAttribute("entity.isbn"));
+							} else {
+								out.println("");
+							}
+						}%></esapi:encodeForHTMLAttribute>">
+					</td>
 				</tr>
 				<tr>
 					<th width="130">出版社</th>
@@ -174,48 +144,38 @@ input#customer_name {
 							cssClass="input_text" /></td>
 				</tr>
 				<tr>
-					<th width="130">美國國家圖書館類碼</th>
+					<th width="130">杜威十進位分類號</th>
 					<td><s:textfield name="entity.bookInfoIntegral"
 							cssClass="input_text" /></td>
 				</tr>
 				<tr>
 					<th width="130">起始日</th>
-					<td><s:textfield name="resourcesBuyers.startDate"
+					<td><s:textfield name="entity.resourcesBuyers.startDate"
 							cssClass="input_text" /></td>
 				</tr>
 				<tr>
 					<th width="130">到期日</th>
-					<td><s:textfield name="resourcesBuyers.maturityDate"
+					<td><s:textfield name="entity.resourcesBuyers.maturityDate"
 							cssClass="input_text" /></td>
 				</tr>
 				<tr>
 					<th width="130">資源類型</th>
-					<td><c:forEach var="item" items="${categoryList}"
-							varStatus="status">
-							<input type="radio" name="rCategory"
-								id="apply_ebook_update_resourcesBuyers_rCategory"
-								value="${item.category }">
-							<label for="apply_ebook_update_resourcesBuyers_rCategory">${item.category }</label>
-						</c:forEach></td>
+					<td><s:radio name="entity.resourcesBuyers.category"
+							list="categoryList" listKey="name()" listValue="category" /></td>
 				</tr>
 				<tr>
 					<th width="130">資源種類</th>
-					<td><c:forEach var="item" items="${typeList}"
-							varStatus="status">
-							<input type="radio" name="rType"
-								id="apply_ebook_update_resourcesBuyers_rType"
-								value="${item.type }">
-							<label for="apply_ebook_update_resourcesBuyers_rType">${item.type }</label>
-						</c:forEach></td>
+					<td><s:radio name="entity.resourcesBuyers.type"
+							list="typeList" listKey="name()" listValue="type" /></td>
 				</tr>
 				<tr>
 					<th width="130">資料庫中文題名</th>
-					<td><s:textfield name="resourcesBuyers.dbChtTitle"
+					<td><s:textfield name="entity.resourcesBuyers.dbChtTitle"
 							cssClass="input_text" /></td>
 				</tr>
 				<tr>
 					<th width="130">資料庫英文題名</th>
-					<td><s:textfield name="resourcesBuyers.dbEngTitle"
+					<td><s:textfield name="entity.resourcesBuyers.dbEngTitle"
 							cssClass="input_text" /></td>
 				</tr>
 				<tr>

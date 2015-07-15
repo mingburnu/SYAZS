@@ -43,40 +43,6 @@
 		});
 	});
 
-	$(document).ready(
-			function() {
-				$("input#apply_journal_update_resourcesBuyers_rCategory").each(
-						function() {
-							if ($(this).val() == "未註明") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_journal_update_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "期刊") {
-								this.checked = true;
-							}
-						});
-			});
-
-	$(document).ready(
-			function() {
-				$("input#apply_journal_update_resourcesBuyers_rCategory").each(
-						function() {
-							if ($(this).val() == "${rCategory}") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_journal_update_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "${rType}") {
-								this.checked = true;
-							}
-						});
-			});
-
 	//重設所有欄位(清空)
 	function resetData() {
 		goDetail('<%=request.getContextPath()%>/crud/apply.journal.edit.action?'
@@ -183,23 +149,13 @@ input#customer_name {
 				</tr>
 				<tr>
 					<th width="130">資源類型</th>
-					<td><c:forEach var="item" items="${categoryList}"
-							varStatus="status">
-							<input type="radio" name="rCategory"
-								id="apply_journal_update_resourcesBuyers_rCategory"
-								value="${item.category }">
-							<label for="apply_journal_update_resourcesBuyers_rCategory">${item.category }</label>
-						</c:forEach></td>
+					<td><s:radio name="entity.resourcesBuyers.category"
+							list="categoryList" listKey="name()" listValue="category" /></td>
 				</tr>
 				<tr>
 					<th width="130">資源種類</th>
-					<td><c:forEach var="item" items="${typeList}"
-							varStatus="status">
-							<input type="radio" name="rType"
-								id="apply_journal_update_resourcesBuyers_rType"
-								value="${item.type }">
-							<label for="apply_journal_update_resourcesBuyers_rType">${item.type }</label>
-						</c:forEach></td>
+					<td><s:radio name="entity.resourcesBuyers.type"
+							list="typeList" listKey="name()" listValue="type" /></td>
 				</tr>
 				<tr>
 					<th width="130">資料庫中文題名</th>

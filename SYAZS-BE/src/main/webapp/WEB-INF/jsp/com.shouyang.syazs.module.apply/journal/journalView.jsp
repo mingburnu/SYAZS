@@ -104,11 +104,11 @@
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>
-						<td>${entity.resourcesBuyers.rCategory}</td>
+						<td>${entity.resourcesBuyers.category}</td>
 					</tr>
 					<tr>
 						<th width="130">資源種類</th>
-						<td>${entity.resourcesBuyers.rType}</td>
+						<td>${entity.resourcesBuyers.type}</td>
 					</tr>
 					<tr>
 						<th width="130">資料庫中文題名</th>

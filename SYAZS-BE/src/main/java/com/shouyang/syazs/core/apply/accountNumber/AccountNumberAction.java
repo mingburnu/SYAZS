@@ -489,12 +489,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String deauthorize() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
-		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-
 		if (ArrayUtils.isEmpty(checkItem)) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(checkItem));
+			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < checkItem.length) {
 				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
@@ -559,12 +560,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String authorize() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
-		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-
 		if (ArrayUtils.isEmpty(checkItem)) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(checkItem));
+			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < checkItem.length) {
 				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
@@ -1034,11 +1036,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
-		Set<String> deRepeatSet = new HashSet<String>(
-				Arrays.asList(importSerNos));
-		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(importSerNos));
+			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < importSerNos.length) {
 				if (NumberUtils.isDigits(importSerNos[i])) {
@@ -1140,9 +1143,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		return XLSX;
 	}
 
-	public boolean hasEntity() throws Exception {
-		if (getEntity().getSerNo() == null) {
-			getEntity().setSerNo(-1L);
+	protected boolean hasEntity() throws Exception {
+		if (getEntity().isNew()) {
 			return false;
 		}
 
@@ -1155,7 +1157,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	// 判斷文件類型
-	public Workbook createWorkBook(InputStream is) throws IOException {
+	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
 			if (fileFileName[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);
@@ -1171,7 +1173,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		return null;
 	}
 
-	public boolean isEmail(String email) {
+	protected boolean isEmail(String email) {
 		String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 

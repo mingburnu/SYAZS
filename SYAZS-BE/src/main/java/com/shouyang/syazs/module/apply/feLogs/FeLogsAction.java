@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -47,7 +46,7 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 	private CustomerService customerService;
 
 	@Autowired
-	private JodaTimeConverter converter;
+	private JodaTimeConverter jodaTimeConverter;
 
 	private InputStream inputStream;
 
@@ -83,18 +82,17 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 	@Override
 	public String list() throws Exception {
-		String customerName = getRequest().getParameter("customer");
-
-		String cusSerNo = getRequest().getParameter("cusSerNo");
 		if (getLoginUser().getRole().equals(Role.管理員)) {
-			cusSerNo = String.valueOf(getLoginUser().getCustomer().getSerNo());
+			getEntity().getCustomer().setSerNo(
+					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (cusSerNo == null || !NumberUtils.isDigits(cusSerNo)) {
+		if (getEntity().getCustomer().getSerNo() == null) {
 			addActionError("請正確填寫機構名稱");
 		} else {
-			if (Long.parseLong(cusSerNo) != 0
-					&& customerService.getBySerNo(Long.parseLong(cusSerNo)) == null) {
+			if (getEntity().getCustomer().getSerNo() != 0
+					&& customerService.getBySerNo(getEntity().getCustomer()
+							.getSerNo()) == null) {
 				addActionError("請正確填寫機構名稱");
 			}
 		}
@@ -104,18 +102,11 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
 			}
 
-			if (Long.parseLong(cusSerNo) > 0) {
+			if (getEntity().getCustomer().getSerNo() > 0) {
 				getEntity().setCustomer(
-						customerService.getBySerNo(Long.parseLong(cusSerNo)));
-				getRequest().setAttribute("customer",
-						getEntity().getCustomer().getName());
-			} else {
-				customer = new Customer();
-				customer.setSerNo(Long.parseLong(cusSerNo));
-				getEntity().setCustomer(customer);
+						customerService.getBySerNo(getEntity().getCustomer()
+								.getSerNo()));
 			}
-
-			getRequest().setAttribute("cusSerNo", cusSerNo);
 
 			DataSet<FeLogs> ds = feLogsService.getByRestrictions(initDataSet());
 
@@ -129,8 +120,6 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 			setDs(ds);
 			return LIST;
 		} else {
-			getRequest().setAttribute("customer", customerName);
-			getRequest().setAttribute("cusSerNo", cusSerNo);
 			return LIST;
 		}
 	}
@@ -154,18 +143,17 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 	}
 
 	public String exports() throws Exception {
-		String customerName = getRequest().getParameter("customer");
-
-		String cusSerNo = getRequest().getParameter("cusSerNo");
 		if (getLoginUser().getRole().equals(Role.管理員)) {
-			cusSerNo = String.valueOf(getLoginUser().getCustomer().getSerNo());
+			getEntity().getCustomer().setSerNo(
+					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (cusSerNo == null || !NumberUtils.isDigits(cusSerNo)) {
+		if (getEntity().getCustomer().getSerNo() == null) {
 			addActionError("請正確填寫機構名稱");
 		} else {
-			if (Long.parseLong(cusSerNo) != 0
-					&& customerService.getBySerNo(Long.parseLong(cusSerNo)) == null) {
+			if (getEntity().getCustomer().getSerNo() != 0
+					&& customerService.getBySerNo(getEntity().getCustomer()
+							.getSerNo()) == null) {
 				addActionError("請正確填寫機構名稱");
 			}
 		}
@@ -175,21 +163,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
 			}
 
-			if (Long.parseLong(cusSerNo) > 0) {
-				getEntity().setCustomer(
-						customerService.getBySerNo(Long.parseLong(cusSerNo)));
-				getRequest().setAttribute("customer",
-						getEntity().getCustomer().getName());
-			} else {
-				customer = new Customer();
-				customer.setSerNo(Long.parseLong(cusSerNo));
-				getEntity().setCustomer(customer);
-			}
-
 			DataSet<FeLogs> ds = initDataSet();
 			ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
-			ds = feLogsService.getByRestrictions(ds);
-
 			ds = feLogsService.getByRestrictions(ds);
 
 			getEntity().setReportFile("feLogs.xlsx");
@@ -237,14 +212,12 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 			return XLSX;
 		} else {
-			getRequest().setAttribute("customer", customerName);
-			getRequest().setAttribute("cusSerNo", cusSerNo);
-			return LIST;
+			return null;
 		}
 	}
 
-	public String getDateString(LocalDateTime dateTime) {
-		return converter.convertToString(null, dateTime);
+	protected String getDateString(LocalDateTime dateTime) {
+		return jodaTimeConverter.convertToString(null, dateTime);
 	}
 
 	/**

@@ -2,29 +2,20 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
-<c:if test="${not empty isbn }">
-<script type="text/javascript">
-$(document).ready(function() {
-	$("input[name='entity.isbn']").val("${isbn}");
-});
-</script>
-</c:if>
 <script type="text/javascript">
 //切換查詢項目
 $(document).ready(function() {
 	$("select#listForm_searchCondition").change(function() {
 		$("input#search").attr("name", $(this).val());
 	});
-});
-
-$(document).ready(function() {
-	$("select#listForm_searchCondition").val('${option }');
 });
 
 //IE press Enter GoPage
@@ -137,28 +128,19 @@ function goImport(){
 
 					<tbody>
 						<tr>
-							<td align="left"><select name="option"
-								id="listForm_searchCondition">
-									<option value="entity.bookName">書名</option>
-									<option value="entity.isbn">ISBN</option>
-							</select></td>
-							<c:set var="option">
-								<c:out value="${option }" />
-							</c:set>
+							<td align="left"><s:select name="entity.option"
+									id="listForm_searchCondition"
+									list="#{'entity.bookName':'書名','entity.isbn':'ISBN'}"></s:select>
+							</td>
 							<c:choose>
-								<c:when test="${not empty option }">
-									<c:set var="find">
-										<c:out
-											value='<%=request.getParameter(request
-									.getAttribute("option").toString())%>' />
-									</c:set>
-									<td align="left"><input type="text" name="${option }"
-										maxlength="20" id="search" class="input_text" value="${find }">
-									</td>
+								<c:when test="${entity.option=='entity.isbn' }">
+									<td align="left"><input type="text" name="entity.isbn"
+										id="search" class="input_text"
+										value="<esapi:encodeForHTMLAttribute><%=request.getParameter("entity.isbn")%></esapi:encodeForHTMLAttribute>"></td>
 								</c:when>
 								<c:otherwise>
-									<td align="left"><input type="text" name="entity.bookName"
-										maxlength="20" id="search" class="input_text"></td>
+									<td align="left"><s:textfield name="entity.name"
+											id="search" cssClass="input_text" /></td>
 								</c:otherwise>
 							</c:choose>
 							<td align="left"><a class="state-default"
@@ -207,7 +189,7 @@ function goImport(){
 								type="checkbox" class="checkbox" name="checkItem"
 								value="${item.serNo}"></td>
 							<td><c:out value="${item.bookName }" /></td>
-							<td align="center">${item.resourcesBuyers.rType.type }</td>
+							<td align="center">${item.resourcesBuyers.type.type }</td>
 							<td><c:out value="${item.cUid }" /></td>
 							<td align="center"><c:out value="${item.uUid }" /></td>
 							<td align="center"><a class="state-default2"

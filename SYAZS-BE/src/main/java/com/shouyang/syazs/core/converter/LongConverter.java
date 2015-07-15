@@ -6,7 +6,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LongConverter extends TypeConverter {
+public class LongConverter extends RootConverter {
 
 	@SuppressWarnings("rawtypes")
 	@Override

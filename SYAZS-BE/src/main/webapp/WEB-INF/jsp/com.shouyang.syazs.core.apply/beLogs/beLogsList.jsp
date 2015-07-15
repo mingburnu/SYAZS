@@ -12,7 +12,7 @@
 $(document).ready(function() {
 	formSetCSS();
 	state_hover();
-	initAutoComplete("<%=request.getContextPath()%>/crud/apply.customer.json.action",'#customerSerno','#customerName');
+	initAutoComplete("<%=request.getContextPath()%>/crud/apply.customer.json.action",'#customerSerNo','#customerName');
 });
 
 //IE press Enter GoPage
@@ -24,15 +24,15 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 	$('input#customerName').click(function(){
-		$('input[name="cusSerNo"]:eq(0)').attr( "checked", '' );
-		$('input[name="cusSerNo"]:eq(1)').attr( "checked", true );
+		$('input[name="entity.customer.serNo"]:eq(0)').attr( "checked", '' );
+		$('input[name="entity.customer.serNo"]:eq(1)').attr( "checked", true );
 	});
 });
 
 	function goSearch(){
-		if($("input#customerSerno").attr("checked")){
-		var customerSerno=$("input#customerSerno").val();
-		if(customerSerno!=null&&customerSerno>0){
+		if($("input#customerSerNo").attr("checked")){
+		var customerSerNo=$("input#customerSerNo").val();
+		if(customerSerNo!=null&&customerSerNo>0){
 			goMain("<%=request.getContextPath()%>/crud/apply.beLogs.list.action",
 					"#apply_beLogs_list", "");
 		}else{
@@ -75,15 +75,15 @@ $(document).ready(function() {
 		var data=$("#apply_beLogs_list").serialize();
 		var url='<%=request.getContextPath()%>/crud/apply.beLogs.exports.action?'
 				+ data;
-		if ($("input#customerSerno").attr("checked")) {
-			var customerSerno = $("input#customerSerno").val();
-			if (customerSerno != null && customerSerno > 0) {
-				window.open(url, "_top");
+		if ($("input#customerSerNo").attr("checked")) {
+			var customerSerNo = $("input#customerSerNo").val();
+			if (customerSerNo != null && customerSerNo > 0) {
+				window.open(url, "exports");
 			} else {
 				goAlert("訊息", "請正確填寫機構名稱");
 			}
 		} else {
-			window.open(url, "_top");
+			window.open(url, "exports");
 		}
 	}
 </script>
@@ -118,11 +118,12 @@ $(document).ready(function() {
 							<tr>
 								<th align="right">全部：</th>
 								<td><c:choose>
-										<c:when test="${0 eq cusSerNo}">
-											<input type="radio" name="cusSerNo" value="0" checked>
+										<c:when test="${0 eq entity.customer.serNo}">
+											<input type="radio" name="entity.customer.serNo" value="0"
+												checked>
 										</c:when>
 										<c:otherwise>
-											<input type="radio" name="cusSerNo" value="0">
+											<input type="radio" name="entity.customer.serNo" value="0">
 										</c:otherwise>
 									</c:choose></td>
 							</tr>
@@ -132,30 +133,26 @@ $(document).ready(function() {
 								<tr>
 									<th align="right">用戶名稱：</th>
 									<td><c:choose>
-											<c:when test="${0 eq cusSerNo}">
-												<input type="radio" name="cusSerNo" id="customerSerno"
-													value="0" />
+											<c:when test="${0 eq entity.customer.serNo}">
+												<input type="radio" name="entity.customer.serNo"
+													id="customerSerNo" value="0" />
 											</c:when>
 											<c:otherwise>
-												<c:set var="cusSerNo">
-													<c:out value="${cusSerNo }" />
-												</c:set>
-												<input type="radio" name="cusSerNo" id="customerSerno"
-													value="${cusSerNo }" checked />
+												<input type="radio" name="entity.customer.serNo"
+													id="customerSerNo" value="${entity.customer.serNo }"
+													checked />
 											</c:otherwise>
-										</c:choose> <c:set var="customer">
-											<c:out value="${customer }" />
-										</c:set><input type="text" id="customerName" class="input_text"
-										name="customer" value="${customer }"> <a
-										class="state-default" onclick="goSearch()">查詢</a></td>
+										</c:choose> <input type="text" id="customerName" class="input_text"
+										name="entity.customer.name" value="${entity.customer.name }">
+										<a class="state-default" onclick="goSearch()">查詢</a></td>
 								</tr>
 							</c:when>
 							<c:otherwise>
 								<tr>
 									<th align="right">用戶名稱：</th>
-									<td><input type="radio" name="cusSerNo" id="customerSerno"
-										value="${login.customer.serNo}" checked> <input
-										type="text" id="customerName" class="input_text"
+									<td><input type="radio" name="entity.customer.serNo"
+										id="customerSerNo" value="${login.customer.serNo}" checked>
+										<input type="text" id="customerName" class="input_text"
 										value="${login.customer.name}" readonly> <a
 										class="state-default" onclick="goSearch()">查詢</a></td>
 								</tr>
@@ -254,6 +251,7 @@ $(document).ready(function() {
 			</div>
 		</div>
 	</s:form>
+	<iframe name="exports" style="display: none;"></iframe>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>

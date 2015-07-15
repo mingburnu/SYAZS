@@ -60,8 +60,8 @@ public class BeLogsDao extends ModuleDaoLog<BeLogs> {
 					+ "' group by acc_serNo) as countTotal";
 
 			if (entity.getCustomer().getSerNo() == 0) {
-				listHql = listHql.replace(
-						"' and B.customer.serNo ='" + entity.getCustomer(), "");
+				listHql = listHql.replace("' and B.customer.serNo ='"
+						+ entity.getCustomer().getSerNo(), "");
 				countSql = countSql.replace("' and cus_serNo ='"
 						+ entity.getCustomer().getSerNo(), "");
 			}
@@ -89,7 +89,6 @@ public class BeLogsDao extends ModuleDaoLog<BeLogs> {
 
 			listQuery = getSession().createQuery(listHql);
 			totalQuery = getSession().createSQLQuery(countSql);
-
 		}
 
 		listQuery.setFirstResult(ds.getPager().getOffset());

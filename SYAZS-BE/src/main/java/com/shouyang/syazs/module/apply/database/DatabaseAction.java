@@ -48,6 +48,8 @@ import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
+import com.shouyang.syazs.module.converter.CategoryConverter;
+import com.shouyang.syazs.module.converter.TypeConverter;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -92,19 +94,20 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Autowired
 	private CustomerService customerService;
 
+	@Autowired
+	private CategoryConverter categoryConverter;
+
+	@Autowired
+	private TypeConverter typeConverter;
+
 	private String[] importSerNos;
+
+	private List<Category> categoryList;
+
+	private List<Type> typeList;
 
 	@Override
 	protected void validateSave() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
-		cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-		
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		if (StringUtils.isBlank(getEntity().getDbChtTitle())
 				&& StringUtils.isBlank(getEntity().getDbEngTitle())) {
 			errorMessages.add("沒有資料庫名稱");
@@ -129,6 +132,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (ArrayUtils.isEmpty(cusSerNo)) {
 			errorMessages.add("至少選擇一筆以上購買單位");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(cusSerNo));
+			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < cusSerNo.length) {
 				if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
@@ -141,38 +148,21 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 		}
 
-		boolean isLegalCategory = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rCategory") != null
-					&& getRequest().getParameter("rCategory").equals(
-							categoryList.get(i).getCategory())) {
-				isLegalCategory = true;
-			}
+		if (getEntity().getResourcesBuyers() == null) {
+			getEntity().setResourcesBuyers(resourcesBuyers);
 		}
 
-		if (isLegalCategory) {
-			getRequest().setAttribute("rCategory",
-					getRequest().getParameter("rCategory"));
-		} else {
+		if (getEntity().getResourcesBuyers().getCategory() == null
+				|| getEntity().getResourcesBuyers().getCategory()
+						.equals(Category.不明)) {
 			errorMessages.add("資源類型錯誤");
+			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
-		boolean isLegalType = false;
-		for (int i = 0; i < categoryList.size(); i++) {
-			if (getRequest().getParameter("rType") != null
-					&& getRequest().getParameter("rType").equals(
-							typeList.get(i).getType())) {
-				isLegalType = true;
-			}
-		}
-
-		if (isLegalType) {
-			getRequest().setAttribute("rType",
-					getRequest().getParameter("rType"));
-		} else {
+		if (getEntity().getResourcesBuyers().getType() == null) {
 			errorMessages.add("資源種類錯誤");
+			getEntity().getResourcesBuyers().setType(Type.資料庫);
 		}
-
 	}
 
 	@Override
@@ -180,16 +170,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(cusSerNo));
-			cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-			
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
-			categoryList.remove(categoryList.size() - 1);
-
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
-
 			if (StringUtils.isBlank(getEntity().getDbChtTitle())
 					&& StringUtils.isBlank(getEntity().getDbEngTitle())) {
 				errorMessages.add("沒有資料庫名稱");
@@ -216,6 +196,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			if (ArrayUtils.isEmpty(cusSerNo)) {
 				errorMessages.add("至少選擇一筆以上購買單位");
 			} else {
+				Set<String> deRepeatSet = new HashSet<String>(
+						Arrays.asList(cusSerNo));
+				cusSerNo = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 				int i = 0;
 				while (i < cusSerNo.length) {
 					if (!NumberUtils.isDigits(String.valueOf(cusSerNo[i]))
@@ -228,48 +212,33 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 			}
 
-			boolean isLegalCategory = false;
-			for (int i = 0; i < categoryList.size(); i++) {
-				if (getRequest().getParameter("rCategory") != null
-						&& getRequest().getParameter("rCategory").equals(
-								categoryList.get(i).getCategory())) {
-					isLegalCategory = true;
-				}
+			if (getEntity().getResourcesBuyers() == null) {
+				getEntity().setResourcesBuyers(resourcesBuyers);
 			}
 
-			if (isLegalCategory) {
-				getRequest().setAttribute("rCategory",
-						getRequest().getParameter("rCategory"));
-			} else {
+			if (getEntity().getResourcesBuyers().getCategory() == null
+					|| getEntity().getResourcesBuyers().getCategory()
+							.equals(Category.不明)) {
 				errorMessages.add("資源類型錯誤");
+				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
-			boolean isLegalType = false;
-			for (int i = 0; i < categoryList.size(); i++) {
-				if (getRequest().getParameter("rType") != null
-						&& getRequest().getParameter("rType").equals(
-								typeList.get(i).getType())) {
-					isLegalType = true;
-				}
-			}
-
-			if (isLegalType) {
-				getRequest().setAttribute("rType",
-						getRequest().getParameter("rType"));
-			} else {
+			if (getEntity().getResourcesBuyers().getType() == null) {
 				errorMessages.add("資源種類錯誤");
+				getEntity().getResourcesBuyers().setType(Type.資料庫);
 			}
 		}
 	}
 
 	@Override
 	protected void validateDelete() throws Exception {
-		Set<String> deRepeatSet = new HashSet<String>(Arrays.asList(checkItem));
-		checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
-
 		if (ArrayUtils.isEmpty(checkItem)) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(checkItem));
+			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < checkItem.length) {
 				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
@@ -285,19 +254,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	public String add() throws Exception {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
+		categoryList = new ArrayList<Category>(Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
-		getRequest().setAttribute("categoryList", categoryList);
 
-		List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-		getRequest().setAttribute("typeList", typeList);
+		typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
 		List<Customer> customers = new ArrayList<Customer>();
 		database.setCustomers(customers);
+		database.setResourcesBuyers(resourcesBuyers);
+		database.getResourcesBuyers().setCategory(Category.未註明);
+		database.getResourcesBuyers().setType(Type.資料庫);
 		setEntity(database);
 
 		return ADD;
@@ -306,14 +275,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
-			categoryList.remove(categoryList.size() - 1);
-			getRequest().setAttribute("categoryList", categoryList);
-
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
-			getRequest().setAttribute("typeList", typeList);
+			categoryList.remove(categoryList.size() - 1);
+
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -333,12 +299,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 
 			resourcesBuyers = resourcesUnion.getResourcesBuyers();
-			getRequest().setAttribute("rCategory",
-					resourcesBuyers.getrCategory().getCategory());
-			getRequest().setAttribute("rType",
-					resourcesBuyers.getrType().getType());
+			database.setResourcesBuyers(resourcesBuyers);
 			database.setCustomers(customers);
-
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -348,20 +310,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	public String list() throws Exception {
-		if (StringUtils.isNotBlank(getRequest().getParameter("option"))) {
-			if (getRequest().getParameter("option").equals("entity.dbChtTitle")
-					|| getRequest().getParameter("option").equals(
-							"entity.dbEngTitle")) {
-				getRequest().setAttribute("option",
-						getRequest().getParameter("option"));
-
-			} else {
-				getRequest().setAttribute("option", "entity.dbChtTitle");
+		if (StringUtils.isNotBlank(getEntity().getOption())) {
+			if (!getEntity().getOption().equals("entity.dbChtTitle")
+					&& !getEntity().getOption().equals("entity.dbEngTitle")) {
+				getEntity().setOption("entity.dbChtTitle");
 			}
-
 		} else {
-			getRequest().setAttribute("option", "entity.dbChtTitle");
-
+			getEntity().setOption("entity.dbChtTitle");
 		}
 
 		DataSet<Database> ds = databaseService.getByRestrictions(initDataSet());
@@ -403,16 +358,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 
 			database = databaseService.save(getEntity(), getLoginUser());
-
-			resourcesBuyers = resourcesBuyersService
-					.save(new ResourcesBuyers(getRequest().getParameter(
-							"resourcesBuyers.startDate"), getRequest()
-							.getParameter("resourcesBuyers.maturityDate"),
-							Category.valueOf(getRequest().getParameter(
-									"rCategory")), Type.valueOf(getRequest()
-									.getParameter("rType")), database
-									.getDbChtTitle(), database.getDbEngTitle()),
-							getLoginUser());
+			resourcesBuyers = resourcesBuyersService.save(getEntity()
+					.getResourcesBuyers(), getLoginUser());
 
 			int i = 0;
 			while (i < cusSerNo.length) {
@@ -442,15 +389,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			setEntity(database);
 			return VIEW;
 		} else {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
+					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
-			getRequest().setAttribute("categoryList", categoryList);
-			getRequest().setAttribute("typeList", typeList);
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
 
@@ -487,18 +431,15 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			database = databaseService.update(getEntity(), getLoginUser());
 
-			resourcesBuyers = resourcesUnionService.getByObjSerNo(
-					database.getSerNo(), Database.class).getResourcesBuyers();
-			resourcesBuyers.setStartDate(getRequest().getParameter(
-					"resourcesBuyers.startDate"));
-			resourcesBuyers.setMaturityDate(getRequest().getParameter(
-					"resourcesBuyers.maturityDate"));
-			resourcesBuyers.setrCategory(Category.valueOf(getRequest()
-					.getParameter("rCategory")));
-			resourcesBuyers.setrType(Type.valueOf(getRequest().getParameter(
-					"rType")));
-			resourcesBuyers.setDbChtTitle(database.getDbChtTitle());
-			resourcesBuyers.setDbEngTitle(database.getDbEngTitle());
+			resourcesBuyers = new ResourcesBuyers(getEntity()
+					.getResourcesBuyers().getStartDate(), getEntity()
+					.getResourcesBuyers().getMaturityDate(), getEntity()
+					.getResourcesBuyers().getCategory(), getEntity()
+					.getResourcesBuyers().getType(), database.getDbChtTitle(),
+					database.getDbEngTitle());
+			resourcesBuyers.setSerNo(resourcesUnionService
+					.getByObjSerNo(database.getSerNo(), Database.class)
+					.getResourcesBuyers().getSerNo());
 			resourcesBuyersService.update(resourcesBuyers, getLoginUser());
 
 			List<ResourcesUnion> resourcesUnions = resourcesUnionService
@@ -552,15 +493,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			setEntity(database);
 			return VIEW;
 		} else {
-			List<Category> categoryList = new ArrayList<Category>(
-					Arrays.asList(Category.values()));
+			categoryList = new ArrayList<Category>(Arrays.asList(Category
+					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-					.values()));
+			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
-			getRequest().setAttribute("typeList", typeList);
-			getRequest().setAttribute("categoryList", categoryList);
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
 
@@ -775,44 +713,28 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					k++;
 				}
 
-				List<Category> categoryList = new ArrayList<Category>(
-						Arrays.asList(Category.values()));
-				categoryList.remove(categoryList.size() - 1);
-
 				String category = "";
 				if (rowValues[9] == null || rowValues[9].trim().equals("")) {
 					category = Category.未註明.getCategory();
 				} else {
-					boolean isLegalCategory = false;
-					for (int j = 0; j < categoryList.size(); j++) {
-						if (rowValues[9].trim().equals(
-								categoryList.get(j).getCategory())) {
-							category = categoryList.get(j).getCategory();
-							isLegalCategory = true;
-						}
-					}
-
-					if (!isLegalCategory) {
+					Object object = getEnumCategory(new String[] { rowValues[9]
+							.trim() });
+					if (object != null) {
+						category = rowValues[9].trim();
+					} else {
 						category = Category.不明.getCategory();
 					}
 				}
 
-				List<Type> typeList = new ArrayList<Type>(Arrays.asList(Type
-						.values()));
 				String type = "";
 				if (rowValues[10] == null || rowValues[10].trim().equals("")) {
 					type = Type.資料庫.getType();
 				} else {
-					boolean isLegalType = false;
-					for (int j = 0; j < typeList.size(); j++) {
-						if (rowValues[10].trim().equals(
-								typeList.get(j).getType())) {
-							type = typeList.get(j).getType();
-							isLegalType = true;
-						}
-					}
-
-					if (!isLegalType) {
+					Object object = getEnumType(new String[] { rowValues[10]
+							.trim() });
+					if (object != null) {
+						type = rowValues[10].trim();
+					} else {
 						type = Type.資料庫.getType();
 					}
 				}
@@ -887,7 +809,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 							}
 
 						} else {
-							if (database.getResourcesBuyers().getrCategory()
+							if (database.getResourcesBuyers().getCategory()
 									.equals(Category.不明)) {
 								database.setExistStatus("資源類型不明");
 							}
@@ -1070,11 +992,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
-		Set<String> deRepeatSet = new HashSet<String>(
-				Arrays.asList(importSerNos));
-		importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
 
 		if (ArrayUtils.isNotEmpty(importSerNos)) {
+			Set<String> deRepeatSet = new HashSet<String>(
+					Arrays.asList(importSerNos));
+			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+
 			int i = 0;
 			while (i < importSerNos.length) {
 				if (NumberUtils.isDigits(importSerNos[i])) {
@@ -1205,15 +1128,14 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		return XLSX;
 	}
 
-	public boolean isURL(String url) {
+	protected boolean isURL(String url) {
 		String urlPattern = "(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?(https://)?[a-zA-Z_0-9\\-]+(\\.\\w[`~!@#$%^&*()_-{[}]|;:<>?,./a-zA-Z0-9\u0000-\uffff\\+=]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?";
 
 		return Pattern.compile(urlPattern).matcher(url).matches();
 	}
 
-	public boolean hasEntity() throws Exception {
-		if (getEntity().getSerNo() == null) {
-			getEntity().setSerNo(-1L);
+	protected boolean hasEntity() throws Exception {
+		if (getEntity().isNew()) {
 			return false;
 		}
 
@@ -1226,7 +1148,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	// 判斷文件類型
-	public Workbook createWorkBook(InputStream is) throws IOException {
+	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
 			if (fileFileName[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);
@@ -1240,6 +1162,14 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		return null;
+	}
+
+	protected Object getEnumCategory(String[] categorys) {
+		return categoryConverter.convertFromString(null, categorys, null);
+	}
+
+	protected Object getEnumType(String[] types) {
+		return typeConverter.convertFromString(null, types, null);
 	}
 
 	/**
@@ -1270,21 +1200,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	 */
 	public void setCusSerNo(String[] cusSerNo) {
 		this.cusSerNo = cusSerNo;
-	}
-
-	/**
-	 * @return the resourcesBuyers
-	 */
-	public ResourcesBuyers getResourcesBuyers() {
-		return resourcesBuyers;
-	}
-
-	/**
-	 * @param resourcesBuyers
-	 *            the resourcesBuyers to set
-	 */
-	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
-		this.resourcesBuyers = resourcesBuyers;
 	}
 
 	/**
@@ -1345,5 +1260,35 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	 */
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
+	}
+
+	/**
+	 * @return the categoryList
+	 */
+	public List<Category> getCategoryList() {
+		return categoryList;
+	}
+
+	/**
+	 * @param categoryList
+	 *            the categoryList to set
+	 */
+	public void setCategoryList(List<Category> categoryList) {
+		this.categoryList = categoryList;
+	}
+
+	/**
+	 * @return the typeList
+	 */
+	public List<Type> getTypeList() {
+		return typeList;
+	}
+
+	/**
+	 * @param typeList
+	 *            the typeList to set
+	 */
+	public void setTypeList(List<Type> typeList) {
+		this.typeList = typeList;
 	}
 }

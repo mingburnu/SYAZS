@@ -27,12 +27,18 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		Database entity = ds.getEntity();
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
 
-		if (StringUtils.isNotBlank(entity.getDbChtTitle())) {
-			restrictions.likeIgnoreCase("dbChtTitle", entity.getDbChtTitle(),
-					MatchMode.ANYWHERE);
-		} else if (StringUtils.isNotBlank(entity.getDbEngTitle())) {
-			restrictions.likeIgnoreCase("dbEngTitle", entity.getDbEngTitle(),
-					MatchMode.ANYWHERE);
+		if (entity.getOption().equals("entity.dbChtTitle")) {
+			if (StringUtils.isNotBlank(entity.getDbChtTitle())) {
+				restrictions.likeIgnoreCase("dbChtTitle",
+						entity.getDbChtTitle(), MatchMode.ANYWHERE);
+			}
+		}
+		
+		if (entity.getOption().equals("entity.dbEngTitle")) {
+			if (StringUtils.isNotBlank(entity.getDbEngTitle())) {
+				restrictions.likeIgnoreCase("dbEngTitle",
+						entity.getDbEngTitle(), MatchMode.ANYWHERE);
+			}
 		}
 
 		return dao.findByRestrictions(restrictions, ds);

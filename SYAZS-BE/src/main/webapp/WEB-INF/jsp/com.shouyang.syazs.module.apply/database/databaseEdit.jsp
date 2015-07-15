@@ -43,44 +43,10 @@
 		});
 	});
 
-	$(document).ready(
-			function() {
-				$("input#apply_database_update_resourcesBuyers_rCategory")
-						.each(function() {
-							if ($(this).val() == "未註明") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_database_update_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "資料庫") {
-								this.checked = true;
-							}
-						});
-			});
-
-	$(document).ready(
-			function() {
-				$("input#apply_database_update_resourcesBuyers_rCategory")
-						.each(function() {
-							if ($(this).val() == "${rCategory}") {
-								this.checked = true;
-							}
-						});
-
-				$("input#apply_database_update_resourcesBuyers_rType").each(
-						function() {
-							if ($(this).val() == "${rType}") {
-								this.checked = true;
-							}
-						});
-			});
-
 	//重設所有欄位(清空)
 	function resetData() {
 		goDetail('<%=request.getContextPath()%>/crud/apply.database.edit.action?'
-				+ 'entity.serNo=${entity.serNo}', '資料庫-修改');
+						+ 'entity.serNo=${entity.serNo}', '資料庫-修改');
 	}
 
 	//遞交表單
@@ -162,33 +128,23 @@ input#customer_name {
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
-				<td><s:textfield name="resourcesBuyers.startDate"
+				<td><s:textfield name="entity.resourcesBuyers.startDate"
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
-				<td><s:textfield name="resourcesBuyers.maturityDate"
+				<td><s:textfield name="entity.resourcesBuyers.maturityDate"
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>
-				<td><c:forEach var="item" items="${categoryList}"
-						varStatus="status">
-						<input type="radio" name="rCategory"
-							id="apply_database_update_resourcesBuyers_rCategory"
-							value="${item.category }">
-						<label for="apply_database_update_resourcesBuyers_rCategory">${item.category }</label>
-					</c:forEach></td>
+				<td><s:radio name="entity.resourcesBuyers.category"
+						list="categoryList" listKey="name()" listValue="category" /></td>
 			</tr>
 			<tr>
 				<th width="130">資源種類</th>
-				<td><c:forEach var="item" items="${typeList}"
-						varStatus="status">
-						<input type="radio" name="rType"
-							id="apply_database_update_resourcesBuyers_rType"
-							value="${item.type }">
-						<label for="apply_database_update_resourcesBuyers_rType">${item.type }</label>
-					</c:forEach></td>
+				<td><s:radio name="entity.resourcesBuyers.type" list="typeList"
+						listKey="name()" listValue="type" /></td>
 			</tr>
 			<tr>
 				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
