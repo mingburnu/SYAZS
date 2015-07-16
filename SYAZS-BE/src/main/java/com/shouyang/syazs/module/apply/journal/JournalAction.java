@@ -105,8 +105,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	private List<Category> categoryList;
 
-	private List<Type> typeList;
-
 	@Override
 	protected void validateSave() throws Exception {
 		if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
@@ -262,8 +260,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		categoryList = new ArrayList<Category>(Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
 
-		typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
@@ -283,8 +279,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -325,7 +319,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			getEntity().setOption("entity.chineseTitle");
 		}
 
-		 if (getEntity().getOption().equals("entity.englishTitle")) {
+		if (getEntity().getOption().equals("entity.englishTitle")) {
 			getEntity().setChineseTitle(null);
 			getEntity().setIssn(null);
 		} else {
@@ -404,8 +398,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -511,8 +503,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -1280,20 +1270,5 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	 */
 	public void setCategoryList(List<Category> categoryList) {
 		this.categoryList = categoryList;
-	}
-
-	/**
-	 * @return the typeList
-	 */
-	public List<Type> getTypeList() {
-		return typeList;
-	}
-
-	/**
-	 * @param typeList
-	 *            the typeList to set
-	 */
-	public void setTypeList(List<Type> typeList) {
-		this.typeList = typeList;
 	}
 }

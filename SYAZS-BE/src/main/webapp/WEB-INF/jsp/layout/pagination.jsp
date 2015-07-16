@@ -4,6 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="pg" uri="http://jsptags.com/tags/navigation/pager"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 
 <c:set var="recordPerPage" value="${pager.recordPerPage}" />
 <c:set var="totalRecord" value="${pager.totalRecord}" />
@@ -12,12 +14,9 @@
 <c:set var="lastPage" value="${factor + (1 - (factor % 1)) % 1}" />
 
 <c:set var="goToPage">
-	<c:url value="${param.namespace}/${param.action}.action" />
+	<c:url
+		value="<esapi:encodeForXMLAttribute>${param.namespace}</esapi:encodeForXMLAttribute>/<esapi:encodeForXMLAttribute>${param.action}</esapi:encodeForXMLAttribute>.action" />
 </c:set>
-<c:set var="goToPage">
-	<c:out value="${goToPage }"></c:out>
-</c:set>
-
 <pg:pager url="${goToPage}" items="${totalRecord}"
 	maxPageItems="${recordPerPage}" maxIndexPages="5">
 	<pg:index>

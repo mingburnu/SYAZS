@@ -41,6 +41,7 @@ public class AccountNumberDao extends ModuleDaoFull<AccountNumber> {
 		Criteria criteria = getSession().createCriteria(AccountNumber.class);
 		criteria.createAlias("customer", "customer");
 		Criteria countCri = getSession().createCriteria(AccountNumber.class);
+		countCri.createAlias("customer", "customer");
 
 		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
 		List<Role> tempList = new ArrayList<Role>();
@@ -54,15 +55,19 @@ public class AccountNumberDao extends ModuleDaoFull<AccountNumber> {
 
 		for (int i = 0; i < tempList.size(); i++) {
 			criteria.add(Restrictions.ne("role", tempList.get(i)));
+			countCri.add(Restrictions.ne("role", tempList.get(i)));
 		}
 
 		if (loginUser.getRole() == Role.管理員) {
 			criteria.add(Restrictions.eq("customer", loginUser.getCustomer()));
+			countCri.add(Restrictions.eq("customer", loginUser.getCustomer()));
 		} else {
 			if (ds.getEntity().getCustomer() != null
 					&& StringUtils.isNotBlank(ds.getEntity().getCustomer()
 							.getName())) {
 				criteria.add(Restrictions.ilike("customer.name", ds.getEntity()
+						.getCustomer().getName().trim(), MatchMode.ANYWHERE));
+				countCri.add(Restrictions.ilike("customer.name", ds.getEntity()
 						.getCustomer().getName().trim(), MatchMode.ANYWHERE));
 
 			}
@@ -70,6 +75,8 @@ public class AccountNumberDao extends ModuleDaoFull<AccountNumber> {
 
 		if (StringUtils.isNotBlank(ds.getEntity().getUserId())) {
 			criteria.add(Restrictions.ilike("userId", ds.getEntity()
+					.getUserId().trim(), MatchMode.ANYWHERE));
+			countCri.add(Restrictions.ilike("userId", ds.getEntity()
 					.getUserId().trim(), MatchMode.ANYWHERE));
 		}
 

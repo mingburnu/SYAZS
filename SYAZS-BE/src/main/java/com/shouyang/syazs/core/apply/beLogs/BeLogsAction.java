@@ -17,8 +17,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumberService;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
@@ -46,12 +44,6 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 	@Autowired
 	private Customer customer;
-
-	@Autowired
-	private AccountNumberService accountNumberService;
-
-	@Autowired
-	private AccountNumber accountNumber;
 
 	@Autowired
 	private JodaTimeConverter jodaTimeConverter;
@@ -95,7 +87,8 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer().getSerNo() == null) {
+		if (getEntity().getCustomer() == null
+				|| getEntity().getCustomer().getSerNo() == null) {
 			addActionError("請正確填寫機構名稱");
 		} else {
 			if (getEntity().getCustomer().getSerNo() != 0

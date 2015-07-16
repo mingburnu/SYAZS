@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.shouyang.syazs.core.dao.DsRestrictions;
 
 /**
@@ -29,9 +26,6 @@ public class HibernateRestrictions implements DsRestrictions {
 	private List<Criterion> criterions;
 
 	private List<Order> orders;
-
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	public HibernateRestrictions() {
 		criterions = new ArrayList<Criterion>();

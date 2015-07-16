@@ -115,7 +115,7 @@
 			</result>
 			<result name="view">${entity.location}{1}/{1}View.jsp
 			</result>
-			<result name="ajax">${entity.location}{1}/{1}Ajax.jsp
+			<result name="box">${entity.location}{1}/{1}Box.jsp
 			</result>
 			<result name="queue">${entity.location}{1}/{1}Queue.jsp
 			</result>

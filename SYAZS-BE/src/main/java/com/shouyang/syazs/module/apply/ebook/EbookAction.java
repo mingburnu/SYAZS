@@ -103,8 +103,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	private List<Category> categoryList;
 
-	private List<Type> typeList;
-
 	@Override
 	protected void validateSave() throws Exception {
 		if (StringUtils.isBlank(getEntity().getBookName())) {
@@ -310,8 +308,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		categoryList = new ArrayList<Category>(Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
 
-		typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
@@ -331,8 +327,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -460,8 +454,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
 
@@ -558,8 +550,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -1328,20 +1318,5 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	 */
 	public void setCategoryList(List<Category> categoryList) {
 		this.categoryList = categoryList;
-	}
-
-	/**
-	 * @return the typeList
-	 */
-	public List<Type> getTypeList() {
-		return typeList;
-	}
-
-	/**
-	 * @param typeList
-	 *            the typeList to set
-	 */
-	public void setTypeList(List<Type> typeList) {
-		this.typeList = typeList;
 	}
 }

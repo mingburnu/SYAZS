@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
@@ -19,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
+
+import com.shouyang.syazs.core.apply.enums.Role;
 
 public class Test {
 
@@ -207,28 +210,34 @@ public class Test {
 
 		System.out.println("xentity=".contains("entity"));
 
-//		 try {
-//		AccountNumber accountNumber = new AccountNumber("", "", "", "", "", "",
-//				"");
-//		 } catch (Exception e) {
-//		 System.out.println(e);
-//		 System.out.println("Error");
-//		 }
+		// try {
+		// AccountNumber accountNumber = new AccountNumber("", "", "", "", "",
+		// "",
+		// "");
+		// } catch (Exception e) {
+		// System.out.println(e);
+		// System.out.println("Error");
+		// }
 
 		System.out.println("Hello");
-		
+
 		LocalDateTime dateTime = LocalDateTime.parse("2012-12-12",
 				DateTimeFormat.forPattern("yyyy-MM-dd"));
 		System.out.println(dateTime);
-		
-		String numStr =""+Long.MAX_VALUE;
+
+		String numStr = "" + Long.MAX_VALUE;
 		System.out.println(NumberUtils.isDigits(numStr));
 		System.out.println(numStr);
-		Number number1 =NumberFormat.getInstance().parse(numStr);
+		Number number1 = NumberFormat.getInstance().parse(numStr);
 		System.out.println(number1);
 		System.out.println(NumberFormat.getInstance().parse("-9.4"));
 		System.out.println(NumberUtils.isNumber("9."));
 		System.out.println("9".split("\\.").length);
+
+		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
+		roleList.remove(0);
+		System.out.println(roleList.contains(Role.系統管理員));
+		System.out.println(roleList.contains(Role.使用者));
 	}
 
 	public static boolean isLCC(String LCC) {

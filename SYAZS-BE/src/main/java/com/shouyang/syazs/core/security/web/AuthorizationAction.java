@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumberService;
-import com.shouyang.syazs.core.apply.customer.Customer;
-import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericAction;
 
@@ -34,12 +32,6 @@ public class AuthorizationAction extends GenericAction<AccountNumber> {
 
 	@Autowired
 	private AccountNumber user;
-
-	@Autowired
-	private CustomerService customerService;
-
-	@Autowired
-	private Customer customer;
 
 	@Autowired
 	private DataSet<AccountNumber> ds;

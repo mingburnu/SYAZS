@@ -359,6 +359,13 @@
 			<artifactId>esapi</artifactId>
 			<version>2.1.0</version>
 		</dependency>
+
+		<!-- UserAgentUtils -->
+		<dependency>
+			<groupId>nl.bitwalker</groupId>
+			<artifactId>UserAgentUtils</artifactId>
+			<version>1.2.4</version>
+		</dependency>
 	</dependencies>
 
 	<build>

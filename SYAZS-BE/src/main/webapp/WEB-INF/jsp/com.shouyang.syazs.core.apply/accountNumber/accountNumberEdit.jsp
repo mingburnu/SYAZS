@@ -8,23 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
-	$(document).ready(
-			function() {
-				$("select#apply_accountNumber_update_role").children().each(
-						function() {
-							if ($(this).text() == "${entity.role.role}") {
-								this.selected = true;
-							}
-						});
-
-				$("select#apply_accountNumber_update_status").children().each(
-						function() {
-							if ($(this).text() == "${entity.status.status}") {
-								this.selected = true;
-							}
-						});
-			});
-
+	
 	//重設所有欄位(清空)
 	function resetData() {
 		goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.edit.action?'
@@ -71,26 +55,19 @@
 					</c:choose></td>
 			</tr>
 			<tr>
-				<th width="130">帳戶角色</th>
-				<td><select name="role" id="apply_accountNumber_update_role"
-					class="input_text">
-						<c:forEach var="item" items="${roleList}" varStatus="status">
-							<option value="${item.role }">${item.role }</option>
-						</c:forEach>
-				</select></td>
-			</tr>
-			<tr>
 				<th width="130">Email</th>
 				<td><s:textfield name="entity.email" cssClass="input_text" /></td>
 			</tr>
 			<tr>
+				<th width="130">帳戶角色</th>
+				<td><s:select name="entity.role" list="roleList"
+						listKey="name()" listValue="role" cssClass="input_text" /></td>
+			</tr>
+			<tr>
 				<th width="130">狀態</th>
-				<td><select name="status"
-					id="apply_accountNumber_update_status" class="input_text">
-						<c:forEach var="item" items="${statusList}" varStatus="status">
-							<option value="${item.status }">${item.status }</option>
-						</c:forEach>
-				</select></td>
+				<td><s:select name="entity.status"
+						list="@com.shouyang.syazs.core.apply.enums.Status@values()"
+						listKey="name()" listValue="status" cssClass="input_text" /></td>
 			</tr>
 		</table>
 		<div class="button_box">

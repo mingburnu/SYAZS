@@ -87,7 +87,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer().getSerNo() == null) {
+		if (getEntity().getCustomer() == null
+				|| getEntity().getCustomer().getSerNo() == null) {
 			addActionError("請正確填寫機構名稱");
 		} else {
 			if (getEntity().getCustomer().getSerNo() != 0

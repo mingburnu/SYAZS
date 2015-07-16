@@ -18,7 +18,7 @@
 								.html();
 						if (contain != '單位-新增') {
 							goCustomers(
-									"<c:url value = '/'/>crud/apply.customer.ajax.action",
+									"<c:url value = '/'/>crud/apply.customer.box.action",
 									'單位-新增');
 						}
 					});
@@ -166,7 +166,8 @@ input#customer_name {
 				<tr>
 					<th width="130">資源種類</th>
 					<td><s:radio name="entity.resourcesBuyers.type"
-							list="typeList" listKey="name()" listValue="type" /></td>
+							list="@com.shouyang.syazs.module.apply.enums.Type@values()"
+							listKey="name()" listValue="type" /></td>
 				</tr>
 				<tr>
 					<th width="130">資料庫中文題名</th>

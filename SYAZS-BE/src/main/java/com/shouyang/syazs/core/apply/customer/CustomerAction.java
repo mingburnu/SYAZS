@@ -42,8 +42,6 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
-import com.shouyang.syazs.core.apply.ipRange.IpRange;
-import com.shouyang.syazs.core.apply.ipRange.IpRangeService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
@@ -71,16 +69,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	private CustomerService customerService;
 
 	@Autowired
-	private IpRange ipRange;
-
-	@Autowired
 	private GroupMapping groupMapping;
 
 	@Autowired
 	private GroupMappingService groupMappingService;
-
-	@Autowired
-	private IpRangeService ipRangeService;
 
 	private String[] importSerNos;
 
@@ -271,11 +263,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		return VIEW;
 	}
 
-	public String ajax() throws Exception {
+	public String box() throws Exception {
 		getRequest().setAttribute("customerUnits",
 				customerService.getAllCustomers());
 
-		return AJAX;
+		return BOX;
 	}
 
 	public String json() throws Exception {

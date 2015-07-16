@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -33,6 +31,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.owasp.esapi.ESAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -104,8 +103,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	private List<Category> categoryList;
 
-	private List<Type> typeList;
-
 	@Override
 	protected void validateSave() throws Exception {
 		if (StringUtils.isBlank(getEntity().getDbChtTitle())
@@ -123,10 +120,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 		}
 
-		if (StringUtils.isNotEmpty(getEntity().getUrl())) {
-			if (!isURL(getEntity().getUrl())) {
-				errorMessages.add("URL格式不正確");
-			}
+		if (!isURL(getEntity().getUrl())) {
+			errorMessages.add("URL格式不正確");
 		}
 
 		if (ArrayUtils.isEmpty(cusSerNo)) {
@@ -187,10 +182,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 			}
 
-			if (StringUtils.isNotEmpty(getEntity().getUrl())) {
-				if (!isURL(getEntity().getUrl())) {
-					errorMessages.add("URL格式不正確");
-				}
+			if (!isURL(getEntity().getUrl())) {
+				errorMessages.add("URL格式不正確");
 			}
 
 			if (ArrayUtils.isEmpty(cusSerNo)) {
@@ -257,8 +250,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		categoryList = new ArrayList<Category>(Arrays.asList(Category.values()));
 		categoryList.remove(categoryList.size() - 1);
 
-		typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
@@ -278,8 +269,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -393,8 +382,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
 
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
-
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
 
@@ -496,8 +483,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			categoryList = new ArrayList<Category>(Arrays.asList(Category
 					.values()));
 			categoryList.remove(categoryList.size() - 1);
-
-			typeList = new ArrayList<Type>(Arrays.asList(Type.values()));
 
 			getRequest().setAttribute("allCustomers",
 					customerService.getAllCustomers());
@@ -714,7 +699,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 
 				String category = "";
-				if (rowValues[9] == null || rowValues[9].trim().equals("")) {
+				if (StringUtils.isBlank(rowValues[9])) {
 					category = Category.未註明.getCategory();
 				} else {
 					Object object = getEnumCategory(new String[] { rowValues[9]
@@ -727,7 +712,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 
 				String type = "";
-				if (rowValues[10] == null || rowValues[10].trim().equals("")) {
+				if (StringUtils.isBlank(rowValues[10])) {
 					type = Type.資料庫.getType();
 				} else {
 					Object object = getEnumType(new String[] { rowValues[10]
@@ -824,10 +809,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				}
 
-				if (StringUtils.isNotEmpty(database.getUrl())) {
-					if (!isURL(database.getUrl())) {
-						database.setUrl(null);
-					}
+				if (!isURL(database.getUrl())) {
+					database.setUrl(null);
 				}
 
 				if (database.getExistStatus().equals("")) {
@@ -1129,9 +1112,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	protected boolean isURL(String url) {
-		String urlPattern = "(@)?(href=')?(HREF=')?(HREF=\")?(href=\")?(http://)?(https://)?[a-zA-Z_0-9\\-]+(\\.\\w[`~!@#$%^&*()_-{[}]|;:<>?,./a-zA-Z0-9\u0000-\uffff\\+=]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?";
-
-		return Pattern.compile(urlPattern).matcher(url).matches();
+		return ESAPI.validator().isValidInput("Database URL", url, "URL",
+				Integer.MAX_VALUE, true);
 	}
 
 	protected boolean hasEntity() throws Exception {
@@ -1275,20 +1257,5 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	 */
 	public void setCategoryList(List<Category> categoryList) {
 		this.categoryList = categoryList;
-	}
-
-	/**
-	 * @return the typeList
-	 */
-	public List<Type> getTypeList() {
-		return typeList;
-	}
-
-	/**
-	 * @param typeList
-	 *            the typeList to set
-	 */
-	public void setTypeList(List<Type> typeList) {
-		this.typeList = typeList;
 	}
 }

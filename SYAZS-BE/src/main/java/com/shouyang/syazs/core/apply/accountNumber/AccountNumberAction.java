@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,6 +32,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.owasp.esapi.ESAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -42,6 +42,8 @@ import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
+import com.shouyang.syazs.core.converter.RoleConverter;
+import com.shouyang.syazs.core.converter.StatusConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
@@ -80,54 +82,26 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Autowired
 	private CustomerService customerService;
 
+	@Autowired
+	private StatusConverter statusConverter;
+
+	@Autowired
+	private RoleConverter roleConverter;
+
 	private String[] importSerNos;
+
+	private List<Role> roleList;
 
 	@Override
 	protected void validateSave() throws Exception {
-		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
-		List<Role> tempList = new ArrayList<Role>();
-		roleList.remove(roleList.size() - 1);
+		setLegalRoles();
 
-		int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-		for (int i = 0; i < roleCode; i++) {
-			tempList.add(roleList.get(i));
-		}
-
-		roleList.removeAll(tempList);
-
-		boolean isLegalRole = false;
-		for (int i = 0; i < roleList.size(); i++) {
-			if (StringUtils.isNotBlank(getRequest().getParameter("role"))
-					&& getRequest().getParameter("role").equals(
-							roleList.get(i).getRole())) {
-				isLegalRole = true;
-			}
-		}
-
-		List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
-				.values()));
-
-		boolean isLegalStatus = false;
-		for (int i = 0; i < statusList.size(); i++) {
-			if (StringUtils.isNotBlank(getRequest().getParameter("status"))
-					&& getRequest().getParameter("status").equals(
-							statusList.get(i).getStatus())) {
-				isLegalStatus = true;
-			}
-		}
-
-		if (isLegalRole) {
-			getEntity()
-					.setRole(Role.valueOf(getRequest().getParameter("role")));
-		} else {
+		if (getEntity().getRole() == null
+				|| !roleList.contains(getEntity().getRole())) {
 			errorMessages.add("角色錯誤");
 		}
 
-		if (isLegalStatus) {
-			getEntity().setStatus(
-					Status.valueOf(getRequest().getParameter("status")));
-		} else {
+		if (getEntity().getStatus() == null) {
 			errorMessages.add("狀態錯誤");
 		}
 
@@ -156,7 +130,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			errorMessages.add("用戶姓名不得空白");
 		}
 
-		if (getEntity().getCustomer().getSerNo() == null
+		if (getEntity().getCustomer() == null
+				|| getEntity().getCustomer().getSerNo() == null
 				|| getEntity().getCustomer().getSerNo() <= 0
 				|| customerService.getBySerNo(getEntity().getCustomer()
 						.getSerNo()) == null) {
@@ -170,10 +145,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			}
 		}
 
-		if (StringUtils.isNotEmpty(getEntity().getEmail())) {
-			if (!isEmail(getEntity().getEmail())) {
-				errorMessages.add("email格式不正確");
-			}
+		if (!isEmail(getEntity().getEmail())) {
+			errorMessages.add("email格式不正確");
 		}
 
 	}
@@ -183,20 +156,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			List<Status> statusList = new ArrayList<Status>(
-					Arrays.asList(Status.values()));
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
-					.values()));
-			List<Role> tempList = new ArrayList<Role>();
-			roleList.remove(roleList.size() - 1);
-
-			int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-			for (int i = 0; i < roleCode; i++) {
-				tempList.add(roleList.get(i));
-			}
-
-			roleList.removeAll(tempList);
+			setLegalRoles();
 
 			if (!roleList.contains(accountNumberService.getBySerNo(
 					getEntity().getSerNo()).getRole())) {
@@ -205,39 +165,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			}
 
 			if (errorMessages.size() == 0) {
-				boolean isLegalRole = false;
-				for (int i = 0; i < roleList.size(); i++) {
-					if (StringUtils.isNotBlank(getRequest()
-							.getParameter("role"))
-							&& getRequest().getParameter("role").equals(
-									roleList.get(i).getRole())) {
-						isLegalRole = true;
-					}
-				}
-
-				boolean isLegalStatus = false;
-				for (int i = 0; i < statusList.size(); i++) {
-					if (StringUtils.isNotBlank(getRequest().getParameter(
-							"status"))
-							&& getRequest().getParameter("status").equals(
-									statusList.get(i).getStatus())) {
-						isLegalStatus = true;
-					}
-				}
-
-				if (isLegalRole) {
-					getEntity().setRole(
-							Role.valueOf(getRequest().getParameter("role")));
-				} else {
+				if (getEntity().getRole() == null
+						|| !roleList.contains(getEntity().getRole())) {
 					errorMessages.add("角色錯誤");
 				}
 
-				if (isLegalStatus) {
-					getEntity()
-							.setStatus(
-									Status.valueOf(getRequest().getParameter(
-											"status")));
-				} else {
+				if (getEntity().getStatus() == null) {
 					errorMessages.add("狀態錯誤");
 				}
 
@@ -245,7 +178,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					errorMessages.add("用戶姓名不得空白");
 				}
 
-				if (getEntity().getCustomer().getSerNo() == null
+				if (getEntity().getCustomer() == null
+						|| getEntity().getCustomer().getSerNo() == null
 						|| getEntity().getCustomer().getSerNo() <= 0
 						|| customerService.getBySerNo(getEntity().getCustomer()
 								.getSerNo()) == null) {
@@ -260,10 +194,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				}
 			}
 
-			if (StringUtils.isNotEmpty(getEntity().getEmail())) {
-				if (!isEmail(getEntity().getEmail())) {
-					errorMessages.add("email格式不正確");
-				}
+			if (!isEmail(getEntity().getEmail())) {
+				errorMessages.add("email格式不正確");
 			}
 		}
 	}
@@ -276,23 +208,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	public String add() throws Exception {
-		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
-		List<Role> tempList = new ArrayList<Role>();
-		roleList.remove(roleList.size() - 1);
-
-		int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-		for (int i = 0; i < roleCode; i++) {
-			tempList.add(roleList.get(i));
-		}
-
-		roleList.removeAll(tempList);
-
-		getRequest().setAttribute("roleList", roleList);
-
-		List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
-				.values()));
-		getRequest().setAttribute("statusList", statusList);
+		setLegalRoles();
 
 		DataSet<AccountNumber> ds = initDataSet();
 		if (getLoginUser().getRole().equals(Role.管理員)) {
@@ -309,27 +225,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
-					.values()));
-			List<Role> tempList = new ArrayList<Role>();
-			roleList.remove(roleList.size() - 1);
-
-			int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-			for (int i = 0; i < roleCode; i++) {
-				tempList.add(roleList.get(i));
-			}
-
-			roleList.removeAll(tempList);
-
-			getRequest().setAttribute("roleList", roleList);
-
-			List<Status> statusList = new ArrayList<Status>(
-					Arrays.asList(Status.values()));
-			getRequest().setAttribute("statusList", statusList);
+			setLegalRoles();
 
 			boolean isLegalRole = false;
-
 			if (roleList.contains(accountNumber.getRole())) {
 				isLegalRole = true;
 			}
@@ -384,32 +282,16 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	public String save() throws Exception {
-		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
-		List<Role> tempList = new ArrayList<Role>();
-		roleList.remove(roleList.size() - 1);
-
-		int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-		for (int i = 0; i < roleCode; i++) {
-			tempList.add(roleList.get(i));
-		}
-
-		roleList.removeAll(tempList);
-
-		List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
-				.values()));
-
 		validateSave();
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
 			accountNumber = accountNumberService.save(getEntity(),
 					getLoginUser());
+			accountNumber = accountNumberService.getBySerNo(accountNumber.getSerNo());
 			setEntity(accountNumber);
 			return VIEW;
 		} else {
-			getRequest().setAttribute("roleList", roleList);
-			getRequest().setAttribute("statusList", statusList);
 			setEntity(getEntity());
 
 			DataSet<AccountNumber> ds = initDataSet();
@@ -427,20 +309,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	public String update() throws Exception {
-		List<Status> statusList = new ArrayList<Status>(Arrays.asList(Status
-				.values()));
-		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
-		List<Role> tempList = new ArrayList<Role>();
-		roleList.remove(roleList.size() - 1);
-
-		int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-		for (int i = 0; i < roleCode; i++) {
-			tempList.add(roleList.get(i));
-		}
-
-		roleList.removeAll(tempList);
-
 		validateUpdate();
 		setActionErrors(errorMessages);
 
@@ -456,18 +324,14 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 						getLoginUser(), "userId");
 			}
 
+			accountNumber = accountNumberService.getBySerNo(accountNumber.getSerNo());
 			setEntity(accountNumber);
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
-			getRequest().setAttribute("roleList", roleList);
-			getRequest().setAttribute("statusList", statusList);
-
-			if (hasEntity()) {
-				getEntity().setUserId(
-						accountNumberService.getBySerNo(getEntity().getSerNo())
-								.getUserId());
-			}
+			getEntity().setUserId(
+					accountNumberService.getBySerNo(getEntity().getSerNo())
+							.getUserId());
 
 			DataSet<AccountNumber> ds = initDataSet();
 			if (getLoginUser().getRole().equals(Role.管理員)) {
@@ -509,26 +373,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		if (!hasActionErrors()) {
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
-					.values()));
-			List<Role> tempList = new ArrayList<Role>();
-
-			roleList.remove(roleList.size() - 1);
-
-			int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-			for (int i = 0; i < roleCode; i++) {
-				tempList.add(roleList.get(i));
-			}
-
-			roleList.removeAll(tempList);
+			setLegalRoles();
 
 			for (int j = 0; j < checkItem.length; j++) {
 				boolean isLegalRole = false;
 				accountNumber = accountNumberService.getBySerNo(Long
 						.parseLong(checkItem[j]));
-				if (accountNumber != null
-						&& roleList.contains(accountNumber.getRole())) {
+				if (roleList.contains(accountNumber.getRole())) {
 					isLegalRole = true;
 				}
 
@@ -580,26 +431,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		if (!hasActionErrors()) {
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
-					.values()));
-			List<Role> tempList = new ArrayList<Role>();
-
-			roleList.remove(roleList.size() - 1);
-
-			int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-			for (int i = 0; i < roleCode; i++) {
-				tempList.add(roleList.get(i));
-			}
-
-			roleList.removeAll(tempList);
+			setLegalRoles();
 
 			for (int j = 0; j < checkItem.length; j++) {
 				boolean isLegalRole = false;
 				accountNumber = accountNumberService.getBySerNo(Long
 						.parseLong(checkItem[j]));
-				if (accountNumber != null
-						&& roleList.contains(accountNumber.getRole())) {
+				if (roleList.contains(accountNumber.getRole())) {
 					isLegalRole = true;
 				}
 
@@ -632,19 +470,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	public String view() throws Exception {
 		if (hasEntity()) {
-			List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
-					.values()));
-			List<Role> tempList = new ArrayList<Role>();
-
-			roleList.remove(roleList.size() - 1);
-
-			int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-			for (int i = 0; i < roleCode; i++) {
-				tempList.add(roleList.get(i));
-			}
-
-			roleList.removeAll(tempList);
+			setLegalRoles();
 
 			boolean isLegalRole = false;
 			if (roleList.contains(accountNumber.getRole())) {
@@ -738,6 +564,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				n++;
 			}
 
+			setLegalRoles();
 			LinkedHashSet<AccountNumber> originalData = new LinkedHashSet<AccountNumber>();
 			Map<String, AccountNumber> checkRepeatRow = new LinkedHashMap<String, AccountNumber>();
 			int normal = 0;
@@ -795,47 +622,33 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				}
 
 				String role = "";
-				List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role
-						.values()));
-				List<Role> tempList = new ArrayList<Role>();
-				for (int j = 0; j < roleList.size(); j++) {
-					if (rowValues[4].trim().equals(roleList.get(j).getRole())) {
-						role = roleList.get(j).getRole();
-					}
-				}
-
-				if (role.equals("")) {
-					role = Role.不明.getRole();
-				}
-
-				int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-				for (int j = 0; j < roleCode; j++) {
-					tempList.add(roleList.get(j));
-				}
-
-				roleList.removeAll(tempList);
-
 				boolean isLegalRole = false;
-				roleList.remove(roleList.size() - 1);
-				for (int j = 0; j < roleList.size(); j++) {
-					if (role.equals(roleList.get(j).getRole())) {
+				if (StringUtils.isBlank(rowValues[4])) {
+					role = Role.不明.getRole();
+				} else {
+					Object object = getEnumRole(new String[] { rowValues[4]
+							.trim() });
+					if (object != null
+							&& roleList.contains(Role.valueOf(rowValues[4]
+									.trim()))) {
+						role = rowValues[4].trim();
 						isLegalRole = true;
+					} else {
+						role = Role.不明.getRole();
 					}
 				}
 
-				List<Status> statusList = new ArrayList<Status>(
-						Arrays.asList(Status.values()));
 				String status = "";
-				for (int j = 0; j < statusList.size(); j++) {
-					if (rowValues[5].trim().equals(
-							statusList.get(j).getStatus())) {
-						status = statusList.get(j).getStatus();
-					}
-				}
-
-				if (status.equals("")) {
+				if (StringUtils.isBlank(rowValues[5])) {
 					status = Status.審核中.getStatus();
+				} else {
+					Object object = getEnumStatus(new String[] { rowValues[5]
+							.trim() });
+					if (object != null) {
+						status = rowValues[5].trim();
+					} else {
+						status = Status.審核中.getStatus();
+					}
 				}
 
 				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
@@ -895,10 +708,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					}
 				}
 
-				if (StringUtils.isNotEmpty(accountNumber.getEmail())) {
-					if (!isEmail(accountNumber.getEmail())) {
-						accountNumber.setEmail(null);
-					}
+				if (!isEmail(accountNumber.getEmail())) {
+					accountNumber.setEmail(null);
 				}
 
 				if (accountNumber.getExistStatus().equals("")) {
@@ -1174,10 +985,30 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	protected boolean isEmail(String email) {
-		String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-				+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		return ESAPI.validator().isValidInput("account Email", email, "Email",
+				254, true);
+	}
 
-		return Pattern.compile(emailPattern).matcher(email).matches();
+	protected Object getEnumRole(String[] roles) {
+		return roleConverter.convertFromString(null, roles, null);
+	}
+
+	protected Object getEnumStatus(String[] statuses) {
+		return statusConverter.convertFromString(null, statuses, null);
+	}
+
+	protected void setLegalRoles() {
+		roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
+		List<Role> tempList = new ArrayList<Role>();
+		roleList.remove(roleList.size() - 1);
+
+		int roleCode = roleList.indexOf(getLoginUser().getRole());
+
+		for (int i = 0; i < roleCode; i++) {
+			tempList.add(roleList.get(i));
+		}
+
+		roleList.removeAll(tempList);
 	}
 
 	/**
@@ -1253,5 +1084,20 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	 */
 	public void setImportSerNos(String[] importSerNos) {
 		this.importSerNos = importSerNos;
+	}
+
+	/**
+	 * @return the roleList
+	 */
+	public List<Role> getRoleList() {
+		return roleList;
+	}
+
+	/**
+	 * @param roleList
+	 *            the roleList to set
+	 */
+	public void setRoleList(List<Role> roleList) {
+		this.roleList = roleList;
 	}
 }
