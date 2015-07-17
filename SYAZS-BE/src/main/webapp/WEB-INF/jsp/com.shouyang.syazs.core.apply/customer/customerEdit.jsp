@@ -35,7 +35,7 @@
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
-				<td><c:out value="${entity.name }" /></td>
+				<td>${entity.name }</td>
 			</tr>
 			<tr>
 				<th width="130">用戶英文名稱</th>

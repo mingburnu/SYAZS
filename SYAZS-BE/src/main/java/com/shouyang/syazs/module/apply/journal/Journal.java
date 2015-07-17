@@ -85,10 +85,7 @@ public class Journal extends GenericEntityFull {
 
 	@Transient
 	private List<Customer> customers;
-	
-	@Transient
-	private String existStatus;
-	
+
 	/**
 	 * @return the chineseTitle
 	 */
@@ -329,20 +326,6 @@ public class Journal extends GenericEntityFull {
 		this.customers = customers;
 	}
 
-	/**
-	 * @return the existStatus
-	 */
-	public String getExistStatus() {
-		return existStatus;
-	}
-
-	/**
-	 * @param existStatus the existStatus to set
-	 */
-	public void setExistStatus(String existStatus) {
-		this.existStatus = existStatus;
-	}
-
 	public Journal() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -353,8 +336,7 @@ public class Journal extends GenericEntityFull {
 			String languages, String publishName, String publishYear,
 			String caption, String url, String numB, String publication,
 			String congressClassification, Integer version,
-			ResourcesBuyers resourcesBuyers, List<Customer> customers,
-			String existStatus) {
+			ResourcesBuyers resourcesBuyers, List<Customer> customers) {
 		super();
 		this.chineseTitle = chineseTitle;
 		this.englishTitle = englishTitle;
@@ -372,7 +354,5 @@ public class Journal extends GenericEntityFull {
 		this.version = version;
 		this.resourcesBuyers = resourcesBuyers;
 		this.customers = customers;
-		this.existStatus = existStatus;
 	}
-
 }

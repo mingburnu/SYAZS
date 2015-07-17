@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -182,14 +184,14 @@ function goImport(){
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
 							<td align="center" class="td_first" nowrap><input
-								type="checkbox" class="checkbox" name="checkItem"
+								type="checkbox" class="checkbox" name="entity.checkItem"
 								value="${item.serNo}"></td>
 							<td><c:choose>
 									<c:when test="${not empty item.dbEngTitle }">
-										<c:out value="${item.dbEngTitle }" />
+										<esapi:encodeForHTML>${item.dbEngTitle }</esapi:encodeForHTML>
 									</c:when>
 									<c:otherwise>
-										<c:out value="${item.dbChtTitle }" />
+										<esapi:encodeForHTML>${item.dbChtTitle }</esapi:encodeForHTML>
 									</c:otherwise>
 								</c:choose></td>
 							<td align="center">${item.resourcesBuyers.type }</td>

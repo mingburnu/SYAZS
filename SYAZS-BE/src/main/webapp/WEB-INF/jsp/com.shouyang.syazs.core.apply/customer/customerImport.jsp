@@ -8,14 +8,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
-	var importForm = "";
-	$(document).ready(function() {
-		importForm = $("form#apply_customer_queue").html();
-	});
-
 	//重設所有欄位(清空)
 	function resetData() {
-		$("form#apply_customer_queue").html(importForm);
+		$("input[name='entity.file']").val("");
 	}
 
 	//匯出範本
@@ -125,7 +120,7 @@
 				<th width="130">匯入檔案<span class="required">(•)</span>(<a
 					href="#" onclick="goExample();">範例</a>)
 				</th>
-				<td><input type="file" id="file" name="file" size="50"></td>
+				<td><input type="file" id="file" name="entity.file" size="50"></td>
 			</tr>
 		</table>
 		<div class="button_box">

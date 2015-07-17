@@ -23,7 +23,7 @@ import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
  * 
  */
 @MappedSuperclass
-public abstract class GenericEntityGroup implements Entity {
+public abstract class GenericEntityGroup extends FileIoProperties {
 
 	/**
 	 * 
@@ -51,22 +51,6 @@ public abstract class GenericEntityGroup implements Entity {
 	@Column(name = "uDTime")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime uDTime;
-
-	/** set struts action dispatcher location */
-	@Transient
-	private String location;
-
-	public String getLocation() {
-		StringBuilder locationBuilder = new StringBuilder("/WEB-INF/jsp/");
-
-		String className = getClass().getCanonicalName();
-		String packageName = className.substring(0, className.lastIndexOf("."));
-
-		location = locationBuilder
-				.append(packageName.substring(0, packageName.lastIndexOf(".")))
-				.append("/").toString();
-		return location;
-	}
 
 	/**
 	 * @return the serNo

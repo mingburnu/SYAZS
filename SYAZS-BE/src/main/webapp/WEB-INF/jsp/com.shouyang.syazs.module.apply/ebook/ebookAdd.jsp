@@ -100,6 +100,12 @@ input#customer_name {
 </style>
 </head>
 <body>
+	<%
+		String isbn = "";
+		if (request.getParameter("entity.isbn") != null) {
+			isbn = request.getParameter("entity.isbn");
+		}
+	%>
 	<s:form namespace="/crud" action="apply.ebook.save">
 		<table cellspacing="1" class="detail-table">
 			<tr>
@@ -110,9 +116,7 @@ input#customer_name {
 				<th width="130">ISBN<span class="required">(&#8226;)</span></th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_save_entity_isbn"
-					value="<esapi:encodeForHTMLAttribute><%if (request.getParameter("entity.isbn") != null) {
-						out.println(request.getParameter("entity.isbn"));
-					}%></esapi:encodeForHTMLAttribute>">
+					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>">
 				</td>
 			</tr>
 			<tr>
@@ -188,7 +192,8 @@ input#customer_name {
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"
 								src="<c:url value = '/'/>resources/images/minus.png"><input
-								id="unit" type="hidden" value="${item.serNo }" name="cusSerNo">
+								id="unit" type="hidden" value="${item.serNo }"
+								name="entity.cusSerNo">
 						</div>
 					</c:forEach> <c:forEach var="item" items="${allCustomers}" varStatus="status">
 						<div style="display: none;">

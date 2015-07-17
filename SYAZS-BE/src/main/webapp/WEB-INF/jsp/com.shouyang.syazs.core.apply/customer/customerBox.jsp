@@ -16,7 +16,7 @@
 				var value = $(this).val();
 				$("input#unit").each(function() {
 					if (value == $(this).val()) {
-						$(this).attr("name", "cusSerNo");
+						$(this).attr("name", "entity.cusSerNo");
 						$(this).parent().show();
 					}
 				});
@@ -38,7 +38,7 @@
 			var value = $(this).val();
 			var name = $(this).attr("name");
 
-			if (name == "cusSerNo") {
+			if (name == "entity.cusSerNo") {
 				$("input#customer_unit").each(function() {
 					if (value == $(this).val()) {
 						$(this).attr("checked", true);
@@ -68,7 +68,7 @@
 				var value = $(this).val();
 				$("input#unit").each(function() {
 					if (value == $(this).val()) {
-						$(this).attr("name", "cusSerNo");
+						$(this).attr("name", "entity.cusSerNo");
 						$(this).parent().show();
 					}
 				});
@@ -87,7 +87,7 @@
 	function addCustomer() {
 		$("#div_Customers").show();
 	}
-	
+
 	function clearCustomers() {
 		$("#div_Customers .content .header .title").html("");
 		$("#div_Customers .content .contain").html("");
@@ -104,8 +104,7 @@
 	<c:forEach var="item" items="${customerUnits}" varStatus="status">
 		<div id="unit_div">
 			<input type="checkbox" id="customer_unit" class="checkbox"
-				value="${item.serNo }"><label><c:out
-					value="${item.name}" /></label>
+				value="${item.serNo }"><label>${item.name}</label>
 		</div>
 	</c:forEach>
 	<div class="button_box">

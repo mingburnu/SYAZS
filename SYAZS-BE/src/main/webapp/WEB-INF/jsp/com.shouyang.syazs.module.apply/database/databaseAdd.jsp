@@ -149,7 +149,8 @@ input#customer_name {
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"
 								src="<c:url value = '/'/>resources/images/minus.png"><input
-								id="unit" type="hidden" value="${item.serNo }" name="cusSerNo">
+								id="unit" type="hidden" value="${item.serNo }"
+								name="entity.cusSerNo">
 						</div>
 					</c:forEach> <c:forEach var="item" items="${allCustomers}" varStatus="status">
 						<div style="display: none;">

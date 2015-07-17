@@ -57,7 +57,7 @@
 			</tr>
 			<tr>
 				<th width="130">帳戶角色</th>
-				<td><s:select name="entity.role" list="roleList"
+				<td><s:select name="entity.role" list='roleList'
 						listKey="name()" listValue="role" cssClass="input_text" /></td>
 			</tr>
 			<tr>

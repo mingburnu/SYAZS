@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @MappedSuperclass
-public abstract class GenericEntitySerNo implements Entity {
+public abstract class GenericEntitySerNo extends FileIoProperties {
 
 	/**
 	 * 

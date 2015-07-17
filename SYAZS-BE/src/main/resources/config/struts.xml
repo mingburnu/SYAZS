@@ -126,7 +126,7 @@
 			<result name="xlsx" type="stream">
 				<param name="contentDisposition">attachment;filename="${entity.reportFile}"</param>
 				<param name="contentType">application/vnd.ms-excel</param>
-				<param name="inputName">inputStream</param>
+				<param name="inputName">entity.inputStream</param>
 				<param name="bufferSize">1024</param>
 			</result>
 			<result name="*"></result>

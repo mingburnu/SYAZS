@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -150,15 +152,11 @@ function goImport(){
 							<td align="left"></td>
 						</tr>
 						<tr>
-							<td align="left"><c:set var="userId">
-									<c:out value="${entity.userId }"></c:out>
-								</c:set> <input type="text" name="entity.userId" maxlength="20"
-								id="search" class="input_text" value="${userId }">&nbsp;
-								<c:choose>
+							<td align="left"><s:textfield name="entity.userId"
+									id="search" cssClass="input_text" />&nbsp; <c:choose>
 									<c:when test="${login.role.role != '管理員' }">
-										<input type="text" name="entity.customer.name" maxlength="20"
-											id="search" class="input_text"
-											value="${entity.customer.name }">
+										<s:textfield name="entity.customer.name" id="search"
+											cssClass="input_text" />
 									</c:when>
 									<c:otherwise>
 										<input type="text" maxlength="20" id="search"
@@ -214,13 +212,13 @@ function goImport(){
 							<td align="center" class="td_first" nowrap><c:choose>
 									<c:when test="${9 eq  item.serNo }"></c:when>
 									<c:otherwise>
-										<input type="checkbox" class="checkbox" name="checkItem"
-											value="${item.serNo}">
+										<input type="checkbox" class="checkbox"
+											name="entity.checkItem" value="${item.serNo}">
 									</c:otherwise>
 								</c:choose></td>
-							<td><c:out value="${item.userId }" /></td>
-							<td align="center"><c:out value="${item.userName }" /></td>
-							<td><c:out value="${item.customer.name }" /></td>
+							<td>${item.userId }</td>
+							<td align="center"><esapi:encodeForHTMLAttribute>${item.userName }</esapi:encodeForHTMLAttribute></td>
+							<td>${item.customer.name }</td>
 							<td align="center">${item.email }</td>
 							<td>${item.role.role }</td>
 							<td align="center">${item.status.status }</td>

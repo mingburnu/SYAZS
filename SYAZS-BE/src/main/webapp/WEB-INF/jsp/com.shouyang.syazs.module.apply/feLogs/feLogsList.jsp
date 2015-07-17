@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -71,7 +73,8 @@ function chagePageSize(){
 //匯出
 function goExport(){
 	var data=$("#apply_feLogs_list").serialize();
-	var url='<%=request.getContextPath()%>/crud/apply.feLogs.exports.action?'
+	var url='<%=request.getContextPath()%>
+	/crud/apply.feLogs.exports.action?'
 				+ data;
 
 		if ($("input#customerSerNo").attr("checked")) {
@@ -191,7 +194,7 @@ function goExport(){
 							<td><s:property value="entity.start" />~<s:property
 									value="entity.end" /></td>
 							<td align="center">${item.rank }</td>
-							<td><c:out value="${item.keyword }" /></td>
+							<td><esapi:encodeForHTML>${item.keyword }</esapi:encodeForHTML></td>
 							<td>${item.count }</td>
 							<td><c:out value="${item.customer.name }" /></td>
 						</tr>

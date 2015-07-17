@@ -8,8 +8,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -79,9 +77,6 @@ public class AccountNumber extends GenericEntityFull {
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	private Customer customer;
-
-	@Transient
-	private String existStatus;
 
 	/**
 	 * @return the userId
@@ -182,28 +177,13 @@ public class AccountNumber extends GenericEntityFull {
 		this.customer = customer;
 	}
 
-	/**
-	 * @return the existStatus
-	 */
-	public String getExistStatus() {
-		return existStatus;
-	}
-
-	/**
-	 * @param existStatus
-	 *            the existStatus to set
-	 */
-	public void setExistStatus(String existStatus) {
-		this.existStatus = existStatus;
-	}
-
 	public AccountNumber() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public AccountNumber(String userId, String userPw, String userName,
-			Role role, Status status, Customer customer, String existStatus) {
+			Role role, Status status, Customer customer) {
 		super();
 		this.userId = userId;
 		this.userPw = userPw;
@@ -211,7 +191,6 @@ public class AccountNumber extends GenericEntityFull {
 		this.role = role;
 		this.status = status;
 		this.customer = customer;
-		this.existStatus = existStatus;
 	}
 
 }

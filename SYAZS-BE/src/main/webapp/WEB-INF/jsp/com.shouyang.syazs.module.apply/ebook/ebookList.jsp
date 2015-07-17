@@ -186,12 +186,12 @@ function goImport(){
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
 							<td align="center" class="td_first" nowrap><input
-								type="checkbox" class="checkbox" name="checkItem"
+								type="checkbox" class="checkbox" name="entity.checkItem"
 								value="${item.serNo}"></td>
-							<td><c:out value="${item.bookName }" /></td>
+							<td><esapi:encodeForHTML>${item.bookName }</esapi:encodeForHTML></td>
 							<td align="center">${item.resourcesBuyers.type.type }</td>
-							<td><c:out value="${item.cUid }" /></td>
-							<td align="center"><c:out value="${item.uUid }" /></td>
+							<td>${item.cUid }</td>
+							<td align="center">${item.uUid }</td>
 							<td align="center"><a class="state-default2"
 								onclick="goView(${item.serNo });"><span
 									class="icon-default icon-view"></span>檢視</a> <a

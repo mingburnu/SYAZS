@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -54,11 +56,11 @@
 	function allRow(action) {
 		if (action == 1) {
 			checkedValues = new Array($(".checkbox.queue:visible").length);
-			var importSerNos = "";
+			var importItem = "";
 			$(".checkbox.queue:visible").each(
 					function() {
 						$(this).attr("checked", "checked");
-						importSerNos = importSerNos + "importSerNos="
+						importItem = importItem + "entity.importItem="
 								+ $(this).val() + "&";
 					});
 
@@ -67,7 +69,7 @@
 						type : "POST",
 						url : "<c:url value = '/'/>crud/apply.database.allCheckedItem.action",
 						dataType : "html",
-						data : importSerNos.slice(0, importSerNos.length - 1),
+						data : importItem.slice(0, importItem.length - 1),
 						success : function(message) {
 
 						}
@@ -86,7 +88,7 @@
 					type : "POST",
 					url : "<c:url value = '/'/>crud/apply.database.getCheckedItem.action",
 					dataType : "html",
-					data : "importSerNos=" + index,
+					data : "entity.importItem=" + index,
 					success : function(message) {
 
 					}
@@ -130,7 +132,7 @@
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
 						<c:if
 							test="${(0 eq status.index) || (1 eq status.index)||(6 eq status.index)||(9 eq status.index)||(10 eq status.index)||(11 eq status.index)}">
-							<th><c:out value="${item}" /></th>
+							<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
 						</c:if>
 					</c:forEach>
 					<th></th>
@@ -147,14 +149,14 @@
 									<input type="checkbox" disabled="disabled">
 								</c:otherwise>
 							</c:choose></td>
-						<td><c:out value="${item.dbChtTitle }" /></td>
-						<td><c:out value="${item.dbEngTitle }" /></td>
-						<td><c:out value="${item.url }" /></td>
+						<td><esapi:encodeForHTML>${item.dbChtTitle }</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${item.dbEngTitle }</esapi:encodeForHTML></td>
+						<td>${item.url }</td>
 						<td>${item.resourcesBuyers.category.category }</td>
 						<td>${item.resourcesBuyers.type.type }</td>
 						<td align="center"><c:forEach var="customer"
 								items="${item.customers}" varStatus="status">
-								<c:out value="${customer.name }" />
+								<esapi:encodeForHTML>${customer.name }</esapi:encodeForHTML>
 							</c:forEach></td>
 						<td align="center">${item.existStatus }</td>
 					</tr>

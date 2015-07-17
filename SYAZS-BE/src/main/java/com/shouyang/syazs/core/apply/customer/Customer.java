@@ -3,8 +3,6 @@ package com.shouyang.syazs.core.apply.customer;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -45,9 +43,6 @@ public class Customer extends GenericEntityFull {
 	@Column(name = "memo")
 	@Type(type = "text")
 	private String memo;
-
-	@Transient
-	private String existStatus;
 
 	/**
 	 * @return the name
@@ -139,28 +134,13 @@ public class Customer extends GenericEntityFull {
 		this.memo = memo;
 	}
 
-	/**
-	 * @return the existStatus
-	 */
-	public String getExistStatus() {
-		return existStatus;
-	}
-
-	/**
-	 * @param existStatus
-	 *            the existStatus to set
-	 */
-	public void setExistStatus(String existStatus) {
-		this.existStatus = existStatus;
-	}
-
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public Customer(String name, String engName, String address, String tel,
-			String contactUserName, String memo, String existStatus) {
+			String contactUserName, String memo) {
 		super();
 		this.name = name;
 		this.engName = engName;
@@ -168,7 +148,6 @@ public class Customer extends GenericEntityFull {
 		this.tel = tel;
 		this.contactUserName = contactUserName;
 		this.memo = memo;
-		this.existStatus = existStatus;
 	}
 
 }

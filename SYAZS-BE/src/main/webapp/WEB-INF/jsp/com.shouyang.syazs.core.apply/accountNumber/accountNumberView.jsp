@@ -2,6 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -60,16 +62,16 @@
 				<tbody>
 					<tr>
 						<th width="130">用戶代碼</th>
-						<td><c:out value="${entity.userId }" /></td>
+						<td><esapi:encodeForHTMLAttribute>${entity.userId }</esapi:encodeForHTMLAttribute></td>
 
 					</tr>
 					<tr>
 						<th width="130">用戶姓名</th>
-						<td><c:out value="${entity.userName }" /></td>
+						<td><esapi:encodeForHTMLAttribute>${entity.userName }</esapi:encodeForHTMLAttribute></td>
 					</tr>
 					<tr>
 						<th width="130">客戶名稱</th>
-						<td><c:out value="${entity.customer.name }" /></td>
+						<td><esapi:encodeForHTMLAttribute>${entity.customer.name }</esapi:encodeForHTMLAttribute></td>
 					</tr>
 					<tr>
 						<th width="130">E-Mail</th>

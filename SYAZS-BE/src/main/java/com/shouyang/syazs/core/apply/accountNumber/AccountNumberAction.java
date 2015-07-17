@@ -2,7 +2,6 @@ package com.shouyang.syazs.core.apply.accountNumber;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +37,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
@@ -62,14 +62,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	 */
 	private static final long serialVersionUID = 9198667697775718131L;
 
-	private String[] checkItem;
-
-	private File[] file;
-
-	private String[] fileFileName;
-
-	private String[] fileContentType;
-
 	@Autowired
 	private AccountNumber accountNumber;
 
@@ -88,13 +80,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Autowired
 	private RoleConverter roleConverter;
 
-	private String[] importSerNos;
-
-	private List<Role> roleList;
-
 	@Override
 	protected void validateSave() throws Exception {
-		setLegalRoles();
+		List<Role> roleList=getLegalRoles();
 
 		if (getEntity().getRole() == null
 				|| !roleList.contains(getEntity().getRole())) {
@@ -156,7 +144,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			setLegalRoles();
+			List<Role> roleList=getLegalRoles();
 
 			if (!roleList.contains(accountNumberService.getBySerNo(
 					getEntity().getSerNo()).getRole())) {
@@ -208,7 +196,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	public String add() throws Exception {
-		setLegalRoles();
+		getLegalRoles();
 
 		DataSet<AccountNumber> ds = initDataSet();
 		if (getLoginUser().getRole().equals(Role.管理員)) {
@@ -225,7 +213,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			setLegalRoles();
+			List<Role> roleList=getLegalRoles();
 
 			boolean isLegalRole = false;
 			if (roleList.contains(accountNumber.getRole())) {
@@ -288,7 +276,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasActionErrors()) {
 			accountNumber = accountNumberService.save(getEntity(),
 					getLoginUser());
-			accountNumber = accountNumberService.getBySerNo(accountNumber.getSerNo());
+			accountNumber = accountNumberService.getBySerNo(accountNumber
+					.getSerNo());
 			setEntity(accountNumber);
 			return VIEW;
 		} else {
@@ -324,7 +313,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 						getLoginUser(), "userId");
 			}
 
-			accountNumber = accountNumberService.getBySerNo(accountNumber.getSerNo());
+			accountNumber = accountNumberService.getBySerNo(accountNumber
+					.getSerNo());
 			setEntity(accountNumber);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -353,38 +343,40 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String deauthorize() throws Exception {
-		if (ArrayUtils.isEmpty(checkItem)) {
+		if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
 			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(checkItem));
-			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+					Arrays.asList(getEntity().getCheckItem()));
+			getEntity().setCheckItem(
+					deRepeatSet.toArray(new String[deRepeatSet.size()]));
 
 			int i = 0;
-			while (i < checkItem.length) {
-				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
-						|| Long.parseLong(checkItem[i]) < 1
+			while (i < getEntity().getCheckItem().length) {
+				if (!NumberUtils.isDigits(String.valueOf(getEntity()
+						.getCheckItem()[i]))
+						|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
 						|| accountNumberService.getBySerNo(Long
-								.parseLong(checkItem[i])) == null) {
-					addActionError(checkItem[i] + "為不可利用的流水號");
+								.parseLong(getEntity().getCheckItem()[i])) == null) {
+					addActionError(getEntity().getCheckItem()[i] + "為不可利用的流水號");
 				}
 				i++;
 			}
 		}
 
 		if (!hasActionErrors()) {
-			setLegalRoles();
+			List<Role> roleList=getLegalRoles();
 
-			for (int j = 0; j < checkItem.length; j++) {
+			for (int j = 0; j < getEntity().getCheckItem().length; j++) {
 				boolean isLegalRole = false;
 				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(checkItem[j]));
+						.parseLong(getEntity().getCheckItem()[j]));
 				if (roleList.contains(accountNumber.getRole())) {
 					isLegalRole = true;
 				}
 
 				if (!isLegalRole) {
-					addActionError(checkItem[j] + "權限不可變更");
+					addActionError(getEntity().getCheckItem()[j] + "權限不可變更");
 				}
 
 			}
@@ -392,9 +384,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 		if (!hasActionErrors()) {
 			int j = 0;
-			while (j < checkItem.length) {
+			while (j < getEntity().getCheckItem().length) {
 				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(checkItem[j]));
+						.parseLong(getEntity().getCheckItem()[j]));
 				accountNumber.setStatus(Status.不生效);
 				accountNumberService.update(accountNumber, getLoginUser());
 
@@ -411,38 +403,40 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String authorize() throws Exception {
-		if (ArrayUtils.isEmpty(checkItem)) {
+		if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
 			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(checkItem));
-			checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+					Arrays.asList(getEntity().getCheckItem()));
+			getEntity().setCheckItem(
+					deRepeatSet.toArray(new String[deRepeatSet.size()]));
 
 			int i = 0;
-			while (i < checkItem.length) {
-				if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
-						|| Long.parseLong(checkItem[i]) < 1
+			while (i < getEntity().getCheckItem().length) {
+				if (!NumberUtils.isDigits(String.valueOf(getEntity()
+						.getCheckItem()[i]))
+						|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
 						|| accountNumberService.getBySerNo(Long
-								.parseLong(checkItem[i])) == null) {
-					addActionError(checkItem[i] + "為不可利用的流水號");
+								.parseLong(getEntity().getCheckItem()[i])) == null) {
+					addActionError(getEntity().getCheckItem()[i] + "為不可利用的流水號");
 				}
 				i++;
 			}
 		}
 
 		if (!hasActionErrors()) {
-			setLegalRoles();
+			List<Role> roleList=getLegalRoles();
 
-			for (int j = 0; j < checkItem.length; j++) {
+			for (int j = 0; j < getEntity().getCheckItem().length; j++) {
 				boolean isLegalRole = false;
 				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(checkItem[j]));
+						.parseLong(getEntity().getCheckItem()[j]));
 				if (roleList.contains(accountNumber.getRole())) {
 					isLegalRole = true;
 				}
 
 				if (!isLegalRole) {
-					addActionError(checkItem[j] + "權限不可變更");
+					addActionError(getEntity().getCheckItem()[j] + "權限不可變更");
 				}
 
 			}
@@ -450,9 +444,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 		if (!hasActionErrors()) {
 			int j = 0;
-			while (j < checkItem.length) {
+			while (j < getEntity().getCheckItem().length) {
 				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(checkItem[j]));
+						.parseLong(getEntity().getCheckItem()[j]));
 				accountNumber.setStatus(Status.生效);
 				accountNumberService.update(accountNumber, getLoginUser());
 
@@ -470,7 +464,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	public String view() throws Exception {
 		if (hasEntity()) {
-			setLegalRoles();
+			List<Role> roleList=getLegalRoles();
 
 			boolean isLegalRole = false;
 			if (roleList.contains(accountNumber.getRole())) {
@@ -496,16 +490,18 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	public String queue() throws Exception {
-		if (ArrayUtils.isEmpty(file) || !file[0].isFile()) {
+		if (ArrayUtils.isEmpty(getEntity().getFile())
+				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(file[0])) == null) {
+			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
 				addActionError("檔案格式錯誤");
 			}
 		}
 
 		if (!hasActionErrors()) {
-			Workbook book = createWorkBook(new FileInputStream(file[0]));
+			Workbook book = createWorkBook(new FileInputStream(getEntity()
+					.getFile()[0]));
 			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
 			Sheet sheet = book.getSheetAt(0);
 
@@ -564,7 +560,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				n++;
 			}
 
-			setLegalRoles();
+			List<Role> roleList=getLegalRoles();
 			LinkedHashSet<AccountNumber> originalData = new LinkedHashSet<AccountNumber>();
 			Map<String, AccountNumber> checkRepeatRow = new LinkedHashMap<String, AccountNumber>();
 			int normal = 0;
@@ -653,7 +649,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
 						rowValues[2], Role.valueOf(role),
-						Status.valueOf(status), null, "");
+						Status.valueOf(status), null);
 
 				if (customerService.getCusSerNoByName(rowValues[3].trim()) != 0) {
 					customer = customerService.getBySerNo(customerService
@@ -712,7 +708,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					accountNumber.setEmail(null);
 				}
 
-				if (accountNumber.getExistStatus().equals("")) {
+				if (accountNumber.getExistStatus() == null) {
 					accountNumber.setExistStatus("正常");
 				}
 
@@ -820,17 +816,20 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			checkItemSet = (Set<Integer>) getSession().get("checkItemSet");
 		}
 
-		if (ArrayUtils.isNotEmpty(importSerNos)) {
-			if (NumberUtils.isDigits(importSerNos[0])) {
-				if (!checkItemSet.contains(Integer.parseInt(importSerNos[0]))) {
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
+			if (NumberUtils.isDigits(getEntity().getImportItem()[0])) {
+				if (!checkItemSet.contains(Integer.parseInt(getEntity()
+						.getImportItem()[0]))) {
 					if (((AccountNumber) importList.get(Integer
-							.parseInt(importSerNos[0]))).getExistStatus()
-							.equals("正常")) {
-						checkItemSet.add(Integer.parseInt(importSerNos[0]));
+							.parseInt(getEntity().getImportItem()[0])))
+							.getExistStatus().equals("正常")) {
+						checkItemSet.add(Integer.parseInt(getEntity()
+								.getImportItem()[0]));
 
 					}
 				} else {
-					checkItemSet.remove(Integer.parseInt(importSerNos[0]));
+					checkItemSet.remove(Integer.parseInt(getEntity()
+							.getImportItem()[0]));
 				}
 			}
 		}
@@ -848,19 +847,22 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 
-		if (ArrayUtils.isNotEmpty(importSerNos)) {
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
 			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(importSerNos));
-			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+					Arrays.asList(getEntity().getImportItem()));
+			getEntity().setImportItem(
+					deRepeatSet.toArray(new String[deRepeatSet.size()]));
 
 			int i = 0;
-			while (i < importSerNos.length) {
-				if (NumberUtils.isDigits(importSerNos[i])) {
-					if (Long.parseLong(importSerNos[i]) < importList.size()) {
+			while (i < getEntity().getImportItem().length) {
+				if (NumberUtils.isDigits(getEntity().getImportItem()[i])) {
+					if (Long.parseLong(getEntity().getImportItem()[i]) < importList
+							.size()) {
 						if (((AccountNumber) importList.get(Integer
-								.parseInt(importSerNos[i]))).getExistStatus()
-								.equals("正常")) {
-							checkItemSet.add(Integer.parseInt(importSerNos[i]));
+								.parseInt(getEntity().getImportItem()[i])))
+								.getExistStatus().equals("正常")) {
+							checkItemSet.add(Integer.parseInt(getEntity()
+									.getImportItem()[i]));
 						}
 					}
 
@@ -949,7 +951,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 		ByteArrayOutputStream boas = new ByteArrayOutputStream();
 		workbook.write(boas);
-		setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
 
 		return XLSX;
 	}
@@ -970,11 +973,11 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (fileFileName[0].toLowerCase().endsWith("xls")) {
+			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);
 			}
 
-			if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
+			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
 				return new XSSFWorkbook(is);
 			}
 		} catch (InvalidOperationException e) {
@@ -997,8 +1000,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		return statusConverter.convertFromString(null, statuses, null);
 	}
 
-	protected void setLegalRoles() {
-		roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
+	protected List<Role> getLegalRoles() {
+		List<Role> roleList = new ArrayList<Role>(Arrays.asList(Role.values()));
 		List<Role> tempList = new ArrayList<Role>();
 		roleList.remove(roleList.size() - 1);
 
@@ -1007,97 +1010,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		for (int i = 0; i < roleCode; i++) {
 			tempList.add(roleList.get(i));
 		}
-
+		
 		roleList.removeAll(tempList);
-	}
-
-	/**
-	 * @return the checkItem
-	 */
-	public String[] getCheckItem() {
-		return checkItem;
-	}
-
-	/**
-	 * @param checkItem
-	 *            the checkItem to set
-	 */
-	public void setCheckItem(String[] checkItem) {
-		this.checkItem = checkItem;
-	}
-
-	/**
-	 * @return the file
-	 */
-	public File[] getFile() {
-		return file;
-	}
-
-	/**
-	 * @param file
-	 *            the file to set
-	 */
-	public void setFile(File[] file) {
-		this.file = file;
-	}
-
-	/**
-	 * @return the fileFileName
-	 */
-	public String[] getFileFileName() {
-		return fileFileName;
-	}
-
-	/**
-	 * @param fileFileName
-	 *            the fileFileName to set
-	 */
-	public void setFileFileName(String[] fileFileName) {
-		this.fileFileName = fileFileName;
-	}
-
-	/**
-	 * @return the fileContentType
-	 */
-	public String[] getFileContentType() {
-		return fileContentType;
-	}
-
-	/**
-	 * @param fileContentType
-	 *            the fileContentType to set
-	 */
-	public void setFileContentType(String[] fileContentType) {
-		this.fileContentType = fileContentType;
-	}
-
-	/**
-	 * @return the importSerNos
-	 */
-	public String[] getImportSerNos() {
-		return importSerNos;
-	}
-
-	/**
-	 * @param importSerNos
-	 *            the importSerNos to set
-	 */
-	public void setImportSerNos(String[] importSerNos) {
-		this.importSerNos = importSerNos;
-	}
-
-	/**
-	 * @return the roleList
-	 */
-	public List<Role> getRoleList() {
+		ActionContext.getContext().getValueStack().set("roleList", roleList);
+		
 		return roleList;
-	}
-
-	/**
-	 * @param roleList
-	 *            the roleList to set
-	 */
-	public void setRoleList(List<Role> roleList) {
-		this.roleList = roleList;
 	}
 }

@@ -3,7 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ page import="org.owasp.esapi.ESAPI"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <c:if test="${login.role.role == '管理員'}">
 	<%
 		response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -93,7 +94,7 @@ function goDel(serNo){
 		trueText:'是',
 		trueFunc:function(){
 			var url = '<c:url value = "/crud/apply.customer.delete.action"/>';
-			var data =$('#apply_customer_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}'+'&checkItem='+serNo;
+			var data =$('#apply_customer_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}'+'&entity.checkItem='+serNo;
 			goMain(url,'',data);
 			},
 			falseText:'否',
@@ -239,14 +240,14 @@ function goImport(){
 								<td align="center" class="td_first" nowrap><c:choose>
 										<c:when test="${9 eq  item.serNo }"></c:when>
 										<c:otherwise>
-											<input type="checkbox" class="checkbox" name="checkItem"
-												value="${item.serNo}">
+											<input type="checkbox" class="checkbox"
+												name="entity.checkItem" value="${item.serNo}">
 										</c:otherwise>
 									</c:choose></td>
 							</c:if>
-							<td><c:out value="${item.name}" /></td>
-							<td align="center"><c:out value="${item.tel }" /></td>
-							<td><c:out value="${item.address }" /></td>
+							<td>${item.name}</td>
+							<td align="center">${item.tel }</td>
+							<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
 							<td align="center"><c:choose>
 									<c:when test="${9 eq  item.serNo }">
 										<a class="state-default2" onclick="goView(${item.serNo });"><span

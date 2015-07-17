@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -54,11 +56,11 @@
 	function allRow(action) {
 		if (action == 1) {
 			checkedValues = new Array($(".checkbox.queue:visible").length);
-			var importSerNos = "";
+			var importItem = "";
 			$(".checkbox.queue:visible").each(
 					function() {
 						$(this).attr("checked", "checked");
-						importSerNos = importSerNos + "importSerNos="
+						importItem = importItem + "entity.importItem="
 								+ $(this).val() + "&";
 					});
 
@@ -67,7 +69,7 @@
 						type : "POST",
 						url : "<c:url value = '/'/>crud/apply.accountNumber.allCheckedItem.action",
 						dataType : "html",
-						data : importSerNos.slice(0, importSerNos.length - 1),
+						data : importItem.slice(0, importItem.length - 1),
 						success : function(message) {
 
 						}
@@ -86,7 +88,7 @@
 					type : "POST",
 					url : "<c:url value = '/'/>crud/apply.accountNumber.getCheckedItem.action",
 					dataType : "html",
-					data : "importSerNos=" + index,
+					data : "entity.importItem=" + index,
 					success : function(message) {
 
 					}
@@ -129,7 +131,7 @@
 					<th></th>
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
 						<c:if test="${1 ne status.index }">
-							<th><c:out value="${item}" /></th>
+							<th><esapi:encodeForHTMLAttribute>${item}</esapi:encodeForHTMLAttribute></th>
 						</c:if>
 					</c:forEach>
 					<th></th>
@@ -146,9 +148,9 @@
 									<input type="checkbox" disabled="disabled">
 								</c:otherwise>
 							</c:choose></td>
-						<td><c:out value="${item.userId }" /></td>
-						<td><c:out value="${item.userName }" /></td>
-						<td><c:out value="${item.customer.name }" /></td>
+						<td><esapi:encodeForHTMLAttribute>${item.userId }</esapi:encodeForHTMLAttribute></td>
+						<td><esapi:encodeForHTMLAttribute>${item.userName }</esapi:encodeForHTMLAttribute></td>
+						<td><esapi:encodeForHTMLAttribute>${item.customer.name }</esapi:encodeForHTMLAttribute></td>
 						<td>${item.role.role }</td>
 						<td>${item.status.status }</td>
 						<td align="center">${item.existStatus }</td>

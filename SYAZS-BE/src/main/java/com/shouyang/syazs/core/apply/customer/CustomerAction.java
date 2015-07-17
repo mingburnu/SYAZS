@@ -2,7 +2,6 @@ package com.shouyang.syazs.core.apply.customer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,14 +53,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	 */
 	private static final long serialVersionUID = 4530353636126561614L;
 
-	private String[] checkItem;
-
-	private File[] file;
-
-	private String[] fileFileName;
-
-	private String[] fileContentType;
-
 	@Autowired
 	private Customer customer;
 
@@ -73,8 +64,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	@Autowired
 	private GroupMappingService groupMappingService;
-
-	private String[] importSerNos;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -119,21 +108,24 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	protected void validateDelete() throws Exception {
 		if (getLoginUser().getRole().equals(Role.系統管理員)) {
 
-			if (ArrayUtils.isEmpty(checkItem)) {
+			if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 				errorMessages.add("請選擇一筆或一筆以上的資料");
 			} else {
 				Set<String> deRepeatSet = new HashSet<String>(
-						Arrays.asList(checkItem));
-				checkItem = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+						Arrays.asList(getEntity().getCheckItem()));
+				getEntity().setCheckItem(
+						deRepeatSet.toArray(new String[deRepeatSet.size()]));
 
 				int i = 0;
-				while (i < checkItem.length) {
-					if (!NumberUtils.isDigits(String.valueOf(checkItem[i]))
-							|| Long.parseLong(checkItem[i]) < 1
-							|| Long.parseLong(checkItem[i]) == 9
+				while (i < getEntity().getCheckItem().length) {
+					if (!NumberUtils.isDigits(String.valueOf(getEntity()
+							.getCheckItem()[i]))
+							|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
+							|| Long.parseLong(getEntity().getCheckItem()[i]) == 9
 							|| customerService.getBySerNo(Long
-									.parseLong(checkItem[i])) == null) {
-						errorMessages.add(checkItem[i] + "為不可利用的流水號");
+									.parseLong(getEntity().getCheckItem()[i])) == null) {
+						errorMessages.add(getEntity().getCheckItem()[i]
+								+ "為不可利用的流水號");
 					}
 					i++;
 				}
@@ -230,13 +222,15 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		if (!hasActionErrors()) {
 			int i = 0;
-			while (i < checkItem.length) {
+			while (i < getEntity().getCheckItem().length) {
 				String name = customerService.getBySerNo(
-						Long.parseLong(checkItem[i])).getName();
-				if (customerService
-						.deleteOwnerObj(Long.parseLong(checkItem[i]))) {
+						Long.parseLong(getEntity().getCheckItem()[i]))
+						.getName();
+				if (customerService.deleteOwnerObj(Long.parseLong(getEntity()
+						.getCheckItem()[i]))) {
 					groupMappingService.delByCustomerName(name);
-					customerService.deleteBySerNo(Long.parseLong(checkItem[i]));
+					customerService.deleteBySerNo(Long.parseLong(getEntity()
+							.getCheckItem()[i]));
 					addActionMessage(name + "刪除成功");
 				} else {
 					addActionMessage(name + "資源必須先刪除");
@@ -294,16 +288,18 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String queue() throws Exception {
-		if (ArrayUtils.isEmpty(file) || !file[0].isFile()) {
+		if (ArrayUtils.isEmpty(getEntity().getFile())
+				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(file[0])) == null) {
+			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
 				addActionError("檔案格式錯誤");
 			}
 		}
 
 		if (!hasActionErrors()) {
-			Workbook book = createWorkBook(new FileInputStream(file[0]));
+			Workbook book = createWorkBook(new FileInputStream(getEntity()
+					.getFile()[0]));
 			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
 			Sheet sheet = book.getSheetAt(0);
 
@@ -419,7 +415,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				}
 
 				customer = new Customer(rowValues[0], rowValues[1],
-						rowValues[2], rowValues[4], rowValues[3], "", "");
+						rowValues[2], rowValues[4], rowValues[3], "");
 
 				if (StringUtils.isBlank(customer.getName())) {
 					customer.setExistStatus("名稱空白");
@@ -446,7 +442,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 				}
 
-				if (customer.getExistStatus().equals("")) {
+				if (customer.getExistStatus() == null) {
 					customer.setExistStatus("正常");
 				}
 
@@ -552,16 +548,19 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			checkItemSet = (Set<Integer>) getSession().get("checkItemSet");
 		}
 
-		if (ArrayUtils.isNotEmpty(importSerNos)) {
-			if (NumberUtils.isDigits(importSerNos[0])) {
-				if (!checkItemSet.contains(Integer.parseInt(importSerNos[0]))) {
-					if (((Customer) importList.get(Integer
-							.parseInt(importSerNos[0]))).getExistStatus()
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
+			if (NumberUtils.isDigits(getEntity().getImportItem()[0])) {
+				if (!checkItemSet.contains(Integer.parseInt(getEntity()
+						.getImportItem()[0]))) {
+					if (((Customer) importList.get(Integer.parseInt(getEntity()
+							.getImportItem()[0]))).getExistStatus()
 							.equals("正常")) {
-						checkItemSet.add(Integer.parseInt(importSerNos[0]));
+						checkItemSet.add(Integer.parseInt(getEntity()
+								.getImportItem()[0]));
 					}
 				} else {
-					checkItemSet.remove(Integer.parseInt(importSerNos[0]));
+					checkItemSet.remove(Integer.parseInt(getEntity()
+							.getImportItem()[0]));
 				}
 			}
 		}
@@ -579,19 +578,22 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 
-		if (ArrayUtils.isNotEmpty(importSerNos)) {
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
 			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(importSerNos));
-			importSerNos = deRepeatSet.toArray(new String[deRepeatSet.size()]);
+					Arrays.asList(getEntity().getImportItem()));
+			getEntity().setImportItem(
+					deRepeatSet.toArray(new String[deRepeatSet.size()]));
 
 			int i = 0;
-			while (i < importSerNos.length) {
-				if (NumberUtils.isDigits(importSerNos[i])) {
-					if (Long.parseLong(importSerNos[i]) < importList.size()) {
+			while (i < getEntity().getImportItem().length) {
+				if (NumberUtils.isDigits(getEntity().getImportItem()[i])) {
+					if (Long.parseLong(getEntity().getImportItem()[i]) < importList
+							.size()) {
 						if (((Customer) importList.get(Integer
-								.parseInt(importSerNos[i]))).getExistStatus()
-								.equals("正常")) {
-							checkItemSet.add(Integer.parseInt(importSerNos[i]));
+								.parseInt(getEntity().getImportItem()[i])))
+								.getExistStatus().equals("正常")) {
+							checkItemSet.add(Integer.parseInt(getEntity()
+									.getImportItem()[i]));
 						}
 					}
 
@@ -683,7 +685,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		ByteArrayOutputStream boas = new ByteArrayOutputStream();
 		workbook.write(boas);
-		setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
 
 		return XLSX;
 	}
@@ -704,11 +707,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (fileFileName[0].toLowerCase().endsWith("xls")) {
+			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
 				return new HSSFWorkbook(is);
 			}
 
-			if (fileFileName[0].toLowerCase().endsWith("xlsx")) {
+			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
 				return new XSSFWorkbook(is);
 			}
 		} catch (InvalidOperationException e) {
@@ -716,80 +719,5 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		}
 
 		return null;
-	}
-
-	/**
-	 * @return the checkItem
-	 */
-	public String[] getCheckItem() {
-		return checkItem;
-	}
-
-	/**
-	 * @param checkItem
-	 *            the checkItem to set
-	 */
-	public void setCheckItem(String[] checkItem) {
-		this.checkItem = checkItem;
-	}
-
-	/**
-	 * @return the file
-	 */
-	public File[] getFile() {
-		return file;
-	}
-
-	/**
-	 * @param file
-	 *            the file to set
-	 */
-	public void setFile(File[] file) {
-		this.file = file;
-	}
-
-	/**
-	 * @return the fileFileName
-	 */
-	public String[] getFileFileName() {
-		return fileFileName;
-	}
-
-	/**
-	 * @param fileFileName
-	 *            the fileFileName to set
-	 */
-	public void setFileFileName(String[] fileFileName) {
-		this.fileFileName = fileFileName;
-	}
-
-	/**
-	 * @return the fileContentType
-	 */
-	public String[] getFileContentType() {
-		return fileContentType;
-	}
-
-	/**
-	 * @param fileContentType
-	 *            the fileContentType to set
-	 */
-	public void setFileContentType(String[] fileContentType) {
-		this.fileContentType = fileContentType;
-	}
-
-	/**
-	 * @return the importSerNos
-	 */
-	public String[] getImportSerNos() {
-		return importSerNos;
-	}
-
-	/**
-	 * @param importSerNos
-	 *            the importSerNos to set
-	 */
-	public void setImportSerNos(String[] importSerNos) {
-		this.importSerNos = importSerNos;
 	}
 }

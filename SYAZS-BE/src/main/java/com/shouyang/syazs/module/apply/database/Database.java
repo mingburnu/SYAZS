@@ -65,15 +65,12 @@ public class Database extends GenericEntityFull {
 	// 收錄年代
 	@Column(name = "IndexedYears")
 	private String indexedYears;
-	
+
 	@Transient
 	private ResourcesBuyers resourcesBuyers;
-	
+
 	@Transient
 	private List<Customer> customers;
-	
-	@Transient
-	private String existStatus;
 
 	/**
 	 * @return the dbChtTitle
@@ -233,7 +230,8 @@ public class Database extends GenericEntityFull {
 	}
 
 	/**
-	 * @param resourcesBuyers the resourcesBuyers to set
+	 * @param resourcesBuyers
+	 *            the resourcesBuyers to set
 	 */
 	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
 		this.resourcesBuyers = resourcesBuyers;
@@ -247,24 +245,11 @@ public class Database extends GenericEntityFull {
 	}
 
 	/**
-	 * @param customers the customers to set
+	 * @param customers
+	 *            the customers to set
 	 */
 	public void setCustomers(List<Customer> customers) {
 		this.customers = customers;
-	}
-	
-	/**
-	 * @return the existStatus
-	 */
-	public String getExistStatus() {
-		return existStatus;
-	}
-
-	/**
-	 * @param existStatus the existStatus to set
-	 */
-	public void setExistStatus(String existStatus) {
-		this.existStatus = existStatus;
 	}
 
 	public Database() {
@@ -276,7 +261,7 @@ public class Database extends GenericEntityFull {
 			String includedSpecies, String publishName, String content,
 			String url, String topic, String classification,
 			String indexedYears, ResourcesBuyers resourcesBuyers,
-			List<Customer> customers, String existStatus) {
+			List<Customer> customers) {
 		super();
 		this.dbChtTitle = dbChtTitle;
 		this.dbEngTitle = dbEngTitle;
@@ -290,7 +275,6 @@ public class Database extends GenericEntityFull {
 		this.indexedYears = indexedYears;
 		this.resourcesBuyers = resourcesBuyers;
 		this.customers = customers;
-		this.existStatus = existStatus;
 	}
-		
+
 }

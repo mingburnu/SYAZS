@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -196,10 +198,9 @@ $(document).ready(function() {
 									value="entity.end" /></td>
 							<td align="center">${item.rank }</td>
 							<td>${item.accountNumber.userId }</td>
-							<td align="center"><c:out
-									value="${item.accountNumber.userName }" /></td>
+							<td align="center"><esapi:encodeForHTMLAttribute>${item.accountNumber.userName }</esapi:encodeForHTMLAttribute></td>
 							<td align="center">${item.accountNumber.role.role }</td>
-							<td align="center"><c:out value="${item.customer.name }" /></td>
+							<td align="center">${item.customer.name }</td>
 							<td>${item.accountNumber.status.status }</td>
 							<td>${item.count }</td>
 						</tr>

@@ -2,6 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -60,47 +62,47 @@
 				<tbody>
 					<tr>
 						<th width="130">中文刊名</th>
-						<td><c:out value="${entity.chineseTitle }" /></td>
+						<td><esapi:encodeForHTML>${entity.chineseTitle }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">英文刊名<span class="required">(&#8226;)</span></th>
-						<td><c:out value="${entity.englishTitle }" /></td>
+						<td><esapi:encodeForHTML>${entity.englishTitle }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">英文縮寫刊名</th>
-						<td><c:out value="${entity.abbreviationTitle }" /></td>
+						<td><esapi:encodeForHTML>${entity.abbreviationTitle }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">ISSN<span class="required">(&#8226;)</span></th>
-						<td><c:out value="${entity.issn }" /></td>
+						<td>${entity.issn }"/></td>
 					</tr>
 					<tr>
 						<th width="130">語文</th>
-						<td><c:out value="${entity.languages }" /></td>
+						<td><esapi:encodeForHTML>${entity.languages }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">出版項</th>
-						<td><c:out value="${entity.publishName }" /></td>
+						<td><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">出版年</th>
-						<td><c:out value="${entity.publishYear }" /></td>
+						<td><esapi:encodeForHTML>${entity.publishYear }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">刊別</th>
-						<td><c:out value="${entity.publication }" /></td>
+						<td><esapi:encodeForHTML>${entity.publication }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">國會分類號</th>
-						<td><c:out value="${entity.congressClassification }" /></td>
+						<td>${entity.congressClassification }</td>
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><c:out value="${entity.resourcesBuyers.startDate}" /></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><c:out value="${entity.resourcesBuyers.maturityDate}" /></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>
@@ -112,19 +114,17 @@
 					</tr>
 					<tr>
 						<th width="130">資料庫中文題名</th>
-						<td><c:out value="${entity.resourcesBuyers.dbChtTitle}" /></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbChtTitle}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">資料庫英文題名</th>
-						<td><c:out value="${entity.resourcesBuyers.dbEngTitle}" /></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbEngTitle}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>
 						<td><c:forEach var="item" items="${entity.customers}"
 								varStatus="status">
-								<div>
-									<c:out value="${item.name}" />
-								</div>
+								<div>${item.name}</div>
 							</c:forEach></td>
 					</tr>
 

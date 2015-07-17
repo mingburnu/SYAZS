@@ -2,7 +2,6 @@ package com.shouyang.syazs.module.apply.feLogs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,8 +46,6 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 	@Autowired
 	private JodaTimeConverter jodaTimeConverter;
-
-	private InputStream inputStream;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -209,7 +206,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 			ByteArrayOutputStream boas = new ByteArrayOutputStream();
 			workbook.write(boas);
-			setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
 
 			return XLSX;
 		} else {
@@ -219,20 +217,5 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 	protected String getDateString(LocalDateTime dateTime) {
 		return jodaTimeConverter.convertToString(null, dateTime);
-	}
-
-	/**
-	 * @return the inputStream
-	 */
-	public InputStream getInputStream() {
-		return inputStream;
-	}
-
-	/**
-	 * @param inputStream
-	 *            the inputStream to set
-	 */
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
 	}
 }

@@ -3,6 +3,8 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -182,12 +184,12 @@ function goImport(){
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
 							<td align="center" class="td_first" nowrap><input
-								type="checkbox" class="checkbox" name="checkItem"
+								type="checkbox" class="checkbox" name="entity.checkItem"
 								value="${item.serNo}"></td>
-							<td><c:out value="${item.englishTitle }" /></td>
+							<td><esapi:encodeForHTML>${item.englishTitle }</esapi:encodeForHTML></td>
 							<td align="center">${item.resourcesBuyers.type }</td>
-							<td><c:out value="${item.cUid }" /></td>
-							<td align="center"><c:out value="${item.uUid }" /></td>
+							<td>${item.cUid }</td>
+							<td align="center">${item.uUid }</td>
 							<td align="center"><a class="state-default2"
 								onclick="goView(${item.serNo })"><span
 									class="icon-default icon-view"></span>檢視</a> <a

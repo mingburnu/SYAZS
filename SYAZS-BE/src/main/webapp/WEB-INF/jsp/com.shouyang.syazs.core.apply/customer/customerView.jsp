@@ -2,6 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -61,24 +63,23 @@
 				<tbody>
 					<tr>
 						<th width="130">用戶名稱</th>
-						<td><c:out value="${entity.name }" /></td>
-						<c:out value="" />
+						<td>${entity.name }</td>
 					</tr>
 					<tr>
 						<th width="130">用戶英文名稱</th>
-						<td><c:out value="${entity.engName }" /></td>
+						<td><esapi:encodeForHTML>${entity.engName }"</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">聯絡人</th>
-						<td><c:out value="${entity.contactUserName }" /></td>
+						<td><esapi:encodeForHTML>${entity.contactUserName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">地址</th>
-						<td><c:out value="${entity.address }" /></td>
+						<td><esapi:encodeForHTML>${entity.address }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">電話</th>
-						<td><c:out value="${entity.tel }" /></td>
+						<td>${entity.tel }</td>
 					</tr>
 				</tbody>
 			</table>
