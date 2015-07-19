@@ -83,6 +83,21 @@ public class CustomerService extends GenericServiceFull<Customer> {
 
 	public List<Customer> getAllCustomers() throws Exception {
 		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+
+		return dao.findByRestrictions(restrictions);
+	}
+
+	public List<Customer> getUncheckCustomers(List<Customer> checkedCustomers)
+			throws Exception {
+		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		if (checkedCustomers != null) {
+			int i = 0;
+			while (i < checkedCustomers.size()) {
+				restrictions.ne("serNo", checkedCustomers.get(i).getSerNo());
+				i++;
+			}
+		}
+
 		return dao.findByRestrictions(restrictions);
 	}
 

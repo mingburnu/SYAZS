@@ -4,7 +4,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 @MappedSuperclass
-public abstract class CheckArray implements Entity {
+public abstract class CheckArray extends SearchProperties {
 
 	/**
 	 * 
@@ -12,26 +12,26 @@ public abstract class CheckArray implements Entity {
 	private static final long serialVersionUID = 8820737802424454266L;
 
 	@Transient
-	private String[] checkItem;
+	private Long[] checkItem;
 
 	@Transient
-	private String[] cusSerNo;
+	private Long[] cusSerNo;
 
 	@Transient
-	private String[] importItem;
+	private Integer[] importItem;
 
-	public String[] getCheckItem() {
+	public Long[] getCheckItem() {
 		return checkItem;
 	}
 
-	public void setCheckItem(String[] checkItem) {
+	public void setCheckItem(Long[] checkItem) {
 		this.checkItem = checkItem;
 	}
 
 	/**
 	 * @return the cusSerNo
 	 */
-	public String[] getCusSerNo() {
+	public Long[] getCusSerNo() {
 		return cusSerNo;
 	}
 
@@ -39,14 +39,14 @@ public abstract class CheckArray implements Entity {
 	 * @param cusSerNo
 	 *            the cusSerNo to set
 	 */
-	public void setCusSerNo(String[] cusSerNo) {
+	public void setCusSerNo(Long[] cusSerNo) {
 		this.cusSerNo = cusSerNo;
 	}
 
 	/**
 	 * @return the importItem
 	 */
-	public String[] getImportItem() {
+	public Integer[] getImportItem() {
 		return importItem;
 	}
 
@@ -54,7 +54,7 @@ public abstract class CheckArray implements Entity {
 	 * @param importItem
 	 *            the importItem to set
 	 */
-	public void setImportItem(String[] importItem) {
+	public void setImportItem(Integer[] importItem) {
 		this.importItem = importItem;
 	}
 }

@@ -64,9 +64,6 @@ public abstract class GenericEntityFull extends FileIoProperties {
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
 	private LocalDateTime uDTime;
 
-	@Transient
-	private String option;
-
 	/**
 	 * @return the serNo
 	 */
@@ -156,21 +153,6 @@ public abstract class GenericEntityFull extends FileIoProperties {
 
 	public void setLastModifiedUser(AccountNumber lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
-	}
-
-	/**
-	 * @return the option
-	 */
-	public String getOption() {
-		return option;
-	}
-
-	/**
-	 * @param option
-	 *            the option to set
-	 */
-	public void setOption(String option) {
-		this.option = option;
 	}
 
 	/**

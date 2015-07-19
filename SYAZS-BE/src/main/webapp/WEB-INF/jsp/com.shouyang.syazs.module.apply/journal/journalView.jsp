@@ -74,7 +74,7 @@
 					</tr>
 					<tr>
 						<th width="130">ISSN<span class="required">(&#8226;)</span></th>
-						<td>${entity.issn }"/></td>
+						<td>${entity.issn }</td>
 					</tr>
 					<tr>
 						<th width="130">語文</th>

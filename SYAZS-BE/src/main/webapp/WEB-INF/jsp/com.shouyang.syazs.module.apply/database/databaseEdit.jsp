@@ -76,24 +76,6 @@ input#customer_name {
 </style>
 </head>
 <body>
-	<c:if test="${not empty categoryList}">
-		<%
-			ArrayList<?> allCustomers = (ArrayList<?>) request
-						.getAttribute("allCustomers");
-				ArrayList<?> entityCustomers = (ArrayList<?>) request
-						.getAttribute("entity.customers");
-				Object[] allCustomerArray = allCustomers.toArray();
-				if (entityCustomers.size() > 0) {
-					for (int j = 0; j < entityCustomers.size(); j++) {
-						if (allCustomers.contains(entityCustomers.get(j))) {
-							allCustomers.remove(entityCustomers.get(j));
-						}
-					}
-				}
-
-				request.setAttribute("allCustomers", allCustomers);
-		%>
-	</c:if>
 	<s:form namespace="/crud" action="apply.database.update">
 		<table cellspacing="1" class="detail-table">
 			<tr>
@@ -153,7 +135,7 @@ input#customer_name {
 					disabled="disabled" value="增加單位"><img id="add"
 					src="<c:url value = '/'/>resources/images/add.png"
 					onclick="addCustomer();"> <c:forEach var="item"
-						items="${entity.customers}" varStatus="status2">
+						items="${entity.customers}" varStatus="status">
 						<div style="">
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"
@@ -161,7 +143,8 @@ input#customer_name {
 								id="unit" type="hidden" value="${item.serNo }"
 								name="entity.cusSerNo">
 						</div>
-					</c:forEach> <c:forEach var="item" items="${allCustomers}" varStatus="status">
+					</c:forEach> <c:forEach var="item" items="${uncheckCustomers}"
+						varStatus="status">
 						<div style="display: none;">
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"

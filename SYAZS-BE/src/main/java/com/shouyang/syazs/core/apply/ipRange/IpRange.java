@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -29,6 +29,7 @@ public class IpRange extends GenericEntityFull {
 	 */
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cus_serNo", nullable = false)
+	@Autowired
 	private Customer customer;
 
 	// IP開始
@@ -38,9 +39,6 @@ public class IpRange extends GenericEntityFull {
 	// IP結束
 	@Column(name = "ipRangeEnd")
 	private String ipRangeEnd;
-
-	@Transient
-	private Integer listNo;
 
 	/**
 	 * @return the customer
@@ -86,20 +84,4 @@ public class IpRange extends GenericEntityFull {
 	public void setIpRangeEnd(String ipRangeEnd) {
 		this.ipRangeEnd = ipRangeEnd;
 	}
-
-	/**
-	 * @return the listNo
-	 */
-	public Integer getListNo() {
-		return listNo;
-	}
-
-	/**
-	 * @param listNo
-	 *            the listNo to set
-	 */
-	public void setListNo(Integer listNo) {
-		this.listNo = listNo;
-	}
-
 }

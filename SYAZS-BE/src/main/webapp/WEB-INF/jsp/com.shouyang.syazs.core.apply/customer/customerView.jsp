@@ -67,7 +67,7 @@
 					</tr>
 					<tr>
 						<th width="130">用戶英文名稱</th>
-						<td><esapi:encodeForHTML>${entity.engName }"</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${entity.engName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">聯絡人</th>

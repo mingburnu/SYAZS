@@ -8,9 +8,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -49,6 +48,7 @@ public class FeLogs extends GenericEntityLog {
 	 */
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cus_serNo", nullable = false)
+	@Autowired
 	private Customer customer;
 
 	/**
@@ -69,18 +69,6 @@ public class FeLogs extends GenericEntityLog {
 	// 期刊流水號
 	@Column(name = "jou_SerNo")
 	private Long jouSerNo;
-
-	@Transient
-	private LocalDateTime start;
-
-	@Transient
-	private LocalDateTime end;
-
-	@Transient
-	private int count;
-
-	@Transient
-	private int rank;
 
 	/**
 	 * @return the actionType
@@ -185,66 +173,6 @@ public class FeLogs extends GenericEntityLog {
 	 */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-	}
-
-	/**
-	 * @return the start
-	 */
-	public LocalDateTime getStart() {
-		return start;
-	}
-
-	/**
-	 * @param start
-	 *            the start to set
-	 */
-	public void setStart(LocalDateTime start) {
-		this.start = start;
-	}
-
-	/**
-	 * @return the end
-	 */
-	public LocalDateTime getEnd() {
-		return end;
-	}
-
-	/**
-	 * @param end
-	 *            the end to set
-	 */
-	public void setEnd(LocalDateTime end) {
-		this.end = end;
-	}
-
-	/**
-	 * @return the count
-	 */
-	public int getCount() {
-		return count;
-	}
-
-	/**
-	 * @param count
-	 *            the count to set
-	 */
-	public void setCount(int count) {
-		this.count = count;
-	}
-
-	/**
-	 * @return the rank
-	 */
-	public int getRank() {
-		return rank;
-	}
-
-	/**
-	 * @param rank
-	 *            the rank to set
-	 */
-	public void setRank(int rank) {
-		this.rank = rank;
 	}
 
 	public FeLogs() {

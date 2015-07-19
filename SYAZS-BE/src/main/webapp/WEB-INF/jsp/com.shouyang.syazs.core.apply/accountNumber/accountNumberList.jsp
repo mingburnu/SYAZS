@@ -148,12 +148,14 @@ function goImport(){
 
 					<tbody>
 						<tr>
-							<td align="left">用戶代碼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;客戶名稱</td>
+							<td align="left">用戶代碼</td>
+							<td>客戶名稱</td>
 							<td align="left"></td>
 						</tr>
 						<tr>
 							<td align="left"><s:textfield name="entity.userId"
-									id="search" cssClass="input_text" />&nbsp; <c:choose>
+									id="search" cssClass="input_text" /></td>
+							<td><c:choose>
 									<c:when test="${login.role.role != '管理員' }">
 										<s:textfield name="entity.customer.name" id="search"
 											cssClass="input_text" />

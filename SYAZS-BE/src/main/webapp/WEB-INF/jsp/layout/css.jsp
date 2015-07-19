@@ -19,5 +19,10 @@ if (userAgent.getBrowser().getGroup().equals(Browser.MOZILLA)
 	out.println(".page-box table tbody td {width: 287px;}");
 	out.println(".page-box table tbody td a {position: relative;right: -148px;}");	
 }
+
+if(userAgent.getBrowser().getGroup().equals(Browser.IE) 
+		&& userAgent.getBrowserVersion().getVersion().equals("7.0")){
+	out.println(".page-box table tbody td a {position: relative;right: -48px;}");	
+}
 %>
 </style>

@@ -238,6 +238,11 @@ public class Test {
 		roleList.remove(0);
 		System.out.println(roleList.contains(Role.系統管理員));
 		System.out.println(roleList.contains(Role.使用者));
+		
+		String abc="baaaaaa";
+		String aaaa=abc.replaceFirst("a", "?");
+		System.out.println(aaaa);
+		
 	}
 
 	public static boolean isLCC(String LCC) {

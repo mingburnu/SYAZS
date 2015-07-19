@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,8 +38,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.opensymphony.xwork2.ActionContext;
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
+import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
@@ -49,8 +50,6 @@ import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
-import com.shouyang.syazs.module.converter.CategoryConverter;
-import com.shouyang.syazs.module.converter.TypeConverter;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -86,10 +85,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	private CustomerService customerService;
 
 	@Autowired
-	private CategoryConverter categoryConverter;
-
-	@Autowired
-	private TypeConverter typeConverter;
+	private EnumConverter enumConverter;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -119,27 +115,23 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		if (ArrayUtils.isEmpty(getEntity().getCusSerNo())) {
 			errorMessages.add("至少選擇一筆以上購買單位");
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(getEntity().getCusSerNo()));
+			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
+					.getCusSerNo()));
 			getEntity().setCusSerNo(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
-				if (!NumberUtils.isDigits(String.valueOf(getEntity()
-						.getCusSerNo()[i]))
-						|| Long.parseLong(getEntity().getCusSerNo()[i]) < 1
-						|| customerService.getBySerNo(Long
-								.parseLong(getEntity().getCusSerNo()[i])) == null) {
+				if (getEntity().getCusSerNo()[i] == null
+						|| getEntity().getCusSerNo()[i] < 1
+						|| customerService
+								.getBySerNo(getEntity().getCusSerNo()[i]) == null) {
 					errorMessages.add(getEntity().getCusSerNo()[i]
 							+ "為不可利用的流水號");
+					getEntity().getCusSerNo()[i] = null;
 				}
 				i++;
 			}
-		}
-
-		if (getEntity().getResourcesBuyers() == null) {
-			getEntity().setResourcesBuyers(resourcesBuyers);
 		}
 
 		if (getEntity().getResourcesBuyers().getCategory() == null
@@ -188,27 +180,23 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			if (ArrayUtils.isEmpty(getEntity().getCusSerNo())) {
 				errorMessages.add("至少選擇一筆以上購買單位");
 			} else {
-				Set<String> deRepeatSet = new HashSet<String>(
+				Set<Long> deRepeatSet = new HashSet<Long>(
 						Arrays.asList(getEntity().getCusSerNo()));
 				getEntity().setCusSerNo(
-						deRepeatSet.toArray(new String[deRepeatSet.size()]));
+						deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 				int i = 0;
 				while (i < getEntity().getCusSerNo().length) {
-					if (!NumberUtils.isDigits(String.valueOf(getEntity()
-							.getCusSerNo()[i]))
-							|| Long.parseLong(getEntity().getCusSerNo()[i]) < 1
-							|| customerService.getBySerNo(Long
-									.parseLong(getEntity().getCusSerNo()[i])) == null) {
+					if (getEntity().getCusSerNo()[i] == null
+							|| getEntity().getCusSerNo()[i] < 1
+							|| customerService.getBySerNo(getEntity()
+									.getCusSerNo()[i]) == null) {
 						errorMessages.add(getEntity().getCusSerNo()[i]
 								+ "為不可利用的流水號");
+						getEntity().getCusSerNo()[i] = null;
 					}
 					i++;
 				}
-			}
-
-			if (getEntity().getResourcesBuyers() == null) {
-				getEntity().setResourcesBuyers(resourcesBuyers);
 			}
 
 			if (getEntity().getResourcesBuyers().getCategory() == null
@@ -230,20 +218,19 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(getEntity().getCheckItem()));
+			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
+					.getCheckItem()));
 			getEntity().setCheckItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				if (!NumberUtils.isDigits(String.valueOf(getEntity()
-						.getCheckItem()[i]))
-						|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
-						|| journalService.getBySerNo(Long.parseLong(getEntity()
-								.getCheckItem()[i])) == null) {
-					errorMessages.add(getEntity().getCheckItem()[i]
-							+ "為不可利用的流水號");
+				if (getEntity().getCheckItem()[i] == null
+						|| getEntity().getCheckItem()[i] < 1
+						|| journalService
+								.getBySerNo(getEntity().getCheckItem()[i]) == null) {
+					addActionError("有錯誤流水號");
+					break;
 				}
 				i++;
 			}
@@ -253,12 +240,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	@Override
 	public String add() throws Exception {
 		setCategoryList();
-		getRequest().setAttribute("allCustomers",
-				customerService.getAllCustomers());
 
 		List<Customer> customers = new ArrayList<Customer>();
 		journal.setCustomers(customers);
-		journal.setResourcesBuyers(resourcesBuyers);
+		getRequest().setAttribute("uncheckCustomers",
+				customerService.getUncheckCustomers(customers));
 		journal.getResourcesBuyers().setCategory(Category.未註明);
 		journal.getResourcesBuyers().setType(Type.期刊);
 		setEntity(journal);
@@ -270,8 +256,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String edit() throws Exception {
 		if (hasEntity()) {
 			setCategoryList();
-			getRequest().setAttribute("allCustomers",
-					customerService.getAllCustomers());
 
 			Iterator<ResourcesUnion> iterator = resourcesUnionService
 					.getResourcesUnionsByObj(getEntity(), Journal.class)
@@ -287,9 +271,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				}
 			}
 
-			resourcesBuyers = resourcesUnion.getResourcesBuyers();
-			journal.setResourcesBuyers(resourcesBuyers);
+			journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 			journal.setCustomers(customers);
+			getRequest().setAttribute("uncheckCustomers",
+					customerService.getUncheckCustomers(customers));
 			setEntity(journal);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -301,15 +286,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String list() throws Exception {
 		if (StringUtils.isNotEmpty(getEntity().getOption())) {
 			if (!getEntity().getOption().equals("entity.chineseTitle")
-					&& getEntity().getOption().equals("entity.englishTitle")
-					&& getEntity().getOption().equals("entity.issn")) {
+					&& !getEntity().getOption().equals("entity.englishTitle")
+					&& !getEntity().getOption().equals("entity.issn")) {
 				getEntity().setOption("entity.chineseTitle");
 			}
 		} else {
 			getEntity().setOption("entity.chineseTitle");
 		}
 
-		if (getEntity().getOption().equals("entity.englishTitle")) {
+		if (getEntity().getOption().equals("entity.chineseTitle")) {
+			getEntity().setEnglishTitle(null);
+			getEntity().setIssn(null);
+		} else if (getEntity().getOption().equals("entity.englishTitle")) {
 			getEntity().setChineseTitle(null);
 			getEntity().setIssn(null);
 		} else {
@@ -359,8 +347,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				resourcesUnionService.save(
-						new ResourcesUnion(customerService.getBySerNo(Long
-								.parseLong(getEntity().getCusSerNo()[i])),
+						new ResourcesUnion(customerService
+								.getBySerNo(getEntity().getCusSerNo()[i]),
 								resourcesBuyers, 0L, 0L, journal.getSerNo()),
 						getLoginUser());
 
@@ -391,18 +379,12 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					customerService.getAllCustomers());
 
 			List<Customer> customers = new ArrayList<Customer>();
-			if (getEntity().getCusSerNo() != null
-					&& getEntity().getCusSerNo().length != 0) {
+			if (ArrayUtils.isNotEmpty(getEntity().getCusSerNo())) {
 				int i = 0;
 				while (i < getEntity().getCusSerNo().length) {
-					if (getEntity().getCusSerNo()[i] != null
-							&& NumberUtils
-									.isDigits(getEntity().getCusSerNo()[i])) {
-						if (customerService.getBySerNo(Long
-								.parseLong(getEntity().getCusSerNo()[i])) != null) {
-							customers.add(customerService.getBySerNo(Long
-									.parseLong(getEntity().getCusSerNo()[i])));
-						}
+					if (getEntity().getCusSerNo()[i] != null) {
+						customers.add(customerService.getBySerNo(getEntity()
+								.getCusSerNo()[i]));
 					}
 					i++;
 				}
@@ -410,6 +392,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 			journal = getEntity();
 			journal.setCustomers(customers);
+			getRequest().setAttribute("uncheckCustomers",
+					customerService.getUncheckCustomers(customers));
 			setEntity(journal);
 			return ADD;
 		}
@@ -444,8 +428,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			for (int j = 0; j < getEntity().getCusSerNo().length; j++) {
 				for (int i = 0; i < resourcesUnions.size(); i++) {
 					resourcesUnion = resourcesUnions.get(i);
-					if (resourcesUnion.getCustomer().getSerNo() == Long
-							.parseLong(getEntity().getCusSerNo()[j])) {
+					if (resourcesUnion.getCustomer().getSerNo() == getEntity()
+							.getCusSerNo()[j]) {
 						resourcesUnions.remove(i);
 					}
 				}
@@ -460,11 +444,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				if (!resourcesUnionService.isExist(journal, Journal.class,
-						Long.parseLong(getEntity().getCusSerNo()[i]))) {
+						getEntity().getCusSerNo()[i])) {
 					resourcesUnionService
 							.save(new ResourcesUnion(customerService
-									.getBySerNo(Long.parseLong(getEntity()
-											.getCusSerNo()[i])),
+									.getBySerNo(getEntity().getCusSerNo()[i]),
 									resourcesBuyers, 0L, 0L, journal.getSerNo()),
 									getLoginUser());
 				}
@@ -496,18 +479,21 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					customerService.getAllCustomers());
 
 			List<Customer> customers = new ArrayList<Customer>();
-			if (getEntity().getCusSerNo() != null
-					&& getEntity().getCusSerNo().length != 0) {
+			if (ArrayUtils.isNotEmpty(getEntity().getCusSerNo())) {
 				int i = 0;
 				while (i < getEntity().getCusSerNo().length) {
-					customers.add(customerService.getBySerNo(Long
-							.parseLong(getEntity().getCusSerNo()[i])));
+					if (getEntity().getCusSerNo()[i] != null) {
+						customers.add(customerService.getBySerNo(getEntity()
+								.getCusSerNo()[i]));
+					}
 					i++;
 				}
 			}
 
 			journal = getEntity();
 			journal.setCustomers(customers);
+			getRequest().setAttribute("uncheckCustomers",
+					customerService.getUncheckCustomers(customers));
 			setEntity(journal);
 			return EDIT;
 		}
@@ -523,8 +509,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			int j = 0;
 			while (j < getEntity().getCheckItem().length) {
 				List<ResourcesUnion> resourcesUnions = resourcesUnionService
-						.getResourcesUnionsByObj(journalService.getBySerNo(Long
-								.parseLong(getEntity().getCheckItem()[j])),
+						.getResourcesUnionsByObj(journalService
+								.getBySerNo(getEntity().getCheckItem()[j]),
 								Journal.class);
 				resourcesUnion = resourcesUnions.get(0);
 
@@ -536,8 +522,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				}
 				resourcesBuyersService.deleteBySerNo(resourcesUnion
 						.getResourcesBuyers().getSerNo());
-				journalService.deleteBySerNo(Long.parseLong(getEntity()
-						.getCheckItem()[j]));
+				journalService.deleteBySerNo(getEntity().getCheckItem()[j]);
 
 				j++;
 			}
@@ -715,8 +700,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				if (rowValues[13] == null || rowValues[13].trim().equals("")) {
 					category = Category.未註明.getCategory();
 				} else {
-					Object object = getEnumCategory(new String[] { rowValues[13]
-							.trim() });
+					Object object = getEnum(
+							new String[] { rowValues[13].trim() },
+							Category.class);
 					if (object != null) {
 						category = rowValues[13].trim();
 					} else {
@@ -728,8 +714,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				if (rowValues[14] == null || rowValues[14].trim().equals("")) {
 					type = Type.資料庫.getType();
 				} else {
-					Object object = getEnumType(new String[] { rowValues[14]
-							.trim() });
+					Object object = getEnum(
+							new String[] { rowValues[14].trim() }, Type.class);
 					if (object != null) {
 						type = rowValues[14].trim();
 					} else {
@@ -753,8 +739,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 				journal = new Journal(rowValues[0], rowValues[1], rowValues[2],
 						"", issn, rowValues[4], rowValues[5], rowValues[6], "",
-						"", "", rowValues[7], rowValues[8], null,
-						resourcesBuyers, customers);
+						"", "", rowValues[7], rowValues[8], null);
+				journal.setResourcesBuyers(resourcesBuyers);
+				journal.setCustomers(customers);
 
 				if (isIssn(issn)) {
 					long jouSerNo = journalService.getJouSerNoByIssn(issn);
@@ -767,19 +754,19 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 									journalService.getBySerNo(jouSerNo),
 									Journal.class, cusSerNo)) {
 
-								journal.setExistStatus("已存在");
+								journal.setDataStatus("已存在");
 							}
 						} else {
 							if (journal.getResourcesBuyers().getCategory()
 									.equals(Category.不明)) {
-								journal.setExistStatus("資源類型不明");
+								journal.setDataStatus("資源類型不明");
 							}
 						}
 					} else {
-						journal.setExistStatus("無此客戶");
+						journal.setDataStatus("無此客戶");
 					}
 				} else {
-					journal.setExistStatus("ISSN異常");
+					journal.setDataStatus("ISSN異常");
 				}
 
 				if (StringUtils.isNotEmpty(journal.getCongressClassification())) {
@@ -788,16 +775,16 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					}
 				}
 
-				if (journal.getExistStatus() == null) {
-					journal.setExistStatus("正常");
+				if (journal.getDataStatus() == null) {
+					journal.setDataStatus("正常");
 				}
 
-				if (journal.getExistStatus().equals("正常")
+				if (journal.getDataStatus().equals("正常")
 						&& !originalData.contains(journal)) {
 
 					if (checkRepeatRow.containsKey(journal.getIssn()
 							+ customer.getName())) {
-						journal.setExistStatus("資料重複");
+						journal.setDataStatus("資料重複");
 
 					} else {
 						checkRepeatRow
@@ -896,18 +883,17 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			if (NumberUtils.isDigits(getEntity().getImportItem()[0])) {
-				if (!checkItemSet.contains(Integer.parseInt(getEntity()
-						.getImportItem()[0]))) {
-					if (((Journal) importList.get(Integer.parseInt(getEntity()
-							.getImportItem()[0]))).getExistStatus()
-							.equals("正常")) {
-						checkItemSet.add(Integer.parseInt(getEntity()
-								.getImportItem()[0]));
+			if (getEntity().getImportItem()[0] != null
+					&& getEntity().getImportItem()[0] >= 0
+					&& getEntity().getImportItem()[0] < importList.size()) {
+				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[0])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[0]);
+
 					}
 				} else {
-					checkItemSet.remove(Integer.parseInt(getEntity()
-							.getImportItem()[0]));
+					checkItemSet.remove(getEntity().getImportItem()[0]);
 				}
 			}
 		}
@@ -926,22 +912,19 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			Set<String> deRepeatSet = new HashSet<String>(
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
 					Arrays.asList(getEntity().getImportItem()));
 			getEntity().setImportItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getImportItem().length) {
-				if (NumberUtils.isDigits(getEntity().getImportItem()[i])) {
-					if (Long.parseLong(getEntity().getImportItem()[i]) < importList
-							.size()) {
-						if (((Journal) importList.get(Integer
-								.parseInt(getEntity().getImportItem()[i])))
-								.getExistStatus().equals("正常")) {
-							checkItemSet.add(Integer.parseInt(getEntity()
-									.getImportItem()[i]));
-						}
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[i])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 
 					if (checkItemSet.size() == importList.size()) {
@@ -1129,7 +1112,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		return null;
 	}
-	
+
 	protected void setCategoryList() {
 		List<Category> categoryList = new ArrayList<Category>(
 				Arrays.asList(Category.values()));
@@ -1150,27 +1133,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		return true;
 	}
-	
-	protected Object getEnumCategory(String[] categorys) {
-		return categoryConverter.convertFromString(null, categorys, null);
-	}
 
-	protected Object getEnumType(String[] types) {
-		return typeConverter.convertFromString(null, types, null);
-	}
-
-	/**
-	 * @return the resourcesBuyers
-	 */
-	public ResourcesBuyers getResourcesBuyers() {
-		return resourcesBuyers;
-	}
-
-	/**
-	 * @param resourcesBuyers
-	 *            the resourcesBuyers to set
-	 */
-	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
-		this.resourcesBuyers = resourcesBuyers;
+	@SuppressWarnings("rawtypes")
+	protected Object getEnum(String[] values, Class toClass) {
+		return enumConverter.convertFromString(null, values, toClass);
 	}
 }

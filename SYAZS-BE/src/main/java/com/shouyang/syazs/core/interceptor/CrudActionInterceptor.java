@@ -1,6 +1,7 @@
 package com.shouyang.syazs.core.interceptor;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,18 @@ public class CrudActionInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
+
+		System.out.println(invocation.getInvocationContext().getParameters());
+		invocation.getInvocationContext().getParameters().remove("ds.entity");
+		Iterator iterator = invocation.getInvocationContext().getParameters()
+				.entrySet().iterator();
+		
+		
+
+		while (iterator.hasNext()) {
+			Map.Entry entry = (Map.Entry) iterator.next();
+			System.out.println(entry.getKey() + ": " + entry.getValue());
+		}
 
 		if (!invocation.getAction().toString().contains("beLogs")
 				&& !invocation.getAction().toString().contains("feLogs")) {

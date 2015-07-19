@@ -227,7 +227,7 @@ $(document).ready(function() {
 										<fmt:formatNumber type="number" pattern="#"
 											value="${pageFactor+(1-(pageFactor%1))%1}" />
 									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
-									onchange="chagePageSize()">
+									onchange="changePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>

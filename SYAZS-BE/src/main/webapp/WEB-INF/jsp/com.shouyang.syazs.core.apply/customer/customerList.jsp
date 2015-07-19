@@ -20,7 +20,7 @@
 $(document).ready(function() {
 	$("select#listForm_searchCondition").change(function() {
 		$("input#search").attr("name", $(this).val());
-	});
+	});	
 });
 
 //IE press Enter GoPage
@@ -151,8 +151,8 @@ function gotoPage(page){
 }
 	
 //變更顯示筆數
-function chagePageSize(recordPoint){
-	goMain('<c:url value = '/'/>crud/apply.customer.list.action','#apply_customer_list','&pager.recordPoint='+recordPoint);
+function changePageSize(){
+	goMain('<c:url value = '/'/>crud/apply.customer.list.action','#apply_customer_list','&pager.recordPoint='+'${ds.pager.recordPoint }');
 }
 
 //批次匯入
@@ -293,7 +293,7 @@ function goImport(){
 										<fmt:formatNumber type="number" pattern="#"
 											value="${pageFactor+(1-(pageFactor%1))%1}" />
 									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
-									onchange="changePageSize(${ds.pager.recordPoint })">
+									onchange="changePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>

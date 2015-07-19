@@ -1,23 +1,17 @@
 package com.shouyang.syazs.module.apply.ebook;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.shouyang.syazs.core.apply.customer.Customer;
-import com.shouyang.syazs.core.entity.GenericEntityFull;
-import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
+import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Entity
 @Table(name = "ebook")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Ebook extends GenericEntityFull {
+public class Ebook extends ModuleProperties {
 	/**
 	 * 
 	 */
@@ -78,12 +72,6 @@ public class Ebook extends GenericEntityFull {
 	// 出版地
 	@Column(name = "publication")
 	private String publication;
-
-	@Transient
-	private ResourcesBuyers resourcesBuyers;
-
-	@Transient
-	private List<Customer> customers;
 
 	/**
 	 * @return the bookName
@@ -295,36 +283,6 @@ public class Ebook extends GenericEntityFull {
 		this.publication = publication;
 	}
 
-	/**
-	 * @return the resourcesBuyers
-	 */
-	public ResourcesBuyers getResourcesBuyers() {
-		return resourcesBuyers;
-	}
-
-	/**
-	 * @param resourcesBuyers
-	 *            the resourcesBuyers to set
-	 */
-	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
-		this.resourcesBuyers = resourcesBuyers;
-	}
-
-	/**
-	 * @return the customers
-	 */
-	public List<Customer> getCustomers() {
-		return customers;
-	}
-
-	/**
-	 * @param customers
-	 *            the customers to set
-	 */
-	public void setCustomers(List<Customer> customers) {
-		this.customers = customers;
-	}
-
 	public Ebook() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -334,8 +292,7 @@ public class Ebook extends GenericEntityFull {
 			String autherName, String authers, String uppeName, String pubDate,
 			String languages, Integer version, String cnClassBzStr,
 			String bookInfoIntegral, String url, String style,
-			String publication, ResourcesBuyers resourcesBuyers,
-			List<Customer> customers) {
+			String publication) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;
@@ -351,8 +308,6 @@ public class Ebook extends GenericEntityFull {
 		this.url = url;
 		this.style = style;
 		this.publication = publication;
-		this.resourcesBuyers = resourcesBuyers;
-		this.customers = customers;
 	}
 
 }

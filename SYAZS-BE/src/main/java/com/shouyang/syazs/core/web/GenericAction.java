@@ -86,6 +86,8 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 	 * 
 	 * @param entity
 	 * @return
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
 	 */
 	protected DataSet<T> initDataSet() {
 		ds.setEntity(entity);

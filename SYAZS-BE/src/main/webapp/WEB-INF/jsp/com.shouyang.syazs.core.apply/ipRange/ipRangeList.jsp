@@ -8,17 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
-<c:set var="customerSerNo">
-	<c:out value='<%=request.getParameter("entity.customer.serNo")%>'></c:out>
-</c:set>
 <script type="text/javascript">
-//刪除後引導頁面
-$(document).ready(function() {
-	if($("table.list-table:eq(1) tbody tr").length==2&&$("form#apply_ipRange_list input#listForm_currentPageHeader").val()>1){
-		 gotoPage_detail($("form#apply_ipRange_list input#listForm_currentPageHeader").val()-1);
-	};
-});
-
 //IE press Enter GoPage
 $(document).ready(function() {
 	$("input#listForm_currentPageHeader:(1)").keyup(function(e){
@@ -29,20 +19,20 @@ $(document).ready(function() {
 //新增IP Range
 function goAdd_detail() {
 	var url = "<c:url value = '/'/>/crud/apply.ipRange.add.action";
-	var data ='entity.customer.serNo='+'${customerSerNo }';
+	var data ='entity.customer.serNo='+'${entity.customer.serNo }';
 	goDetail_2(url, 'IP Range管理-新增', data);
 }
 
 //IP Range編輯
 function goUpdate_detail(listNo,serNo) {
-		var isNum = /^\d+$/.test(serNo);
-		var islistNo = /^\d+$/.test(listNo);
-		if (isNum && islistNo &&parseInt(serNo) > 0){
+	var isNum = /^\d+$/.test(serNo);
+	var islistNo = /^\d+$/.test(listNo);
+	if (isNum && islistNo && parseInt(serNo) > 0){
 		var url = "<c:url value = '/'/>crud/apply.ipRange.edit.action";
-		var data = 'entity.serNo=' + serNo +'&entity.listNo='+listNo+'&entity.customer.serNo='+'${customerSerNo }';
+		var data = 'entity.serNo=' + serNo +'&entity.listNo='+listNo+'&entity.customer.serNo='+'${entity.customer.serNo }';
 		goDetail_2(url, 'IP Range管理-修改', data); 
-		}
 	}
+}
 
 //單筆刪除
 function goDel_detail(serNo) {
@@ -50,7 +40,7 @@ function goDel_detail(serNo) {
 			 trueText:'是',
 			 trueFunc:function(){
 				 var url = "<c:url value = '/'/>crud/apply.ipRange.delete.action";
-				 var data = $('#apply_ipRange_list').serialize()+'&entity.serNo='+serNo+'&pager.currentPage='+'${ds.pager.currentPage}';
+				 var data = $('#apply_ipRange_list').serialize()+'&entity.serNo='+serNo+'&entity.customer.serNo='+'${entity.customer.serNo }'+'&pager.currentPage='+'${ds.pager.currentPage}';
 				 goDetail_Main(url,'',data);
 			     },
 			  falseText:'否',
@@ -62,10 +52,10 @@ function goDel_detail(serNo) {
 	 var isNum = /^\d+$/.test(serNo);
 	 if (isNum && parseInt(serNo) > 0){
 		 goAlert('提醒','確定要刪除此筆資料嗎?',f);
-		 } else {
-			 goAlert('提醒','錯誤','');
-		 }
+	 } else {
+		 goAlert('提醒','錯誤','');
 	 }
+}
 
 //GoPage
 function gotoPage_detail(page) {
@@ -75,35 +65,35 @@ function gotoPage_detail(page) {
 	var offset = parseInt(recordPerPage) * (parseInt(page) - 1);
 	if(!isNum){
 		page="${ds.pager.currentPage}";
-		} else {
-			if (parseInt(page) < 1){
-				page=1;
-			}		
+	} else {
+		if (parseInt(page) < 1){
+			page=1;
+		}		
 			
-			if (parseInt(page) > parseInt(totalPage)){
-				page=totalPage;
-			} 
+		if (parseInt(page) > parseInt(totalPage)){
+			page=totalPage;
+			
 		}
-		goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action','#apply_ipRange_list', '&pager.currentPage='+page);
 	}
+	
+	goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action','#apply_ipRange_list', '&entity.customer.serNo='+'${entity.customer.serNo }'+'&pager.currentPage='+page);
+}
 
 //變更顯示筆數
 function changePageSize_detail() {
-	goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action','#apply_ipRange_list', '&pager.recordPoint='+'${ds.pager.recordPoint }');
-	}
+	goDetail_Main('<c:url value = '/'/>crud/apply.ipRange.list.action','#apply_ipRange_list', '&entity.customer.serNo='+'${entity.customer.serNo }'+'&pager.recordPoint='+'${ds.pager.recordPoint }');
+}
 	
 function closeDetail() {
 	$("#div_Detail").hide();
 	UI_Resize();
 	$("#div_Detail .content > .header > .title").empty();
 	$("#div_Detail .content > .contain").empty();
-	}
+}
 </script>
 </head>
 <body>
 	<s:form action="apply.ipRange.list" namespace="/crud" method="post">
-		<input type="hidden" name="entity.customer.serNo"
-			value="${customerSerNo }" />
 		<div class="list-box">
 			<div class="list-buttons">
 				<a class="state-default" onclick="goAdd_detail();">新增</a>

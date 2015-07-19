@@ -73,8 +73,7 @@ function chagePageSize(){
 //匯出
 function goExport(){
 	var data=$("#apply_feLogs_list").serialize();
-	var url='<%=request.getContextPath()%>
-	/crud/apply.feLogs.exports.action?'
+	var url='<%=request.getContextPath()%>/crud/apply.feLogs.exports.action?'
 				+ data;
 
 		if ($("input#customerSerNo").attr("checked")) {

@@ -2,34 +2,28 @@ package com.shouyang.syazs.core.converter;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IntegerConverter extends RootConverter {
+public class EnumConverter extends RootConverter {
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object convertFromString(Map context, String[] values, Class toClass) {
-		Integer number = null;
-
 		try {
-			if (NumberUtils.isNumber(values[0])) {
-				number = Integer.parseInt(values[0]);
-			}
-		} catch (NumberFormatException e) {
+			log.info(Enum.valueOf(toClass, values[0]));
+			return Enum.valueOf(toClass, values[0]);
+		} catch (java.lang.IllegalArgumentException e) {
 			return null;
 		}
-
-		return number;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public String convertToString(Map context, Object o) {
-
-		if (o != null) {
-			return o.toString();
+		if (o instanceof Enum) {
+			Enum e = (Enum) o;
+			return e.name();
 		} else {
 			return "";
 		}

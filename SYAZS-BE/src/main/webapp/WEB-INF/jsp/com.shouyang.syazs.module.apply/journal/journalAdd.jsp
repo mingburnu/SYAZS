@@ -45,7 +45,7 @@
 
 	//重設所有欄位(清空)
 	function resetData() {
-		$("[id^='apply_journal_save_entity']").val("");
+		$("[id^='apply_journal_save_entity'][type!='radio']").val("");
 
 		for (var i = 0; i < $("input[type='radio']").length; i++) {
 			$("input[type='radio']:eq(" + i + ")").val(
@@ -180,7 +180,8 @@ input#customer_name {
 								id="unit" type="hidden" value="${item.serNo }"
 								name="entity.cusSerNo">
 						</div>
-					</c:forEach> <c:forEach var="item" items="${allCustomers}" varStatus="status">
+					</c:forEach> <c:forEach var="item" items="${uncheckCustomers}"
+						varStatus="status">
 						<div style="display: none;">
 							<input class="input_text" disabled="disabled"
 								value='${item.name}'><img id="minus"

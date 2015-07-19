@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -38,8 +37,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.opensymphony.xwork2.ActionContext;
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
+import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
@@ -48,8 +49,6 @@ import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion;
 import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
-import com.shouyang.syazs.module.converter.CategoryConverter;
-import com.shouyang.syazs.module.converter.TypeConverter;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -85,10 +84,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	private CustomerService customerService;
 
 	@Autowired
-	private CategoryConverter categoryConverter;
-
-	@Autowired
-	private TypeConverter typeConverter;
+	private EnumConverter enumConverter;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -114,27 +110,23 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (ArrayUtils.isEmpty(getEntity().getCusSerNo())) {
 			errorMessages.add("至少選擇一筆以上購買單位");
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(getEntity().getCusSerNo()));
+			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
+					.getCusSerNo()));
 			getEntity().setCusSerNo(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
-				if (!NumberUtils.isDigits(String.valueOf(getEntity()
-						.getCusSerNo()[i]))
-						|| Long.parseLong(getEntity().getCusSerNo()[i]) < 1
-						|| customerService.getBySerNo(Long
-								.parseLong(getEntity().getCusSerNo()[i])) == null) {
+				if (getEntity().getCusSerNo()[i] == null
+						|| getEntity().getCusSerNo()[i] < 1
+						|| customerService
+								.getBySerNo(getEntity().getCusSerNo()[i]) == null) {
 					errorMessages.add(getEntity().getCusSerNo()[i]
 							+ "為不可利用的流水號");
+					getEntity().getCusSerNo()[i] = null;
 				}
 				i++;
 			}
-		}
-
-		if (getEntity().getResourcesBuyers() == null) {
-			getEntity().setResourcesBuyers(resourcesBuyers);
 		}
 
 		if (getEntity().getResourcesBuyers().getCategory() == null
@@ -179,27 +171,23 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			if (ArrayUtils.isEmpty(getEntity().getCusSerNo())) {
 				errorMessages.add("至少選擇一筆以上購買單位");
 			} else {
-				Set<String> deRepeatSet = new HashSet<String>(
+				Set<Long> deRepeatSet = new HashSet<Long>(
 						Arrays.asList(getEntity().getCusSerNo()));
 				getEntity().setCusSerNo(
-						deRepeatSet.toArray(new String[deRepeatSet.size()]));
+						deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 				int i = 0;
 				while (i < getEntity().getCusSerNo().length) {
-					if (!NumberUtils.isDigits(String.valueOf(getEntity()
-							.getCusSerNo()[i]))
-							|| Long.parseLong(getEntity().getCusSerNo()[i]) < 1
-							|| customerService.getBySerNo(Long
-									.parseLong(getEntity().getCusSerNo()[i])) == null) {
+					if (getEntity().getCusSerNo()[i] == null
+							|| getEntity().getCusSerNo()[i] < 1
+							|| customerService.getBySerNo(getEntity()
+									.getCusSerNo()[i]) == null) {
 						errorMessages.add(getEntity().getCusSerNo()[i]
 								+ "為不可利用的流水號");
+						getEntity().getCusSerNo()[i] = Long.MIN_VALUE;
 					}
 					i++;
 				}
-			}
-
-			if (getEntity().getResourcesBuyers() == null) {
-				getEntity().setResourcesBuyers(resourcesBuyers);
 			}
 
 			if (getEntity().getResourcesBuyers().getCategory() == null
@@ -221,20 +209,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 			errorMessages.add("請選擇一筆或一筆以上的資料");
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(getEntity().getCheckItem()));
+			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
+					.getCheckItem()));
 			getEntity().setCheckItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				if (!NumberUtils.isDigits(String.valueOf(getEntity()
-						.getCheckItem()[i]))
-						|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
-						|| databaseService.getBySerNo(Long
-								.parseLong(getEntity().getCheckItem()[i])) == null) {
-					errorMessages.add(getEntity().getCheckItem()[i]
-							+ "為不可利用的流水號");
+				if (getEntity().getCheckItem()[i] == null
+						|| getEntity().getCheckItem()[i] < 1
+						|| databaseService.getBySerNo(getEntity()
+								.getCheckItem()[i]) == null) {
+					addActionError("有錯誤流水號");
+					break;
 				}
 				i++;
 			}
@@ -244,14 +231,14 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Override
 	public String add() throws Exception {
 		setCategoryList();
-		getRequest().setAttribute("allCustomers",
-				customerService.getAllCustomers());
 
 		List<Customer> customers = new ArrayList<Customer>();
 		database.setCustomers(customers);
-		database.setResourcesBuyers(resourcesBuyers);
+		getRequest().setAttribute("uncheckCustomers",
+				customerService.getUncheckCustomers(customers));
 		database.getResourcesBuyers().setCategory(Category.未註明);
 		database.getResourcesBuyers().setType(Type.資料庫);
+
 		setEntity(database);
 
 		return ADD;
@@ -261,8 +248,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String edit() throws Exception {
 		if (hasEntity()) {
 			setCategoryList();
-			getRequest().setAttribute("allCustomers",
-					customerService.getAllCustomers());
 
 			Iterator<ResourcesUnion> iterator = resourcesUnionService
 					.getResourcesUnionsByObj(getEntity(), Database.class)
@@ -281,6 +266,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			resourcesBuyers = resourcesUnion.getResourcesBuyers();
 			database.setResourcesBuyers(resourcesBuyers);
 			database.setCustomers(customers);
+			getRequest().setAttribute("uncheckCustomers",
+					customerService.getUncheckCustomers(customers));
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -344,8 +331,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				resourcesUnionService.save(
-						new ResourcesUnion(customerService.getBySerNo(Long
-								.parseLong(getEntity().getCusSerNo()[i])),
+						new ResourcesUnion(customerService
+								.getBySerNo(getEntity().getCusSerNo()[i]),
 								resourcesBuyers, 0L, database.getSerNo(), 0L),
 						getLoginUser());
 
@@ -371,21 +358,23 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			return VIEW;
 		} else {
 			setCategoryList();
-			getRequest().setAttribute("allCustomers",
-					customerService.getAllCustomers());
 
 			List<Customer> customers = new ArrayList<Customer>();
 			if (ArrayUtils.isNotEmpty(getEntity().getCusSerNo())) {
 				int i = 0;
 				while (i < getEntity().getCusSerNo().length) {
-					customers.add(customerService.getBySerNo(Long
-							.parseLong(getEntity().getCusSerNo()[i])));
+					if (getEntity().getCusSerNo()[i] != null) {
+						customers.add(customerService.getBySerNo(getEntity()
+								.getCusSerNo()[i]));
+					}
 					i++;
 				}
 			}
 
 			database = getEntity();
 			database.setCustomers(customers);
+			getRequest().setAttribute("uncheckCustomers",
+					customerService.getUncheckCustomers(customers));
 			setEntity(database);
 			return ADD;
 		}
@@ -424,8 +413,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			for (int j = 0; j < getEntity().getCusSerNo().length; j++) {
 				for (int i = 0; i < resourcesUnions.size(); i++) {
 					resourcesUnion = resourcesUnions.get(i);
-					if (resourcesUnion.getCustomer().getSerNo() == Long
-							.parseLong(getEntity().getCusSerNo()[j])) {
+					if (resourcesUnion.getCustomer().getSerNo() == getEntity()
+							.getCusSerNo()[j]) {
 						resourcesUnions.remove(i);
 					}
 				}
@@ -440,10 +429,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				if (!resourcesUnionService.isExist(database, Database.class,
-						Long.parseLong(getEntity().getCusSerNo()[i]))) {
+						getEntity().getCusSerNo()[i])) {
 					resourcesUnionService.save(
-							new ResourcesUnion(customerService.getBySerNo(Long
-									.parseLong(getEntity().getCusSerNo()[i])),
+							new ResourcesUnion(customerService
+									.getBySerNo(getEntity().getCusSerNo()[i]),
 									resourcesBuyers, 0L, database.getSerNo(),
 									0L), getLoginUser());
 				}
@@ -470,22 +459,23 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			return VIEW;
 		} else {
 			setCategoryList();
-			getRequest().setAttribute("allCustomers",
-					customerService.getAllCustomers());
 
 			List<Customer> customers = new ArrayList<Customer>();
-			if (getEntity().getCusSerNo() != null
-					&& getEntity().getCusSerNo().length != 0) {
+			if (ArrayUtils.isNotEmpty(getEntity().getCusSerNo())) {
 				int i = 0;
 				while (i < getEntity().getCusSerNo().length) {
-					customers.add(customerService.getBySerNo(Long
-							.parseLong(getEntity().getCusSerNo()[i])));
+					if (getEntity().getCusSerNo()[i] != null) {
+						customers.add(customerService.getBySerNo(getEntity()
+								.getCusSerNo()[i]));
+					}
 					i++;
 				}
 			}
 
 			database = getEntity();
 			database.setCustomers(customers);
+			getRequest().setAttribute("uncheckCustomers",
+					customerService.getUncheckCustomers(customers));
 			setEntity(database);
 			return EDIT;
 		}
@@ -501,8 +491,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			while (j < getEntity().getCheckItem().length) {
 				List<ResourcesUnion> resourcesUnions = resourcesUnionService
 						.getResourcesUnionsByObj(databaseService
-								.getBySerNo(Long.parseLong(getEntity()
-										.getCheckItem()[j])), Database.class);
+								.getBySerNo(getEntity().getCheckItem()[j]),
+								Database.class);
 				resourcesUnion = resourcesUnions.get(0);
 
 				Iterator<ResourcesUnion> iterator = resourcesUnions.iterator();
@@ -514,8 +504,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				resourcesBuyersService.deleteBySerNo(resourcesUnion
 						.getResourcesBuyers().getSerNo());
-				databaseService.deleteBySerNo(Long.parseLong(getEntity()
-						.getCheckItem()[j]));
+				databaseService.deleteBySerNo(getEntity().getCheckItem()[j]);
 
 				j++;
 			}
@@ -692,8 +681,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				if (StringUtils.isBlank(rowValues[9])) {
 					category = Category.未註明.getCategory();
 				} else {
-					Object object = getEnumCategory(new String[] { rowValues[9]
-							.trim() });
+					Object object = getEnum(
+							new String[] { rowValues[9].trim() },
+							Category.class);
 					if (object != null) {
 						category = rowValues[9].trim();
 					} else {
@@ -705,8 +695,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				if (StringUtils.isBlank(rowValues[10])) {
 					type = Type.資料庫.getType();
 				} else {
-					Object object = getEnumType(new String[] { rowValues[10]
-							.trim() });
+					Object object = getEnum(
+							new String[] { rowValues[10].trim() }, Type.class);
 					if (object != null) {
 						type = rowValues[10].trim();
 					} else {
@@ -727,8 +717,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				database = new Database(rowValues[0].trim(),
 						rowValues[1].trim(), rowValues[3], rowValues[4],
-						rowValues[2], rowValues[5], rowValues[6], "", "", "",
-						resourcesBuyers, customers);
+						rowValues[2], rowValues[5], rowValues[6], "", "", "");
+				database.setResourcesBuyers(resourcesBuyers);
+				database.setCustomers(customers);
 
 				long cusSerNo = customerService.getCusSerNoByName(rowValues[11]
 						.trim());
@@ -746,26 +737,26 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 							if (resourcesUnionService.isExist(databaseService
 									.getBySerNo(datSerNoByChtName),
 									Database.class, cusSerNo)) {
-								database.setExistStatus("已存在");
+								database.setDataStatus("已存在");
 							}
 
 						} else if (datSerNoByChtName != 0
 								&& datSerNoByEngName != 0
 								&& datSerNoByChtName != datSerNoByEngName) {
-							database.setExistStatus("資料庫名稱混亂");
+							database.setDataStatus("資料庫名稱混亂");
 
 						} else if (datSerNoByChtName == 0
 								&& datSerNoByEngName != 0) {
 							if (databaseService.getDatSerNoByBothName(
 									database.getDbChtTitle(),
 									database.getDbEngTitle()) == 0) {
-								database.setExistStatus("資料庫名稱混亂");
+								database.setDataStatus("資料庫名稱混亂");
 
 							} else if (resourcesUnionService.isExist(
 									databaseService
 											.getBySerNo(datSerNoByEngName),
 									Database.class, cusSerNo)) {
-								database.setExistStatus("已存在");
+								database.setDataStatus("已存在");
 							}
 
 						} else if (datSerNoByChtName != 0
@@ -773,28 +764,28 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 							if (databaseService.getDatSerNoByBothName(
 									database.getDbChtTitle(),
 									database.getDbEngTitle()) == 0) {
-								database.setExistStatus("資料庫名稱混亂");
+								database.setDataStatus("資料庫名稱混亂");
 
 							} else if (resourcesUnionService.isExist(
 									databaseService
 											.getBySerNo(datSerNoByChtName),
 									Database.class, cusSerNo)) {
-								database.setExistStatus("已存在");
+								database.setDataStatus("已存在");
 							}
 
 						} else {
 							if (database.getResourcesBuyers().getCategory()
 									.equals(Category.不明)) {
-								database.setExistStatus("資源類型不明");
+								database.setDataStatus("資源類型不明");
 							}
 						}
 
 					} else {
-						database.setExistStatus("資料庫名稱空白");
+						database.setDataStatus("資料庫名稱空白");
 
 					}
 				} else {
-					database.setExistStatus("無此客戶");
+					database.setDataStatus("無此客戶");
 
 				}
 
@@ -802,30 +793,30 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					database.setUrl(null);
 				}
 
-				if (database.getExistStatus() == null) {
-					database.setExistStatus("正常");
+				if (database.getDataStatus() == null) {
+					database.setDataStatus("正常");
 				}
 
-				if (database.getExistStatus().equals("正常")
+				if (database.getDataStatus().equals("正常")
 						&& !originalData.contains(database)) {
 
 					if (checkRepeatRow.containsKey(database.getDbChtTitle()
 							+ database.getDbEngTitle() + customer.getName())) {
-						database.setExistStatus("資料重複");
+						database.setDataStatus("資料重複");
 
 					} else if (checkErrorRow.containsKey(database
 							.getDbEngTitle())
 							&& !checkErrorRow.get(database.getDbEngTitle())
 									.equals(database.getDbChtTitle()
 											+ database.getDbEngTitle())) {
-						database.setExistStatus("不能新增");
+						database.setDataStatus("不能新增");
 
 					} else if (checkErrorRow.containsKey(database
 							.getDbChtTitle())
 							&& !checkErrorRow.get(database.getDbChtTitle())
 									.equals(database.getDbChtTitle()
 											+ database.getDbEngTitle())) {
-						database.setExistStatus("不能新增");
+						database.setDataStatus("不能新增");
 					} else {
 						checkRepeatRow.put(
 								database.getDbChtTitle()
@@ -939,18 +930,17 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			if (NumberUtils.isDigits(getEntity().getImportItem()[0])) {
-				if (!checkItemSet.contains(Integer.parseInt(getEntity()
-						.getImportItem()[0]))) {
-					if (((Database) importList.get(Integer.parseInt(getEntity()
-							.getImportItem()[0]))).getExistStatus()
-							.equals("正常")) {
-						checkItemSet.add(Integer.parseInt(getEntity()
-								.getImportItem()[0]));
+			if (getEntity().getImportItem()[0] != null
+					&& getEntity().getImportItem()[0] >= 0
+					&& getEntity().getImportItem()[0] < importList.size()) {
+				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[0])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[0]);
+
 					}
 				} else {
-					checkItemSet.remove(Integer.parseInt(getEntity()
-							.getImportItem()[0]));
+					checkItemSet.remove(getEntity().getImportItem()[0]);
 				}
 			}
 		}
@@ -969,22 +959,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			Set<String> deRepeatSet = new HashSet<String>(
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
 					Arrays.asList(getEntity().getImportItem()));
 			getEntity().setImportItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getImportItem().length) {
-				if (NumberUtils.isDigits(getEntity().getImportItem()[i])) {
-					if (Long.parseLong(getEntity().getImportItem()[i]) < importList
-							.size()) {
-						if (((Database) importList.get(Integer
-								.parseInt(getEntity().getImportItem()[i])))
-								.getExistStatus().equals("正常")) {
-							checkItemSet.add(Integer.parseInt(getEntity()
-									.getImportItem()[i]));
-						}
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[i])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 
 					if (checkItemSet.size() == importList.size()) {
@@ -1150,11 +1137,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		return null;
 	}
 
-	protected Object getEnumCategory(String[] categorys) {
-		return categoryConverter.convertFromString(null, categorys, null);
-	}
-
-	protected Object getEnumType(String[] types) {
-		return typeConverter.convertFromString(null, types, null);
+	@SuppressWarnings("rawtypes")
+	protected Object getEnum(String[] values, Class toClass) {
+		return enumConverter.convertFromString(null, values, toClass);
 	}
 }

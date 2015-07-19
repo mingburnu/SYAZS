@@ -40,43 +40,15 @@ public class ParameterFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 
-		if (request.getSession().getAttribute("redirect") != null) {
-			request.getSession().removeAttribute("redirect");
-		} else {
-
-			StringBuilder parameterJoin = new StringBuilder();
-			if (StringUtils.isNotBlank(request.getQueryString())) {
-				String[] parameters = request.getQueryString().split("&");
-				int count = 0;
-
-				int i = 0;
-				while (i < parameters.length) {
-					if (StringUtils.isNotBlank(parameters[i])) {
-						if (!parameters[i].startsWith("entity=")
-								&& !parameters[i].equals("entity")
-								&& !parameters[i].startsWith("pager=")
-								&& !parameters[i].equals("pager")
-								&& !parameters[i].startsWith("ds=")
-								&& !parameters[i].equals("ds")
-								&& !parameters[i].startsWith("file=")
-								&& !parameters[i].equals("file")
-								&& !parameters[i].startsWith("ds.")) {
-							parameterJoin.append(parameters[i]).append("&");
-							count++;
-						}
-					}
-
-					i++;
-				}
-
-				if (count != parameters.length) {
-					request.getSession().setAttribute("redirect", true);
-					response.sendRedirect(request.getContextPath()
-							+ request.getServletPath() + "?"
-							+ parameterJoin.toString());
-				}
-			}
-		}
+//		if (request.getSession().getAttribute("redirect") != null) {
+//			request.getSession().removeAttribute("redirect");
+//		} else {
+//			if (StringUtils.isNotEmpty(request.getParameter("ds.entity"))) {
+//				request.getSession().setAttribute("redirect", true);
+//				response.sendRedirect(request.getContextPath()
+//						+ request.getServletPath());
+//			}
+//		}
 
 		chain.doFilter(request, response);
 

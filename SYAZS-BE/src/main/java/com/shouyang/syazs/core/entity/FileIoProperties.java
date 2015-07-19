@@ -24,7 +24,7 @@ public abstract class FileIoProperties extends CheckArray {
 	private String[] fileContentType;
 
 	@Transient
-	private String existStatus;
+	private String dataStatus;
 
 	/** export file name */
 	@Transient
@@ -57,12 +57,12 @@ public abstract class FileIoProperties extends CheckArray {
 		this.fileContentType = fileContentType;
 	}
 
-	public String getExistStatus() {
-		return existStatus;
+	public String getDataStatus() {
+		return dataStatus;
 	}
 
-	public void setExistStatus(String existStatus) {
-		this.existStatus = existStatus;
+	public void setDataStatus(String dataStatus) {
+		this.dataStatus = dataStatus;
 	}
 
 	public String getReportFile() {

@@ -139,7 +139,7 @@
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
 					<tr>
 						<td><c:choose>
-								<c:when test="${item.existStatus=='正常'}">
+								<c:when test="${item.dataStatus=='正常'}">
 									<input type="checkbox" class="checkbox queue"
 										value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
 										onclick="getCheckedItem(this.value)">
@@ -153,7 +153,7 @@
 						<td><esapi:encodeForHTMLAttribute>${item.customer.name }</esapi:encodeForHTMLAttribute></td>
 						<td>${item.role.role }</td>
 						<td>${item.status.status }</td>
-						<td align="center">${item.existStatus }</td>
+						<td align="center">${item.dataStatus }</td>
 					</tr>
 				</c:forEach>
 			</tbody>

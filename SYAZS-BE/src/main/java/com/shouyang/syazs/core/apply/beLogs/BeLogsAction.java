@@ -16,7 +16,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.converter.JodaTimeConverter;
@@ -40,9 +39,6 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 
 	@Autowired
 	private CustomerService customerService;
-
-	@Autowired
-	private Customer customer;
 
 	@Autowired
 	private JodaTimeConverter jodaTimeConverter;
@@ -84,13 +80,12 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer() == null
-				|| getEntity().getCustomer().getSerNo() == null) {
+		if (getEntity().getCustomer().isNew()) {
 			addActionError("請正確填寫機構名稱");
 		} else {
-			if (getEntity().getCustomer().getSerNo() != 0
-					&& customerService.getBySerNo(getEntity().getCustomer()
-							.getSerNo()) == null) {
+			if (getEntity().getCustomer().getSerNo() < 0
+					|| (getEntity().getCustomer().getSerNo() != 0 && customerService
+							.getBySerNo(getEntity().getCustomer().getSerNo()) == null)) {
 				addActionError("請正確填寫機構名稱");
 			}
 		}
@@ -148,12 +143,12 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer().getSerNo() == null) {
+		if (getEntity().getCustomer().isNew()) {
 			addActionError("請正確填寫機構名稱");
 		} else {
-			if (getEntity().getCustomer().getSerNo() != 0
-					&& customerService.getBySerNo(getEntity().getCustomer()
-							.getSerNo()) == null) {
+			if (getEntity().getCustomer().getSerNo() < 0
+					|| (getEntity().getCustomer().getSerNo() != 0 && customerService
+							.getBySerNo(getEntity().getCustomer().getSerNo()) == null)) {
 				addActionError("請正確填寫機構名稱");
 			}
 		}

@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -42,8 +41,7 @@ import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
-import com.shouyang.syazs.core.converter.RoleConverter;
-import com.shouyang.syazs.core.converter.StatusConverter;
+import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
@@ -75,14 +73,11 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	private CustomerService customerService;
 
 	@Autowired
-	private StatusConverter statusConverter;
-
-	@Autowired
-	private RoleConverter roleConverter;
+	private EnumConverter enumConverter;
 
 	@Override
 	protected void validateSave() throws Exception {
-		List<Role> roleList=getLegalRoles();
+		List<Role> roleList = getLegalRoles();
 
 		if (getEntity().getRole() == null
 				|| !roleList.contains(getEntity().getRole())) {
@@ -118,8 +113,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			errorMessages.add("用戶姓名不得空白");
 		}
 
-		if (getEntity().getCustomer() == null
-				|| getEntity().getCustomer().getSerNo() == null
+		if (getEntity().getCustomer().isNew()
 				|| getEntity().getCustomer().getSerNo() <= 0
 				|| customerService.getBySerNo(getEntity().getCustomer()
 						.getSerNo()) == null) {
@@ -144,7 +138,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			List<Role> roleList=getLegalRoles();
+			List<Role> roleList = getLegalRoles();
 
 			if (!roleList.contains(accountNumberService.getBySerNo(
 					getEntity().getSerNo()).getRole())) {
@@ -166,8 +160,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					errorMessages.add("用戶姓名不得空白");
 				}
 
-				if (getEntity().getCustomer() == null
-						|| getEntity().getCustomer().getSerNo() == null
+				if (getEntity().getCustomer().isNew()
 						|| getEntity().getCustomer().getSerNo() <= 0
 						|| customerService.getBySerNo(getEntity().getCustomer()
 								.getSerNo()) == null) {
@@ -213,7 +206,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<Role> roleList=getLegalRoles();
+			List<Role> roleList = getLegalRoles();
 
 			boolean isLegalRole = false;
 			if (roleList.contains(accountNumber.getRole())) {
@@ -222,8 +215,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 			if (isLegalRole) {
 				if (getLoginUser().getRole().equals(Role.管理員)) {
-					if (accountNumber.getCustomer().getName()
-							.equals(getLoginUser().getCustomer().getName())) {
+					if (accountNumber.getCustomer().getSerNo() == getLoginUser()
+							.getCustomer().getSerNo()) {
 						setEntity(accountNumber);
 					} else {
 						getResponse().sendError(
@@ -346,31 +339,31 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(getEntity().getCheckItem()));
+			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
+					.getCheckItem()));
 			getEntity().setCheckItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				if (!NumberUtils.isDigits(String.valueOf(getEntity()
-						.getCheckItem()[i]))
-						|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
-						|| accountNumberService.getBySerNo(Long
-								.parseLong(getEntity().getCheckItem()[i])) == null) {
-					addActionError(getEntity().getCheckItem()[i] + "為不可利用的流水號");
+				if (getEntity().getCheckItem()[i] == null
+						|| getEntity().getCheckItem()[i] < 1
+						|| accountNumberService.getBySerNo(getEntity()
+								.getCheckItem()[i]) == null) {
+					addActionError("有錯誤流水號");
+					break;
 				}
 				i++;
 			}
 		}
 
 		if (!hasActionErrors()) {
-			List<Role> roleList=getLegalRoles();
+			List<Role> roleList = getLegalRoles();
 
 			for (int j = 0; j < getEntity().getCheckItem().length; j++) {
 				boolean isLegalRole = false;
-				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(getEntity().getCheckItem()[j]));
+				accountNumber = accountNumberService.getBySerNo(getEntity()
+						.getCheckItem()[j]);
 				if (roleList.contains(accountNumber.getRole())) {
 					isLegalRole = true;
 				}
@@ -385,8 +378,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasActionErrors()) {
 			int j = 0;
 			while (j < getEntity().getCheckItem().length) {
-				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(getEntity().getCheckItem()[j]));
+				accountNumber = accountNumberService.getBySerNo(getEntity()
+						.getCheckItem()[j]);
 				accountNumber.setStatus(Status.不生效);
 				accountNumberService.update(accountNumber, getLoginUser());
 
@@ -406,31 +399,31 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 			addActionError("請選擇一筆或一筆以上的資料");
 		} else {
-			Set<String> deRepeatSet = new HashSet<String>(
-					Arrays.asList(getEntity().getCheckItem()));
+			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
+					.getCheckItem()));
 			getEntity().setCheckItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				if (!NumberUtils.isDigits(String.valueOf(getEntity()
-						.getCheckItem()[i]))
-						|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
-						|| accountNumberService.getBySerNo(Long
-								.parseLong(getEntity().getCheckItem()[i])) == null) {
-					addActionError(getEntity().getCheckItem()[i] + "為不可利用的流水號");
+				if (getEntity().getCheckItem()[i] == null
+						|| getEntity().getCheckItem()[i] < 1
+						|| accountNumberService.getBySerNo(getEntity()
+								.getCheckItem()[i]) == null) {
+					addActionError("有錯誤流水號");
+					break;
 				}
 				i++;
 			}
 		}
 
 		if (!hasActionErrors()) {
-			List<Role> roleList=getLegalRoles();
+			List<Role> roleList = getLegalRoles();
 
 			for (int j = 0; j < getEntity().getCheckItem().length; j++) {
 				boolean isLegalRole = false;
-				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(getEntity().getCheckItem()[j]));
+				accountNumber = accountNumberService.getBySerNo(getEntity()
+						.getCheckItem()[j]);
 				if (roleList.contains(accountNumber.getRole())) {
 					isLegalRole = true;
 				}
@@ -445,8 +438,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasActionErrors()) {
 			int j = 0;
 			while (j < getEntity().getCheckItem().length) {
-				accountNumber = accountNumberService.getBySerNo(Long
-						.parseLong(getEntity().getCheckItem()[j]));
+				accountNumber = accountNumberService.getBySerNo(getEntity()
+						.getCheckItem()[j]);
 				accountNumber.setStatus(Status.生效);
 				accountNumberService.update(accountNumber, getLoginUser());
 
@@ -464,7 +457,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	public String view() throws Exception {
 		if (hasEntity()) {
-			List<Role> roleList=getLegalRoles();
+			List<Role> roleList = getLegalRoles();
 
 			boolean isLegalRole = false;
 			if (roleList.contains(accountNumber.getRole())) {
@@ -560,7 +553,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				n++;
 			}
 
-			List<Role> roleList=getLegalRoles();
+			List<Role> roleList = getLegalRoles();
 			LinkedHashSet<AccountNumber> originalData = new LinkedHashSet<AccountNumber>();
 			Map<String, AccountNumber> checkRepeatRow = new LinkedHashMap<String, AccountNumber>();
 			int normal = 0;
@@ -622,8 +615,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (StringUtils.isBlank(rowValues[4])) {
 					role = Role.不明.getRole();
 				} else {
-					Object object = getEnumRole(new String[] { rowValues[4]
-							.trim() });
+					Object object = getEnum(
+							new String[] { rowValues[4].trim() }, Role.class);
 					if (object != null
 							&& roleList.contains(Role.valueOf(rowValues[4]
 									.trim()))) {
@@ -638,8 +631,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (StringUtils.isBlank(rowValues[5])) {
 					status = Status.審核中.getStatus();
 				} else {
-					Object object = getEnumStatus(new String[] { rowValues[5]
-							.trim() });
+					Object object = getEnum(
+							new String[] { rowValues[5].trim() }, Status.class);
 					if (object != null) {
 						status = rowValues[5].trim();
 					} else {
@@ -647,42 +640,42 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					}
 				}
 
+				customer.setName(rowValues[3].trim());
 				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
 						rowValues[2], Role.valueOf(role),
-						Status.valueOf(status), null);
-
-				if (customerService.getCusSerNoByName(rowValues[3].trim()) != 0) {
-					customer = customerService.getBySerNo(customerService
-							.getCusSerNoByName(rowValues[3].trim()));
-					accountNumber.setCustomer(customer);
-				}
+						Status.valueOf(status), customer);
 
 				if (StringUtils.isBlank(accountNumber.getUserId())) {
-					accountNumber.setExistStatus("帳號空白");
+					accountNumber.setDataStatus("帳號空白");
 				} else {
 					if (accountNumber.getUserId().replaceAll("[0-9a-zA-Z]", "")
 							.length() != 0) {
-						accountNumber.setExistStatus("帳號必須英數");
+						accountNumber.setDataStatus("帳號必須英數");
 					} else {
 						long serNo = accountNumberService
 								.getSerNoByUserId(accountNumber.getUserId());
 						if (serNo != 0) {
-							accountNumber.setExistStatus("已存在");
+							accountNumber.setDataStatus("已存在");
 						} else {
+							if (customerService.getCusSerNoByName(customer
+									.getName()) != 0) {
+								customer = customerService
+										.getBySerNo(customerService
+												.getCusSerNoByName(rowValues[3]
+														.trim()));
+								accountNumber.setCustomer(customer);
+							}
+
 							if (getLoginUser().getRole().equals(Role.管理員)) {
 								if (StringUtils.isBlank(accountNumber
 										.getUserId())
 										|| StringUtils.isBlank(accountNumber
 												.getUserPw())
-										|| accountNumber.getCustomer() == null
 										|| !isLegalRole
 										|| !getLoginUser().getCustomer()
 												.equals(accountNumber
 														.getCustomer())) {
-									customer = new Customer();
-									customer.setName(rowValues[3]);
-									accountNumber.setCustomer(customer);
-									accountNumber.setExistStatus("資料錯誤");
+									accountNumber.setDataStatus("資料錯誤");
 								}
 							} else {
 								if (StringUtils.isBlank(accountNumber
@@ -692,12 +685,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 												.length() != 0
 										|| StringUtils.isBlank(accountNumber
 												.getUserPw())
-										|| accountNumber.getCustomer() == null
+										|| accountNumber.getCustomer().isNew()
 										|| !isLegalRole) {
-									customer = new Customer();
-									customer.setName(rowValues[3]);
-									accountNumber.setCustomer(customer);
-									accountNumber.setExistStatus("資料錯誤");
+									accountNumber.setDataStatus("資料錯誤");
 								}
 							}
 						}
@@ -708,15 +698,15 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					accountNumber.setEmail(null);
 				}
 
-				if (accountNumber.getExistStatus() == null) {
-					accountNumber.setExistStatus("正常");
+				if (accountNumber.getDataStatus() == null) {
+					accountNumber.setDataStatus("正常");
 				}
 
-				if (accountNumber.getExistStatus().equals("正常")
+				if (accountNumber.getDataStatus().equals("正常")
 						&& !originalData.contains(accountNumber)) {
 
 					if (checkRepeatRow.containsKey(accountNumber.getUserId())) {
-						accountNumber.setExistStatus("帳號重複");
+						accountNumber.setDataStatus("帳號重複");
 
 					} else {
 						checkRepeatRow.put(accountNumber.getUserId(),
@@ -817,19 +807,17 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			if (NumberUtils.isDigits(getEntity().getImportItem()[0])) {
-				if (!checkItemSet.contains(Integer.parseInt(getEntity()
-						.getImportItem()[0]))) {
-					if (((AccountNumber) importList.get(Integer
-							.parseInt(getEntity().getImportItem()[0])))
-							.getExistStatus().equals("正常")) {
-						checkItemSet.add(Integer.parseInt(getEntity()
-								.getImportItem()[0]));
+			if (getEntity().getImportItem()[0] != null
+					&& getEntity().getImportItem()[0] >= 0
+					&& getEntity().getImportItem()[0] < importList.size()) {
+				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[0])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[0]);
 
 					}
 				} else {
-					checkItemSet.remove(Integer.parseInt(getEntity()
-							.getImportItem()[0]));
+					checkItemSet.remove(getEntity().getImportItem()[0]);
 				}
 			}
 		}
@@ -848,22 +836,19 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			Set<String> deRepeatSet = new HashSet<String>(
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
 					Arrays.asList(getEntity().getImportItem()));
 			getEntity().setImportItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getImportItem().length) {
-				if (NumberUtils.isDigits(getEntity().getImportItem()[i])) {
-					if (Long.parseLong(getEntity().getImportItem()[i]) < importList
-							.size()) {
-						if (((AccountNumber) importList.get(Integer
-								.parseInt(getEntity().getImportItem()[i])))
-								.getExistStatus().equals("正常")) {
-							checkItemSet.add(Integer.parseInt(getEntity()
-									.getImportItem()[i]));
-						}
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[i])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 
 					if (checkItemSet.size() == importList.size()) {
@@ -992,12 +977,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				254, true);
 	}
 
-	protected Object getEnumRole(String[] roles) {
-		return roleConverter.convertFromString(null, roles, null);
-	}
-
-	protected Object getEnumStatus(String[] statuses) {
-		return statusConverter.convertFromString(null, statuses, null);
+	@SuppressWarnings("rawtypes")
+	protected Object getEnum(String[] values, Class toClass) {
+		return enumConverter.convertFromString(null, values, toClass);
 	}
 
 	protected List<Role> getLegalRoles() {
@@ -1010,10 +992,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		for (int i = 0; i < roleCode; i++) {
 			tempList.add(roleList.get(i));
 		}
-		
+
 		roleList.removeAll(tempList);
 		ActionContext.getContext().getValueStack().set("roleList", roleList);
-		
+
 		return roleList;
 	}
 }

@@ -8,9 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -48,19 +46,7 @@ public class BeLogs extends GenericEntityLog {
 	// 用戶流水號
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cus_serNo", nullable = false)
-	private Customer customer;
-
-	@Transient
-	private LocalDateTime start;
-
-	@Transient
-	private LocalDateTime end;
-
-	@Transient
-	private Integer count;
-
-	@Transient
-	private Integer rank;
+	private Customer customer = new Customer();
 
 	/**
 	 * @return the actionType
@@ -105,66 +91,6 @@ public class BeLogs extends GenericEntityLog {
 	 */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-	}
-
-	/**
-	 * @return the start
-	 */
-	public LocalDateTime getStart() {
-		return start;
-	}
-
-	/**
-	 * @param start
-	 *            the start to set
-	 */
-	public void setStart(LocalDateTime start) {
-		this.start = start;
-	}
-
-	/**
-	 * @return the end
-	 */
-	public LocalDateTime getEnd() {
-		return end;
-	}
-
-	/**
-	 * @param end
-	 *            the end to set
-	 */
-	public void setEnd(LocalDateTime end) {
-		this.end = end;
-	}
-
-	/**
-	 * @return the count
-	 */
-	public Integer getCount() {
-		return count;
-	}
-
-	/**
-	 * @param count
-	 *            the count to set
-	 */
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-
-	/**
-	 * @return the rank
-	 */
-	public Integer getRank() {
-		return rank;
-	}
-
-	/**
-	 * @param rank
-	 *            the rank to set
-	 */
-	public void setRank(Integer rank) {
-		this.rank = rank;
 	}
 
 	public BeLogs() {

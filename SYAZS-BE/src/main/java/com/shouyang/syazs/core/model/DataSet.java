@@ -14,25 +14,26 @@ import com.shouyang.syazs.core.entity.Entity;
 
 /**
  * DataSet
+ * 
  * @author Roderick
  * @version 2014/3/18
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class DataSet<T extends Entity> implements Serializable {
-	
+public class DataSet<T extends Entity> extends Model implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2324828511681435281L;
 
 	private Pager pager;
-	
+
 	private T entity;
-	
+
 	private List<T> results = Lists.newArrayList();
-	
-	private Map<String,Object> datas = Maps.newHashMap();
+
+	private Map<String, Object> datas = Maps.newHashMap();
 
 	public T getEntity() {
 		return entity;
@@ -65,5 +66,5 @@ public class DataSet<T extends Entity> implements Serializable {
 	public void setPager(Pager pager) {
 		this.pager = pager;
 	}
-	
+
 }

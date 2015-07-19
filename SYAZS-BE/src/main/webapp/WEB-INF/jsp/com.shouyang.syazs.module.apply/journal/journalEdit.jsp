@@ -76,137 +76,121 @@ input#customer_name {
 </style>
 </head>
 <body>
-	<c:if test="${not empty categoryList}">
-		<%
-			ArrayList<?> allCustomers = (ArrayList<?>) request
-						.getAttribute("allCustomers");
-				ArrayList<?> entityCustomers = (ArrayList<?>) request
-						.getAttribute("entity.customers");
-				Object[] allCustomerArray = allCustomers.toArray();
-				if (entityCustomers.size() > 0) {
-					for (int j = 0; j < entityCustomers.size(); j++) {
-						if (allCustomers.contains(entityCustomers.get(j))) {
-							allCustomers.remove(entityCustomers.get(j));
-						}
-					}
-				}
-				request.setAttribute("allCustomers", allCustomers);
-		%>
-		<s:form namespace="/crud" action="apply.journal.update">
-			<table cellspacing="1" class="detail-table">
-				<tr>
-					<th width="130">中文刊名</th>
-					<td><s:textfield name="entity.chineseTitle"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">英文刊名<span class="required">(&#8226;)</span></th>
-					<td><s:textfield name="entity.englishTitle"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">英文縮寫刊名</th>
-					<td><s:textfield name="entity.abbreviationTitle"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">ISSN<span class="required">(&#8226;)</span></th>
-					<td><s:textfield name="entity.issn" cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">語文</th>
-					<td><s:textfield name="entity.languages" cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">出版項</th>
-					<td><s:textfield name="entity.publishName"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">出版年</th>
-					<td><s:textfield name="entity.publishYear"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">刊別</th>
-					<td><s:textfield name="entity.publication"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">國會分類號</th>
-					<td><s:textfield name="entity.congressClassification"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">起始日</th>
-					<td><s:textfield name="resourcesBuyers.startDate"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">到期日</th>
-					<td><s:textfield name="resourcesBuyers.maturityDate"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">資源類型</th>
-					<td><s:radio name="entity.resourcesBuyers.category"
-							list="categoryList" listKey="name()" listValue="category" /></td>
-				</tr>
-				<tr>
-					<th width="130">資源種類</th>
-					<td><s:radio name="entity.resourcesBuyers.type"
-							list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-							listKey="name()" listValue="type" /></td>
-				</tr>
-				<tr>
-					<th width="130">資料庫中文題名</th>
-					<td><s:textfield name="resourcesBuyers.dbChtTitle"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">資料庫英文題名</th>
-					<td><s:textfield name="resourcesBuyers.dbEngTitle"
-							cssClass="input_text" /></td>
-				</tr>
-				<tr>
-					<th width="130">購買單位<span class="required">(&#8226;)</span></th>
-					<td><input type="text" id="customer_name" class="input_text"
-						disabled="disabled" value="增加單位"><img id="add"
-						src="<c:url value = '/'/>resources/images/add.png"
-						onclick="addCustomer();"> <c:forEach var="item"
-							items="${entity.customers}" varStatus="status2">
-							<div style="">
-								<input class="input_text" disabled="disabled"
-									value='${item.name}'><img id="minus"
-									src="<c:url value = '/'/>resources/images/minus.png"><input
-									id="unit" type="hidden" value="${item.serNo }"
-									name="entity.cusSerNo">
-							</div>
-						</c:forEach> <c:forEach var="item" items="${allCustomers}" varStatus="status">
-							<div style="display: none;">
-								<input class="input_text" disabled="disabled"
-									value='${item.name}'><img id="minus"
-									src="<c:url value = '/'/>resources/images/minus.png"><input
-									id="unit" type="hidden" value="${item.serNo }">
-							</div>
-						</c:forEach></td>
-				</tr>
-			</table>
-			<div class="button_box">
-				<div class="detail-func-button">
-					<a class="state-default" onclick="clearCustomers();closeDetail();">取消</a>
-					&nbsp;<a class="state-default" onclick="resetData();">重設</a>&nbsp;
-					<a class="state-default" onclick="submitData();">確認</a>
-				</div>
+	<s:form namespace="/crud" action="apply.journal.update">
+		<table cellspacing="1" class="detail-table">
+			<tr>
+				<th width="130">中文刊名</th>
+				<td><s:textfield name="entity.chineseTitle"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">英文刊名<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.englishTitle"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">英文縮寫刊名</th>
+				<td><s:textfield name="entity.abbreviationTitle"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">ISSN<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.issn" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">語文</th>
+				<td><s:textfield name="entity.languages" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">出版項</th>
+				<td><s:textfield name="entity.publishName"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">出版年</th>
+				<td><s:textfield name="entity.publishYear"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">刊別</th>
+				<td><s:textfield name="entity.publication"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">國會分類號</th>
+				<td><s:textfield name="entity.congressClassification"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">起始日</th>
+				<td><s:textfield name="resourcesBuyers.startDate"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">到期日</th>
+				<td><s:textfield name="resourcesBuyers.maturityDate"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">資源類型</th>
+				<td><s:radio name="entity.resourcesBuyers.category"
+						list="categoryList" listKey="name()" listValue="category" /></td>
+			</tr>
+			<tr>
+				<th width="130">資源種類</th>
+				<td><s:radio name="entity.resourcesBuyers.type"
+						list="@com.shouyang.syazs.module.apply.enums.Type@values()"
+						listKey="name()" listValue="type" /></td>
+			</tr>
+			<tr>
+				<th width="130">資料庫中文題名</th>
+				<td><s:textfield name="resourcesBuyers.dbChtTitle"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">資料庫英文題名</th>
+				<td><s:textfield name="resourcesBuyers.dbEngTitle"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
+				<td><input type="text" id="customer_name" class="input_text"
+					disabled="disabled" value="增加單位"><img id="add"
+					src="<c:url value = '/'/>resources/images/add.png"
+					onclick="addCustomer();"> <c:forEach var="item"
+						items="${entity.customers}" varStatus="status2">
+						<div style="">
+							<input class="input_text" disabled="disabled"
+								value='${item.name}'><img id="minus"
+								src="<c:url value = '/'/>resources/images/minus.png"><input
+								id="unit" type="hidden" value="${item.serNo }"
+								name="entity.cusSerNo">
+						</div>
+					</c:forEach> <c:forEach var="item" items="${uncheckCustomers}"
+						varStatus="status">
+						<div style="display: none;">
+							<input class="input_text" disabled="disabled"
+								value='${item.name}'><img id="minus"
+								src="<c:url value = '/'/>resources/images/minus.png"><input
+								id="unit" type="hidden" value="${item.serNo }">
+						</div>
+					</c:forEach></td>
+			</tr>
+		</table>
+		<div class="button_box">
+			<div class="detail-func-button">
+				<a class="state-default" onclick="clearCustomers();closeDetail();">取消</a>
+				&nbsp;<a class="state-default" onclick="resetData();">重設</a>&nbsp; <a
+					class="state-default" onclick="submitData();">確認</a>
 			</div>
-			<div class="detail_note">
-				<div class="detail_note_title">Note</div>
-				<div class="detail_note_content">
-					<span class="required">(•)</span>為必填欄位
-				</div>
+		</div>
+		<div class="detail_note">
+			<div class="detail_note_title">Note</div>
+			<div class="detail_note_content">
+				<span class="required">(•)</span>為必填欄位
 			</div>
-		</s:form>
-	</c:if>
+		</div>
+	</s:form>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>

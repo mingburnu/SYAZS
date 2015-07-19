@@ -38,6 +38,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
@@ -111,21 +112,19 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			if (ArrayUtils.isEmpty(getEntity().getCheckItem())) {
 				errorMessages.add("請選擇一筆或一筆以上的資料");
 			} else {
-				Set<String> deRepeatSet = new HashSet<String>(
+				Set<Long> deRepeatSet = new HashSet<Long>(
 						Arrays.asList(getEntity().getCheckItem()));
 				getEntity().setCheckItem(
-						deRepeatSet.toArray(new String[deRepeatSet.size()]));
+						deRepeatSet.toArray(new Long[deRepeatSet.size()]));
 
 				int i = 0;
 				while (i < getEntity().getCheckItem().length) {
-					if (!NumberUtils.isDigits(String.valueOf(getEntity()
-							.getCheckItem()[i]))
-							|| Long.parseLong(getEntity().getCheckItem()[i]) < 1
-							|| Long.parseLong(getEntity().getCheckItem()[i]) == 9
-							|| customerService.getBySerNo(Long
-									.parseLong(getEntity().getCheckItem()[i])) == null) {
-						errorMessages.add(getEntity().getCheckItem()[i]
-								+ "為不可利用的流水號");
+					if (getEntity().getCheckItem()[i] == null
+							|| getEntity().getCheckItem()[i] < 1
+							|| customerService.getBySerNo(getEntity()
+									.getCheckItem()[i]) == null) {
+						addActionError("有錯誤流水號");
+						break;
 					}
 					i++;
 				}
@@ -224,13 +223,12 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
 				String name = customerService.getBySerNo(
-						Long.parseLong(getEntity().getCheckItem()[i]))
-						.getName();
-				if (customerService.deleteOwnerObj(Long.parseLong(getEntity()
-						.getCheckItem()[i]))) {
+						getEntity().getCheckItem()[i]).getName();
+				if (customerService
+						.deleteOwnerObj(getEntity().getCheckItem()[i])) {
 					groupMappingService.delByCustomerName(name);
-					customerService.deleteBySerNo(Long.parseLong(getEntity()
-							.getCheckItem()[i]));
+					customerService
+							.deleteBySerNo(getEntity().getCheckItem()[i]);
 					addActionMessage(name + "刪除成功");
 				} else {
 					addActionMessage(name + "資源必須先刪除");
@@ -258,7 +256,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String box() throws Exception {
-		getRequest().setAttribute("customerUnits",
+		getRequest().setAttribute("allCustomers",
 				customerService.getAllCustomers());
 
 		return BOX;
@@ -418,17 +416,17 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 						rowValues[2], rowValues[4], rowValues[3], "");
 
 				if (StringUtils.isBlank(customer.getName())) {
-					customer.setExistStatus("名稱空白");
+					customer.setDataStatus("名稱空白");
 				} else {
 					if (customer.getName()
 							.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "")
 							.length() != 0) {
-						customer.setExistStatus("名稱字元異常");
+						customer.setDataStatus("名稱字元異常");
 					} else {
 						long cusSerNo = customerService
 								.getCusSerNoByName(customer.getName());
 						if (cusSerNo != 0) {
-							customer.setExistStatus("已存在");
+							customer.setDataStatus("已存在");
 						}
 
 						if (StringUtils.isNotEmpty(customer.getTel())) {
@@ -442,15 +440,15 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 				}
 
-				if (customer.getExistStatus() == null) {
-					customer.setExistStatus("正常");
+				if (customer.getDataStatus() == null) {
+					customer.setDataStatus("正常");
 				}
 
-				if (customer.getExistStatus().equals("正常")
+				if (customer.getDataStatus().equals("正常")
 						&& !originalData.contains(customer)) {
 
 					if (checkRepeatRow.containsKey(customer.getName())) {
-						customer.setExistStatus("名稱重複");
+						customer.setDataStatus("名稱重複");
 
 					} else {
 						checkRepeatRow.put(customer.getName(), customer);
@@ -549,18 +547,17 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		}
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			if (NumberUtils.isDigits(getEntity().getImportItem()[0])) {
-				if (!checkItemSet.contains(Integer.parseInt(getEntity()
-						.getImportItem()[0]))) {
-					if (((Customer) importList.get(Integer.parseInt(getEntity()
-							.getImportItem()[0]))).getExistStatus()
-							.equals("正常")) {
-						checkItemSet.add(Integer.parseInt(getEntity()
-								.getImportItem()[0]));
+			if (getEntity().getImportItem()[0] != null
+					&& getEntity().getImportItem()[0] >= 0
+					&& getEntity().getImportItem()[0] < importList.size()) {
+				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[0])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[0]);
+
 					}
 				} else {
-					checkItemSet.remove(Integer.parseInt(getEntity()
-							.getImportItem()[0]));
+					checkItemSet.remove(getEntity().getImportItem()[0]);
 				}
 			}
 		}
@@ -579,22 +576,19 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
-			Set<String> deRepeatSet = new HashSet<String>(
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
 					Arrays.asList(getEntity().getImportItem()));
 			getEntity().setImportItem(
-					deRepeatSet.toArray(new String[deRepeatSet.size()]));
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
 
 			int i = 0;
 			while (i < getEntity().getImportItem().length) {
-				if (NumberUtils.isDigits(getEntity().getImportItem()[i])) {
-					if (Long.parseLong(getEntity().getImportItem()[i]) < importList
-							.size()) {
-						if (((Customer) importList.get(Integer
-								.parseInt(getEntity().getImportItem()[i])))
-								.getExistStatus().equals("正常")) {
-							checkItemSet.add(Integer.parseInt(getEntity()
-									.getImportItem()[i]));
-						}
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					if (((AccountNumber) importList.get(getEntity()
+							.getImportItem()[i])).getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 
 					if (checkItemSet.size() == importList.size()) {

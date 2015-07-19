@@ -101,7 +101,7 @@
 </head>
 
 <body>
-	<c:forEach var="item" items="${customerUnits}" varStatus="status">
+	<c:forEach var="item" items="${allCustomers}" varStatus="status">
 		<div id="unit_div">
 			<input type="checkbox" id="customer_unit" class="checkbox"
 				value="${item.serNo }"><label>${item.name}</label>
