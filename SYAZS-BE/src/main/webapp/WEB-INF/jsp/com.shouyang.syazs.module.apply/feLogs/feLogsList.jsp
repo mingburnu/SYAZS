@@ -10,83 +10,96 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
+<c:if test="${login.role.role != '管理員'}">
+	<script type="text/javascript">
+	$(document).ready(function() {
+		formSetCSS();
+		state_hover();
+		initAutoComplete("<%=request.getContextPath()%>/crud/apply.customer.json.action",
+				'#customerSerNo', '#customerName');
+		});
+	</script>
+</c:if>
 <script type="text/javascript">
-$(document).ready(function() {
-	formSetCSS();
-	state_hover();
-	initAutoComplete("<%=request.getContextPath()%>/crud/apply.customer.json.action",'#customerSerNo','#customerName');
-});
-
-//IE press Enter GoPage
-$(document).ready(function() {
-	$("input#listForm_currentPageHeader").keyup(function(e){
-		if(e.keyCode == 13){gotoPage($(this).val());}
-	});
-});
-
-$(document).ready(function() {
-	$('input#customerName').click(function(){
-		$('input[name="entity.customer.serNo"]:eq(0)').attr( "checked", '' );
-		$('input[name="entity.customer.serNo"]:eq(1)').attr( "checked", true );
-	});
-});
-	
-function goSearch(){
-	if($("input#customerSerNo").attr("checked")){
-	var customerSerNo=$("input#customerSerNo").val();
-	if(customerSerNo!=null&&customerSerNo>0){
-		goMain("<%=request.getContextPath()%>/crud/apply.feLogs.list.action",
-				"#apply_feLogs_list", "");
-	}else{
-		goAlert("訊息", "請正確填寫機構名稱");
-	}
-	}else{
-		goMain("<%=request.getContextPath()%>/crud/apply.feLogs.list.action",
-				"#apply_feLogs_list", "");
-		}
-}
-
-//GoPage
-function gotoPage(page){
-	var isNum = /^\d+$/.test(page);
-	var totalPage = $("span.totalNum:eq(0)").html();
-	
-	if(!isNum){
-		page="${ds.pager.currentPage}";
-	} else {
-		if (parseInt(page) < 1){
-			page=1;
-			}		
-		
-		if (parseInt(page) > parseInt(totalPage)){
-			page=totalPage;
-			} 
-		}
-    goMain('<c:url value = '/'/>crud/apply.feLogs.list.action','#apply_feLogs_list','&pager.currentPage='+page);
-}
-
-//變更顯示筆數
-function chagePageSize(){
-        goMain('<c:url value = '/'/>crud/apply.feLogs.list.action','#apply_feLogs_list','&pager.recordPoint='+'${ds.pager.recordPoint }');
-}
-
-//匯出
-function goExport(){
-	var data=$("#apply_feLogs_list").serialize();
-	var url='<%=request.getContextPath()%>/crud/apply.feLogs.exports.action?'
-				+ data;
-
-		if ($("input#customerSerNo").attr("checked")) {
-			var customerSerNo = $("input#customerSerNo").val();
-			if (customerSerNo != null && customerSerNo > 0) {
-				window.open(url, "exports");
-			} else {
-				goAlert("訊息", "請正確填寫機構名稱");
+	//IE press Enter GoPage
+	$(document).ready(function() {
+		$("input#listForm_currentPageHeader").keyup(function(e) {
+			if (e.keyCode == 13) {
+				gotoPage($(this).val());
 			}
-		} else {
-			window.open(url, "exports");
+		});
+	});
+
+	$(document).ready(
+			function() {
+				$('input#customerName').click(
+						function() {
+							$('input[name="entity.customer.serNo"]:eq(0)')
+									.attr("checked", '');
+							$('input[name="entity.customer.serNo"]:eq(1)')
+									.attr("checked", true);
+						});
+			});
+	
+	function goSearch(){
+		if($("input#customerSerNo").attr("checked")){
+		var customerSerNo=$("input#customerSerNo").val();
+		if(customerSerNo!=null&&customerSerNo>0){
+			goMain("<%=request.getContextPath()%>/crud/apply.feLogs.list.action",
+					"#apply_feLogs_list", "");
+		}else{
+			goAlert("訊息", "請正確填寫機構名稱");
 		}
+		}else{
+			goMain("<%=request.getContextPath()%>/crud/apply.feLogs.list.action",
+						"#apply_feLogs_list", "");
+			}
+		}
+		
+	//GoPage
+	function gotoPage(page) {
+		var isNum = /^\d+$/.test(page);
+		var totalPage = $("span.totalNum:eq(0)").html();
+
+		if (!isNum) {
+			page = "${ds.pager.currentPage}";
+		} else {
+			if (parseInt(page) < 1) {
+				page = 1;
+			}
+
+			if (parseInt(page) > parseInt(totalPage)) {
+				page = totalPage;
+			}
+		}
+		goMain('<c:url value = '/'/>crud/apply.feLogs.list.action',
+				'#apply_feLogs_list', '&pager.currentPage=' + page);
 	}
+
+	//變更顯示筆數
+	function chagePageSize() {
+		goMain('<c:url value = '/'/>crud/apply.feLogs.list.action',
+				'#apply_feLogs_list', '&pager.recordPoint='
+						+ '${ds.pager.recordPoint }');
+	}
+
+	//匯出
+	function goExport(){
+		var data=$("#apply_feLogs_list").serialize();
+		var url='<%=request.getContextPath()%>/crud/apply.feLogs.exports.action?'
+					+ data;
+
+			if ($("input#customerSerNo").attr("checked")) {
+				var customerSerNo = $("input#customerSerNo").val();
+				if (customerSerNo != null && customerSerNo > 0) {
+					window.open(url, "exports");
+				} else {
+					goAlert("訊息", "請正確填寫機構名稱");
+				}
+			} else {
+				window.open(url, "exports");
+			}
+		}		
 </script>
 </head>
 <body>
@@ -152,9 +165,10 @@ function goExport(){
 								<tr>
 									<th align="right">用戶名稱：</th>
 									<td><input type="radio" name="entity.customer.serNo"
-										id="customerSerNo" value="${login.customer.serNo}" checked>
-										<input type="text" id="customerName" class="input_text"
-										value="${login.customer.name}" readonly> <a
+										id="customerSerNo" value="${login.customer.serNo}"
+										disabled="disabled" checked="checked"> <input
+										type="text" id="customerName" class="input_text"
+										value="${login.customer.name}" disabled="disabled"> <a
 										class="state-default" onclick="goSearch()">查詢</a></td>
 								</tr>
 							</c:otherwise>

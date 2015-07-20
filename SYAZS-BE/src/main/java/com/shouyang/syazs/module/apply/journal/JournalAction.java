@@ -830,7 +830,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String paginate() throws Exception {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		clearCheckedItem();
@@ -874,7 +874,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String getCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -887,10 +887,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					&& getEntity().getImportItem()[0] >= 0
 					&& getEntity().getImportItem()[0] < importList.size()) {
 				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
-					if (((AccountNumber) importList.get(getEntity()
-							.getImportItem()[0])).getDataStatus().equals("正常")) {
+					if (((Journal) importList
+							.get(getEntity().getImportItem()[0]))
+							.getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[0]);
-
 					}
 				} else {
 					checkItemSet.remove(getEntity().getImportItem()[0]);
@@ -899,14 +899,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		getSession().put("checkItemSet", checkItemSet);
-
-		return null;
+		return QUEUE;
 	}
 
 	public String allCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -936,12 +935,12 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		getSession().put("checkItemSet", checkItemSet);
-		return null;
+		return QUEUE;
 	}
 
 	public String clearCheckedItem() {
 		if (getSession().get("importList") == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -953,7 +952,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		List<?> importList = (List<?>) getSession().get("importList");
 
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<?> checkItemSet = (Set<?>) getSession().get("checkItemSet");
@@ -1122,7 +1121,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	protected boolean hasEntity() throws Exception {
-		if (getEntity().isNew()) {
+		if (!getEntity().hasSerNo()) {
 			return false;
 		}
 

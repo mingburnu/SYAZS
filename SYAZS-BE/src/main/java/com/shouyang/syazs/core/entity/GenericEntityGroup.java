@@ -15,7 +15,6 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 
 /**
@@ -113,12 +112,12 @@ public abstract class GenericEntityGroup extends FileIoProperties {
 	}
 
 	/**
-	 * check entity is new or not.
+	 * check entity has id or not.
 	 * 
-	 * @return true, if is new
+	 * @return true, if has id
 	 */
-	public boolean isNew() {
-		return serNo == null;
+	public boolean hasSerNo() {
+		return serNo != null;
 	}
 
 	/**

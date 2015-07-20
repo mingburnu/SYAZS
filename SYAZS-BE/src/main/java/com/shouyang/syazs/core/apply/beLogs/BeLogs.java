@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -46,7 +47,8 @@ public class BeLogs extends GenericEntityLog {
 	// 用戶流水號
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cus_serNo", nullable = false)
-	private Customer customer = new Customer();
+	@Autowired
+	private Customer customer;
 
 	/**
 	 * @return the actionType

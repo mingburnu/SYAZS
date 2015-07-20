@@ -113,17 +113,14 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			errorMessages.add("用戶姓名不得空白");
 		}
 
-		if (getEntity().getCustomer().isNew()
-				|| getEntity().getCustomer().getSerNo() <= 0
-				|| customerService.getBySerNo(getEntity().getCustomer()
-						.getSerNo()) == null) {
-			errorMessages.add("用戶名稱必選");
+		if (getLoginUser().getRole().equals(Role.管理員)) {
+			getEntity().setCustomer(getLoginUser().getCustomer());
 		} else {
-			if (getLoginUser().getRole().equals(Role.管理員)) {
-				if (getLoginUser().getCustomer().getSerNo() != getEntity()
-						.getCustomer().getSerNo()) {
-					errorMessages.add("用戶名稱不正確");
-				}
+			if (!getEntity().getCustomer().hasSerNo()
+					|| getEntity().getCustomer().getSerNo() <= 0
+					|| customerService.getBySerNo(getEntity().getCustomer()
+							.getSerNo()) == null) {
+				errorMessages.add("用戶名稱必選");
 			}
 		}
 
@@ -160,17 +157,14 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					errorMessages.add("用戶姓名不得空白");
 				}
 
-				if (getEntity().getCustomer().isNew()
-						|| getEntity().getCustomer().getSerNo() <= 0
-						|| customerService.getBySerNo(getEntity().getCustomer()
-								.getSerNo()) == null) {
-					errorMessages.add("用戶名稱必選");
+				if (getLoginUser().getRole().equals(Role.管理員)) {
+					getEntity().setCustomer(getLoginUser().getCustomer());
 				} else {
-					if (getLoginUser().getRole().equals(Role.管理員)) {
-						if (getLoginUser().getCustomer().getSerNo() != getEntity()
-								.getCustomer().getSerNo()) {
-							errorMessages.add("用戶名稱不正確");
-						}
+					if (!getEntity().getCustomer().hasSerNo()
+							|| getEntity().getCustomer().getSerNo() <= 0
+							|| customerService.getBySerNo(getEntity()
+									.getCustomer().getSerNo()) == null) {
+						errorMessages.add("用戶名稱必選");
 					}
 				}
 			}
@@ -215,8 +209,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 			if (isLegalRole) {
 				if (getLoginUser().getRole().equals(Role.管理員)) {
-					if (accountNumber.getCustomer().getSerNo() == getLoginUser()
-							.getCustomer().getSerNo()) {
+					if (accountNumber.getCustomer().equals(
+							getLoginUser().getCustomer())) {
 						setEntity(accountNumber);
 					} else {
 						getResponse().sendError(
@@ -380,9 +374,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			while (j < getEntity().getCheckItem().length) {
 				accountNumber = accountNumberService.getBySerNo(getEntity()
 						.getCheckItem()[j]);
-				accountNumber.setStatus(Status.不生效);
-				accountNumberService.update(accountNumber, getLoginUser());
-
+				if (!accountNumber.getStatus().equals(Status.不生效)) {
+					accountNumber.setStatus(Status.不生效);
+					accountNumberService.update(accountNumber, getLoginUser());
+				}
 				j++;
 			}
 
@@ -440,9 +435,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			while (j < getEntity().getCheckItem().length) {
 				accountNumber = accountNumberService.getBySerNo(getEntity()
 						.getCheckItem()[j]);
-				accountNumber.setStatus(Status.生效);
-				accountNumberService.update(accountNumber, getLoginUser());
-
+				if (!accountNumber.getStatus().equals(Status.生效)) {
+					accountNumber.setStatus(Status.生效);
+					accountNumberService.update(accountNumber, getLoginUser());
+				}
 				j++;
 			}
 
@@ -640,6 +636,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					}
 				}
 
+				customer = new Customer();
 				customer.setName(rowValues[3].trim());
 				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
 						rowValues[2], Role.valueOf(role),
@@ -659,22 +656,27 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 						} else {
 							if (customerService.getCusSerNoByName(customer
 									.getName()) != 0) {
-								customer = customerService
+								accountNumber.setCustomer(customerService
 										.getBySerNo(customerService
 												.getCusSerNoByName(rowValues[3]
-														.trim()));
-								accountNumber.setCustomer(customer);
+														.trim())));
 							}
 
 							if (getLoginUser().getRole().equals(Role.管理員)) {
 								if (StringUtils.isBlank(accountNumber
 										.getUserId())
+										|| accountNumber.getUserId()
+												.replaceAll("[0-9a-zA-Z]", "")
+												.length() != 0
 										|| StringUtils.isBlank(accountNumber
 												.getUserPw())
 										|| !isLegalRole
-										|| !getLoginUser().getCustomer()
+										|| !getLoginUser()
+												.getCustomer()
+												.getName()
 												.equals(accountNumber
-														.getCustomer())) {
+														.getCustomer()
+														.getName())) {
 									accountNumber.setDataStatus("資料錯誤");
 								}
 							} else {
@@ -685,8 +687,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 												.length() != 0
 										|| StringUtils.isBlank(accountNumber
 												.getUserPw())
-										|| accountNumber.getCustomer().isNew()
-										|| !isLegalRole) {
+										|| !accountNumber.getCustomer()
+												.hasSerNo() || !isLegalRole) {
 									accountNumber.setDataStatus("資料錯誤");
 								}
 							}
@@ -754,7 +756,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	public String paginate() throws Exception {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		clearCheckedItem();
@@ -798,7 +800,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	public String getCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -814,7 +816,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					if (((AccountNumber) importList.get(getEntity()
 							.getImportItem()[0])).getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[0]);
-
 					}
 				} else {
 					checkItemSet.remove(getEntity().getImportItem()[0]);
@@ -823,14 +824,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		getSession().put("checkItemSet", checkItemSet);
-
-		return null;
+		return QUEUE;
 	}
 
 	public String allCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -860,12 +860,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		}
 
 		getSession().put("checkItemSet", checkItemSet);
-		return null;
+		return QUEUE;
 	}
 
 	public String clearCheckedItem() {
 		if (getSession().get("importList") == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -877,7 +877,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		List<?> importList = (List<?>) getSession().get("importList");
 
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<?> checkItemSet = (Set<?>) getSession().get("checkItemSet");
@@ -943,7 +943,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	}
 
 	protected boolean hasEntity() throws Exception {
-		if (getEntity().isNew()) {
+		if (!getEntity().hasSerNo()) {
 			return false;
 		}
 

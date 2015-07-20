@@ -11,9 +11,6 @@ public class NumberConverter extends RootConverter {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object convertFromString(Map context, String[] values, Class toClass) {
-		log.info(toClass.equals(Long.class));
-		log.info(toClass.equals(Integer.class));
-		log.info(values[0]);
 		try {
 			if (NumberUtils.isNumber(values[0])) {
 				if (toClass.equals(Long.class)) {
@@ -21,9 +18,8 @@ public class NumberConverter extends RootConverter {
 				}
 
 				if (toClass.equals(Integer.class)) {
-					return  Long.parseLong(values[0]);
+					return Integer.parseInt(values[0]);
 				}
-
 			}
 		} catch (NumberFormatException e) {
 			return null;

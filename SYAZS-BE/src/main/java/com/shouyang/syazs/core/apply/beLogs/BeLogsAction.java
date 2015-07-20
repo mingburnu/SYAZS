@@ -80,7 +80,7 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer().isNew()) {
+		if (!getEntity().getCustomer().hasSerNo()) {
 			addActionError("請正確填寫機構名稱");
 		} else {
 			if (getEntity().getCustomer().getSerNo() < 0
@@ -142,8 +142,7 @@ public class BeLogsAction extends GenericWebActionLog<BeLogs> {
 			getEntity().getCustomer().setSerNo(
 					getLoginUser().getCustomer().getSerNo());
 		}
-
-		if (getEntity().getCustomer().isNew()) {
+		if (!getEntity().getCustomer().hasSerNo()) {
 			addActionError("請正確填寫機構名稱");
 		} else {
 			if (getEntity().getCustomer().getSerNo() < 0

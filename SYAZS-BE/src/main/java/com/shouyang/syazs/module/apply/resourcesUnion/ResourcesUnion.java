@@ -7,6 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -26,10 +27,12 @@ public class ResourcesUnion extends GenericEntitySerNo {
 
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "cus_serNo", nullable = false)
+	@Autowired
 	private Customer customer;
 
 	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "res_SerNo", nullable = false)
+	@Autowired
 	private ResourcesBuyers resourcesBuyers;
 
 	@Column(name = "ebk_SerNo")

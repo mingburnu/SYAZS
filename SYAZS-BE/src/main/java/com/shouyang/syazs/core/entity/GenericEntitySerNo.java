@@ -35,7 +35,7 @@ public abstract class GenericEntitySerNo extends FileIoProperties {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "serNo", unique = true, nullable = false, insertable = true, updatable = false, precision = 20)
 	private Long serNo;
-	
+
 	/**
 	 * @return the serNo
 	 */
@@ -52,12 +52,12 @@ public abstract class GenericEntitySerNo extends FileIoProperties {
 	}
 
 	/**
-	 * check entity is new or not.
+	 * check entity has id or not.
 	 * 
-	 * @return true, if is new
+	 * @return true, if has id
 	 */
-	public boolean isNew() {
-		return serNo == null;
+	public boolean hasSerNo() {
+		return serNo != null;
 	}
 
 	/*

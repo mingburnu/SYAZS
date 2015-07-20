@@ -42,7 +42,7 @@
 				<td><c:choose>
 						<c:when test="${login.role.role == '管理員' }">
 							<s:select name="entity.customer.serNo" cssClass="input_text"
-								list="ds.datas" listKey="value" listValue="key" />
+								list="ds.datas" listKey="value" listValue="key" disabled="true"/>
 						</c:when>
 						<c:otherwise>
 							<s:select headerValue="--用戶名稱--" headerKey="0"

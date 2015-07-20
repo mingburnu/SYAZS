@@ -20,7 +20,7 @@ import com.shouyang.syazs.core.entity.Entity;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class DataSet<T extends Entity> extends Model implements Serializable {
+public class DataSet<T extends Entity> implements Serializable {
 
 	/**
 	 * 

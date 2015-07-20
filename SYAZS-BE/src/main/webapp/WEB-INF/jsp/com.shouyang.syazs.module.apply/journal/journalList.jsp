@@ -41,7 +41,6 @@ function goDelete() {
 	var IsSelected = false;
 	for (var i = 0; i < $(".checkbox").length; i++) {
 		if ($(".checkbox").get(i).checked) {
-			serNoStr = serNoStr + $(".checkbox").get(i).value + "；；";
 			IsSelected = true;
 			break;
 		}

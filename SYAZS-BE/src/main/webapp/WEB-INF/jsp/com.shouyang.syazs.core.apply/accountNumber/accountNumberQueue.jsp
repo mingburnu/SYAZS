@@ -150,7 +150,7 @@
 							</c:choose></td>
 						<td><esapi:encodeForHTMLAttribute>${item.userId }</esapi:encodeForHTMLAttribute></td>
 						<td><esapi:encodeForHTMLAttribute>${item.userName }</esapi:encodeForHTMLAttribute></td>
-						<td><esapi:encodeForHTMLAttribute>${item.customer.name }</esapi:encodeForHTMLAttribute></td>
+						<td><esapi:encodeForHTMLAttribute>${item.customer.name }${item.rank }</esapi:encodeForHTMLAttribute></td>
 						<td>${item.role.role }</td>
 						<td>${item.status.status }</td>
 						<td align="center">${item.dataStatus }</td>

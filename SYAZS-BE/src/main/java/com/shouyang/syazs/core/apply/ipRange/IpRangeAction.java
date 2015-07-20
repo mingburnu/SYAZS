@@ -34,7 +34,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 
 	@Override
 	protected void validateSave() throws Exception {
-		if (getEntity().getCustomer().isNew()
+		if (!getEntity().getCustomer().hasSerNo()
 				|| getEntity().getCustomer().getSerNo() <= 0
 				|| customerService.getBySerNo(getEntity().getCustomer()
 						.getSerNo()) == null) {
@@ -181,7 +181,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 
 	@Override
 	public String list() throws Exception {
-		if (!getEntity().getCustomer().isNew()
+		if (getEntity().getCustomer().hasSerNo()
 				&& getEntity().getCustomer().getSerNo() > 0) {
 			DataSet<IpRange> ds = ipRangeService
 					.getByRestrictions(initDataSet());

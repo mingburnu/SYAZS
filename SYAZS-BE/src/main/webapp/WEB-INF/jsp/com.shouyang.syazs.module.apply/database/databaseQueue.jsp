@@ -90,7 +90,7 @@
 					dataType : "html",
 					data : "entity.importItem=" + index,
 					success : function(message) {
-
+						
 					}
 				});
 	}
@@ -116,7 +116,7 @@
 					url : "<c:url value = '/'/>crud/apply.database.clearCheckedItem.action",
 					dataType : "html",
 					success : function(message) {
-
+						$("div#temp").html(message);
 					}
 				});
 	}

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Pager extends Model implements Serializable {
+public class Pager implements Serializable {
 
 	/**
 	 * 

@@ -905,7 +905,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String paginate() throws Exception {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		clearCheckedItem();
@@ -949,7 +949,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String getCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -962,10 +962,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					&& getEntity().getImportItem()[0] >= 0
 					&& getEntity().getImportItem()[0] < importList.size()) {
 				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
-					if (((AccountNumber) importList.get(getEntity()
-							.getImportItem()[0])).getDataStatus().equals("正常")) {
+					if (((Ebook) importList.get(getEntity().getImportItem()[0]))
+							.getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[0]);
-
 					}
 				} else {
 					checkItemSet.remove(getEntity().getImportItem()[0]);
@@ -974,14 +973,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		getSession().put("checkItemSet", checkItemSet);
-
-		return null;
+		return QUEUE;
 	}
 
 	public String allCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -1011,12 +1009,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		getSession().put("checkItemSet", checkItemSet);
-		return null;
+		return QUEUE;
 	}
 
 	public String clearCheckedItem() {
 		if (getSession().get("importList") == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
@@ -1028,7 +1026,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		List<?> importList = (List<?>) getSession().get("importList");
 
 		if (importList == null) {
-			return null;
+			return IMPORT;
 		}
 
 		Set<?> checkItemSet = (Set<?>) getSession().get("checkItemSet");

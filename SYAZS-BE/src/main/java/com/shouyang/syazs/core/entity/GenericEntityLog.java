@@ -15,7 +15,6 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 
 /**
@@ -39,9 +38,6 @@ public abstract class GenericEntityLog extends FileIoProperties {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "serNo", unique = true, nullable = false, insertable = true, updatable = false, precision = 20)
 	private Long serNo;
-
-	@Transient
-	private AccountNumber createdUser;
 
 	/** The created date. */
 	@Column(name = "cDTime", updatable = false)
@@ -78,21 +74,13 @@ public abstract class GenericEntityLog extends FileIoProperties {
 		this.cDTime = cDTime;
 	}
 
-	public AccountNumber getCreatedUser() {
-		return createdUser;
-	}
-
-	public void setCreatedUser(AccountNumber createdUser) {
-		this.createdUser = createdUser;
-	}
-
 	/**
-	 * check entity is new or not.
+	 * check entity has id or not.
 	 * 
-	 * @return true, if is new
+	 * @return true, if has id
 	 */
-	public boolean isNew() {
-		return serNo == null;
+	public boolean hasSerNo() {
+		return serNo != null;
 	}
 
 	/**

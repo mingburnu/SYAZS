@@ -80,7 +80,7 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer().isNew()) {
+		if (!getEntity().getCustomer().hasSerNo()) {
 			addActionError("請正確填寫機構名稱");
 		} else {
 			if (getEntity().getCustomer().getSerNo() < 0
@@ -141,7 +141,7 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 					getLoginUser().getCustomer().getSerNo());
 		}
 
-		if (getEntity().getCustomer().isNew()) {
+		if (!getEntity().getCustomer().hasSerNo()) {
 			addActionError("請正確填寫機構名稱");
 		} else {
 			if (getEntity().getCustomer().getSerNo() < 0

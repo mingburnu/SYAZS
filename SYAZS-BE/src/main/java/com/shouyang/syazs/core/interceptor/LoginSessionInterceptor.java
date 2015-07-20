@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 /**
  * 檢查登入session
@@ -12,7 +11,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  * @author Roderick
  * @version 2014/3/26
  */
-public class LoginSessionInterceptor extends AbstractInterceptor {
+public class LoginSessionInterceptor extends RootInterceptor {
 
 	/**
 	 * 

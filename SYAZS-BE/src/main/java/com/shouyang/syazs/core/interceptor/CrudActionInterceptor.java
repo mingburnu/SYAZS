@@ -1,7 +1,6 @@
 package com.shouyang.syazs.core.interceptor;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.enums.Role;
 
@@ -23,7 +21,7 @@ import com.shouyang.syazs.core.apply.enums.Role;
  * @author Roderick
  * @version 2015/1/20
  */
-public class CrudActionInterceptor extends AbstractInterceptor {
+public class CrudActionInterceptor extends RootInterceptor {
 	/**
 	 * 
 	 */
@@ -34,18 +32,7 @@ public class CrudActionInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
-
-		System.out.println(invocation.getInvocationContext().getParameters());
-		invocation.getInvocationContext().getParameters().remove("ds.entity");
-		Iterator iterator = invocation.getInvocationContext().getParameters()
-				.entrySet().iterator();
-		
-		
-
-		while (iterator.hasNext()) {
-			Map.Entry entry = (Map.Entry) iterator.next();
-			System.out.println(entry.getKey() + ": " + entry.getValue());
-		}
+		removeErrorParameters(invocation);
 
 		if (!invocation.getAction().toString().contains("beLogs")
 				&& !invocation.getAction().toString().contains("feLogs")) {
@@ -88,7 +75,7 @@ public class CrudActionInterceptor extends AbstractInterceptor {
 			if (accountNumber.getRole().equals(Role.管理員)) {
 				String method = invocation.getProxy().getMethod();
 
-				if (!method.equals("json") && !method.equals("ajax")) {
+				if (!method.equals("json") && !method.equals("box")) {
 					HttpServletResponse response = ServletActionContext
 							.getResponse();
 					response.sendError(HttpServletResponse.SC_FORBIDDEN);

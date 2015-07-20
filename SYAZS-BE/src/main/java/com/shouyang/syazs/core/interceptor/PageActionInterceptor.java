@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 /**
  * 儲存檢索log
@@ -12,7 +11,7 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  * @author Roderick
  * @version 2015/1/20
  */
-public class PageInterceptor extends AbstractInterceptor {
+public class PageActionInterceptor extends RootInterceptor {
 
 	/**
 	 * 
@@ -21,6 +20,8 @@ public class PageInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
+		removeErrorParameters(invocation);
+
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		if (session.get("importList") != null) {
 			session.remove("cellNames");

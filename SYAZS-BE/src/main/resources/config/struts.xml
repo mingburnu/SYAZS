@@ -65,7 +65,7 @@
 			<interceptor name="loginSessionInterceptor"
 				class="com.shouyang.syazs.core.interceptor.LoginSessionInterceptor" />
 			<interceptor name="SearchActionInterceptor"
-				class="com.shouyang.syazs.core.interceptor.PageInterceptor" />
+				class="com.shouyang.syazs.core.interceptor.PageActionInterceptor" />
 
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="loginSessionInterceptor" />
