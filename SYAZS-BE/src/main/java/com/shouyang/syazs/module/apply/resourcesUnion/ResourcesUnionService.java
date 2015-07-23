@@ -12,7 +12,6 @@ import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceSerNo;
-import com.shouyang.syazs.core.util.DsBeanFactory;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.ebook.Ebook;
 import com.shouyang.syazs.module.apply.journal.Journal;
@@ -29,7 +28,7 @@ public class ResourcesUnionService extends GenericServiceSerNo<ResourcesUnion> {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
@@ -39,11 +38,12 @@ public class ResourcesUnionService extends GenericServiceSerNo<ResourcesUnion> {
 		return dao;
 	}
 
-	public ResourcesUnion getByObjSerNo(long objSerNo, Class<?> objClass) throws Exception {
+	public ResourcesUnion getByObjSerNo(long objSerNo, Class<?> objClass)
+			throws Exception {
 		DataSet<ResourcesUnion> ds = new DataSet<ResourcesUnion>();
 		ds.setPager(new Pager());
 		ds.getPager().setRecordPerPage(1);
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		if (objClass.equals(Journal.class)) {
 			restrictions.eq("jouSerNo", objSerNo);
@@ -52,13 +52,14 @@ public class ResourcesUnionService extends GenericServiceSerNo<ResourcesUnion> {
 		} else {
 			restrictions.eq("datSerNo", objSerNo);
 		}
-		
+
 		return dao.findByRestrictions(restrictions, ds).getResults().get(0);
 	}
 
-	public boolean isExist(Object obj, Class<?> objClass, long cusSerNo) throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
-		
+	public boolean isExist(Object obj, Class<?> objClass, long cusSerNo)
+			throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+
 		if (objClass.equals(Journal.class)) {
 			Journal journal = (Journal) obj;
 			restrictions.customCriterion(Restrictions.and(
@@ -83,9 +84,10 @@ public class ResourcesUnionService extends GenericServiceSerNo<ResourcesUnion> {
 		}
 	}
 
-	public List<ResourcesUnion> getResourcesUnionsByObj(Object obj, Class<?> objClass) throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
-		
+	public List<ResourcesUnion> getResourcesUnionsByObj(Object obj,
+			Class<?> objClass) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+
 		if (objClass.equals(Journal.class)) {
 			Journal journal = (Journal) obj;
 			restrictions.eq("jouSerNo", journal.getSerNo());

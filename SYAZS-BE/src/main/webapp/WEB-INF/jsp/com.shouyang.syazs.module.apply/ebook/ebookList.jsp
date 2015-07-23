@@ -10,18 +10,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
+<c:set var="pageFactor"
+	value="${ds.pager.totalRecord/ds.pager.recordPerPage}" />
+<c:set var="totalPage">
+	<fmt:formatNumber type="number" pattern="#"
+		value="${pageFactor+(1-(pageFactor%1))%1}" />
+</c:set>
 <script type="text/javascript">
 //切換查詢項目
 $(document).ready(function() {
 	$("select#listForm_searchCondition").change(function() {
 		$("input#search").attr("name", $(this).val());
-	});
-});
-
-//IE press Enter GoPage
-$(document).ready(function() {
-	$("input#listForm_currentPageHeader").keyup(function(e){
-		if(e.keyCode == 13){gotoPage($(this).val());}
 	});
 });
 
@@ -82,30 +81,6 @@ function goUpdate(serNo) {
 	if (isNum && parseInt(serNo) > 0){
 		goDetail('<%=request.getContextPath()%>/crud/apply.ebook.edit.action?'+'entity.serNo='+serNo,'電子書-修改');
 	}
-}
-
-//GoPage
-function gotoPage(page){
-	var isNum = /^\d+$/.test(page);
-	var totalPage = $("span.totalNum:eq(0)").html();
-	
-	if(!isNum){
-		page="${ds.pager.currentPage}";
-	} else {
-		if (parseInt(page) < 1){
-			page=1;
-			}		
-		
-		if (parseInt(page) > parseInt(totalPage)){
-			page=totalPage;
-			} 
-		}
-    goMain('<c:url value = '/'/>crud/apply.ebook.list.action','#apply_ebook_list','&pager.currentPage='+page);
-}
-
-//變更顯示筆數
-function chagePageSize(){
-        goMain('<c:url value = '/'/>crud/apply.ebook.list.action','#apply_ebook_list','&pager.recordPoint='+'${ds.pager.recordPoint }');
 }
 
 //批次匯入
@@ -211,17 +186,10 @@ function goImport(){
 										<jsp:param name="namespace" value="/crud" />
 										<jsp:param name="action" value="apply.ebook.list" />
 										<jsp:param name="pager" value="${ds.pager}" />
-										<jsp:param name="recordPerPage"
-											value="${ds.pager.recordPerPage}" />
 										<jsp:param name="detail" value="0" />
 									</jsp:include></td>
-								<td><c:set var="pageFactor"
-										value="${ds.pager.totalRecord/ds.pager.recordPerPage}" /> <c:set
-										var="totalPage">
-										<fmt:formatNumber type="number" pattern="#"
-											value="${pageFactor+(1-(pageFactor%1))%1}" />
-									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
-									onchange="chagePageSize()">
+								<td>每頁顯示 <select id="listForm_pageSize"
+									name="pager.recordPerPage" onchange="changePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>
@@ -230,7 +198,8 @@ function goImport(){
 								</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
 									value="${ds.pager.currentPage }" type="number" min="1"
 									max="${totalPage }" onchange="gotoPage(this.value)"> 頁,
-									共<span class="totalNum">${totalPage }</span>頁</td>
+									共<span class="totalNum">${totalPage }</span>頁
+								</td>
 							</tr>
 						</c:if>
 					</tbody>

@@ -10,7 +10,6 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
-import com.shouyang.syazs.core.util.DsBeanFactory;
 
 @Service
 public class IpRangeService extends GenericServiceFull<IpRange> {
@@ -24,7 +23,7 @@ public class IpRangeService extends GenericServiceFull<IpRange> {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 		IpRange entity = ds.getEntity();
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		restrictions.eq("customer.serNo", entity.getCustomer().getSerNo());
 
@@ -39,7 +38,7 @@ public class IpRangeService extends GenericServiceFull<IpRange> {
 	}
 
 	public List<IpRange> getAllIpList(long ipRangeSerNo) throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.ne("serNo", ipRangeSerNo);
 
 		return dao.findByRestrictions(restrictions);
@@ -49,7 +48,7 @@ public class IpRangeService extends GenericServiceFull<IpRange> {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 		IpRange entity = ds.getEntity();
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		if (entity.getSerNo() != null) {
 			restrictions.eq("serNo", entity.getSerNo());

@@ -38,7 +38,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
@@ -164,8 +163,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
-					(int) (ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage() + 1));
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
 			ds = customerService.getByRestrictions(ds);
 		}
 
@@ -515,8 +514,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
-					(int) (ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage() + 1));
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
 			first = ds.getPager().getOffset();
 			last = first + ds.getPager().getRecordPerPage();
 
@@ -585,8 +584,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				if (getEntity().getImportItem()[i] != null
 						&& getEntity().getImportItem()[i] >= 0
 						&& getEntity().getImportItem()[i] < importList.size()) {
-					if (((AccountNumber) importList.get(getEntity()
-							.getImportItem()[i])).getDataStatus().equals("正常")) {
+					if (((Customer) importList
+							.get(getEntity().getImportItem()[i]))
+							.getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 

@@ -1,4 +1,4 @@
-package com.shouyang.syazs.core.util;
+package com.shouyang.syazs.core.service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,14 +10,15 @@ import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.HibernateQueryLanguage;
 import com.shouyang.syazs.core.dao.HibernateRestrictions;
+import com.shouyang.syazs.core.entity.Entity;
 
 /**
- * DsBeanFactory
+ * ServiceFactory
  * 
  * @author Roderick
  * @version 2014/11/27
  */
-public class DsBeanFactory {
+public abstract class ServiceFactory<T extends Entity> implements Service<T> {
 
 	/**
 	 * Get the DsRestrictions

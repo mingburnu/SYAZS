@@ -3,7 +3,6 @@ package com.shouyang.syazs.core.apply.group;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -60,9 +59,8 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			}
 
 			if (getEntity().getFirstLevelOption().equals("extend")) {
-				if (NumberUtils.isDigits(getEntity().getFirstLevelSelect())) {
-					long serNo = Long.parseLong(getEntity()
-							.getFirstLevelSelect());
+				if (getEntity().getFirstLevelSelect() != null) {
+					long serNo = getEntity().getFirstLevelSelect();
 					if (groupService.getBySerNo(serNo) == null) {
 						errorMessages.add("LEVEL 1流水號不正確");
 					} else {
@@ -110,20 +108,18 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 							if (groupService.isRepeatSubGroup(getEntity()
 									.getSecondLevelName(), getEntity()
 									.getCustomer().getSerNo(), groupService
-									.getBySerNo(Long.parseLong(getEntity()
-											.getFirstLevelSelect())))) {
+									.getBySerNo(getEntity()
+											.getFirstLevelSelect()))) {
 								errorMessages.add("LEVEL 2名稱重複");
 							}
 						}
 					}
 
 					if (getEntity().getSecondLevelOption().equals("extend")) {
-						if (NumberUtils.isDigits(getEntity()
-								.getSecondLevelSelect())) {
-							long firstSerNo = Long.parseLong(getEntity()
-									.getFirstLevelSelect());
-							long secondSerNo = Long.parseLong(getEntity()
-									.getSecondLevelSelect());
+						if (getEntity().getSecondLevelSelect() != null) {
+							long firstSerNo = getEntity().getFirstLevelSelect();
+							long secondSerNo = getEntity()
+									.getSecondLevelSelect();
 							if (groupService.getBySerNo(secondSerNo) == null) {
 								errorMessages.add("LEVEL 2流水號不正確");
 							} else {
@@ -183,8 +179,8 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 							if (groupService.isRepeatSubGroup(getEntity()
 									.getThirdLevelName(), getEntity()
 									.getCustomer().getSerNo(), groupService
-									.getBySerNo(Long.parseLong(getEntity()
-											.getSecondLevelSelect())))) {
+									.getBySerNo(getEntity()
+											.getSecondLevelSelect()))) {
 								errorMessages.add("LEVEL 3名稱重複");
 							}
 						}
@@ -215,15 +211,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 	@Override
 	public String add() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String edit() throws Exception {
-		if (getEntity() != null
-				&& getEntity().getCustomer() != null
-				&& getEntity().getCustomer().getSerNo() != null
+		if (getEntity().getCustomer().getSerNo() != null
 				&& customerService.getBySerNo(getEntity().getCustomer()
 						.getSerNo()) != null) {
 			getEntity().setCustomer(
@@ -232,51 +220,46 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			setFirstLevelGroups(groupService.getMainGroups(getEntity()
 					.getCustomer().getSerNo()));
 
-			boolean isFirstGroupSerNo = StringUtils.isNotEmpty(getEntity()
-					.getFirstLevelSelect())
-					&& NumberUtils.isDigits(getEntity().getFirstLevelSelect())
-					&& Long.parseLong(getEntity().getFirstLevelSelect()) > 0
-					&& groupService.getBySerNo(Long.parseLong(getEntity()
-							.getFirstLevelSelect())) != null
+			boolean isFirstGroupSerNo = getEntity().getFirstLevelSelect() != null
+					&& getEntity().getFirstLevelSelect() > 0
+					&& groupService.getBySerNo(getEntity()
+							.getFirstLevelSelect()) != null
 					&& groupService
-							.getBySerNo(
-									Long.parseLong(getEntity()
-											.getFirstLevelSelect()))
+							.getBySerNo(getEntity().getFirstLevelSelect())
 							.getGroupMapping().getLevel() == 1;
 
-			boolean isSecondGroupSerNo = StringUtils.isNotEmpty(getEntity()
-					.getSecondLevelSelect())
-					&& NumberUtils.isDigits(getEntity().getSecondLevelSelect())
-					&& Long.parseLong(getEntity().getSecondLevelSelect()) > 0
-					&& groupService.getBySerNo(Long.parseLong(getEntity()
-							.getSecondLevelSelect())) != null
+			boolean isSecondGroupSerNo = getEntity().getSecondLevelSelect() != null
+					&& getEntity().getSecondLevelSelect() > 0
+					&& groupService.getBySerNo(getEntity()
+							.getSecondLevelSelect()) != null
 					&& groupService
-							.getBySerNo(
-									Long.parseLong(getEntity()
-											.getSecondLevelSelect()))
+							.getBySerNo(getEntity().getSecondLevelSelect())
 							.getGroupMapping().getLevel() == 2;
 
 			if (isFirstGroupSerNo) {
 				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), groupService.getBySerNo(Long
-						.parseLong(getEntity().getFirstLevelSelect()))));
+						.getCustomer().getSerNo(), groupService
+						.getBySerNo(getEntity().getFirstLevelSelect())));
 			}
 
 			if (isFirstGroupSerNo && isSecondGroupSerNo) {
-				long firstSerNo = Long.parseLong(getEntity()
-						.getFirstLevelSelect());
-				long secondSerNo = Long.parseLong(getEntity()
-						.getSecondLevelSelect());
+				long firstSerNo = getEntity().getFirstLevelSelect();
+				long secondSerNo = getEntity().getSecondLevelSelect();
 				if (groupService.getBySerNo(secondSerNo).getGroupMapping()
 						.getParentGroupMapping().getGroup().getSerNo() == firstSerNo)
 					setThirdLevelGroups(groupService.getSubGroups(getEntity()
 							.getCustomer().getSerNo(), groupService
-							.getBySerNo(Long.parseLong(getEntity()
-									.getSecondLevelSelect()))));
+							.getBySerNo(getEntity().getSecondLevelSelect())));
 			}
 		}
 
 		setEntity(getEntity());
+		return ADD;
+	}
+
+	@Override
+	public String edit() throws Exception {
+
 		return EDIT;
 	}
 
@@ -286,8 +269,8 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
-					(int) (ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage() + 1));
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
 			ds = groupService.getByRestrictions(ds);
 		}
 
@@ -314,47 +297,36 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			setFirstLevelGroups(groupService.getMainGroups(getEntity()
 					.getCustomer().getSerNo()));
 
-			boolean isFirstGroupSerNo = StringUtils.isNotEmpty(getEntity()
-					.getFirstLevelSelect())
-					&& NumberUtils.isDigits(getEntity().getFirstLevelSelect())
-					&& Long.parseLong(getEntity().getFirstLevelSelect()) > 0
-					&& groupService.getBySerNo(Long.parseLong(getEntity()
-							.getFirstLevelSelect())) != null
+			boolean isFirstGroupSerNo = getEntity().getFirstLevelSelect() != null
+					&& getEntity().getFirstLevelSelect() > 0
+					&& groupService.getBySerNo(getEntity()
+							.getFirstLevelSelect()) != null
 					&& groupService
-							.getBySerNo(
-									Long.parseLong(getEntity()
-											.getFirstLevelSelect()))
+							.getBySerNo(getEntity().getFirstLevelSelect())
 							.getGroupMapping().getLevel() == 1;
 
-			boolean isSecondGroupSerNo = StringUtils.isNotEmpty(getEntity()
-					.getSecondLevelSelect())
-					&& NumberUtils.isDigits(getEntity().getSecondLevelSelect())
-					&& Long.parseLong(getEntity().getSecondLevelSelect()) > 0
-					&& groupService.getBySerNo(Long.parseLong(getEntity()
-							.getSecondLevelSelect())) != null
+			boolean isSecondGroupSerNo = getEntity().getSecondLevelSelect() != null
+					&& getEntity().getSecondLevelSelect() > 0
+					&& groupService.getBySerNo(getEntity()
+							.getSecondLevelSelect()) != null
 					&& groupService
-							.getBySerNo(
-									Long.parseLong(getEntity()
-											.getSecondLevelSelect()))
+							.getBySerNo(getEntity().getSecondLevelSelect())
 							.getGroupMapping().getLevel() == 2;
 
 			if (isFirstGroupSerNo) {
 				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), groupService.getBySerNo(Long
-						.parseLong(getEntity().getFirstLevelSelect()))));
+						.getCustomer().getSerNo(), groupService
+						.getBySerNo(getEntity().getFirstLevelSelect())));
 			}
 
 			if (isFirstGroupSerNo && isSecondGroupSerNo) {
-				long firstSerNo = Long.parseLong(getEntity()
-						.getFirstLevelSelect());
-				long secondSerNo = Long.parseLong(getEntity()
-						.getSecondLevelSelect());
+				long firstSerNo = getEntity().getFirstLevelSelect();
+				long secondSerNo = getEntity().getSecondLevelSelect();
 				if (groupService.getBySerNo(secondSerNo).getGroupMapping()
 						.getParentGroupMapping().getGroup().getSerNo() == firstSerNo)
 					setThirdLevelGroups(groupService.getSubGroups(getEntity()
 							.getCustomer().getSerNo(), groupService
-							.getBySerNo(Long.parseLong(getEntity()
-									.getSecondLevelSelect()))));
+							.getBySerNo(getEntity().getSecondLevelSelect())));
 			}
 			return EDIT;
 		}

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.shouyang.syazs.core.GenericTest;
 import com.shouyang.syazs.core.dao.DsRestrictions;
-import com.shouyang.syazs.core.util.DsBeanFactory;
+import com.shouyang.syazs.core.service.ServiceFactory;
 import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.apply.journal.JournalDao;
 
@@ -60,7 +60,7 @@ public class JournalDaoTest extends GenericTest {
 		Assert.assertTrue(updated);
 
 		// query by condition
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = ServiceFactory.getDsRestrictions();
 		restrictions.eq("englishTitle", dbJournal1UpdateValue);
 		List<Journal> journal = dao
 				.findByRestrictions(restrictions);

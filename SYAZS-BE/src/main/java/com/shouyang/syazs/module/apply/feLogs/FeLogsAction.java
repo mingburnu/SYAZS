@@ -103,10 +103,11 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 			DataSet<FeLogs> ds = feLogsService.getByRestrictions(initDataSet());
 
-			while (ds.getResults().size() == 0
+			if (ds.getResults().size() == 0
 					&& ds.getPager().getCurrentPage() > 1) {
-				ds.getPager()
-						.setCurrentPage(ds.getPager().getCurrentPage() - 1);
+				ds.getPager().setCurrentPage(
+						(int) Math.ceil(ds.getPager().getTotalRecord()
+								/ ds.getPager().getRecordPerPage()));
 				ds = feLogsService.getByRestrictions(ds);
 			}
 

@@ -16,8 +16,8 @@ import com.shouyang.syazs.core.entity.GenericEntitySerNo;
  * @author Roderick
  * @version 2014/9/29
  */
-public abstract class GenericServiceSerNo<T extends GenericEntitySerNo>
-		implements Service<T> {
+public abstract class GenericServiceSerNo<T extends GenericEntitySerNo> extends
+		ServiceFactory<T> {
 
 	protected final transient Logger log = Logger.getLogger(getClass());
 

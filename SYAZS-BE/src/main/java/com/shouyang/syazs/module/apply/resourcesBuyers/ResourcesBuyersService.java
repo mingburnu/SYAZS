@@ -8,7 +8,6 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
-import com.shouyang.syazs.core.util.DsBeanFactory;
 
 @Service
 public class ResourcesBuyersService extends GenericServiceFull<ResourcesBuyers> {
@@ -22,7 +21,7 @@ public class ResourcesBuyersService extends GenericServiceFull<ResourcesBuyers> 
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		return dao.findByRestrictions(restrictions, ds);
 	}
 

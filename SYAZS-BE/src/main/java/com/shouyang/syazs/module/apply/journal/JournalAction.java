@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.opensymphony.xwork2.ActionContext;
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.converter.EnumConverter;
@@ -309,8 +308,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
-					(int) (ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage() + 1));
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
 			ds = journalService.getByRestrictions(ds);
 		}
 
@@ -851,8 +850,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
-					(int) (ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage() + 1));
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
 			first = ds.getPager().getOffset();
 			last = first + ds.getPager().getRecordPerPage();
 
@@ -921,8 +920,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				if (getEntity().getImportItem()[i] != null
 						&& getEntity().getImportItem()[i] >= 0
 						&& getEntity().getImportItem()[i] < importList.size()) {
-					if (((AccountNumber) importList.get(getEntity()
-							.getImportItem()[i])).getDataStatus().equals("正常")) {
+					if (((Journal) importList
+							.get(getEntity().getImportItem()[i]))
+							.getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 

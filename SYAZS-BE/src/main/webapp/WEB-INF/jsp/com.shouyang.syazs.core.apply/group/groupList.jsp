@@ -11,17 +11,16 @@
 <c:set var="customerSerNo">
 	<c:out value='<%=request.getParameter("entity.customer.serNo")%>'></c:out>
 </c:set>
+<c:set var="pageFactor"
+	value="${ds.pager.totalRecord/ds.pager.recordPerPage}" />
+<c:set var="totalPage">
+	<fmt:formatNumber type="number" pattern="#"
+		value="${pageFactor+(1-(pageFactor%1))%1}" />
+</c:set>
 <script type="text/javascript">
-//IE press Enter GoPage
-$(document).ready(function() {
-	$("input#listForm_currentPageHeader:(1)").keyup(function(e){
-		if(e.keyCode == 13){gotoPage_detail($(this).val());}
-	});
-});
-	
 //新增Group
 function goAdd_detail() {
-	var url = "<c:url value = '/'/>/crud/apply.group.edit.action";
+	var url = "<c:url value = '/'/>/crud/apply.group.add.action";
 	var data ='entity.customer.serNo='+'${customerSerNo }';
 	goDetail_2(url, '客戶-群組新增', data);
 }
@@ -59,30 +58,6 @@ function goDel_detail(serNo) {
 		}
 }
 
-///GoPage
-function gotoPage(page){
-	var isNum = /^\d+$/.test(page);
-	var totalPage = $("span.totalNum:eq(0)").html();
-		
-	if(!isNum){
-		page="${ds.pager.currentPage}";
-	} else {
-		if (parseInt(page) < 1){
-			page=1;
-		}		
-			
-		if (parseInt(page) > parseInt(totalPage)){
-			page=totalPage;
-		}
-	}
-	goDetail_Main('<c:url value = '/'/>crud/apply.group.list.action','#apply_group_list', '&pager.currentPage='+page);
-}
-
-//變更顯示筆數
-function changePageSize_detail() {
-	goDetail_Main('<c:url value = '/'/>crud/apply.group.list.action','#apply_group_list', '&pager.recordPoint='+'${ds.pager.recordPoint }');
-}
-	
 function closeDetail() {
 	$("#div_Detail").hide();
 	UI_Resize();
@@ -148,17 +123,10 @@ function closeDetail() {
 									<jsp:param name="namespace" value="/crud" />
 									<jsp:param name="action" value="apply.group.list" />
 									<jsp:param name="pager" value="${ds.pager}" />
-									<jsp:param name="recordPerPage"
-										value="${ds.pager.recordPerPage}" />
 									<jsp:param name="detail" value="1" />
 								</jsp:include></td>
-							<td><c:set var="pageFactor"
-									value="${ds.pager.totalRecord/ds.pager.recordPerPage}" /> <c:set
-									var="totalPage">
-									<fmt:formatNumber type="number" pattern="#"
-										value="${pageFactor+(1-(pageFactor%1))%1}" />
-								</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
-								onchange="changePageSize_detail()">
+							<td>每頁顯示 <select id="listForm_pageSize"
+								name="pager.recordPerPage" onchange="changePageSize_detail()">
 									<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 									<option value="5">5</option>
 									<option value="10">10</option>
@@ -167,7 +135,8 @@ function closeDetail() {
 							</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
 								value="${ds.pager.currentPage }" type="number" min="1"
 								max="${totalPage }" onchange="gotoPage_detail(this.value)">
-								頁, 共<span class="totalNum">${totalPage }</span>頁</td>
+								頁, 共<span class="totalNum">${totalPage }</span>頁
+							</td>
 						</tr>
 					</tbody>
 				</table>

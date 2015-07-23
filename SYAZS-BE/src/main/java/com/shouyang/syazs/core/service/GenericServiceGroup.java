@@ -16,8 +16,8 @@ import com.shouyang.syazs.core.entity.GenericEntityGroup;
  * @author Roderick
  * @version 2014/9/29
  */
-public abstract class GenericServiceGroup<T extends GenericEntityGroup>
-		implements Service<T> {
+public abstract class GenericServiceGroup<T extends GenericEntityGroup> extends
+		ServiceFactory<T> {
 
 	protected final transient Logger log = Logger.getLogger(getClass());
 

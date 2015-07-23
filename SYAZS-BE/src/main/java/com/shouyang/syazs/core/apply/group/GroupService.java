@@ -11,7 +11,6 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceGroup;
-import com.shouyang.syazs.core.util.DsBeanFactory;
 
 @Service
 public class GroupService extends GenericServiceGroup<Group> {
@@ -27,7 +26,7 @@ public class GroupService extends GenericServiceGroup<Group> {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 		Group entity = ds.getEntity();
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		if (entity.getCustomer().getSerNo() > 0) {
 			restrictions.eq("customer.serNo", entity.getCustomer().getSerNo());
@@ -48,7 +47,7 @@ public class GroupService extends GenericServiceGroup<Group> {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 		Group entity = ds.getEntity();
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("serNo", entity.getSerNo());
 		if (entity.getCustomer() != null) {
 			restrictions.eq("customer.serNo", entity.getCustomer().getSerNo());

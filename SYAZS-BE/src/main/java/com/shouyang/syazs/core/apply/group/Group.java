@@ -56,18 +56,18 @@ public class Group extends GenericEntityGroup {
 
 	@Transient
 	private String firstLevelOption;
-	
+
 	@Transient
 	private String secondLevelOption;
 
 	@Transient
 	private String thirdLevelOption;
-	
+
 	@Transient
-	private String firstLevelSelect;
-	
+	private Long firstLevelSelect;
+
 	@Transient
-	private String secondLevelSelect;
+	private Long secondLevelSelect;
 
 	/**
 	 * @return the groupMapping
@@ -122,7 +122,8 @@ public class Group extends GenericEntityGroup {
 	}
 
 	/**
-	 * @param firstLevelName the firstLevelName to set
+	 * @param firstLevelName
+	 *            the firstLevelName to set
 	 */
 	public void setFirstLevelName(String firstLevelName) {
 		this.firstLevelName = firstLevelName;
@@ -136,7 +137,8 @@ public class Group extends GenericEntityGroup {
 	}
 
 	/**
-	 * @param secondLevelName the secondLevelName to set
+	 * @param secondLevelName
+	 *            the secondLevelName to set
 	 */
 	public void setSecondLevelName(String secondLevelName) {
 		this.secondLevelName = secondLevelName;
@@ -150,7 +152,8 @@ public class Group extends GenericEntityGroup {
 	}
 
 	/**
-	 * @param thirdLevelName the thirdLevelName to set
+	 * @param thirdLevelName
+	 *            the thirdLevelName to set
 	 */
 	public void setThirdLevelName(String thirdLevelName) {
 		this.thirdLevelName = thirdLevelName;
@@ -164,7 +167,8 @@ public class Group extends GenericEntityGroup {
 	}
 
 	/**
-	 * @param firstLevelOption the firstLevelOption to set
+	 * @param firstLevelOption
+	 *            the firstLevelOption to set
 	 */
 	public void setFirstLevelOption(String firstLevelOption) {
 		this.firstLevelOption = firstLevelOption;
@@ -178,7 +182,8 @@ public class Group extends GenericEntityGroup {
 	}
 
 	/**
-	 * @param secondLevelOption the secondLevelOption to set
+	 * @param secondLevelOption
+	 *            the secondLevelOption to set
 	 */
 	public void setSecondLevelOption(String secondLevelOption) {
 		this.secondLevelOption = secondLevelOption;
@@ -192,7 +197,8 @@ public class Group extends GenericEntityGroup {
 	}
 
 	/**
-	 * @param thirdLevelOption the thirdLevelOption to set
+	 * @param thirdLevelOption
+	 *            the thirdLevelOption to set
 	 */
 	public void setThirdLevelOption(String thirdLevelOption) {
 		this.thirdLevelOption = thirdLevelOption;
@@ -201,28 +207,30 @@ public class Group extends GenericEntityGroup {
 	/**
 	 * @return the firstLevelSelect
 	 */
-	public String getFirstLevelSelect() {
+	public Long getFirstLevelSelect() {
 		return firstLevelSelect;
 	}
 
 	/**
-	 * @param firstLevelSelect the firstLevelSelect to set
+	 * @param firstLevelSelect
+	 *            the firstLevelSelect to set
 	 */
-	public void setFirstLevelSelect(String firstLevelSelect) {
+	public void setFirstLevelSelect(Long firstLevelSelect) {
 		this.firstLevelSelect = firstLevelSelect;
 	}
 
 	/**
 	 * @return the secondLevelSelect
 	 */
-	public String getSecondLevelSelect() {
+	public Long getSecondLevelSelect() {
 		return secondLevelSelect;
 	}
 
 	/**
-	 * @param secondLevelSelect the secondLevelSelect to set
+	 * @param secondLevelSelect
+	 *            the secondLevelSelect to set
 	 */
-	public void setSecondLevelSelect(String secondLevelSelect) {
+	public void setSecondLevelSelect(Long secondLevelSelect) {
 		this.secondLevelSelect = secondLevelSelect;
 	}
 

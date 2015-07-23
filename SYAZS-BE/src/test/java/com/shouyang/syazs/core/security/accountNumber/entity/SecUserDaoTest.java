@@ -10,7 +10,7 @@ import com.shouyang.syazs.core.GenericTest;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumberDao;
 import com.shouyang.syazs.core.dao.DsRestrictions;
-import com.shouyang.syazs.core.util.DsBeanFactory;
+import com.shouyang.syazs.core.service.ServiceFactory;
 
 /**
  * SecUserDaoTest
@@ -71,7 +71,7 @@ public class SecUserDaoTest extends GenericTest {
 		Assert.assertTrue(updated);
 
 		// query by condition
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = ServiceFactory.getDsRestrictions();
 		restrictions.eq("userName", user1UpdName);
 		List<AccountNumber> users = dao.findByRestrictions(restrictions);
 		Assert.assertEquals(1, users.size());

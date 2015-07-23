@@ -8,7 +8,6 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceSerNo;
-import com.shouyang.syazs.core.util.DsBeanFactory;
 
 @Service
 public class GroupMappingService extends GenericServiceSerNo<GroupMapping> {
@@ -21,7 +20,7 @@ public class GroupMappingService extends GenericServiceSerNo<GroupMapping> {
 			throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		return dao.findByRestrictions(restrictions, ds);
 	}

@@ -14,7 +14,6 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
-import com.shouyang.syazs.core.util.DsBeanFactory;
 
 @Service
 public class CustomerService extends GenericServiceFull<Customer> {
@@ -28,7 +27,7 @@ public class CustomerService extends GenericServiceFull<Customer> {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 		Customer entity = ds.getEntity();
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		if (entity.getOption().equals("entity.engName")) {
 			if (StringUtils.isNotBlank(entity.getEngName())) {
@@ -59,7 +58,7 @@ public class CustomerService extends GenericServiceFull<Customer> {
 	public boolean nameIsExist(Customer entity) throws Exception {
 		Assert.notNull(entity);
 
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("name", entity.getName().trim());
 
 		List<Customer> customers = dao.findByRestrictions(restrictions);
@@ -71,7 +70,7 @@ public class CustomerService extends GenericServiceFull<Customer> {
 	}
 
 	public long getCusSerNoByName(String name) throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("name", name);
 
 		if (dao.findByRestrictions(restrictions).size() > 0) {
@@ -82,14 +81,14 @@ public class CustomerService extends GenericServiceFull<Customer> {
 	}
 
 	public List<Customer> getAllCustomers() throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 
 		return dao.findByRestrictions(restrictions);
 	}
 
 	public List<Customer> getUncheckCustomers(List<Customer> checkedCustomers)
 			throws Exception {
-		DsRestrictions restrictions = DsBeanFactory.getDsRestrictions();
+		DsRestrictions restrictions = getDsRestrictions();
 		if (checkedCustomers != null) {
 			int i = 0;
 			while (i < checkedCustomers.size()) {

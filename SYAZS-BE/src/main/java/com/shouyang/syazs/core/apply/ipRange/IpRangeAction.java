@@ -2,6 +2,7 @@ package com.shouyang.syazs.core.apply.ipRange;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.owasp.esapi.ESAPI;
@@ -189,8 +190,8 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 			if (ds.getResults().size() == 0
 					&& ds.getPager().getCurrentPage() > 1) {
 				ds.getPager().setCurrentPage(
-						(int) (ds.getPager().getTotalRecord()
-								/ ds.getPager().getRecordPerPage() + 1));
+						(int) Math.ceil(ds.getPager().getTotalRecord()
+								/ ds.getPager().getRecordPerPage()));
 				ds = ipRangeService.getByRestrictions(ds);
 			}
 

@@ -10,6 +10,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
+<c:set var="pageFactor"
+	value="${ds.pager.totalRecord/ds.pager.recordPerPage}" />
+<c:set var="totalPage">
+	<fmt:formatNumber type="number" pattern="#"
+		value="${pageFactor+(1-(pageFactor%1))%1}" />
+</c:set>
 <c:if test="${login.role.role != '管理員'}">
 	<script type="text/javascript">
 	$(document).ready(function() {
@@ -21,15 +27,6 @@
 	</script>
 </c:if>
 <script type="text/javascript">
-	//IE press Enter GoPage
-	$(document).ready(function() {
-		$("input#listForm_currentPageHeader").keyup(function(e) {
-			if (e.keyCode == 13) {
-				gotoPage($(this).val());
-			}
-		});
-	});
-
 	$(document).ready(
 			function() {
 				$('input#customerName').click(
@@ -56,33 +53,6 @@
 		}
 	}
 
-	//GoPage
-	function gotoPage(page) {
-		var isNum = /^\d+$/.test(page);
-		var totalPage = $("span.totalNum:eq(0)").html();
-
-		if (!isNum) {
-			page = "${ds.pager.currentPage}";
-		} else {
-			if (parseInt(page) < 1) {
-				page = 1;
-			}
-
-			if (parseInt(page) > parseInt(totalPage)) {
-				page = totalPage;
-			}
-		}
-		goMain('<c:url value = '/'/>crud/apply.beLogs.list.action',
-				'#apply_beLogs_list', '&pager.currentPage=' + page);
-	}
-
-	//變更顯示筆數
-	function changePageSize() {
-		goMain('<c:url value = '/'/>crud/apply.beLogs.list.action',
-				'#apply_beLogs_list', '&pager.recordPoint='
-						+ '${ds.pager.recordPoint }');
-	}
-	
 	//匯出
 	function goExport(){
 		var data=$("#apply_beLogs_list").serialize();
@@ -229,17 +199,10 @@
 										<jsp:param name="namespace" value="/crud" />
 										<jsp:param name="action" value="apply.beLogs.list" />
 										<jsp:param name="pager" value="${ds.pager}" />
-										<jsp:param name="recordPerPage"
-											value="${ds.pager.recordPerPage}" />
 										<jsp:param name="detail" value="0" />
 									</jsp:include></td>
-								<td><c:set var="pageFactor"
-										value="${ds.pager.totalRecord/ds.pager.recordPerPage}" /> <c:set
-										var="totalPage">
-										<fmt:formatNumber type="number" pattern="#"
-											value="${pageFactor+(1-(pageFactor%1))%1}" />
-									</c:set> 每頁顯示 <select id="listForm_pageSize" name="pager.recordPerPage"
-									onchange="changePageSize()">
+								<td>每頁顯示 <select id="listForm_pageSize"
+									name="pager.recordPerPage" onchange="changePageSize()">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>
@@ -248,7 +211,8 @@
 								</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
 									value="${ds.pager.currentPage }" type="number" min="1"
 									max="${totalPage }" onchange="gotoPage(this.value)"> 頁,
-									共<span class="totalNum">${totalPage }</span>頁</td>
+									共<span class="totalNum">${totalPage }</span>頁
+								</td>
 							</tr>
 						</c:if>
 					</tbody>

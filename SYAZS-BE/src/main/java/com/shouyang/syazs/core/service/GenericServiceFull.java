@@ -16,8 +16,8 @@ import com.shouyang.syazs.core.entity.GenericEntityFull;
  * @author Roderick
  * @version 2014/9/29
  */
-public abstract class GenericServiceFull<T extends GenericEntityFull>
-		implements Service<T> {
+public abstract class GenericServiceFull<T extends GenericEntityFull> extends
+		ServiceFactory<T> {
 
 	protected final transient Logger log = Logger.getLogger(getClass());
 

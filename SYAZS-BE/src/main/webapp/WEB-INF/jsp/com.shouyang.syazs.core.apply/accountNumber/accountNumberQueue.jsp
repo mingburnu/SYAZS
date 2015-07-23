@@ -17,42 +17,6 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-	//IE press Enter GoPage
-	$(document).ready(function() {
-		$("input#listForm_currentPageHeader:(1)").keyup(function(e) {
-			if (e.keyCode == 13) {
-				gotoPage_detail($(this).val());
-			}
-		});
-	});
-
-	function gotoPage_detail(page) {
-		var isNum = /^\d+$/.test(page);
-		var totalPage = "${totalPage}";
-		if (!isNum) {
-			page = "${ds.pager.currentPage}";
-		} else {
-			if (parseInt(page) < 1) {
-				page = 1;
-			}
-
-			if (parseInt(page) > parseInt(totalPage)) {
-				page = totalPage;
-			}
-		}
-		goDetail_Main(
-				'<c:url value = '/'/>crud/apply.accountNumber.paginate.action',
-				'#apply_accountNumber_importData', '&pager.currentPage=' + page);
-	}
-
-	//變更顯示筆數
-	function changePageSize_detail() {
-		goDetail_Main(
-				'<c:url value = '/'/>crud/apply.accountNumber.paginate.action',
-				'#apply_accountNumber_importData', '&pager.recordPoint='
-						+ '${ds.pager.recordPoint }');
-	}
-
 	function allRow(action) {
 		if (action == 1) {
 			checkedValues = new Array($(".checkbox.queue:visible").length);
@@ -102,7 +66,7 @@
 
 			goDetail_Main(
 					'<c:url value = '/'/>crud/apply.accountNumber.importData.action',
-					'#apply_accountNumber_importData', '&pager.currentPage='
+					'#apply_accountNumber_paginate', '&pager.currentPage='
 							+ '${ds.pager.currentPage}');
 		} else {
 			goAlert("訊息", "請選擇一筆或一筆以上的資料");
@@ -123,7 +87,7 @@
 </script>
 </head>
 <body>
-	<s:form namespace="/crud" action="apply.accountNumber.importData"
+	<s:form namespace="/crud" action="apply.accountNumber.paginate"
 		method="post" onsubmit="return false;">
 		<table cellspacing="1" class="list-table queue">
 			<tbody>
@@ -168,8 +132,6 @@
 									<jsp:param name="namespace" value="/crud" />
 									<jsp:param name="action" value="apply.accountNumber.paginate" />
 									<jsp:param name="pager" value="${ds.pager}" />
-									<jsp:param name="recordPerPage"
-										value="${ds.pager.recordPerPage}" />
 									<jsp:param name="detail" value="1" />
 								</jsp:include></td>
 							<td>每頁顯示 <select id="listForm_pageSize"
