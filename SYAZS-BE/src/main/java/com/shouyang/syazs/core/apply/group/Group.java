@@ -30,8 +30,9 @@ public class Group extends GenericEntityGroup {
 	/**
 	 * group mapping
 	 */
-	@OneToOne(cascade = CascadeType.DETACH)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "gro_m_serNo", nullable = false)
+	@Autowired
 	private GroupMapping groupMapping;
 
 	/**

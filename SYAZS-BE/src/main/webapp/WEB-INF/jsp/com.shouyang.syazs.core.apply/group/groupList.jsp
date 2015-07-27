@@ -26,29 +26,36 @@ function goAdd_detail() {
 }
 
 //Group編輯
-function goUpdate_detail(serNo) {
+function goUpdate_detail(listNo,serNo) {
 	var isNum = /^\d+$/.test(serNo);
 	if (isNum &&parseInt(serNo) > 0){
 	var url = "<c:url value = '/'/>crud/apply.group.edit.action";
-	var data = 'entity.serNo=' + serNo +'&entity.customer.serNo='+'${customerSerNo }';
+	var data = 'entity.serNo=' + serNo +'&entity.listNo='+listNo+'&entity.customer.serNo='+'${customerSerNo }';
 	goDetail_2(url, 'Group管理-修改', data); 
 	}
 }
 
 //單筆刪除
 function goDel_detail(serNo) {
-	var f = {
-			trueText:'是',
-			trueFunc:function(){
-				var url = "<c:url value = '/'/>crud/apply.group.delete.action";
-				var data = $('#apply_group_list').serialize()+'&entity.serNo='+serNo+'&pager.currentPage='+'${ds.pager.currentPage}';
-				goDetail_Main(url,'',data);
-			    },
-			falseText:'否',
-			falseFunc:function(){
-				//不進行刪除...
-			}
-	};
+	 var f = {
+			 trueText:'是',
+			 trueFunc:function(){
+				 var url = "<c:url value = '/'/>crud/apply.group.delete.action";
+				 var data = $('#apply_group_list').serialize()+'&entity.serNo='+serNo+'&entity.customer.serNo='+'${entity.customer.serNo }'+'&pager.currentPage='+'${ds.pager.currentPage}';
+				 goDetail_Main(url,'',data);
+			     },
+			  falseText:'否',
+			  falseFunc:function(){
+				  //不進行刪除...
+			  }
+	 };
+
+	 var isNum = /^\d+$/.test(serNo);
+	 if (isNum && parseInt(serNo) > 0){
+		 goAlert('提醒','確定要刪除此筆資料嗎?',f);
+	 } else {
+		 goAlert('提醒','錯誤','');
+	 }
 	
 	var isNum = /^\d+$/.test(serNo);
 	if (isNum && parseInt(serNo) > 0){

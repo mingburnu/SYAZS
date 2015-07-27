@@ -43,23 +43,31 @@ public class GroupService extends GenericServiceGroup<Group> {
 		return dao;
 	}
 
-	public boolean isLegalEntity(DataSet<Group> ds) throws Exception {
+	public Group getTargetEntity(DataSet<Group> ds) throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 		Group entity = ds.getEntity();
 		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.eq("serNo", entity.getSerNo());
+
+		if (entity.getSerNo() != null) {
+			restrictions.eq("serNo", entity.getSerNo());
+		} else {
+			restrictions.eq("serNo", -1L);
+		}
+
 		if (entity.getCustomer() != null) {
 			restrictions.eq("customer.serNo", entity.getCustomer().getSerNo());
 		} else {
 			restrictions.eq("customer.serNo", -1L);
 		}
 
-		if (dao.findByRestrictions(restrictions).size() == 0) {
-			return false;
-		}
+		List<Group> results = dao.findByRestrictions(restrictions);
 
-		return true;
+		if (results.size() == 1) {
+			return results.get(0);
+		} else {
+			return null;
+		}
 	}
 
 	public List<Group> getMainGroups(long cusSerNo) {
@@ -71,7 +79,7 @@ public class GroupService extends GenericServiceGroup<Group> {
 	}
 
 	public boolean isRepeatMainGroup(String groupName, long cusSerNo) {
-		List<Group> groups = dao.getMainGroupByName(groupName, cusSerNo);
+		List<Group> groups = dao.getMainGroupByName(groupName.trim(), cusSerNo);
 
 		if (groups.size() > 0) {
 			return true;
@@ -81,7 +89,8 @@ public class GroupService extends GenericServiceGroup<Group> {
 
 	public boolean isRepeatSubGroup(String groupName, long cusSerNo,
 			Group mainGroup) {
-		List<Group> groups = dao.getSubGroupByName(groupName, cusSerNo, mainGroup);
+		List<Group> groups = dao.getSubGroupByName(groupName.trim(), cusSerNo,
+				mainGroup);
 
 		if (groups.size() > 0) {
 			return true;

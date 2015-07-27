@@ -62,6 +62,14 @@ public interface Dao<T extends Entity> {
 	public void update(T entity) throws Exception;
 
 	/**
+	 * Merge the entity from session and database
+	 * 
+	 * @param entity
+	 * @throws Exception
+	 */
+	public void merge(T entity) throws Exception;
+
+	/**
 	 * Delete the entity from database
 	 * 
 	 * @param entity

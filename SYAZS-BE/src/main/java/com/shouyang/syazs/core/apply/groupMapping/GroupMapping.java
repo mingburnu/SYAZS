@@ -1,10 +1,13 @@
 package com.shouyang.syazs.core.apply.groupMapping;
 
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -27,10 +30,13 @@ public class GroupMapping extends GenericEntitySerNo {
 	/**
 	 * 上層編號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "parentGID", nullable = true)
 	private GroupMapping parentGroupMapping;
-
+	
+//	@OneToMany(orphanRemoval=true, mappedBy="parentGroupMapping")
+//	private Set<GroupMapping> groupMappings;
+	
 	/**
 	 * 名稱
 	 */
@@ -43,7 +49,7 @@ public class GroupMapping extends GenericEntitySerNo {
 	@Column(name = "Level")
 	private Integer level;
 
-	@OneToOne(mappedBy="groupMapping")
+	@OneToOne(mappedBy = "groupMapping")
 	private Group group;
 
 	/**
@@ -99,7 +105,8 @@ public class GroupMapping extends GenericEntitySerNo {
 	}
 
 	/**
-	 * @param group the group to set
+	 * @param group
+	 *            the group to set
 	 */
 	public void setGroup(Group group) {
 		this.group = group;
@@ -117,4 +124,18 @@ public class GroupMapping extends GenericEntitySerNo {
 		this.title = title;
 		this.level = level;
 	}
+
+//	/**
+//	 * @return the groupMappings
+//	 */
+//	public Set<GroupMapping> getGroupMappings() {
+//		return groupMappings;
+//	}
+//
+//	/**
+//	 * @param groupMappings the groupMappings to set
+//	 */
+//	public void setGroupMappings(Set<GroupMapping> groupMappings) {
+//		this.groupMappings = groupMappings;
+//	}
 }

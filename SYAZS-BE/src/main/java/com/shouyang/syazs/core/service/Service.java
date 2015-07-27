@@ -21,6 +21,9 @@ public interface Service<T extends Entity> {
 	public T update(T entity, AccountNumber user, String... ignoreProperties)
 			throws Exception;
 
+	public T merge(T entity, AccountNumber user, String... ignoreProperties)
+			throws Exception;
+
 	public void deleteBySerNo(Long serNo) throws Exception;
 
 }

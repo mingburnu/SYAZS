@@ -124,6 +124,12 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 		Assert.notNull(entity);
 		getSession().update(entity);
 	}
+	
+	@Override
+	public void merge(T entity) throws Exception {
+		Assert.notNull(entity);
+		getSession().merge(entity);
+	}
 
 	@Override
 	public void deleteBySerNo(Long serNo) throws Exception {

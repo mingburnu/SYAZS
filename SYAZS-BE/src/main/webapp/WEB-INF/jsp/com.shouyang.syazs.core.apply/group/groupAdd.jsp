@@ -34,11 +34,6 @@
 	</c:otherwise>
 </c:choose>
 <script type="text/javascript">
-	var updateForm = "";
-	$(document).ready(function() {
-		updateForm = $("form#apply_group_update").html();
-	});
-
 	$(document)
 			.ready(
 					function() {
@@ -227,18 +222,10 @@
 	//遞交表單
 	function submitData() {
 		closeDetail_2();
-		if ($("form#apply_group_save").length != 0) {
-			var data = $('form#apply_group_save').serialize();
-			goDetail_2(
-					"<c:url value = '/'/>crud/apply.group.save.action?entity.customer.serNo=${entity.customer.serNo}",
-					'客戶-群組新增', data);
-			console.log(data);
-		} else {
-			var data = $('form#apply_group_update').serialize();
-			goDetail_2(
-					"<c:url value = '/'/>crud/apply.group.update.action?entity.serNo=${entity.serNo}&entity.customer.serNo=${entity.customer.serNo}",
-					'客戶-群組修改', data);
-		}
+		var data = $('form#apply_group_save').serialize();
+		goDetail_2(
+				"<c:url value = '/'/>crud/apply.group.save.action?entity.customer.serNo=${entity.customer.serNo}",
+				'客戶-群組新增', data);
 	}
 
 	function showSubGroups() {
@@ -260,95 +247,61 @@ input[name="entity.thirdLevelOption"] {
 </style>
 </head>
 <body>
-	<div>${success }</div>
-	<c:choose>
-		<c:when test="${empty entity.serNo }">
-			<s:form namespace="/crud" action="apply.group.save">
-				<table cellspacing="1" class="detail-table">
-					<tr>
-						<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
-						<td>${entity.customer.name }</td>
-					</tr>
-					<tr>
-						<th width="130">LEVEL 1<span class="required">(&#8226;)</span></th>
-						<td><s:radio list="#{'extend':''}"
-								name="entity.firstLevelOption" /> <s:select
-								cssClass="input_text" headerValue="--選擇群組--" headerKey="0"
-								name="entity.firstLevelSelect" list="firstLevelGroups"
-								listKey="serNo" listValue="groupName" onchange="showSubGroups()" />
-							<s:radio list="#{'new':'新增Level 1群組'}"
-								name="entity.firstLevelOption" /> <s:textfield
-								cssClass="input_text" name="entity.firstLevelName" /></td>
-					</tr>
-					<tr>
-						<th width="130">LEVEL 2</th>
-						<td><input type="checkbox" id="checkLevel2"> <s:radio
-								list="#{'extend':''}" name="entity.secondLevelOption" /> <s:select
-								cssClass="input_text" headerValue="--選擇群組--" headerKey="0"
-								name="entity.secondLevelSelect" list="secondLevelGroups"
-								listKey="serNo" listValue="groupName" onchange="showSubGroups()" />
-							<input type="checkbox" id="checkLevel2"> <s:radio
-								list="#{'new':'新增Level 2群組'}" name="entity.secondLevelOption" />
-							<s:textfield name="entity.secondLevelName" cssClass="input_text" /></td>
-					</tr>
-					<tr>
-						<th width="130">LEVEL 3</th>
-						<td><input type="checkbox" disabled> <s:select
-								id="viewGroups" cssClass="input_text" headerValue="--觀看群組--"
-								headerKey="0" list="thirdLevelGroups" listKey="serNo"
-								listValue="groupName" /> <input type="checkbox"
-							id="checkLevel3"> <s:radio list="#{'new':'新增Level 3群組'}"
-								name="entity.thirdLevelOption" /> <s:textfield
-								name="entity.thirdLevelName" cssClass="input_text" /></td>
-					</tr>
-				</table>
-				<div class="button_box">
-					<div class="detail-func-button">
-						<a class="state-default" onclick="closeDetail_2();">取消</a> &nbsp;<a
-							class="state-default" onclick="resetData();">重設</a>&nbsp; <a
-							class="state-default" onclick="submitData();">確認</a>
-					</div>
-				</div>
-				<div class="detail_note">
-					<div class="detail_note_title">Note</div>
-					<div class="detail_note_content">
-						<span class="required">(&#8226;)</span>為必填欄位
-					</div>
+	<s:form namespace="/crud" action="apply.group.save">
+		<table cellspacing="1" class="detail-table">
+			<tr>
+				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
+				<td>${entity.customer.name }</td>
+			</tr>
+			<tr>
+				<th width="130">LEVEL 1<span class="required">(&#8226;)</span></th>
+				<td><s:radio list="#{'extend':''}"
+						name="entity.firstLevelOption" /> <s:select cssClass="input_text"
+						headerValue="--選擇群組--" headerKey="0"
+						name="entity.firstLevelSelect" list="firstLevelGroups"
+						listKey="serNo" listValue="groupName" onchange="showSubGroups()" />
+					<s:radio list="#{'new':'新增Level 1群組'}"
+						name="entity.firstLevelOption" /> <s:textfield
+						cssClass="input_text" name="entity.firstLevelName" /></td>
+			</tr>
+			<tr>
+				<th width="130">LEVEL 2</th>
+				<td><input type="checkbox" id="checkLevel2"> <s:radio
+						list="#{'extend':''}" name="entity.secondLevelOption" /> <s:select
+						cssClass="input_text" headerValue="--選擇群組--" headerKey="0"
+						name="entity.secondLevelSelect" list="secondLevelGroups"
+						listKey="serNo" listValue="groupName" onchange="showSubGroups()" />
+					<input type="checkbox" id="checkLevel2"> <s:radio
+						list="#{'new':'新增Level 2群組'}" name="entity.secondLevelOption" />
+					<s:textfield name="entity.secondLevelName" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">LEVEL 3</th>
+				<td><input type="checkbox" disabled> <s:select
+						id="viewGroups" cssClass="input_text" headerValue="--觀看群組--"
+						headerKey="0" list="thirdLevelGroups" listKey="serNo"
+						listValue="groupName" /> <input type="checkbox" id="checkLevel3">
+					<s:radio list="#{'new':'新增Level 3群組'}"
+						name="entity.thirdLevelOption" /> <s:textfield
+						name="entity.thirdLevelName" cssClass="input_text" /></td>
+			</tr>
+		</table>
+		<div class="button_box">
+			<div class="detail-func-button">
+				<a class="state-default" onclick="closeDetail_2();">取消</a> &nbsp;<a
+					class="state-default" onclick="resetData();">重設</a>&nbsp; <a
+					class="state-default" onclick="submitData();">確認</a>
+			</div>
+		</div>
+		<div class="detail_note">
+			<div class="detail_note_title">Note</div>
+			<div class="detail_note_content">
+				<span class="required">(&#8226;)</span>為必填欄位
+			</div>
 
-				</div>
-			</s:form>
-		</c:when>
-		<c:otherwise>
-			<s:form namespace="/crud" action="apply.group.update">
-				<table cellspacing="1" class="detail-table">
-					<tr>
-						<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
-						<td>${entity.customer.name }</td>
-					</tr>
-					<tr>
-						<th width="130"></th>
-						<td><s:select headerValue="--用戶名稱--" headerKey="0"
-								name="cusSerNo" cssClass="input_text"
-								list="dsFirstLevel.results" listKey="serNo" listValue="name" />
-							<s:textfield name="entity.group" cssClass="input_text" /></td>
-					</tr>
-				</table>
-				<div class="button_box">
-					<div class="detail-func-button">
-						<a class="state-default" onclick="closeDetail_2();">取消</a> &nbsp;<a
-							class="state-default" onclick="resetData();">重設</a>&nbsp; <a
-							class="state-default" onclick="submitData();">確認</a>
-					</div>
-				</div>
-				<div class="detail_note">
-					<div class="detail_note_title">Note</div>
-					<div class="detail_note_content">
-						<span class="required">(&#8226;)</span>為必填欄位
-					</div>
-				</div>
-			</s:form>
-		</c:otherwise>
-	</c:choose>
+		</div>
+	</s:form>
+
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>
