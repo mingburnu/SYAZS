@@ -53,9 +53,9 @@
 
 	//遞交表單
 	function submitData() {
+		var data = $('#apply_ebook_update').serialize();
 		closeDetail();
 		clearCustomers();
-		var data = $('#apply_ebook_update').serialize();
 		goDetail(
 				"<c:url value = '/'/>crud/apply.ebook.update.action?entity.serNo=${entity.serNo}",
 				'電子書-修改', data);

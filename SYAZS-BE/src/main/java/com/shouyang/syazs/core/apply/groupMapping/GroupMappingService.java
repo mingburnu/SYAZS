@@ -31,10 +31,6 @@ public class GroupMappingService extends GenericServiceSerNo<GroupMapping> {
 		return dao;
 	}
 
-	public void delByCustomerName(String title) {
-		dao.deleteByTitle(title);
-	}
-
 	public GroupMapping getRootMapping(String title) throws Exception {
 		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("level", 0);

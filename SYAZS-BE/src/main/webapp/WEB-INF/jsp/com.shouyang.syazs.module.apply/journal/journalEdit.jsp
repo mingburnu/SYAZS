@@ -51,9 +51,9 @@
 
 	//遞交表單
 	function submitData() {
+		var data = $('#apply_journal_update').serialize();
 		closeDetail();
 		clearCustomers();
-		var data = $('#apply_journal_update').serialize();
 		goDetail(
 				"<c:url value = '/'/>crud/apply.journal.update.action?entity.serNo=${entity.serNo}",
 				'期刊-修改', data);

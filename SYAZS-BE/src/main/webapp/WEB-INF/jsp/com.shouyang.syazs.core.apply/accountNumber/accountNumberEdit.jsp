@@ -17,8 +17,8 @@
 
 	//遞交表單
 	function submitData() {
-		closeDetail();
 		var data = $('#apply_accountNumber_update').serialize();
+		closeDetail();
 		goDetail(
 				"<c:url value = '/'/>crud/apply.accountNumber.update.action?entity.serNo=${entity.serNo}",
 				'帳戶-修改', data);

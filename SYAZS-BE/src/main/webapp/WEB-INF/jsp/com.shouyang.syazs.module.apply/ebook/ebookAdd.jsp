@@ -63,24 +63,11 @@
 
 	//遞交表單
 	function submitData() {
+		var data = $('#apply_ebook_save').serialize();
 		closeDetail();
 		clearCustomers();
-		var data = $('#apply_ebook_save').serialize();
 		goDetail("<c:url value = '/'/>crud/apply.ebook.save.action", '電子書-新增',
 				data);
-	}
-
-	function addCustomer() {
-		var contain = $("#div_Customers .content .header .title").html();
-		if (contain != '單位-新增') {
-			goCustomers("<c:url value = '/'/>crud/apply.customer.ajax.action",
-					'單位-新增');
-		}
-
-		$("#div_Customers").show();
-		UI_Resize();
-		$(window).scrollTop(0);
-		closeLoading();
 	}
 </script>
 <style type="text/css">

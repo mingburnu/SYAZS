@@ -30,13 +30,10 @@ public class GroupMapping extends GenericEntitySerNo {
 	/**
 	 * 上層編號
 	 */
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "parentGID", nullable = true)
 	private GroupMapping parentGroupMapping;
-	
-//	@OneToMany(orphanRemoval=true, mappedBy="parentGroupMapping")
-//	private Set<GroupMapping> groupMappings;
-	
+
 	/**
 	 * 名稱
 	 */
@@ -49,8 +46,11 @@ public class GroupMapping extends GenericEntitySerNo {
 	@Column(name = "Level")
 	private Integer level;
 
-	@OneToOne(mappedBy = "groupMapping")
+	@OneToOne(mappedBy = "groupMapping", orphanRemoval = true)
 	private Group group;
+
+	@OneToMany(mappedBy = "parentGroupMapping", orphanRemoval = true)
+	private Set<GroupMapping> groupMappings;
 
 	/**
 	 * @return the parentGroupMapping
@@ -105,11 +105,10 @@ public class GroupMapping extends GenericEntitySerNo {
 	}
 
 	/**
-	 * @param group
-	 *            the group to set
+	 * @return the groupMappings
 	 */
-	public void setGroup(Group group) {
-		this.group = group;
+	public Set<GroupMapping> getGroupMappings() {
+		return groupMappings;
 	}
 
 	public GroupMapping() {
@@ -124,18 +123,4 @@ public class GroupMapping extends GenericEntitySerNo {
 		this.title = title;
 		this.level = level;
 	}
-
-//	/**
-//	 * @return the groupMappings
-//	 */
-//	public Set<GroupMapping> getGroupMappings() {
-//		return groupMappings;
-//	}
-//
-//	/**
-//	 * @param groupMappings the groupMappings to set
-//	 */
-//	public void setGroupMappings(Set<GroupMapping> groupMappings) {
-//		this.groupMappings = groupMappings;
-//	}
 }

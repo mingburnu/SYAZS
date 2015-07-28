@@ -17,8 +17,8 @@
 
 	//遞交表單
 	function submitData() {
-		closeDetail_2();
 		var data = $('form#apply_ipRange_update').serialize();
+		closeDetail_2();
 		goDetail_2(
 				"<c:url value = '/'/>crud/apply.ipRange.update.action?entity.serNo=${entity.serNo}&entity.customer.serNo=${entity.customer.serNo}&entity.listNo=${entity.listNo}",
 				'客戶-IP Range修改', data);

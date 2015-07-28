@@ -1,12 +1,19 @@
 package com.shouyang.syazs.core.apply.customer;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
+import com.shouyang.syazs.core.apply.group.Group;
+import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
 
 @Entity
@@ -43,6 +50,15 @@ public class Customer extends GenericEntityFull {
 	@Column(name = "memo")
 	@Type(type = "text")
 	private String memo;
+
+	@OneToMany(mappedBy = "customer", orphanRemoval = true)
+	private Set<AccountNumber> accountNumbers;
+
+	@OneToMany(mappedBy = "customer", orphanRemoval = true)
+	private Set<Group> groups;
+
+	@OneToMany(mappedBy = "customer", orphanRemoval = true)
+	private Set<IpRange> ipRange;
 
 	/**
 	 * @return the name
@@ -132,6 +148,27 @@ public class Customer extends GenericEntityFull {
 	 */
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	/**
+	 * @return the accountNumbers
+	 */
+	public Set<AccountNumber> getAccountNumbers() {
+		return accountNumbers;
+	}
+
+	/**
+	 * @return the ipRange
+	 */
+	public Set<IpRange> getIpRange() {
+		return ipRange;
+	}
+
+	/**
+	 * @return the groups
+	 */
+	public Set<Group> getGroups() {
+		return groups;
 	}
 
 	public Customer() {

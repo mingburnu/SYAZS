@@ -61,9 +61,8 @@
 
 	//遞交表單
 	function submitData() {
-		closeDetail_2();
 		var data = $('form#apply_group_update').serialize();
-		console.log(data);
+		closeDetail_2();
 		goDetail_2(
 				"<c:url value = '/'/>crud/apply.group.update.action?entity.serNo=${entity.serNo}&entity.customer.serNo=${entity.customer.serNo}",
 				'客戶-群組新增', data);
@@ -181,8 +180,8 @@ input[name="entity.thirdLevelOption"] {
 						</c:when>
 						<c:otherwise>
 							<input type="checkbox" disabled>
-							<s:select id="viewGroups" cssClass="input_text"
-								list="#{'0':'--觀看群組--'}" disabled="true" name="entity" />
+							<select id="viewGroups" class="input_text" disabled="disabled"><option
+									value="0">--觀看群組--</option></select>
 							<input type="checkbox" id="checkLevel3" disabled="disabled">
 							<s:radio list="#{'modify':'修改Level 3群組'}"
 								name="entity.thirdLevelOption" disabled="disabled" />

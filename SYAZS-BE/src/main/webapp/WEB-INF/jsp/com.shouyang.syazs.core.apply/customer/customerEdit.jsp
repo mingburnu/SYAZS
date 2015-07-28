@@ -10,23 +10,17 @@
 <script type="text/javascript">
 	//重設所有欄位(清空)
 	function resetData() {
-		goDetail('<%=request.getContextPath()%>/crud/apply.customer.edit.action?'+'entity.serNo=${entity.serNo}','客戶-修改');
+		goDetail('<%=request.getContextPath()%>/crud/apply.customer.edit.action?'
+						+ 'entity.serNo=${entity.serNo}', '客戶-修改');
 	}
 
 	//遞交表單
 	function submitData() {
+		var data = $('#apply_customer_update').serialize();
 		closeDetail();
-		var data = "";
-		if ($("form#apply_customer_save").length != 0) {
-			data = $('#apply_customer_save').serialize();
-			goDetail("<c:url value = '/'/>crud/apply.customer.save.action",
-					'客戶-新增', data);
-		} else {
-			data = $('#apply_customer_update').serialize();
-			goDetail(
-					"<c:url value = '/'/>crud/apply.customer.update.action?entity.serNo=${entity.serNo}",
-					'客戶-修改', data);
-		}
+		goDetail(
+				"<c:url value = '/'/>crud/apply.customer.update.action?entity.serNo=${entity.serNo}",
+				'客戶-修改', data);
 	}
 </script>
 </head>

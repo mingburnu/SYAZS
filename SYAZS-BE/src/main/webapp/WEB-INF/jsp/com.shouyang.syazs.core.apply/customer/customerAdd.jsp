@@ -8,6 +8,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
+$(document).ready(function() {
+	console.log($('#apply_customer_save').length);
+});
+
 	//重設所有欄位(清空)
 	function resetData() {
 		$("[id^='apply_customer_save_entity']").val("");
@@ -15,8 +19,8 @@
 
 	//遞交表單
 	function submitData() {
-		closeDetail();
 		var data = $('#apply_customer_save').serialize();
+		closeDetail();
 		goDetail("<c:url value = '/'/>crud/apply.customer.save.action",
 				'客戶-新增', data);
 	}

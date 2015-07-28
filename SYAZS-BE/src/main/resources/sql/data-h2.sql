@@ -41,14 +41,29 @@ insert into group_mapping(serNo, parentGID, Title, Level) values(22, 21, '疾病
 insert into group_mapping(serNo, parentGID, Title, Level) values(23, 21, '疾病管制署', 2);
 
 --group
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(1, 'admin', sysdate(), 16, 15, '微生物組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(2, 'admin', sysdate(), 17, 15, '細菌組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(3, 'admin', sysdate(), 18, 15, '球菌組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(4, 'admin', sysdate(), 19, 15, '病毒組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(5, 'admin', sysdate(), 20, 2, '生理所');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(6, 'admin', sysdate(), 21, 15, '寄生蟲組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(7, 'admin', sysdate(), 22, 15, '外寄生蟲組');
-insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(8, 'admin', sysdate(), 23, 15, '內寄生蟲組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(1, 'admin', sysdate(), 1, 1, '長庚紀念醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(2, 'admin', sysdate(), 2, 2, '國防醫學中心');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(3, 'admin', sysdate(), 3, 3, '成功大學附設醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(4, 'admin', sysdate(), 4, 4, '台北醫學院附屬醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(5, 'admin', sysdate(), 5, 5, '恩主公醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(6, 'admin', sysdate(), 6, 6, '中國醫藥大學附設醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(7, 'admin', sysdate(), 7, 7, '宏恩醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(8, 'admin', sysdate(), 8, 8, '馬偕紀念醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(9, 'admin', sysdate(), 9, 9, '碩睿資訊公司');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(10, 'admin', sysdate(), 10, 10, '佛教慈濟綜合醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(11, 'admin', sysdate(), 11, 11, '高雄醫學院附設醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(12, 'admin', sysdate(), 12, 12, '天主教耕莘醫療財團法人耕莘醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(13, 'admin', sysdate(), 13, 13, '為恭紀念醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(14, 'admin', sysdate(), 14, 14, '台灣大學附設醫院');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(15, 'admin', sysdate(), 15, 15, '疾病管制署');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(16, 'admin', sysdate(), 16, 15, '微生物組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(17, 'admin', sysdate(), 17, 15, '細菌組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(18, 'admin', sysdate(), 18, 15, '球菌組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(19, 'admin', sysdate(), 19, 15, '病毒組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(20, 'admin', sysdate(), 20, 2, '生理所');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(21, 'admin', sysdate(), 21, 15, '寄生蟲組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(22, 'admin', sysdate(), 22, 15, '外寄生蟲組');
+insert into groups(serNo, uUid, uDTime, gro_m_serNo, cus_serNo, groupName) values(23, 'admin', sysdate(), 23, 15, '內寄生蟲組');
 
 --accountNumber
 insert into accountNumber(serNo, cUid, uUid, cDTime, uDTime, cus_serNo, userID, userName, userPW, role, status) values(1, 'admin', 'admin', sysdate(), sysdate(), 5, 'user3', 'Default User', '8w5y4CYvLHP69kq5Wm2vHDVfPX1IOcrpskUugS/4KZN6budffcIYbfhpEL6HmNZ0', '使用者','生效');

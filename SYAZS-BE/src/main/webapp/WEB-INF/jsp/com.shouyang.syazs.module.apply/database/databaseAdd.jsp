@@ -56,9 +56,9 @@
 
 	//遞交表單
 	function submitData() {
+		var data = $('#apply_database_save').serialize();
 		closeDetail();
 		clearCustomers();
-		var data = $('#apply_database_save').serialize();
 		goDetail("<c:url value = '/'/>crud/apply.database.save.action",
 				'資料庫-新增', data);
 	}

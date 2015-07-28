@@ -37,6 +37,12 @@
 	$(document)
 			.ready(
 					function() {
+						if($('select#apply_group_save_entity_firstLevelSelect option').length==1){
+							$('select#apply_group_save_entity_firstLevelSelect').attr('disabled', true);
+							$('select#apply_group_save_entity_firstLevelSelect').prev().prev().attr('disabled', true);
+						}
+						
+						
 						if ($("select#apply_group_save_entity_firstLevelSelect")
 								.val() == 0) {
 							$("input#checkLevel2:eq(0)").next().next().next()
@@ -221,8 +227,8 @@
 
 	//遞交表單
 	function submitData() {
-		closeDetail_2();
 		var data = $('form#apply_group_save').serialize();
+		closeDetail_2();
 		goDetail_2(
 				"<c:url value = '/'/>crud/apply.group.save.action?entity.customer.serNo=${entity.customer.serNo}",
 				'客戶-群組新增', data);

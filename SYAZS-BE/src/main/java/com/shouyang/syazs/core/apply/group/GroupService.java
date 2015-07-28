@@ -34,13 +34,17 @@ public class GroupService extends GenericServiceGroup<Group> {
 
 		restrictions.addOrderAsc("serNo");
 
-		return dao.findByRestrictions(restrictions, ds);
+		return dao.getCustomerGroups(restrictions, ds);
 	}
 
 	@Override
 	protected GenericDao<Group> getDao() {
 		// TODO Auto-generated method stub
 		return dao;
+	}
+
+	public Group getRootGroup(long cusSerNo) {
+		return dao.getRootGroup(cusSerNo);
 	}
 
 	public Group getTargetEntity(DataSet<Group> ds) throws Exception {
@@ -68,10 +72,6 @@ public class GroupService extends GenericServiceGroup<Group> {
 		} else {
 			return null;
 		}
-	}
-
-	public List<Group> getMainGroups(long cusSerNo) {
-		return dao.getMainGroups(cusSerNo);
 	}
 
 	public List<Group> getSubGroups(long cusSerNo, Group mainGroup) {

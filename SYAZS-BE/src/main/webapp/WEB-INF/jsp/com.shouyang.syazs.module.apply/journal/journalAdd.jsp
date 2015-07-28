@@ -61,16 +61,11 @@
 
 	//遞交表單
 	function submitData() {
+		var data = $('#apply_journal_save').serialize();
 		closeDetail();
 		clearCustomers();
-		var data = $('#apply_journal_save').serialize();
 		goDetail("<c:url value = '/'/>crud/apply.journal.save.action", '期刊-新增',
 				data);
-	}
-
-	function clearCustomers() {
-		$("#div_Customers .content .header .title").html("");
-		$("#div_Customers .content .contain").html("");
 	}
 </script>
 <style type="text/css">

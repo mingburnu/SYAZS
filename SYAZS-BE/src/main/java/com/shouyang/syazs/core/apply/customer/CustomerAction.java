@@ -39,6 +39,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.enums.Role;
+import com.shouyang.syazs.core.apply.group.Group;
+import com.shouyang.syazs.core.apply.group.GroupService;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
 import com.shouyang.syazs.core.model.DataSet;
@@ -58,6 +60,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	@Autowired
 	private CustomerService customerService;
+
+	@Autowired
+	private GroupService groupService;
 
 	@Autowired
 	private GroupMapping groupMapping;
@@ -179,8 +184,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		if (!hasActionErrors()) {
 			customer = customerService.save(getEntity(), getLoginUser());
-			groupMappingService.save(new GroupMapping(null, customer.getName(),
-					0), getLoginUser());
+			groupService.save(new Group(new GroupMapping(null,
+					customer.getName(), 0), customer, customer.getName()),
+					getLoginUser());
+			
 			setEntity(customer);
 
 			addActionMessage("新增成功");
@@ -223,9 +230,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			while (i < getEntity().getCheckItem().length) {
 				String name = customerService.getBySerNo(
 						getEntity().getCheckItem()[i]).getName();
+
 				if (customerService
 						.deleteOwnerObj(getEntity().getCheckItem()[i])) {
-					groupMappingService.delByCustomerName(name);
+
 					customerService
 							.deleteBySerNo(getEntity().getCheckItem()[i]);
 					addActionMessage(name + "刪除成功");

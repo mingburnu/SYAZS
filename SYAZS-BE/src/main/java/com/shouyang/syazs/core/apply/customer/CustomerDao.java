@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Query;
+import org.hibernate.QueryException;
 import org.hibernate.metadata.ClassMetadata;
 import org.springframework.stereotype.Repository;
 
@@ -18,36 +19,41 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 				.getSessionFactory().getAllClassMetadata();
 
 		for (String entityName : map.keySet()) {
-			Query query = getSession().createQuery("FROM " + entityName);
-			query.setFirstResult(0);
-			query.setMaxResults(1);
+			if (!entityName
+					.equals("com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion")) {
+				continue;
+			}
 
-			if (query.list().toString().contains("customer=")
-					&& !query.list().toString().contains("cDTime=")
-					&& !query.list().toString().contains("uDTime=")) {
-				Query resourceQuery = getSession().createQuery(
-						"SELECT COUNT(*) FROM " + entityName
-								+ " WHERE customer.serNo=?");
+			Query resourceQuery = getSession().createQuery(
+					"SELECT COUNT(*) FROM " + entityName
+							+ " WHERE customer.serNo=?");
 
-				if ((Long) resourceQuery.setLong(0, cusSerNo).list().get(0) > 0) {
-					return false;
-				}
+			if ((Long) resourceQuery.setLong(0, cusSerNo).list().get(0) > 0) {
+				return false;
 			}
 		}
 
 		checkFK(false);
 
 		for (String entityName : map.keySet()) {
+			if (entityName.startsWith("com.shouyang.syazs.core")
+					&& !entityName.contains("BeLogs")) {
+				continue;
+			}
+
 			Query query = getSession().createQuery("FROM " + entityName);
 			query.setFirstResult(0);
 			query.setMaxResults(1);
+			log.info(query.list().toString());
 
-			if (query.list().toString().contains("customer=")) {
+			try {
 				Query delQuery = getSession()
 						.createQuery(
 								"DELETE FROM " + entityName
 										+ " WHERE customer.serNo=?");
 				delQuery.setLong(0, cusSerNo).executeUpdate();
+			} catch (QueryException e) {
+				continue;
 			}
 		}
 
@@ -56,16 +62,17 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> getMap(Map<String,Object> datas) {
-		Query query = getSession().createQuery("SELECT c.name, c.serNo FROM Customer c");
+	public Map<String, Object> getMap(Map<String, Object> datas) {
+		Query query = getSession().createQuery(
+				"SELECT c.name, c.serNo FROM Customer c");
 		List<Object[]> rows = query.list();
-		
+
 		for (Object[] row : rows) {
-		    String name = (String) row[0];
-		    Long serNo = (Long) row[1];
-		    datas.put(name, serNo);
+			String name = (String) row[0];
+			Long serNo = (Long) row[1];
+			datas.put(name, serNo);
 		}
-		
+
 		return datas;
 	}
 }
