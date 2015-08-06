@@ -46,7 +46,6 @@
 	src="<c:url value = '/'/>resources/js/calendar-big5-utf8.js">
 	
 </script>
-
 <script type="text/javascript">
 	$(document).ready(function() {
 		showMenuItems('1');

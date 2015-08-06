@@ -29,20 +29,27 @@
 </script>
 </head>
 <body>
-	<table cellspacing="1" class="detail-table">
-		<tbody>
-			<c:if test="${entity.listNo > 0}">
-				<tr>
-					<th>ID</th>
-					<td>${entity.listNo}</td>
-				</tr>
-			</c:if>
-			<tr>
-				<th>IP Range<span class="required">(&#8226;)</span></th>
-				<td>${entity.ipRangeStart }~${entity.ipRangeEnd}</td>
-			</tr>
-		</tbody>
-	</table>
+	<c:choose>
+		<c:when test="${empty successCount }">
+			<table cellspacing="1" class="detail-table">
+				<tbody>
+					<c:if test="${entity.listNo > 0}">
+						<tr>
+							<th>ID</th>
+							<td>${entity.listNo}</td>
+						</tr>
+					</c:if>
+					<tr>
+						<th>IP Range<span class="required">(&#8226;)</span></th>
+						<td>${entity.ipRangeStart }~${entity.ipRangeEnd}</td>
+					</tr>
+				</tbody>
+			</table>
+		</c:when>
+		<c:otherwise>
+	成功筆數:${successCount}
+	</c:otherwise>
+	</c:choose>
 	<div class="detail-func-button">
 		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
 	</div>

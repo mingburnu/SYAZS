@@ -7,11 +7,14 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
+<c:if test="${empty successCount }">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			closeDetail_ToQuery();
+		});
+	</script>
+</c:if>
 <script type="text/javascript">
-	$(document).ready(function() {
-		closeDetail_ToQuery();
-	});
-
 	//關閉並更新上一層資料
 	function closeDetail_ToQuery() {
 		$("#div_Detail_2").hide();
@@ -31,14 +34,21 @@
 </script>
 </head>
 <body>
-	<table cellspacing="1" class="detail-table">
-		<tbody>
-			<tr>
-				<th>Group<span class="required">(&#8226;)</span></th>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
+	<c:choose>
+		<c:when test="${empty successCount }">
+			<table cellspacing="1" class="detail-table">
+				<tbody>
+					<tr>
+						<th>Group<span class="required">(&#8226;)</span></th>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</c:when>
+		<c:otherwise>
+	成功筆數:${successCount}
+	</c:otherwise>
+	</c:choose>
 	<div class="detail-func-button">
 		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
 	</div>

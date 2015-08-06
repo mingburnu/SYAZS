@@ -3,6 +3,8 @@ package com.shouyang.syazs.core.entity;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import com.shouyang.syazs.core.apply.group.Group;
+
 @MappedSuperclass
 public class GroupProperties implements Entity {
 	/**
@@ -33,6 +35,15 @@ public class GroupProperties implements Entity {
 
 	@Transient
 	private Long secondLevelSelect;
+
+	@Transient
+	private Group firstLevelGroup;
+
+	@Transient
+	private Group secondLevelGroup;
+
+	@Transient
+	private Group thirdLevelGroup;
 
 	/**
 	 * @return the firstLevelName
@@ -152,5 +163,50 @@ public class GroupProperties implements Entity {
 	 */
 	public void setSecondLevelSelect(Long secondLevelSelect) {
 		this.secondLevelSelect = secondLevelSelect;
+	}
+
+	/**
+	 * @return the firstLevelGroup
+	 */
+	public Group getFirstLevelGroup() {
+		return firstLevelGroup;
+	}
+
+	/**
+	 * @param firstLevelGroup
+	 *            the firstLevelGroup to set
+	 */
+	public void setFirstLevelGroup(Group firstLevelGroup) {
+		this.firstLevelGroup = firstLevelGroup;
+	}
+
+	/**
+	 * @return the secondLevelGroup
+	 */
+	public Group getSecondLevelGroup() {
+		return secondLevelGroup;
+	}
+
+	/**
+	 * @param secondLevelGroup
+	 *            the secondLevelGroup to set
+	 */
+	public void setSecondLevelGroup(Group secondLevelGroup) {
+		this.secondLevelGroup = secondLevelGroup;
+	}
+
+	/**
+	 * @return the thirdLevelGroup
+	 */
+	public Group getThirdLevelGroup() {
+		return thirdLevelGroup;
+	}
+
+	/**
+	 * @param thirdLevelGroup
+	 *            the thirdLevelGroup to set
+	 */
+	public void setThirdLevelGroup(Group thirdLevelGroup) {
+		this.thirdLevelGroup = thirdLevelGroup;
 	}
 }

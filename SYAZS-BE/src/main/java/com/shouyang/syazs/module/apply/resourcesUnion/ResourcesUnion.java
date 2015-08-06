@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.entity.GenericEntitySerNo;
-import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 
 @Entity
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -29,11 +28,6 @@ public class ResourcesUnion extends GenericEntitySerNo {
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	@Autowired
 	private Customer customer;
-
-	@ManyToOne(cascade = CascadeType.DETACH)
-	@JoinColumn(name = "res_SerNo", nullable = false)
-	@Autowired
-	private ResourcesBuyers resourcesBuyers;
 
 	@Column(name = "ebk_SerNo")
 	private Long ebkSerNo;
@@ -57,21 +51,6 @@ public class ResourcesUnion extends GenericEntitySerNo {
 	 */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-	}
-
-	/**
-	 * @return the resourcesBuyers
-	 */
-	public ResourcesBuyers getResourcesBuyers() {
-		return resourcesBuyers;
-	}
-
-	/**
-	 * @param resourcesBuyers
-	 *            the resourcesBuyers to set
-	 */
-	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
-		this.resourcesBuyers = resourcesBuyers;
 	}
 
 	/**
@@ -124,11 +103,10 @@ public class ResourcesUnion extends GenericEntitySerNo {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ResourcesUnion(Customer customer, ResourcesBuyers resourcesBuyers,
-			Long ebkSerNo, Long datSerNo, Long jouSerNo) {
+	public ResourcesUnion(Customer customer, Long ebkSerNo, Long datSerNo,
+			Long jouSerNo) {
 		super();
 		this.customer = customer;
-		this.resourcesBuyers = resourcesBuyers;
 		this.ebkSerNo = ebkSerNo;
 		this.datSerNo = datSerNo;
 		this.jouSerNo = jouSerNo;

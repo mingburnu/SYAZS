@@ -47,7 +47,6 @@ public class ResourcesUnionServiceTest extends GenericTest {
 		resourcesUnion1.setDatSerNo(1L);
 		resourcesUnion1.setEbkSerNo(1L);
 		resourcesUnion1.setJouSerNo(1L);
-		resourcesUnion1.setResourcesBuyers(resourcesBuyers);
 
 		ResourcesUnion dbResourcesUnion1 = service.save(resourcesUnion1, user);
 		final Long dbResourcesUnion1SerNo = dbResourcesUnion1.getSerNo();
@@ -59,7 +58,6 @@ public class ResourcesUnionServiceTest extends GenericTest {
 		resourcesUnion2.setDatSerNo(1L);
 		resourcesUnion2.setEbkSerNo(1L);
 		resourcesUnion2.setJouSerNo(1L);
-		resourcesUnion2.setResourcesBuyers(resourcesBuyers);
 
 		ResourcesUnion dbResourcesUnion2 = service.save(resourcesUnion2, user);
 		final Long dbResourcesUnion2SerNo = dbResourcesUnion2.getSerNo();

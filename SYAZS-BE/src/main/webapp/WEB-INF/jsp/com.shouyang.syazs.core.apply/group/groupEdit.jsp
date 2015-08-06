@@ -65,7 +65,7 @@
 		closeDetail_2();
 		goDetail_2(
 				"<c:url value = '/'/>crud/apply.group.update.action?entity.serNo=${entity.serNo}&entity.customer.serNo=${entity.customer.serNo}",
-				'客戶-群組新增', data);
+				'客戶-群組修改', data);
 	}
 
 	function showSubGroups() {

@@ -67,6 +67,47 @@
 			}
 		</script>
 	</c:when>
+	<c:when test="${2 eq param.detail }">
+		<script type="text/javascript">
+			//IE press Enter GoPage
+			$(document).ready(function() {
+				$("input#listForm_currentPageHeader:(2)").keyup(function(e) {
+					if (e.keyCode == 13) {
+						gotoPage_detail_2($(this).val());
+					}
+				});
+			});
+
+			//GoPage
+			function gotoPage_detail_2(page) {
+				var isNum = /^\d+$/.test(page);
+				var totalPage = '${lastPage}';
+
+				if (!isNum) {
+					page = '${currentPage}';
+				} else {
+					if (parseInt(page) < 1) {
+						page = 1;
+					}
+
+					if (parseInt(page) > parseInt(totalPage)) {
+						page = totalPage;
+					}
+				}
+
+				goDetail_Sub($('#' + $("form:eq(2)").attr("id"))
+						.attr("action"), '#' + $("form:eq(2)").attr("id"),
+						'&pager.currentPage=' + page);
+			}
+
+			//變更顯示筆數
+			function changePageSize_detail_2() {
+				goDetail_Sub($('#' + $("form:eq(2)").attr("id"))
+						.attr("action"), '#' + $("form:eq(2)").attr("id"),
+						'&pager.recordPoint=' + '${recordPoint }');
+			}
+		</script>
+	</c:when>
 	<c:otherwise>
 		<script type="text/javascript">
 			//IE press Enter GoPage
@@ -137,6 +178,33 @@
 						<pg:next ifnull="true">&nbsp;&nbsp;<a
 								class="state-default"
 								href="javascript:gotoPage_detail(${currentPage+1});">下一頁</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				</pg:next>
+					</c:otherwise>
+				</c:choose>
+			</c:when>
+			<c:when test="${2 eq param.detail }">
+				<c:choose>
+					<c:when test="${1 eq currentPage}">
+						<pg:next ifnull="true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+								class="state-default"
+								href="javascript:gotoPage_detail_2(${currentPage+1});">下一頁</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				</pg:next>
+					</c:when>
+
+					<c:when test="${lastPage eq currentPage}">
+						<pg:prev ifnull="true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+								class="state-default"
+								href="javascript:gotoPage_detail_2(${currentPage-1});">上一頁</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				</pg:prev>
+					</c:when>
+					<c:otherwise>
+						<pg:prev ifnull="true">
+							<a class="state-default"
+								href="javascript:gotoPage_detail_2(${currentPage-1});">上一頁</a>
+						</pg:prev>
+						<pg:next ifnull="true">&nbsp;&nbsp;<a
+								class="state-default"
+								href="javascript:gotoPage_detail_2(${currentPage+1});">下一頁</a>&nbsp;&nbsp;&nbsp;&nbsp;
 				</pg:next>
 					</c:otherwise>
 				</c:choose>

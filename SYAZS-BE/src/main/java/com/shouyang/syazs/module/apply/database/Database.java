@@ -1,12 +1,18 @@
 package com.shouyang.syazs.module.apply.database;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Type;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Entity
@@ -59,6 +65,12 @@ public class Database extends ModuleProperties {
 	// 收錄年代
 	@Column(name = "IndexedYears")
 	private String indexedYears;
+
+	// ResourcesBuyers
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "res_serNo", nullable = false)
+	@Autowired
+	private ResourcesBuyers resourcesBuyers;
 
 	/**
 	 * @return the dbChtTitle
@@ -210,6 +222,21 @@ public class Database extends ModuleProperties {
 		this.indexedYears = indexedYears;
 	}
 
+	/**
+	 * @return the resourcesBuyers
+	 */
+	public ResourcesBuyers getResourcesBuyers() {
+		return resourcesBuyers;
+	}
+
+	/**
+	 * @param resourcesBuyers
+	 *            the resourcesBuyers to set
+	 */
+	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
+		this.resourcesBuyers = resourcesBuyers;
+	}
+
 	public Database() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -217,7 +244,8 @@ public class Database extends ModuleProperties {
 
 	public Database(String dbChtTitle, String dbEngTitle, String languages,
 			String includedSpecies, String publishName, String content,
-			String url, String topic, String classification, String indexedYears) {
+			String url, String topic, String classification,
+			String indexedYears, ResourcesBuyers resourcesBuyers) {
 		super();
 		this.dbChtTitle = dbChtTitle;
 		this.dbEngTitle = dbEngTitle;
@@ -229,6 +257,6 @@ public class Database extends ModuleProperties {
 		this.topic = topic;
 		this.classification = classification;
 		this.indexedYears = indexedYears;
+		this.resourcesBuyers = resourcesBuyers;
 	}
-
 }

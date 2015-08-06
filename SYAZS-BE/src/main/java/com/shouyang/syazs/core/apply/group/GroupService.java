@@ -87,14 +87,34 @@ public class GroupService extends GenericServiceGroup<Group> {
 		return false;
 	}
 
+	public Group getRepeatMainGroup(String groupName, long cusSerNo) {
+		List<Group> groups = dao.getMainGroupByName(groupName.trim(), cusSerNo);
+
+		if (groups.size() > 0) {
+			return groups.get(0);
+		}
+		return null;
+	}
+
 	public boolean isRepeatSubGroup(String groupName, long cusSerNo,
-			Group mainGroup) {
+			Group parentGroup) {
 		List<Group> groups = dao.getSubGroupByName(groupName.trim(), cusSerNo,
-				mainGroup);
+				parentGroup);
 
 		if (groups.size() > 0) {
 			return true;
 		}
 		return false;
+	}
+	
+	public Group getRepeatSubGroup(String groupName, long cusSerNo,
+			Group parentGroup) {
+		List<Group> groups = dao.getSubGroupByName(groupName.trim(), cusSerNo,
+				parentGroup);
+
+		if (groups.size() > 0) {
+			return groups.get(0);
+		}
+		return null;
 	}
 }

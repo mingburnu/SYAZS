@@ -270,7 +270,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				}
 			}
 
-			journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 			journal.setCustomers(customers);
 			getRequest().setAttribute("uncheckCustomers",
 					customerService.getUncheckCustomers(customers));
@@ -313,17 +312,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			ds = journalService.getByRestrictions(ds);
 		}
 
-		int i = 0;
-		while (i < ds.getResults().size()) {
-			ds.getResults()
-					.get(i)
-					.setResourcesBuyers(
-							resourcesUnionService.getByObjSerNo(
-									ds.getResults().get(i).getSerNo(),
-									Journal.class).getResourcesBuyers());
-			i++;
-		}
-
 		setDs(ds);
 		return LIST;
 	}
@@ -334,29 +322,22 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			journal = getEntity();
-			journal.setIssn(getEntity().getIssn().toUpperCase()
-					.replace("-", "").trim());
+			getEntity()
+					.setIssn(
+							getEntity().getIssn().toUpperCase()
+									.replace("-", "").trim());
 
-			journal = journalService.save(journal, getLoginUser());
-
-			resourcesBuyers = resourcesBuyersService.save(getEntity()
-					.getResourcesBuyers(), getLoginUser());
+			journal = journalService.save(getEntity(), getLoginUser());
 
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				resourcesUnionService.save(
 						new ResourcesUnion(customerService
-								.getBySerNo(getEntity().getCusSerNo()[i]),
-								resourcesBuyers, 0L, 0L, journal.getSerNo()),
-						getLoginUser());
+								.getBySerNo(getEntity().getCusSerNo()[i]), 0L,
+								0L, journal.getSerNo()), getLoginUser());
 
 				i++;
 			}
-
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					journal.getSerNo(), Journal.class);
-			journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(journal, Journal.class);
@@ -404,22 +385,16 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			journal = getEntity();
-			journal.setIssn(getEntity().getIssn().toUpperCase()
-					.replace("-", "").trim());
-			journal = journalService.update(journal, getLoginUser());
+			getEntity()
+					.setIssn(
+							getEntity().getIssn().toUpperCase()
+									.replace("-", "").trim());
 
-			resourcesBuyers = new ResourcesBuyers(getEntity()
-					.getResourcesBuyers().getStartDate(), getEntity()
-					.getResourcesBuyers().getMaturityDate(), getEntity()
-					.getResourcesBuyers().getCategory(), getEntity()
-					.getResourcesBuyers().getType(), getEntity()
-					.getResourcesBuyers().getDbChtTitle(), getEntity()
-					.getResourcesBuyers().getDbEngTitle());
-			resourcesBuyers.setSerNo(resourcesUnionService
-					.getByObjSerNo(journal.getSerNo(), Journal.class)
-					.getResourcesBuyers().getSerNo());
-			resourcesBuyersService.update(resourcesBuyers, getLoginUser());
+			getEntity().getResourcesBuyers().setSerNo(
+					journalService.getBySerNo(getEntity().getSerNo())
+							.getResourcesBuyers().getSerNo());
+
+			journal = journalService.merge(getEntity(), getLoginUser());
 
 			List<ResourcesUnion> resourcesUnions = resourcesUnionService
 					.getResourcesUnionsByObj(journal, Journal.class);
@@ -447,16 +422,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					resourcesUnionService
 							.save(new ResourcesUnion(customerService
 									.getBySerNo(getEntity().getCusSerNo()[i]),
-									resourcesBuyers, 0L, 0L, journal.getSerNo()),
-									getLoginUser());
+									0L, 0L, journal.getSerNo()), getLoginUser());
 				}
 
 				i++;
 			}
-
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					journal.getSerNo(), Journal.class);
-			journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(journal, Journal.class);
@@ -519,8 +489,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					resourcesUnionService.deleteBySerNo(resourcesUnion
 							.getSerNo());
 				}
-				resourcesBuyersService.deleteBySerNo(resourcesUnion
-						.getResourcesBuyers().getSerNo());
+
 				journalService.deleteBySerNo(getEntity().getCheckItem()[j]);
 
 				j++;
@@ -537,11 +506,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					journal.getSerNo(), Journal.class);
-
-			journal.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
-
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(journal, Journal.class);
 			List<Customer> customers = new ArrayList<Customer>();
@@ -738,8 +702,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 				journal = new Journal(rowValues[0], rowValues[1], rowValues[2],
 						"", issn, rowValues[4], rowValues[5], rowValues[6], "",
-						"", "", rowValues[7], rowValues[8], null);
-				journal.setResourcesBuyers(resourcesBuyers);
+						"", "", rowValues[7], rowValues[8], null,
+						resourcesBuyers);
 				journal.setCustomers(customers);
 
 				if (isIssn(issn)) {
@@ -974,20 +938,16 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						.getCustomers().get(0).getName());
 
 				if (jouSerNo == 0) {
-					resourcesBuyers = resourcesBuyersService.save(
-							journal.getResourcesBuyers(), getLoginUser());
 					journal = journalService.save(journal, getLoginUser());
 
 					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo),
-							resourcesBuyers, 0L, 0L, journal.getSerNo()),
-							getLoginUser());
+							customerService.getBySerNo(cusSerNo), 0L, 0L,
+							journal.getSerNo()), getLoginUser());
 				} else {
 					resourcesUnion = resourcesUnionService.getByObjSerNo(
 							jouSerNo, Journal.class);
 					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo),
-							resourcesUnion.getResourcesBuyers(), 0L, 0L,
+							customerService.getBySerNo(cusSerNo), 0L, 0L,
 							jouSerNo), getLoginUser());
 				}
 

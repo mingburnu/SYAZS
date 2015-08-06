@@ -62,6 +62,11 @@ function closeDetail() {
 	$("#div_Detail .content > .header > .title").empty();
 	$("#div_Detail .content > .contain").empty();
 }
+
+//批次匯入
+function goImport_detail(){
+	goDetail_2('<%=request.getContextPath()%>/crud/apply.ipRange.imports.action?','IP-匯入','entity.customer.serNo='+'${entity.customer.serNo}');
+}
 </script>
 </head>
 <body>
@@ -70,7 +75,8 @@ function closeDetail() {
 			value="%{entity.customer.serNo}" />
 		<div class="list-box">
 			<div class="list-buttons">
-				<a class="state-default" onclick="goAdd_detail();">新增</a>
+				<a class="state-default" onclick="goAdd_detail();">新增</a> <a
+					class="state-default" onclick="goImport_detail();">匯入</a>
 			</div>
 			<table cellspacing="1" class="list-table">
 				<tbody>

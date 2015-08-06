@@ -1,15 +1,41 @@
 package com.shouyang.syazs.core.apply.group;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
@@ -30,6 +56,15 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 	private Group group;
 
 	@Autowired
+	private Group parentGroup;
+
+	@Autowired
+	private Group repeatFirstGroup;
+
+	@Autowired
+	private Group repeatSecondGroup;
+
+	@Autowired
 	private GroupService groupService;
 
 	@Autowired
@@ -39,16 +74,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 	private GroupMappingService groupMappingService;
 
 	@Autowired
-	private List<Group> firstLevelGroups;
-
-	@Autowired
-	private List<Group> secondLevelGroups;
-
-	@Autowired
-	private List<Group> thirdLevelGroups;
-
-	@Autowired
-	Customer customer;
+	private Customer customer;
 
 	@Autowired
 	private CustomerService customerService;
@@ -293,9 +319,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			getEntity().setCustomer(
 					customerService.getBySerNo(getEntity().getCustomer()
 							.getSerNo()));
-			setFirstLevelGroups(groupService.getSubGroups(getEntity()
-					.getCustomer().getSerNo(), groupService
-					.getRootGroup(getEntity().getCustomer().getSerNo())));
+			ActionContext
+					.getContext()
+					.getValueStack()
+					.set("firstLevelGroups",
+							groupService.getSubGroups(getEntity().getCustomer()
+									.getSerNo(), groupService
+									.getRootGroup(getEntity().getCustomer()
+											.getSerNo())));
 
 			boolean isFirstGroupSerNo = getEntity().getFirstLevelSelect() != null
 					&& getEntity().getFirstLevelSelect() > 0
@@ -314,9 +345,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 							.getGroupMapping().getLevel() == 2;
 
 			if (isFirstGroupSerNo) {
-				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), groupService
-						.getBySerNo(getEntity().getFirstLevelSelect())));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("secondLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), groupService
+										.getBySerNo(getEntity()
+												.getFirstLevelSelect())));
 			}
 
 			if (isFirstGroupSerNo && isSecondGroupSerNo) {
@@ -324,9 +360,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 				long secondSerNo = getEntity().getSecondLevelSelect();
 				if (groupService.getBySerNo(secondSerNo).getGroupMapping()
 						.getParentGroupMapping().getGroup().getSerNo() == firstSerNo)
-					setThirdLevelGroups(groupService.getSubGroups(getEntity()
-							.getCustomer().getSerNo(), groupService
-							.getBySerNo(getEntity().getSecondLevelSelect())));
+					ActionContext
+							.getContext()
+							.getValueStack()
+							.set("thirdLevelGroups",
+									groupService.getSubGroups(getEntity()
+											.getCustomer().getSerNo(),
+											groupService.getBySerNo(getEntity()
+													.getSecondLevelSelect())));
 			}
 		}
 
@@ -339,14 +380,23 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 		group = groupService.getTargetEntity(initDataSet());
 		if (group != null) {
 			if (group.getGroupMapping().getLevel() == 3) {
-				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), group.getGroupMapping()
-						.getParentGroupMapping().getParentGroupMapping()
-						.getGroup()));
-
-				setThirdLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), group.getGroupMapping()
-						.getParentGroupMapping().getGroup()));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("secondLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), group
+										.getGroupMapping()
+										.getParentGroupMapping()
+										.getParentGroupMapping().getGroup()));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("thirdLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), group
+										.getGroupMapping()
+										.getParentGroupMapping().getGroup()));
 
 				group.setFirstLevelOption("extend");
 				group.setFirstLevelSelect(group.getGroupMapping()
@@ -366,9 +416,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			}
 
 			if (group.getGroupMapping().getLevel() == 2) {
-				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), group.getGroupMapping()
-						.getParentGroupMapping().getGroup()));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("secondLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), group
+										.getGroupMapping()
+										.getParentGroupMapping().getGroup()));
 				group.setFirstLevelOption("extend");
 				group.setFirstLevelSelect(group.getGroupMapping()
 						.getParentGroupMapping().getGroup().getSerNo());
@@ -396,9 +451,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 				getEntity().setCustomer(
 						customerService.getBySerNo(getEntity().getCustomer()
 								.getSerNo()));
-				setFirstLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), groupService
-						.getRootGroup(getEntity().getCustomer().getSerNo())));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("firstLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), groupService
+										.getRootGroup(getEntity().getCustomer()
+												.getSerNo())));
 
 				boolean isFirstGroupSerNo = getEntity().getFirstLevelSelect() != null
 						&& getEntity().getFirstLevelSelect() > 0
@@ -418,9 +478,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 				if (isFirstGroupSerNo) {
 					group.setFirstLevelSelect(getEntity().getFirstLevelSelect());
-					setSecondLevelGroups(groupService.getSubGroups(getEntity()
-							.getCustomer().getSerNo(), groupService
-							.getBySerNo(getEntity().getFirstLevelSelect())));
+					ActionContext
+							.getContext()
+							.getValueStack()
+							.set("secondLevelGroups",
+									groupService.getSubGroups(getEntity()
+											.getCustomer().getSerNo(),
+											groupService.getBySerNo(getEntity()
+													.getFirstLevelSelect())));
 				}
 
 				if (isFirstGroupSerNo && isSecondGroupSerNo) {
@@ -431,10 +496,18 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 					if (groupService.getBySerNo(secondSerNo).getGroupMapping()
 							.getParentGroupMapping().getGroup().getSerNo() == firstSerNo)
-						setThirdLevelGroups(groupService.getSubGroups(
-								getEntity().getCustomer().getSerNo(),
-								groupService.getBySerNo(getEntity()
-										.getSecondLevelSelect())));
+						ActionContext
+								.getContext()
+								.getValueStack()
+								.set("thirdLevelGroups",
+										groupService
+												.getSubGroups(
+														getEntity()
+																.getCustomer()
+																.getSerNo(),
+														groupService
+																.getBySerNo(getEntity()
+																		.getSecondLevelSelect())));
 				}
 			}
 
@@ -527,9 +600,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 					customerService.getBySerNo(getEntity().getCustomer()
 							.getSerNo()));
 
-			setFirstLevelGroups(groupService.getSubGroups(getEntity()
-					.getCustomer().getSerNo(), groupService
-					.getRootGroup(getEntity().getCustomer().getSerNo())));
+			ActionContext
+					.getContext()
+					.getValueStack()
+					.set("firstLevelGroups",
+							groupService.getSubGroups(getEntity().getCustomer()
+									.getSerNo(), groupService
+									.getRootGroup(getEntity().getCustomer()
+											.getSerNo())));
 
 			boolean isFirstGroupSerNo = getEntity().getFirstLevelSelect() != null
 					&& getEntity().getFirstLevelSelect() > 0
@@ -548,9 +626,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 							.getGroupMapping().getLevel() == 2;
 
 			if (isFirstGroupSerNo) {
-				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), groupService
-						.getBySerNo(getEntity().getFirstLevelSelect())));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("secondLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), groupService
+										.getBySerNo(getEntity()
+												.getFirstLevelSelect())));
 			}
 
 			if (isFirstGroupSerNo && isSecondGroupSerNo) {
@@ -558,9 +641,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 				long secondSerNo = getEntity().getSecondLevelSelect();
 				if (groupService.getBySerNo(secondSerNo).getGroupMapping()
 						.getParentGroupMapping().getGroup().getSerNo() == firstSerNo)
-					setThirdLevelGroups(groupService.getSubGroups(getEntity()
-							.getCustomer().getSerNo(), groupService
-							.getBySerNo(getEntity().getSecondLevelSelect())));
+					ActionContext
+							.getContext()
+							.getValueStack()
+							.set("thirdLevelGroups",
+									groupService.getSubGroups(getEntity()
+											.getCustomer().getSerNo(),
+											groupService.getBySerNo(getEntity()
+													.getSecondLevelSelect())));
 			}
 			return ADD;
 		}
@@ -611,9 +699,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 					customerService.getBySerNo(getEntity().getCustomer()
 							.getSerNo()));
 
-			setFirstLevelGroups(groupService.getSubGroups(getEntity()
-					.getCustomer().getSerNo(), groupService
-					.getRootGroup(getEntity().getCustomer().getSerNo())));
+			ActionContext
+					.getContext()
+					.getValueStack()
+					.set("firstLevelGroups",
+							groupService.getSubGroups(getEntity().getCustomer()
+									.getSerNo(), groupService
+									.getRootGroup(getEntity().getCustomer()
+											.getSerNo())));
 
 			getEntity().setGroupMapping(group.getGroupMapping());
 
@@ -634,9 +727,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 							.getGroupMapping().getLevel() == 2;
 
 			if (isFirstGroupSerNo) {
-				setSecondLevelGroups(groupService.getSubGroups(getEntity()
-						.getCustomer().getSerNo(), groupService
-						.getBySerNo(getEntity().getFirstLevelSelect())));
+				ActionContext
+						.getContext()
+						.getValueStack()
+						.set("secondLevelGroups",
+								groupService.getSubGroups(getEntity()
+										.getCustomer().getSerNo(), groupService
+										.getBySerNo(getEntity()
+												.getFirstLevelSelect())));
 			}
 
 			if (isFirstGroupSerNo && isSecondGroupSerNo) {
@@ -644,10 +742,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 				long secondSerNo = getEntity().getSecondLevelSelect();
 				if (groupService.getBySerNo(secondSerNo).getGroupMapping()
 						.getParentGroupMapping().getGroup().getSerNo() == firstSerNo)
-					setThirdLevelGroups(groupService.getSubGroups(getEntity()
-							.getCustomer().getSerNo(), groupService
-							.getBySerNo(getEntity().getSecondLevelSelect())));
-
+					ActionContext
+							.getContext()
+							.getValueStack()
+							.set("thirdLevelGroups",
+									groupService.getSubGroups(getEntity()
+											.getCustomer().getSerNo(),
+											groupService.getBySerNo(getEntity()
+													.getSecondLevelSelect())));
 			}
 
 			setEntity(getEntity());
@@ -671,48 +773,541 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 		}
 	}
 
-	/**
-	 * @return the firstLevelGroups
-	 */
-	public List<Group> getFirstLevelGroups() {
-		return firstLevelGroups;
+	public String imports() {
+		return IMPORT;
 	}
 
-	/**
-	 * @param firstLevelGroups
-	 *            the firstLevelGroups to set
-	 */
-	public void setFirstLevelGroups(List<Group> firstLevelGroups) {
-		this.firstLevelGroups = firstLevelGroups;
+	public String queue() throws Exception {
+		if (ArrayUtils.isEmpty(getEntity().getFile())
+				|| !getEntity().getFile()[0].isFile()) {
+			addActionError("請選擇檔案");
+		} else {
+			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
+				addActionError("檔案格式錯誤");
+			} else {
+				if (!getEntity().getCustomer().hasSerNo()
+						|| getEntity().getCustomer().getSerNo() <= 0
+						|| customerService.getBySerNo(getEntity().getCustomer()
+								.getSerNo()) == null) {
+					addActionError("客戶錯誤");
+				}
+			}
+		}
+
+		if (!hasActionErrors()) {
+			Workbook book = createWorkBook(new FileInputStream(getEntity()
+					.getFile()[0]));
+			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
+			Sheet sheet = book.getSheetAt(0);
+
+			Row firstRow = sheet.getRow(0);
+			if (firstRow == null) {
+				firstRow = sheet.createRow(0);
+			}
+
+			// 保存列名
+			List<String> cellNames = new ArrayList<String>();
+			String[] rowTitles = new String[3];
+			int n = 0;
+			while (n < rowTitles.length) {
+				if (firstRow.getCell(n) == null) {
+					rowTitles[n] = "";
+				} else {
+					int typeInt = firstRow.getCell(n).getCellType();
+					switch (typeInt) {
+					case 0:
+						String tempNumeric = "";
+						tempNumeric = tempNumeric
+								+ firstRow.getCell(n).getNumericCellValue();
+						rowTitles[n] = tempNumeric;
+						break;
+
+					case 1:
+						rowTitles[n] = firstRow.getCell(n).getStringCellValue();
+						break;
+
+					case 2:
+						rowTitles[n] = firstRow.getCell(n).getCellFormula();
+						break;
+
+					case 3:
+						rowTitles[n] = "";
+						break;
+
+					case 4:
+						String tempBoolean = "";
+						tempBoolean = ""
+								+ firstRow.getCell(n).getBooleanCellValue();
+						rowTitles[n] = tempBoolean;
+						break;
+
+					case 5:
+						String tempByte = "";
+						tempByte = tempByte
+								+ firstRow.getCell(n).getErrorCellValue();
+						rowTitles[n] = tempByte;
+						break;
+					}
+
+				}
+
+				cellNames.add(rowTitles[n]);
+				n++;
+			}
+
+			LinkedHashSet<Group> originalData = new LinkedHashSet<Group>();
+			getEntity().getCustomer().setName(
+					customerService.getBySerNo(
+							getEntity().getCustomer().getSerNo()).getName());
+
+			int normal = 0;
+
+			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+				Row row = sheet.getRow(i);
+				if (row == null) {
+					continue;
+				}
+
+				String[] rowValues = new String[3];
+				int k = 0;
+				while (k < rowValues.length) {
+					if (row.getCell(k) == null) {
+						rowValues[k] = "";
+					} else {
+						int typeInt = row.getCell(k).getCellType();
+						switch (typeInt) {
+						case 0:
+							String tempNumeric = "";
+							tempNumeric = tempNumeric
+									+ row.getCell(k).getNumericCellValue();
+							rowValues[k] = tempNumeric;
+							break;
+
+						case 1:
+							rowValues[k] = row.getCell(k).getStringCellValue();
+							break;
+
+						case 2:
+							rowValues[k] = row.getCell(k).getCellFormula();
+							break;
+
+						case 3:
+							rowValues[k] = "";
+							break;
+
+						case 4:
+							String tempBoolean = "";
+							tempBoolean = ""
+									+ row.getCell(k).getBooleanCellValue();
+							rowValues[k] = tempBoolean;
+							break;
+
+						case 5:
+							String tempByte = "";
+							tempByte = tempByte
+									+ row.getCell(k).getErrorCellValue();
+							rowValues[k] = tempByte;
+							break;
+						}
+
+					}
+					k++;
+				}
+
+				group = new Group();
+
+				if (StringUtils.isNotBlank(rowValues[0].trim())) {
+					group.setFirstLevelGroup(new Group(null, getEntity()
+							.getCustomer(), rowValues[0].trim()));
+				}
+
+				if (StringUtils.isNotBlank(rowValues[1].trim())) {
+					group.setSecondLevelGroup(new Group(null, getEntity()
+							.getCustomer(), rowValues[1].trim()));
+				}
+
+				if (StringUtils.isNotBlank(rowValues[2].trim())) {
+					group.setThirdLevelGroup(new Group(null, getEntity()
+							.getCustomer(), rowValues[2].trim()));
+				}
+
+				if (group.getFirstLevelGroup() == null) {
+					group.setDataStatus("Level 1 錯誤");
+				}
+
+				if (group.getFirstLevelGroup() != null
+						&& group.getThirdLevelGroup() != null
+						&& group.getSecondLevelGroup() == null) {
+					group.setDataStatus("Level 2 錯誤");
+				}
+
+				if (group.getDataStatus() == null) {
+					if (group.getSecondLevelGroup() == null
+							&& group.getThirdLevelGroup() == null) {
+						if (groupService.isRepeatMainGroup(group
+								.getFirstLevelGroup().getGroupName(),
+								getEntity().getCustomer().getSerNo())) {
+							group.setDataStatus("已存在");
+						}
+					}
+
+					if (group.getSecondLevelGroup() != null
+							&& group.getThirdLevelGroup() == null) {
+						parentGroup = groupService.getRepeatMainGroup(group
+								.getFirstLevelGroup().getGroupName(),
+								getEntity().getCustomer().getSerNo());
+						if (parentGroup != null) {
+							if (groupService.isRepeatSubGroup(group
+									.getSecondLevelGroup().getGroupName(),
+									getEntity().getCustomer().getSerNo(),
+									parentGroup)) {
+								group.setDataStatus("已存在");
+							}
+						}
+					}
+
+					if (group.getSecondLevelGroup() != null
+							&& group.getThirdLevelGroup() != null) {
+						parentGroup = groupService.getRepeatMainGroup(group
+								.getFirstLevelGroup().getGroupName(),
+								getEntity().getCustomer().getSerNo());
+						if (parentGroup != null) {
+							parentGroup = groupService.getRepeatSubGroup(group
+									.getSecondLevelGroup().getGroupName(),
+									getEntity().getCustomer().getSerNo(),
+									parentGroup);
+							if (groupService.isRepeatSubGroup(group
+									.getThirdLevelGroup().getGroupName(),
+									getEntity().getCustomer().getSerNo(),
+									parentGroup)) {
+								group.setDataStatus("已存在");
+							}
+						}
+					}
+
+				}
+
+				if (group.getDataStatus() == null) {
+					group.setDataStatus("正常");
+
+					if (!originalData.contains(group)) {
+						normal++;
+					}
+				}
+
+				originalData.add(group);
+			}
+
+			List<Group> excelData = new ArrayList<Group>(originalData);
+
+			DataSet<Group> ds = initDataSet();
+			ds.getPager().setTotalRecord((long) excelData.size());
+
+			if (excelData.size() < ds.getPager().getRecordPerPage()) {
+				int i = 0;
+				while (i < excelData.size()) {
+					ds.getResults().add(excelData.get(i));
+					i++;
+				}
+			} else {
+				int i = 0;
+				while (i < ds.getPager().getRecordPerPage()) {
+					ds.getResults().add(excelData.get(i));
+					i++;
+				}
+			}
+
+			getSession().put("cellNames", cellNames);
+			getSession().put("importList", excelData);
+			getSession().put("total", excelData.size());
+			getSession().put("normal", normal);
+
+			setDs(ds);
+			return QUEUE;
+		} else {
+			return IMPORT;
+		}
 	}
 
-	/**
-	 * @return the secondLevelGroups
-	 */
-	public List<Group> getSecondLevelGroups() {
-		return secondLevelGroups;
+	public String paginate() throws Exception {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		clearCheckedItem();
+
+		DataSet<Group> ds = initDataSet();
+		ds.getPager().setTotalRecord((long) importList.size());
+
+		int first = ds.getPager().getOffset();
+		int last = first + ds.getPager().getRecordPerPage();
+
+		int i = 0;
+		while (i < importList.size()) {
+			if (i >= first && i < last) {
+				ds.getResults().add((Group) importList.get(i));
+			}
+			i++;
+		}
+
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
+
+			int j = 0;
+			while (j < importList.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add((Group) importList.get(j));
+				}
+				j++;
+			}
+
+		}
+
+		setDs(ds);
+		return QUEUE;
 	}
 
-	/**
-	 * @param secondLevelGroups
-	 *            the secondLevelGroups to set
-	 */
-	public void setSecondLevelGroups(List<Group> secondLevelGroups) {
-		this.secondLevelGroups = secondLevelGroups;
+	@SuppressWarnings("unchecked")
+	public String getCheckedItem() {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		if (getSession().containsKey("checkItemSet")) {
+			checkItemSet = (Set<Integer>) getSession().get("checkItemSet");
+		}
+
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
+			if (getEntity().getImportItem()[0] != null
+					&& getEntity().getImportItem()[0] >= 0
+					&& getEntity().getImportItem()[0] < importList.size()) {
+				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
+					if (((Group) importList.get(getEntity().getImportItem()[0]))
+							.getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[0]);
+					}
+				} else {
+					checkItemSet.remove(getEntity().getImportItem()[0]);
+				}
+			}
+		}
+
+		getSession().put("checkItemSet", checkItemSet);
+		return QUEUE;
 	}
 
-	/**
-	 * @return the thirdLevelGroups
-	 */
-	public List<Group> getThirdLevelGroups() {
-		return thirdLevelGroups;
+	public String allCheckedItem() {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
+					Arrays.asList(getEntity().getImportItem()));
+			getEntity().setImportItem(
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
+
+			int i = 0;
+			while (i < getEntity().getImportItem().length) {
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					if (((Group) importList.get(getEntity().getImportItem()[i]))
+							.getDataStatus().equals("正常")) {
+						checkItemSet.add(getEntity().getImportItem()[i]);
+					}
+
+					if (checkItemSet.size() == importList.size()) {
+						break;
+					}
+				}
+				i++;
+			}
+		}
+
+		getSession().put("checkItemSet", checkItemSet);
+		return QUEUE;
 	}
 
-	/**
-	 * @param thirdLevelGroups
-	 *            the thirdLevelGroups to set
-	 */
-	public void setThirdLevelGroups(List<Group> thirdLevelGroups) {
-		this.thirdLevelGroups = thirdLevelGroups;
+	public String clearCheckedItem() {
+		if (getSession().get("importList") == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		getSession().put("checkItemSet", checkItemSet);
+		return null;
+	}
+
+	public String importData() throws Exception {
+		List<?> importList = (List<?>) getSession().get("importList");
+
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<?> checkItemSet = (Set<?>) getSession().get("checkItemSet");
+
+		if (CollectionUtils.isEmpty(checkItemSet)) {
+			addActionError("請選擇一筆或一筆以上的資料");
+		}
+
+		if (!hasActionErrors()) {
+			Iterator<?> iterator = checkItemSet.iterator();
+			int successCount = 0;
+			while (iterator.hasNext()) {
+				int index = (Integer) iterator.next();
+				group = (Group) importList.get(index);
+
+				repeatFirstGroup = groupService.getRepeatMainGroup(group
+						.getFirstLevelGroup().getGroupName(), group
+						.getFirstLevelGroup().getCustomer().getSerNo());
+
+				if (repeatFirstGroup == null) {
+					parentGroup = groupService.save(
+							new Group(new GroupMapping(groupMappingService
+									.getRootMapping(group.getFirstLevelGroup()
+											.getCustomer().getName()), group
+									.getFirstLevelGroup().getCustomer()
+									.getName(), 1), group.getFirstLevelGroup()
+									.getCustomer(), group.getFirstLevelGroup()
+									.getGroupName()), getLoginUser());
+
+					if (group.getSecondLevelGroup() != null) {
+						parentGroup = groupService.save(new Group(
+								new GroupMapping(parentGroup.getGroupMapping(),
+										group.getSecondLevelGroup()
+												.getCustomer().getName(), 2),
+								group.getSecondLevelGroup().getCustomer(),
+								group.getSecondLevelGroup().getGroupName()),
+								getLoginUser());
+					}
+
+					if (group.getThirdLevelGroup() != null) {
+						groupService.save(new Group(new GroupMapping(
+								parentGroup.getGroupMapping(), group
+										.getThirdLevelGroup().getCustomer()
+										.getName(), 3), group
+								.getThirdLevelGroup().getCustomer(), group
+								.getThirdLevelGroup().getGroupName()),
+								getLoginUser());
+					}
+
+				} else {
+					if (group.getSecondLevelGroup() != null) {
+						repeatSecondGroup = groupService.getRepeatSubGroup(
+								group.getSecondLevelGroup().getGroupName(),
+								group.getSecondLevelGroup().getCustomer()
+										.getSerNo(), repeatFirstGroup);
+						if (repeatSecondGroup == null) {
+							parentGroup = groupService.save(
+									new Group(new GroupMapping(repeatFirstGroup
+											.getGroupMapping(), group
+											.getSecondLevelGroup()
+											.getCustomer().getName(), 2), group
+											.getSecondLevelGroup()
+											.getCustomer(), group
+											.getSecondLevelGroup()
+											.getGroupName()), getLoginUser());
+
+							if (group.getThirdLevelGroup() != null) {
+								groupService.save(new Group(new GroupMapping(
+										parentGroup.getGroupMapping(), group
+												.getThirdLevelGroup()
+												.getCustomer().getName(), 3),
+										group.getThirdLevelGroup()
+												.getCustomer(), group
+												.getThirdLevelGroup()
+												.getGroupName()),
+										getLoginUser());
+							}
+						} else {
+							if (group.getThirdLevelGroup() != null) {
+								groupService.save(new Group(new GroupMapping(
+										repeatSecondGroup.getGroupMapping(),
+										group.getThirdLevelGroup()
+												.getCustomer().getName(), 3),
+										group.getThirdLevelGroup()
+												.getCustomer(), group
+												.getThirdLevelGroup()
+												.getGroupName()),
+										getLoginUser());
+							}
+						}
+					}
+				}
+
+				++successCount;
+			}
+
+			getRequest().setAttribute("successCount", successCount);
+			return VIEW;
+		} else {
+			paginate();
+			return QUEUE;
+		}
+	}
+
+	public String example() throws Exception {
+		// reportFile = "group_sample.xlsx";
+		getEntity().setReportFile("group_sample.xlsx");
+		// Create blank workbook
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		// Create a blank sheet
+		XSSFSheet spreadsheet = workbook.createSheet("customer");
+		// Create row object
+		XSSFRow row;
+		// This data needs to be written (Object[])
+		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+		empinfo.put("1", new Object[] { "Level 1", "Level 2", "Level 3" });
+
+		empinfo.put("2", new Object[] { "工學院", "材料系", "系辦" });
+
+		// Iterate over data and write to sheet
+		Set<String> keyid = empinfo.keySet();
+		int rowid = 0;
+		for (String key : keyid) {
+			row = spreadsheet.createRow(rowid++);
+			Object[] objectArr = empinfo.get(key);
+			int cellid = 0;
+			for (Object obj : objectArr) {
+				Cell cell = row.createCell(cellid++);
+				cell.setCellValue((String) obj);
+			}
+		}
+
+		ByteArrayOutputStream boas = new ByteArrayOutputStream();
+		workbook.write(boas);
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+
+		return XLSX;
+	}
+
+	// 判斷文件類型
+	protected Workbook createWorkBook(InputStream is) throws IOException {
+		try {
+			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
+				return new HSSFWorkbook(is);
+			}
+
+			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
+				return new XSSFWorkbook(is);
+			}
+		} catch (InvalidOperationException e) {
+			return null;
+		}
+
+		return null;
 	}
 }

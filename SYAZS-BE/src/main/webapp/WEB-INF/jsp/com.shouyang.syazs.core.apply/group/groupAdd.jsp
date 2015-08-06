@@ -37,12 +37,13 @@
 	$(document)
 			.ready(
 					function() {
-						if($('select#apply_group_save_entity_firstLevelSelect option').length==1){
-							$('select#apply_group_save_entity_firstLevelSelect').attr('disabled', true);
-							$('select#apply_group_save_entity_firstLevelSelect').prev().prev().attr('disabled', true);
+						if ($('select#apply_group_save_entity_firstLevelSelect option').length == 1) {
+							$('select#apply_group_save_entity_firstLevelSelect')
+									.attr('disabled', true);
+							$('select#apply_group_save_entity_firstLevelSelect')
+									.prev().prev().attr('disabled', true);
 						}
-						
-						
+
 						if ($("select#apply_group_save_entity_firstLevelSelect")
 								.val() == 0) {
 							$("input#checkLevel2:eq(0)").next().next().next()
@@ -273,22 +274,37 @@ input[name="entity.thirdLevelOption"] {
 			<tr>
 				<th width="130">LEVEL 2</th>
 				<td><input type="checkbox" id="checkLevel2"> <s:radio
-						list="#{'extend':''}" name="entity.secondLevelOption" /> <s:select
-						cssClass="input_text" headerValue="--選擇群組--" headerKey="0"
-						name="entity.secondLevelSelect" list="secondLevelGroups"
-						listKey="serNo" listValue="groupName" onchange="showSubGroups()" />
-					<input type="checkbox" id="checkLevel2"> <s:radio
+						list="#{'extend':''}" name="entity.secondLevelOption" /> <c:choose>
+						<c:when test="${not empty secondLevelGroups }">
+							<s:select cssClass="input_text" headerValue="--選擇群組--"
+								headerKey="0" name="entity.secondLevelSelect"
+								list="secondLevelGroups" listKey="serNo" listValue="groupName"
+								onchange="showSubGroups()" />
+						</c:when>
+						<c:otherwise>
+							<select class="input_text">
+								<option value="0">--選擇群組--</option>
+							</select>
+						</c:otherwise>
+					</c:choose> <input type="checkbox" id="checkLevel2"> <s:radio
 						list="#{'new':'新增Level 2群組'}" name="entity.secondLevelOption" />
 					<s:textfield name="entity.secondLevelName" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">LEVEL 3</th>
-				<td><input type="checkbox" disabled> <s:select
-						id="viewGroups" cssClass="input_text" headerValue="--觀看群組--"
-						headerKey="0" list="thirdLevelGroups" listKey="serNo"
-						listValue="groupName" /> <input type="checkbox" id="checkLevel3">
-					<s:radio list="#{'new':'新增Level 3群組'}"
-						name="entity.thirdLevelOption" /> <s:textfield
+				<td><input type="checkbox" disabled> <c:choose>
+						<c:when test="${not empty thirdLevelGroups}">
+							<s:select id="viewGroups" cssClass="input_text"
+								headerValue="--觀看群組--" headerKey="0" list="thirdLevelGroups"
+								listKey="serNo" listValue="groupName" />
+						</c:when>
+						<c:otherwise>
+							<select class="input_text">
+								<option value="0">--觀看群組--</option>
+							</select>
+						</c:otherwise>
+					</c:choose> <input type="checkbox" id="checkLevel3"> <s:radio
+						list="#{'new':'新增Level 3群組'}" name="entity.thirdLevelOption" /> <s:textfield
 						name="entity.thirdLevelName" cssClass="input_text" /></td>
 			</tr>
 		</table>
@@ -307,7 +323,6 @@ input[name="entity.thirdLevelOption"] {
 
 		</div>
 	</s:form>
-
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>

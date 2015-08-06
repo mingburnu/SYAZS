@@ -1,11 +1,17 @@
 package com.shouyang.syazs.module.apply.journal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Entity
@@ -73,6 +79,12 @@ public class Journal extends ModuleProperties {
 	// 版本
 	@Column(name = "version")
 	private Integer version;
+
+	// ResourcesBuyers
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "res_serNo", nullable = false)
+	@Autowired
+	private ResourcesBuyers resourcesBuyers;
 
 	/**
 	 * @return the chineseTitle
@@ -284,6 +296,21 @@ public class Journal extends ModuleProperties {
 		this.version = version;
 	}
 
+	/**
+	 * @return the resourcesBuyers
+	 */
+	public ResourcesBuyers getResourcesBuyers() {
+		return resourcesBuyers;
+	}
+
+	/**
+	 * @param resourcesBuyers
+	 *            the resourcesBuyers to set
+	 */
+	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
+		this.resourcesBuyers = resourcesBuyers;
+	}
+
 	public Journal() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -293,7 +320,8 @@ public class Journal extends ModuleProperties {
 			String abbreviationTitle, String titleEvolution, String issn,
 			String languages, String publishName, String publishYear,
 			String caption, String url, String numB, String publication,
-			String congressClassification, Integer version) {
+			String congressClassification, Integer version,
+			ResourcesBuyers resourcesBuyers) {
 		super();
 		this.chineseTitle = chineseTitle;
 		this.englishTitle = englishTitle;
@@ -309,5 +337,6 @@ public class Journal extends ModuleProperties {
 		this.publication = publication;
 		this.congressClassification = congressClassification;
 		this.version = version;
+		this.resourcesBuyers = resourcesBuyers;
 	}
 }

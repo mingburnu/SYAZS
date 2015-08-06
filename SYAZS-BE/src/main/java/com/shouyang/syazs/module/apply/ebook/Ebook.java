@@ -1,11 +1,17 @@
 package com.shouyang.syazs.module.apply.ebook;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Entity
@@ -72,6 +78,12 @@ public class Ebook extends ModuleProperties {
 	// 出版地
 	@Column(name = "publication")
 	private String publication;
+
+	// ResourcesBuyers
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "res_serNo", nullable = false)
+	@Autowired
+	private ResourcesBuyers resourcesBuyers;
 
 	/**
 	 * @return the bookName
@@ -283,6 +295,21 @@ public class Ebook extends ModuleProperties {
 		this.publication = publication;
 	}
 
+	/**
+	 * @return the resourcesBuyers
+	 */
+	public ResourcesBuyers getResourcesBuyers() {
+		return resourcesBuyers;
+	}
+
+	/**
+	 * @param resourcesBuyers
+	 *            the resourcesBuyers to set
+	 */
+	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
+		this.resourcesBuyers = resourcesBuyers;
+	}
+
 	public Ebook() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -292,7 +319,7 @@ public class Ebook extends ModuleProperties {
 			String autherName, String authers, String uppeName, String pubDate,
 			String languages, Integer version, String cnClassBzStr,
 			String bookInfoIntegral, String url, String style,
-			String publication) {
+			String publication, ResourcesBuyers resourcesBuyers) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;
@@ -308,6 +335,6 @@ public class Ebook extends ModuleProperties {
 		this.url = url;
 		this.style = style;
 		this.publication = publication;
+		this.resourcesBuyers = resourcesBuyers;
 	}
-
 }

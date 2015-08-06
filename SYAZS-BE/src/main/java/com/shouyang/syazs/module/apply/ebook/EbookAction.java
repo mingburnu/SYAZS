@@ -321,8 +321,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
-			resourcesBuyers = resourcesUnion.getResourcesBuyers();
-			ebook.setResourcesBuyers(resourcesBuyers);
 			ebook.setCustomers(customers);
 			getRequest().setAttribute("uncheckCustomers",
 					customerService.getUncheckCustomers(customers));
@@ -371,17 +369,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			ds = ebookService.getByRestrictions(ds);
 		}
 
-		int i = 0;
-		while (i < ds.getResults().size()) {
-			ds.getResults()
-					.get(i)
-					.setResourcesBuyers(
-							resourcesUnionService.getByObjSerNo(
-									ds.getResults().get(i).getSerNo(),
-									Ebook.class).getResourcesBuyers());
-			i++;
-		}
-
 		setDs(ds);
 		return LIST;
 	}
@@ -397,23 +384,15 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							.trim().replace("-", "")));
 			ebook = ebookService.save(getEntity(), getLoginUser());
 
-			resourcesBuyers = resourcesBuyersService.save(getEntity()
-					.getResourcesBuyers(), getLoginUser());
-
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				resourcesUnionService.save(
 						new ResourcesUnion(customerService
 								.getBySerNo(getEntity().getCusSerNo()[i]),
-								resourcesBuyers, ebook.getSerNo(), 0L, 0L),
-						getLoginUser());
+								ebook.getSerNo(), 0L, 0L), getLoginUser());
 
 				i++;
 			}
-
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					ebook.getSerNo(), Ebook.class);
-			ebook.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(ebook, Ebook.class);
@@ -461,19 +440,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			getEntity().setIsbn(
 					Long.parseLong(getRequest().getParameter("entity.isbn")
 							.trim().replace("-", "")));
-			ebook = ebookService.update(getEntity(), getLoginUser());
 
-			resourcesBuyers = new ResourcesBuyers(getEntity()
-					.getResourcesBuyers().getStartDate(), getEntity()
-					.getResourcesBuyers().getMaturityDate(), getEntity()
-					.getResourcesBuyers().getCategory(), getEntity()
-					.getResourcesBuyers().getType(), getEntity()
-					.getResourcesBuyers().getDbChtTitle(), getEntity()
-					.getResourcesBuyers().getDbEngTitle());
-			resourcesBuyers.setSerNo(resourcesUnionService
-					.getByObjSerNo(ebook.getSerNo(), Ebook.class)
-					.getResourcesBuyers().getSerNo());
-			resourcesBuyersService.update(resourcesBuyers, getLoginUser());
+			getEntity().getResourcesBuyers().setSerNo(
+					ebookService.getBySerNo(getEntity().getSerNo())
+							.getResourcesBuyers().getSerNo());
+
+			ebook = ebookService.merge(getEntity(), getLoginUser());
 
 			List<ResourcesUnion> resourcesUnions = resourcesUnionService
 					.getResourcesUnionsByObj(ebook, Ebook.class);
@@ -501,16 +473,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					resourcesUnionService.save(
 							new ResourcesUnion(customerService
 									.getBySerNo(getEntity().getCusSerNo()[i]),
-									resourcesBuyers, ebook.getSerNo(), 0L, 0L),
-							getLoginUser());
+									ebook.getSerNo(), 0L, 0L), getLoginUser());
 				}
 
 				i++;
 			}
-
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					ebook.getSerNo(), Ebook.class);
-			ebook.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(ebook, Ebook.class);
@@ -570,8 +537,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					resourcesUnionService.deleteBySerNo(resourcesUnion
 							.getSerNo());
 				}
-				resourcesBuyersService.deleteBySerNo(resourcesUnion
-						.getResourcesBuyers().getSerNo());
+
 				ebookService.deleteBySerNo(getEntity().getCheckItem()[j]);
 
 				j++;
@@ -588,11 +554,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					ebook.getSerNo(), Ebook.class);
-
-			ebook.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
-
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(ebook, Ebook.class);
 			List<Customer> customers = new ArrayList<Customer>();
@@ -795,15 +756,15 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
 							rowValues[2], rowValues[3], rowValues[4],
 							rowValues[5], rowValues[6], rowValues[7], version,
-							rowValues[9], rowValues[10], "", "", "");
+							rowValues[9], rowValues[10], "", "", "",
+							resourcesBuyers);
 				} else {
 					ebook = new Ebook(rowValues[0], null, rowValues[2],
 							rowValues[3], rowValues[4], rowValues[5],
 							rowValues[6], rowValues[7], version, rowValues[9],
-							rowValues[10], "", "", "");
+							rowValues[10], "", "", "", resourcesBuyers);
 				}
 
-				ebook.setResourcesBuyers(resourcesBuyers);
 				ebook.setCustomers(customers);
 
 				if (ebook.getIsbn() != null) {
@@ -1046,19 +1007,16 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						.getCustomers().get(0).getName());
 
 				if (ebkSerNo == 0) {
-					resourcesBuyers = resourcesBuyersService.save(
-							ebook.getResourcesBuyers(), getLoginUser());
 					ebook = ebookService.save(ebook, getLoginUser());
-					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo),
-							resourcesBuyers, ebook.getSerNo(), 0L, 0L),
-							getLoginUser());
+					resourcesUnionService.save(
+							new ResourcesUnion(customerService
+									.getBySerNo(cusSerNo), ebook.getSerNo(),
+									0L, 0L), getLoginUser());
 				} else {
 					resourcesUnion = resourcesUnionService.getByObjSerNo(
 							ebkSerNo, Ebook.class);
 					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo),
-							resourcesUnion.getResourcesBuyers(), ebkSerNo, 0L,
+							customerService.getBySerNo(cusSerNo), ebkSerNo, 0L,
 							0L), getLoginUser());
 				}
 

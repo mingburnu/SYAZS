@@ -305,6 +305,26 @@ function goDetail_Main(argURL, argFormId, argData) {
 	});
 }
 
+function goDetail_Sub(argURL, argFormId, argData) {
+	showLoading();
+	$.ajax({
+		type : "POST",
+		url : argURL,
+		async : true,
+		cache : false,
+		data : $(argFormId).serialize() + argData,
+		error : function(msq) {
+			// goAlert("結果","連結失敗.");
+			goAlert("結果", XMLHttpRequest.responseText);
+			closeLoading();
+		},
+		success : function(msg) {
+			$("#div_Detail_2 .content > .contain").empty().html(msg);
+			closeLoading();
+		}
+	});
+}
+
 // 檢查英數字
 function validateNumberAndAlphabet(theVar) {
 	var regExpression = /^[a-zA-Z0-9]*$/;

@@ -84,4 +84,16 @@ public class IpRange extends GenericEntityFull {
 	public void setIpRangeEnd(String ipRangeEnd) {
 		this.ipRangeEnd = ipRangeEnd;
 	}
+
+	public IpRange() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public IpRange(Customer customer, String ipRangeStart, String ipRangeEnd) {
+		super();
+		this.customer = customer;
+		this.ipRangeStart = ipRangeStart;
+		this.ipRangeEnd = ipRangeEnd;
+	}
 }

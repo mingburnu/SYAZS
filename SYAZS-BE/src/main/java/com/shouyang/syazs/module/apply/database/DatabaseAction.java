@@ -262,8 +262,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 			}
 
-			resourcesBuyers = resourcesUnion.getResourcesBuyers();
-			database.setResourcesBuyers(resourcesBuyers);
 			database.setCustomers(customers);
 			getRequest().setAttribute("uncheckCustomers",
 					customerService.getUncheckCustomers(customers));
@@ -294,17 +292,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			ds = databaseService.getByRestrictions(ds);
 		}
 
-		int i = 0;
-		while (i < ds.getResults().size()) {
-			ds.getResults()
-					.get(i)
-					.setResourcesBuyers(
-							resourcesUnionService.getByObjSerNo(
-									ds.getResults().get(i).getSerNo(),
-									Database.class).getResourcesBuyers());
-			i++;
-		}
-
 		setDs(ds);
 		return LIST;
 	}
@@ -324,23 +311,16 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 
 			database = databaseService.save(getEntity(), getLoginUser());
-			resourcesBuyers = resourcesBuyersService.save(getEntity()
-					.getResourcesBuyers(), getLoginUser());
 
 			int i = 0;
 			while (i < getEntity().getCusSerNo().length) {
 				resourcesUnionService.save(
 						new ResourcesUnion(customerService
-								.getBySerNo(getEntity().getCusSerNo()[i]),
-								resourcesBuyers, 0L, database.getSerNo(), 0L),
-						getLoginUser());
+								.getBySerNo(getEntity().getCusSerNo()[i]), 0L,
+								database.getSerNo(), 0L), getLoginUser());
 
 				i++;
 			}
-
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					database.getSerNo(), Database.class);
-			database.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(database, Database.class);
@@ -393,18 +373,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				getEntity().setDbEngTitle(getEntity().getDbEngTitle().trim());
 			}
 
-			database = databaseService.update(getEntity(), getLoginUser());
+			getEntity().getResourcesBuyers().setSerNo(
+					databaseService.getBySerNo(getEntity().getSerNo())
+							.getResourcesBuyers().getSerNo());
 
-			resourcesBuyers = new ResourcesBuyers(getEntity()
-					.getResourcesBuyers().getStartDate(), getEntity()
-					.getResourcesBuyers().getMaturityDate(), getEntity()
-					.getResourcesBuyers().getCategory(), getEntity()
-					.getResourcesBuyers().getType(), database.getDbChtTitle(),
-					database.getDbEngTitle());
-			resourcesBuyers.setSerNo(resourcesUnionService
-					.getByObjSerNo(database.getSerNo(), Database.class)
-					.getResourcesBuyers().getSerNo());
-			resourcesBuyersService.update(resourcesBuyers, getLoginUser());
+			database = databaseService.merge(getEntity(), getLoginUser());
 
 			List<ResourcesUnion> resourcesUnions = resourcesUnionService
 					.getResourcesUnionsByObj(database, Database.class);
@@ -432,16 +405,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					resourcesUnionService.save(
 							new ResourcesUnion(customerService
 									.getBySerNo(getEntity().getCusSerNo()[i]),
-									resourcesBuyers, 0L, database.getSerNo(),
-									0L), getLoginUser());
+									0L, database.getSerNo(), 0L),
+							getLoginUser());
 				}
 
 				i++;
 			}
-
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					database.getSerNo(), Database.class);
-			database.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
 
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(database, Database.class);
@@ -501,8 +470,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 							.getSerNo());
 				}
 
-				resourcesBuyersService.deleteBySerNo(resourcesUnion
-						.getResourcesBuyers().getSerNo());
 				databaseService.deleteBySerNo(getEntity().getCheckItem()[j]);
 
 				j++;
@@ -519,11 +486,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
-			resourcesUnion = resourcesUnionService.getByObjSerNo(
-					database.getSerNo(), Database.class);
-
-			database.setResourcesBuyers(resourcesUnion.getResourcesBuyers());
-
 			List<ResourcesUnion> resourceUnions = resourcesUnionService
 					.getResourcesUnionsByObj(database, Database.class);
 			List<Customer> customers = new ArrayList<Customer>();
@@ -716,8 +678,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				database = new Database(rowValues[0].trim(),
 						rowValues[1].trim(), rowValues[3], rowValues[4],
-						rowValues[2], rowValues[5], rowValues[6], "", "", "");
-				database.setResourcesBuyers(resourcesBuyers);
+						rowValues[2], rowValues[5], rowValues[6], "", "", "",
+						resourcesBuyers);
 				database.setCustomers(customers);
 
 				long cusSerNo = customerService.getCusSerNoByName(rowValues[11]
@@ -1021,20 +983,17 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						.getCustomers().get(0).getName());
 
 				if (datSerNo == 0) {
-					resourcesBuyers = resourcesBuyersService.save(
-							database.getResourcesBuyers(), getLoginUser());
 					database = databaseService.save(database, getLoginUser());
 
-					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo),
-							resourcesBuyers, 0L, database.getSerNo(), 0L),
-							getLoginUser());
+					resourcesUnionService.save(
+							new ResourcesUnion(customerService
+									.getBySerNo(cusSerNo), 0L, database
+									.getSerNo(), 0L), getLoginUser());
 				} else {
 					resourcesUnion = resourcesUnionService.getByObjSerNo(
 							datSerNo, Database.class);
 					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo),
-							resourcesUnion.getResourcesBuyers(), 0L, datSerNo,
+							customerService.getBySerNo(cusSerNo), 0L, datSerNo,
 							0L), getLoginUser());
 				}
 

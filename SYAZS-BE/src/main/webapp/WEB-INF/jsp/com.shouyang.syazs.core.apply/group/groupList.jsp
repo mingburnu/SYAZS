@@ -31,7 +31,7 @@ function goUpdate_detail(listNo,serNo) {
 	if (isNum &&parseInt(serNo) > 0){
 	var url = "<c:url value = '/'/>crud/apply.group.edit.action";
 	var data = 'entity.serNo=' + serNo +'&entity.listNo='+listNo+'&entity.customer.serNo='+'${customerSerNo }';
-	goDetail_2(url, 'Group管理-修改', data); 
+	goDetail_2(url, '客戶-群組修改', data); 
 	}
 }
 
@@ -71,6 +71,11 @@ function closeDetail() {
 	$("#div_Detail .content > .header > .title").empty();
 	$("#div_Detail .content > .contain").empty();
 }
+
+//批次匯入
+function goImport_detail(){
+	goDetail_2('<%=request.getContextPath()%>/crud/apply.group.imports.action?','Group-匯入','entity.customer.serNo='+'${entity.customer.serNo}');
+}
 </script>
 </head>
 <body>
@@ -79,7 +84,8 @@ function closeDetail() {
 			value="${customerSerNo }" />
 		<div class="list-box">
 			<div class="list-buttons">
-				<a class="state-default" onclick="goAdd_detail();">新增</a>
+				<a class="state-default" onclick="goAdd_detail();">新增</a> <a
+					class="state-default" onclick="goImport_detail();">匯入</a>
 			</div>
 			<table cellspacing="1" class="list-table">
 				<tbody>
