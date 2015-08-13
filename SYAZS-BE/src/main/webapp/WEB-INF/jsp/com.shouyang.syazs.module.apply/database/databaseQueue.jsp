@@ -54,7 +54,7 @@
 					dataType : "html",
 					data : "entity.importItem=" + index,
 					success : function(message) {
-						
+
 					}
 				});
 	}
@@ -93,12 +93,12 @@
 			<tbody>
 				<tr>
 					<th></th>
-					<c:forEach var="item" items="${cellNames}" varStatus="status">
-						<c:if
-							test="${(0 eq status.index) || (1 eq status.index)||(6 eq status.index)||(9 eq status.index)||(10 eq status.index)||(11 eq status.index)}">
-							<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
-						</c:if>
-					</c:forEach>
+					<th><esapi:encodeForHTML>${cellNames[0]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[1]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[6]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[9]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[10]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[12]}</esapi:encodeForHTML></th>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -115,13 +115,11 @@
 							</c:choose></td>
 						<td><esapi:encodeForHTML>${item.dbChtTitle }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.dbEngTitle }</esapi:encodeForHTML></td>
-						<td>${item.url }</td>
+						<td>${item.resourcesBuyers.url }</td>
 						<td>${item.resourcesBuyers.category.category }</td>
 						<td>${item.resourcesBuyers.type.type }</td>
-						<td align="center"><c:forEach var="customer"
-								items="${item.customers}" varStatus="status">
-								<esapi:encodeForHTML>${customer.name }</esapi:encodeForHTML>
-							</c:forEach></td>
+						<td align="center"><esapi:encodeForHTML>${item.owners[0].name }</esapi:encodeForHTML>
+						</td>
 						<td align="center">${item.dataStatus }</td>
 					</tr>
 				</c:forEach>

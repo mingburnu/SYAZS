@@ -1,4 +1,4 @@
-package com.shouyang.syazs.core.apply.customer;
+package com.shouyang.syazs.module.apply.referenceOwner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,8 +17,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -39,36 +37,23 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.enums.Role;
-import com.shouyang.syazs.core.apply.group.Group;
-import com.shouyang.syazs.core.apply.group.GroupService;
-import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
-import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class CustomerAction extends GenericWebActionFull<Customer> {
+public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4530353636126561614L;
+	private static final long serialVersionUID = 4935047754421984759L;
 
 	@Autowired
-	private Customer customer;
+	private ReferenceOwner referenceOwner;
 
 	@Autowired
-	private CustomerService customerService;
-
-	@Autowired
-	private GroupService groupService;
-
-	@Autowired
-	private GroupMapping groupMapping;
-
-	@Autowired
-	private GroupMappingService groupMappingService;
+	private ReferenceOwnerService referenceOwnerService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -79,7 +64,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 					.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "").length() != 0) {
 				errorMessages.add("用戶名稱必須是英、數或漢字");
 			} else {
-				if (customerService.getCusSerNoByName(getEntity().getName()) != 0) {
+				if (referenceOwnerService.getRefSerNoByName(getEntity()
+						.getName()) != 0) {
 					errorMessages.add("用戶名稱已存在");
 				}
 			}
@@ -125,7 +111,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				while (i < getEntity().getCheckItem().length) {
 					if (getEntity().getCheckItem()[i] == null
 							|| getEntity().getCheckItem()[i] < 1
-							|| customerService.getBySerNo(getEntity()
+							|| referenceOwnerService.getBySerNo(getEntity()
 									.getCheckItem()[i]) == null) {
 						addActionError("有錯誤流水號");
 						break;
@@ -146,8 +132,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	@Override
 	public String edit() throws Exception {
 		if (getEntity().getSerNo() != null) {
-			customer = customerService.getBySerNo(getEntity().getSerNo());
-			setEntity(customer);
+			referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+					.getSerNo());
+			setEntity(referenceOwner);
 		}
 
 		return EDIT;
@@ -164,13 +151,14 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			getEntity().setOption("entity.name");
 		}
 
-		DataSet<Customer> ds = customerService.getByRestrictions(initDataSet());
+		DataSet<ReferenceOwner> ds = referenceOwnerService
+				.getByRestrictions(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
 					(int) Math.ceil(ds.getPager().getTotalRecord()
 							/ ds.getPager().getRecordPerPage()));
-			ds = customerService.getByRestrictions(ds);
+			ds = referenceOwnerService.getByRestrictions(ds);
 		}
 
 		setDs(ds);
@@ -183,12 +171,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			customer = customerService.save(getEntity(), getLoginUser());
-			groupService.save(
-					new Group(new GroupMapping(null, customer.getName(), 0),
-							customer, customer.getName()), getLoginUser());
+			referenceOwner = referenceOwnerService.save(getEntity(),
+					getLoginUser());
 
-			setEntity(customer);
+			setEntity(referenceOwner);
 
 			addActionMessage("新增成功");
 			return VIEW;
@@ -203,17 +189,17 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			customer = customerService.update(getEntity(), getLoginUser(),
-					"name");
+			referenceOwner = referenceOwnerService.update(getEntity(),
+					getLoginUser(), "name");
 
-			setEntity(customer);
+			setEntity(referenceOwner);
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
 			if (hasEntity()) {
 				getEntity().setName(
-						customerService.getBySerNo(getEntity().getSerNo())
-								.getName());
+						referenceOwnerService
+								.getBySerNo(getEntity().getSerNo()).getName());
 			}
 
 			return EDIT;
@@ -228,14 +214,14 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		if (!hasActionErrors()) {
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				String name = customerService.getBySerNo(
+				String name = referenceOwnerService.getBySerNo(
 						getEntity().getCheckItem()[i]).getName();
 
-				if (customerService
-						.deleteOwnerObj(getEntity().getCheckItem()[i])) {
+				if (referenceOwnerService.deleteOwnerObj(getEntity()
+						.getCheckItem()[i])) {
 
-					customerService
-							.deleteBySerNo(getEntity().getCheckItem()[i]);
+					referenceOwnerService.deleteBySerNo(getEntity()
+							.getCheckItem()[i]);
 					addActionMessage(name + "刪除成功");
 				} else {
 					addActionMessage(name + "資源必須先刪除");
@@ -255,7 +241,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	public String view() throws Exception {
 		if (hasEntity()) {
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
-			setEntity(customer);
+			setEntity(referenceOwner);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -263,29 +249,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String box() throws Exception {
-		getRequest().setAttribute("allCustomers",
-				customerService.getAllCustomers());
+		getRequest().setAttribute("allReferenceOwners",
+				referenceOwnerService.getAllOwners());
 
 		return BOX;
-	}
-
-	public String json() throws Exception {
-		List<Customer> customers = customerService.getAllCustomers();
-		List<JSONObject> objArray = new ArrayList<JSONObject>();
-
-		int i = 0;
-		while (i < customers.size()) {
-			JSONObject obj = new JSONObject();
-			customer = customers.get(i);
-
-			obj.put("name", customer.getName());
-			obj.put("value", customer.getSerNo());
-			objArray.add(obj);
-			i++;
-		}
-
-		getRequest().setAttribute("jsonString", objArray.toString());
-		return JSON;
 	}
 
 	public String imports() {
@@ -315,7 +282,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[5];
+			String[] rowTitles = new String[6];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -363,8 +330,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				n++;
 			}
 
-			LinkedHashSet<Customer> originalData = new LinkedHashSet<Customer>();
-			Map<String, Customer> checkRepeatRow = new LinkedHashMap<String, Customer>();
+			LinkedHashSet<ReferenceOwner> originalData = new LinkedHashSet<ReferenceOwner>();
+			Map<String, ReferenceOwner> checkRepeatRow = new LinkedHashMap<String, ReferenceOwner>();
 			int normal = 0;
 
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -373,7 +340,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 					continue;
 				}
 
-				String[] rowValues = new String[5];
+				String[] rowValues = new String[6];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -419,57 +386,59 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 					k++;
 				}
 
-				customer = new Customer(rowValues[0], rowValues[1],
+				referenceOwner = new ReferenceOwner(rowValues[0], rowValues[1],
 						rowValues[2], rowValues[4], rowValues[3], "");
 
-				if (StringUtils.isBlank(customer.getName())) {
-					customer.setDataStatus("名稱空白");
+				if (StringUtils.isBlank(referenceOwner.getName())) {
+					referenceOwner.setDataStatus("名稱空白");
 				} else {
-					if (customer.getName()
+					if (referenceOwner.getName()
 							.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "")
 							.length() != 0) {
-						customer.setDataStatus("名稱字元異常");
+						referenceOwner.setDataStatus("名稱字元異常");
 					} else {
-						long cusSerNo = customerService
-								.getCusSerNoByName(customer.getName());
+						long cusSerNo = referenceOwnerService
+								.getRefSerNoByName(referenceOwner.getName());
 						if (cusSerNo != 0) {
-							customer.setDataStatus("已存在");
+							referenceOwner.setDataStatus("已存在");
 						}
 
-						if (StringUtils.isNotEmpty(customer.getTel())) {
-							String tel = customer.getTel()
+						if (StringUtils.isNotEmpty(referenceOwner.getTel())) {
+							String tel = referenceOwner.getTel()
 									.replaceAll("[/()+-]", "").replace(" ", "");
 							if (!NumberUtils.isDigits(tel)) {
-								customer.setTel(null);
+								referenceOwner.setTel(null);
 							}
 						}
 					}
 
 				}
 
-				if (customer.getDataStatus() == null) {
-					customer.setDataStatus("正常");
+				if (referenceOwner.getDataStatus() == null) {
+					referenceOwner.setDataStatus("正常");
 				}
 
-				if (customer.getDataStatus().equals("正常")
-						&& !originalData.contains(customer)) {
+				if (referenceOwner.getDataStatus().equals("正常")
+						&& !originalData.contains(referenceOwner)) {
 
-					if (checkRepeatRow.containsKey(customer.getName())) {
-						customer.setDataStatus("名稱重複");
+					if (checkRepeatRow.containsKey(referenceOwner.getName())) {
+						referenceOwner.setDataStatus("名稱重複");
 
 					} else {
-						checkRepeatRow.put(customer.getName(), customer);
+						checkRepeatRow.put(referenceOwner.getName(),
+								referenceOwner);
 
 						++normal;
 					}
 				}
 
-				originalData.add(customer);
+				originalData.add(referenceOwner);
 			}
 
-			List<Customer> excelData = new ArrayList<Customer>(originalData);
+			List<ReferenceOwner> excelData = new ArrayList<ReferenceOwner>(
+					originalData);
 
-			DataSet<Customer> ds = initDataSet();
+			DataSet<ReferenceOwner> ds = initDataSet();
 			ds.getPager().setTotalRecord((long) excelData.size());
 
 			if (excelData.size() < ds.getPager().getRecordPerPage()) {
@@ -506,7 +475,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		clearCheckedItem();
 
-		DataSet<Customer> ds = initDataSet();
+		DataSet<ReferenceOwner> ds = initDataSet();
 		ds.getPager().setTotalRecord((long) importList.size());
 
 		int first = ds.getPager().getOffset();
@@ -515,7 +484,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		int i = 0;
 		while (i < importList.size()) {
 			if (i >= first && i < last) {
-				ds.getResults().add((Customer) importList.get(i));
+				ds.getResults().add((ReferenceOwner) importList.get(i));
 			}
 			i++;
 		}
@@ -530,7 +499,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			int j = 0;
 			while (j < importList.size()) {
 				if (j >= first && j < last) {
-					ds.getResults().add((Customer) importList.get(j));
+					ds.getResults().add((ReferenceOwner) importList.get(j));
 				}
 				j++;
 			}
@@ -558,9 +527,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 					&& getEntity().getImportItem()[0] >= 0
 					&& getEntity().getImportItem()[0] < importList.size()) {
 				if (!checkItemSet.contains(getEntity().getImportItem()[0])) {
-					if (((Customer) importList
-							.get(getEntity().getImportItem()[0]))
-							.getDataStatus().equals("正常")) {
+					if (((ReferenceOwner) importList.get(getEntity()
+							.getImportItem()[0])).getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[0]);
 					}
 				} else {
@@ -592,9 +560,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				if (getEntity().getImportItem()[i] != null
 						&& getEntity().getImportItem()[i] >= 0
 						&& getEntity().getImportItem()[i] < importList.size()) {
-					if (((Customer) importList
-							.get(getEntity().getImportItem()[i]))
-							.getDataStatus().equals("正常")) {
+					if (((ReferenceOwner) importList.get(getEntity()
+							.getImportItem()[i])).getDataStatus().equals("正常")) {
 						checkItemSet.add(getEntity().getImportItem()[i]);
 					}
 
@@ -638,12 +605,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			int successCount = 0;
 			while (iterator.hasNext()) {
 				int index = (Integer) iterator.next();
-				customer = (Customer) importList.get(index);
-				customerService.save(customer, getLoginUser());
-				groupService.save(
-						new Group(
-								new GroupMapping(null, customer.getName(), 0),
-								customer, customer.getName()), getLoginUser());
+				referenceOwner = (ReferenceOwner) importList.get(index);
+				referenceOwnerService.save(referenceOwner, getLoginUser());
 				++successCount;
 			}
 
@@ -656,12 +619,12 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String example() throws Exception {
-		// reportFile = "customer_sample.xlsx";
-		getEntity().setReportFile("customer_sample.xlsx");
+		// reportFile = "referenceOwner_sample.xlsx";
+		getEntity().setReportFile("referenceOwner_sample.xlsx");
 		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		// Create a blank sheet
-		XSSFSheet spreadsheet = workbook.createSheet("customer");
+		XSSFSheet spreadsheet = workbook.createSheet("referenceOwner");
 		// Create row object
 		XSSFRow row;
 		// This data needs to be written (Object[])
@@ -669,8 +632,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		empinfo.put("1", new Object[] { "name/姓名", "egName/英文姓名", "address/地址",
 				"tel/電話", "contactUserName/聯絡人" });
 
-		empinfo.put("2", new Object[] { "國防醫學中心", "ndmc", "台北市內湖區民權東路六段161號",
-				"886-2-87923100", "總機" });
+		empinfo.put("2", new Object[] { "雲天河", "Tien-Ho Yun",
+				"台北市內湖區民權東路六段161號", "886-2-87923100", "總機" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
@@ -698,8 +661,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			return false;
 		}
 
-		customer = customerService.getBySerNo(getEntity().getSerNo());
-		if (customer == null) {
+		referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+				.getSerNo());
+		if (referenceOwner == null) {
 			return false;
 		}
 

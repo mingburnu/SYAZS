@@ -1,30 +1,24 @@
-package com.shouyang.syazs.core.apply.customer;
-
-import java.util.Set;
+package com.shouyang.syazs.module.apply.referenceOwner;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.apply.group.Group;
-import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "referenceOwner")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Customer extends GenericEntityFull {
+public class ReferenceOwner extends GenericEntityFull {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5508975058661670537L;
+	private static final long serialVersionUID = 6946147773195509574L;
 
 	// 名稱
 	@Column(name = "name", unique = true)
@@ -50,15 +44,6 @@ public class Customer extends GenericEntityFull {
 	@Column(name = "memo")
 	@Type(type = "text")
 	private String memo;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<AccountNumber> accountNumbers;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<Group> groups;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<IpRange> ipRanges;
 
 	/**
 	 * @return the name
@@ -150,33 +135,12 @@ public class Customer extends GenericEntityFull {
 		this.memo = memo;
 	}
 
-	/**
-	 * @return the accountNumbers
-	 */
-	public Set<AccountNumber> getAccountNumbers() {
-		return accountNumbers;
-	}
-
-	/**
-	 * @return the ipRange
-	 */
-	public Set<IpRange> getIpRanges() {
-		return ipRanges;
-	}
-
-	/**
-	 * @return the groups
-	 */
-	public Set<Group> getGroups() {
-		return groups;
-	}
-
-	public Customer() {
+	public ReferenceOwner() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Customer(String name, String engName, String address, String tel,
+	public ReferenceOwner(String name, String engName, String address, String tel,
 			String contactUserName, String memo) {
 		super();
 		this.name = name;

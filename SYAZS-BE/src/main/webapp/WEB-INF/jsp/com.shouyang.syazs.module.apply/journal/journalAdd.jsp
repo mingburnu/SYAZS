@@ -15,8 +15,8 @@
 						var contain = $("#div_Detail_2 .content .header .title")
 								.html();
 						if (contain != '單位-新增') {
-							goCustomers(
-									"<c:url value = '/'/>crud/apply.customer.box.action",
+							goReferenceOwners(
+									"<c:url value = '/'/>crud/apply.referenceOwner.box.action",
 									'單位-新增');
 						}
 					});
@@ -26,7 +26,7 @@
 					function() {
 						$("#div_Detail .content .header .close")
 								.html(
-										'<a href="#" onclick="clearCustomers();closeDetail();">關閉</a>');
+										'<a href="#" onclick="clearReferenceOwners();closeDetail();">關閉</a>');
 					});
 
 	$(document).ready(function() {
@@ -35,7 +35,7 @@
 			$(this).next().attr("name", "");
 			$(this).parent().hide();
 
-			$("input#customer_unit").each(function() {
+			$("input#referenceOwner_unit").each(function() {
 				if ($(this).val() == value) {
 					$(this).attr("checked", false);
 				}
@@ -55,7 +55,7 @@
 		$("input[type='radio']:eq(2)").attr("checked", true);
 		$("input[type='radio']:eq(4)").attr("checked", true);
 
-		allSelect_customers(0);
+		allSelect_referenceOwners(0);
 		checkData();
 	}
 
@@ -63,7 +63,7 @@
 	function submitData() {
 		var data = $('#apply_journal_save').serialize();
 		closeDetail();
-		clearCustomers();
+		clearReferenceOwners();
 		goDetail("<c:url value = '/'/>crud/apply.journal.save.action", '期刊-新增',
 				data);
 	}
@@ -79,7 +79,7 @@ img#add,img#minus {
 	left: 5px;
 }
 
-input#customer_name {
+input#referenceOwner_name {
 	background-color: #aaaaaa;
 }
 </style>
@@ -141,15 +141,53 @@ input#customer_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
+				<th width="130">URL</th>
+				<td><s:textfield name="entity.resourcesBuyers.url"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
 				<th width="130">資源類型</th>
-				<td><s:radio name="entity.resourcesBuyers.category"
-						list="categoryList" listKey="name()" listValue="category" /></td>
+				<td><c:choose>
+						<c:when
+							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
+							<s:radio name="entity.resourcesBuyers.category"
+								list="categoryList" listKey="name()" listValue="category"
+								value="'未註明'" />
+						</c:when>
+						<c:otherwise>
+							<s:radio name="entity.resourcesBuyers.category"
+								list="categoryList" listKey="name()" listValue="category" />
+						</c:otherwise>
+					</c:choose></td>
 			</tr>
 			<tr>
 				<th width="130">資源種類</th>
-				<td><s:radio name="entity.resourcesBuyers.type"
-						list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-						listKey="name()" listValue="type" /></td>
+				<td><c:choose>
+						<c:when test="${empty entity.resourcesBuyers.type }">
+							<s:radio name="entity.resourcesBuyers.type"
+								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
+								listKey="name()" listValue="type" value="'期刊'" />
+						</c:when>
+						<c:otherwise>
+							<s:radio name="entity.resourcesBuyers.type"
+								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
+								listKey="name()" listValue="type" />
+						</c:otherwise>
+					</c:choose></td>
+			</tr>
+			<tr>
+				<th width="130">公開資源</th>
+				<td><c:choose>
+						<c:when test="${empty entity.resourcesBuyers.openAccess }">
+							<s:radio name="entity.resourcesBuyers.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
+								value="false" />
+						</c:when>
+						<c:otherwise>
+							<s:radio name="entity.resourcesBuyers.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}" />
+						</c:otherwise>
+					</c:choose></td>
 			</tr>
 			<tr>
 				<th width="130">資料庫中文題名</th>
@@ -163,19 +201,19 @@ input#customer_name {
 			</tr>
 			<tr>
 				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
-				<td><input type="text" id="customer_name" class="input_text"
-					disabled="disabled" value="增加單位"><img id="add"
-					src="<c:url value = '/'/>resources/images/add.png"
-					onclick="addCustomer();"> <c:forEach var="item"
-						items="${entity.customers}" varStatus="status2">
+				<td><input type="text" id="referenceOwner_name"
+					class="input_text" disabled="disabled" value="增加單位"><img
+					id="add" src="<c:url value = '/'/>resources/images/add.png"
+					onclick="addReferenceOwner();"> <c:forEach var="item"
+						items="${entity.referenceOwners}" varStatus="status2">
 						<div style="">
 							<input class="input_text" disabled="disabled"
 								value='${item.name}'><img id="minus"
 								src="<c:url value = '/'/>resources/images/minus.png"><input
 								id="unit" type="hidden" value="${item.serNo }"
-								name="entity.cusSerNo">
+								name="entity.refSerNo">
 						</div>
-					</c:forEach> <c:forEach var="item" items="${uncheckCustomers}"
+					</c:forEach> <c:forEach var="item" items="${uncheckReferenceOwners}"
 						varStatus="status">
 						<div style="display: none;">
 							<input class="input_text" disabled="disabled"
@@ -188,8 +226,9 @@ input#customer_name {
 		</table>
 		<div class="button_box">
 			<div class="detail-func-button">
-				<a class="state-default" onclick="clearCustomers();closeDetail();">取消</a>
-				&nbsp;<a class="state-default" onclick="resetData();">重設</a>&nbsp; <a
+				<a class="state-default"
+					onclick="clearReferenceOwners();closeDetail();">取消</a> &nbsp;<a
+					class="state-default" onclick="resetData();">重設</a>&nbsp; <a
 					class="state-default" onclick="submitData();">確認</a>
 			</div>
 		</div>

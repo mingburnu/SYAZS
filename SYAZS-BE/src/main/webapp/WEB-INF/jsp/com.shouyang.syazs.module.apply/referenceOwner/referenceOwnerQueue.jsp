@@ -31,7 +31,7 @@
 			$
 					.ajax({
 						type : "POST",
-						url : "<c:url value = '/'/>crud/apply.journal.allCheckedItem.action",
+						url : "<c:url value = '/'/>crud/apply.referenceOwner.allCheckedItem.action",
 						dataType : "html",
 						data : importItem.slice(0, importItem.length - 1),
 						success : function(message) {
@@ -50,7 +50,7 @@
 		$
 				.ajax({
 					type : "POST",
-					url : "<c:url value = '/'/>crud/apply.journal.getCheckedItem.action",
+					url : "<c:url value = '/'/>crud/apply.referenceOwner.getCheckedItem.action",
 					dataType : "html",
 					data : "entity.importItem=" + index,
 					success : function(message) {
@@ -65,8 +65,8 @@
 		if ($("input.checkbox.queue:checked").length > 0) {
 
 			goDetail_Main(
-					'<c:url value = '/'/>crud/apply.journal.importData.action',
-					'#apply_journal_paginate', '&pager.currentPage='
+					'<c:url value = '/'/>crud/apply.referenceOwner.importData.action',
+					'#apply_referenceOwner_paginate', '&pager.currentPage='
 							+ '${ds.pager.currentPage}');
 		} else {
 			goAlert("訊息", "請選擇一筆或一筆以上的資料");
@@ -77,7 +77,7 @@
 		$
 				.ajax({
 					type : "POST",
-					url : "<c:url value = '/'/>crud/apply.journal.clearCheckedItem.action",
+					url : "<c:url value = '/'/>crud/apply.referenceOwner.clearCheckedItem.action",
 					dataType : "html",
 					success : function(message) {
 
@@ -87,16 +87,17 @@
 </script>
 </head>
 <body>
-	<s:form namespace="/crud" action="apply.journal.paginate" method="post"
-		onsubmit="return false;">
+	<s:form namespace="/crud" action="apply.referenceOwner.paginate"
+		method="post" onsubmit="return false;">
 		<table cellspacing="1" class="list-table queue">
 			<tbody>
 				<tr>
 					<th></th>
-					<th><esapi:encodeForHTML>${cellNames[1]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[3]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[11]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[17]}</esapi:encodeForHTML></th>
+					<c:forEach var="item" items="${cellNames}" varStatus="status">
+						<c:if test="${status.index < 5}">
+							<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
+						</c:if>
+					</c:forEach>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -111,11 +112,11 @@
 									<input type="checkbox" disabled="disabled">
 								</c:otherwise>
 							</c:choose></td>
-						<td><esapi:encodeForHTML>${item.englishTitle }</esapi:encodeForHTML></td>
-						<td><esapi:encodeForHTML>${item.issn }</esapi:encodeForHTML></td>
-						<td>${item.resourcesBuyers.category.category }</td>
-						<td align="center"><esapi:encodeForHTML>${item.owners[0].name }</esapi:encodeForHTML>
-						</td>
+						<td><esapi:encodeForHTML>${item.name }</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${item.engName }</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${item.contactUserName }</esapi:encodeForHTML></td>
+						<td align="center"><esapi:encodeForHTML>${item.tel }</esapi:encodeForHTML></td>
 						<td align="center">${item.dataStatus }</td>
 					</tr>
 				</c:forEach>
@@ -125,11 +126,12 @@
 		<div class="page-box" align="right">
 			<table border="0" cellspacing="0" cellpadding="0">
 				<tbody>
+
 					<c:if test="${ds.pager.totalRecord > 0 }">
 						<tr>
 							<td><jsp:include page="/WEB-INF/jsp/layout/pagination.jsp">
 									<jsp:param name="namespace" value="/crud" />
-									<jsp:param name="action" value="apply.journal.paginate" />
+									<jsp:param name="action" value="apply.referenceOwner.paginate" />
 									<jsp:param name="pager" value="${ds.pager}" />
 									<jsp:param name="detail" value="1" />
 								</jsp:include></td>
@@ -154,7 +156,7 @@
 			<div class="detail-func-button">
 				<a class="state-default" onclick="allRow(1)">全選</a> <a
 					class="state-default" onclick="allRow(0)">重置</a> <a
-					class="state-default" onclick="closeDetail()">關閉</a> <a
+					class="state-default" onclick="closeDetail();">關閉</a> <a
 					class="state-default" onclick="checkData()">確認</a>
 			</div>
 		</div>
@@ -164,13 +166,6 @@
 				;異常筆數 :${total-normal })</div>
 		</div>
 	</s:form>
-	<s:if test="hasActionErrors()">
-		<script language="javascript" type="text/javascript">
-			var msg = "";
-			<s:iterator value="actionErrors">msg += '<s:property escape="true"/><br>';
-			</s:iterator>;
-			goAlert('訊息', msg);
-		</script>
-	</s:if>
+	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,17 +38,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.opensymphony.xwork2.ActionContext;
-import com.shouyang.syazs.core.apply.customer.Customer;
-import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
-import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion;
-import com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnionService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -62,13 +61,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	private Database database;
 
 	@Autowired
+	private Database targetDb;
+
+	@Autowired
 	private DatabaseService databaseService;
-
-	@Autowired
-	private ResourcesUnion resourcesUnion;
-
-	@Autowired
-	private ResourcesUnionService resourcesUnionService;
 
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
@@ -77,10 +73,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	private ResourcesBuyersService resourcesBuyersService;
 
 	@Autowired
-	private Customer customer;
+	private ReferenceOwner referenceOwner;
 
 	@Autowired
-	private CustomerService customerService;
+	private ReferenceOwnerService referenceOwnerService;
 
 	@Autowired
 	private EnumConverter enumConverter;
@@ -102,28 +98,39 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 		}
 
-		if (!isURL(getEntity().getUrl())) {
+		if (!isURL(getEntity().getResourcesBuyers().getUrl())) {
 			errorMessages.add("URL格式不正確");
 		}
 
-		if (ArrayUtils.isEmpty(getEntity().getCusSerNo())) {
-			errorMessages.add("至少選擇一筆以上購買單位");
+		if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
+			errorMessages.add("至少選擇一筆以上擁有人");
 		} else {
 			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
-					.getCusSerNo()));
-			getEntity().setCusSerNo(
+					.getRefSerNo()));
+			getEntity().setRefSerNo(
 					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
+			getEntity().setOwners(new LinkedList<ReferenceOwner>());
 
 			int i = 0;
-			while (i < getEntity().getCusSerNo().length) {
-				if (getEntity().getCusSerNo()[i] == null
-						|| getEntity().getCusSerNo()[i] < 1
-						|| customerService
-								.getBySerNo(getEntity().getCusSerNo()[i]) == null) {
-					errorMessages.add(getEntity().getCusSerNo()[i]
-							+ "為不可利用的流水號");
-					getEntity().getCusSerNo()[i] = null;
+			while (i < getEntity().getRefSerNo().length) {
+				if (getEntity().getRefSerNo()[i] == null) {
+					errorMessages.add("null為不可利用的流水號");
+				} else {
+					if (getEntity().getRefSerNo()[i] < 1) {
+						errorMessages.add(getEntity().getRefSerNo()[i]
+								+ "為不可利用的流水號");
+					} else {
+						referenceOwner = referenceOwnerService
+								.getBySerNo(getEntity().getRefSerNo()[i]);
+						if (referenceOwner == null) {
+							errorMessages.add(getEntity().getRefSerNo()[i]
+									+ "為不可利用的流水號");
+						} else {
+							getEntity().getOwners().add(referenceOwner);
+						}
+					}
 				}
+
 				i++;
 			}
 		}
@@ -131,13 +138,15 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (getEntity().getResourcesBuyers().getCategory() == null
 				|| getEntity().getResourcesBuyers().getCategory()
 						.equals(Category.不明)) {
-			errorMessages.add("資源類型錯誤");
 			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
 		if (getEntity().getResourcesBuyers().getType() == null) {
-			errorMessages.add("資源種類錯誤");
 			getEntity().getResourcesBuyers().setType(Type.資料庫);
+		}
+
+		if (getEntity().getResourcesBuyers().getOpenAccess() == null) {
+			getEntity().getResourcesBuyers().setOpenAccess(false);
 		}
 	}
 
@@ -163,28 +172,39 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 			}
 
-			if (!isURL(getEntity().getUrl())) {
+			if (!isURL(getEntity().getResourcesBuyers().getUrl())) {
 				errorMessages.add("URL格式不正確");
 			}
 
-			if (ArrayUtils.isEmpty(getEntity().getCusSerNo())) {
-				errorMessages.add("至少選擇一筆以上購買單位");
+			if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
+				errorMessages.add("至少選擇一筆以上擁有人");
 			} else {
 				Set<Long> deRepeatSet = new HashSet<Long>(
-						Arrays.asList(getEntity().getCusSerNo()));
-				getEntity().setCusSerNo(
+						Arrays.asList(getEntity().getRefSerNo()));
+				getEntity().setRefSerNo(
 						deRepeatSet.toArray(new Long[deRepeatSet.size()]));
+				getEntity().setOwners(new LinkedList<ReferenceOwner>());
 
 				int i = 0;
-				while (i < getEntity().getCusSerNo().length) {
-					if (getEntity().getCusSerNo()[i] == null
-							|| getEntity().getCusSerNo()[i] < 1
-							|| customerService.getBySerNo(getEntity()
-									.getCusSerNo()[i]) == null) {
-						errorMessages.add(getEntity().getCusSerNo()[i]
-								+ "為不可利用的流水號");
-						getEntity().getCusSerNo()[i] = Long.MIN_VALUE;
+				while (i < getEntity().getRefSerNo().length) {
+					if (getEntity().getRefSerNo()[i] == null) {
+						errorMessages.add("null為不可利用的流水號");
+					} else {
+						if (getEntity().getRefSerNo()[i] < 1) {
+							errorMessages.add(getEntity().getRefSerNo()[i]
+									+ "為不可利用的流水號");
+						} else {
+							referenceOwner = referenceOwnerService
+									.getBySerNo(getEntity().getRefSerNo()[i]);
+							if (referenceOwner == null) {
+								errorMessages.add(getEntity().getRefSerNo()[i]
+										+ "為不可利用的流水號");
+							} else {
+								getEntity().getOwners().add(referenceOwner);
+							}
+						}
 					}
+
 					i++;
 				}
 			}
@@ -192,13 +212,15 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			if (getEntity().getResourcesBuyers().getCategory() == null
 					|| getEntity().getResourcesBuyers().getCategory()
 							.equals(Category.不明)) {
-				errorMessages.add("資源類型錯誤");
 				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
 			if (getEntity().getResourcesBuyers().getType() == null) {
-				errorMessages.add("資源種類錯誤");
 				getEntity().getResourcesBuyers().setType(Type.資料庫);
+			}
+
+			if (getEntity().getResourcesBuyers().getOpenAccess() == null) {
+				getEntity().getResourcesBuyers().setOpenAccess(false);
 			}
 		}
 	}
@@ -231,12 +253,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String add() throws Exception {
 		setCategoryList();
 
-		List<Customer> customers = new ArrayList<Customer>();
-		database.setCustomers(customers);
-		getRequest().setAttribute("uncheckCustomers",
-				customerService.getUncheckCustomers(customers));
-		database.getResourcesBuyers().setCategory(Category.未註明);
-		database.getResourcesBuyers().setType(Type.資料庫);
+		List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>();
+		database.setOwners(owners);
+		getRequest().setAttribute("uncheckReferenceOwners",
+				referenceOwnerService.getUncheckOwners(owners));
 
 		setEntity(database);
 
@@ -248,23 +268,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (hasEntity()) {
 			setCategoryList();
 
-			Iterator<ResourcesUnion> iterator = resourcesUnionService
-					.getResourcesUnionsByObj(getEntity(), Database.class)
-					.iterator();
-
-			List<Customer> customers = new ArrayList<Customer>();
-
-			while (iterator.hasNext()) {
-				resourcesUnion = iterator.next();
-				customer = resourcesUnion.getCustomer();
-				if (customer != null) {
-					customers.add(customer);
-				}
-			}
-
-			database.setCustomers(customers);
-			getRequest().setAttribute("uncheckCustomers",
-					customerService.getUncheckCustomers(customers));
+			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
+					database.getReferenceOwners());
+			database.setOwners(owners);
+			getRequest().setAttribute("uncheckReferenceOwners",
+					referenceOwnerService.getUncheckOwners(owners));
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -310,50 +318,22 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				getEntity().setDbEngTitle(getEntity().getDbEngTitle().trim());
 			}
 
+			getEntity().setReferenceOwners(
+					new HashSet<ReferenceOwner>(getEntity().getOwners()));
+
 			database = databaseService.save(getEntity(), getLoginUser());
-
-			int i = 0;
-			while (i < getEntity().getCusSerNo().length) {
-				resourcesUnionService.save(
-						new ResourcesUnion(customerService
-								.getBySerNo(getEntity().getCusSerNo()[i]), 0L,
-								database.getSerNo(), 0L), getLoginUser());
-
-				i++;
-			}
-
-			List<ResourcesUnion> resourceUnions = resourcesUnionService
-					.getResourcesUnionsByObj(database, Database.class);
-			List<Customer> customers = new ArrayList<Customer>();
-
-			Iterator<ResourcesUnion> iterator = resourceUnions.iterator();
-			while (iterator.hasNext()) {
-				resourcesUnion = iterator.next();
-				customers.add(resourcesUnion.getCustomer());
-			}
-
-			database.setCustomers(customers);
 			setEntity(database);
+			addActionMessage("新增成功");
 			return VIEW;
 		} else {
 			setCategoryList();
 
-			List<Customer> customers = new ArrayList<Customer>();
-			if (ArrayUtils.isNotEmpty(getEntity().getCusSerNo())) {
-				int i = 0;
-				while (i < getEntity().getCusSerNo().length) {
-					if (getEntity().getCusSerNo()[i] != null) {
-						customers.add(customerService.getBySerNo(getEntity()
-								.getCusSerNo()[i]));
-					}
-					i++;
-				}
-			}
-
 			database = getEntity();
-			database.setCustomers(customers);
-			getRequest().setAttribute("uncheckCustomers",
-					customerService.getUncheckCustomers(customers));
+
+			getRequest().setAttribute(
+					"uncheckReferenceOwners",
+					referenceOwnerService.getUncheckOwners(getEntity()
+							.getOwners()));
 			setEntity(database);
 			return ADD;
 		}
@@ -373,77 +353,21 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				getEntity().setDbEngTitle(getEntity().getDbEngTitle().trim());
 			}
 
-			getEntity().getResourcesBuyers().setSerNo(
-					databaseService.getBySerNo(getEntity().getSerNo())
-							.getResourcesBuyers().getSerNo());
+			getEntity().setReferenceOwners(
+					new HashSet<ReferenceOwner>(getEntity().getOwners()));
 
-			database = databaseService.merge(getEntity(), getLoginUser());
-
-			List<ResourcesUnion> resourcesUnions = resourcesUnionService
-					.getResourcesUnionsByObj(database, Database.class);
-
-			for (int j = 0; j < getEntity().getCusSerNo().length; j++) {
-				for (int i = 0; i < resourcesUnions.size(); i++) {
-					resourcesUnion = resourcesUnions.get(i);
-					if (resourcesUnion.getCustomer().getSerNo() == getEntity()
-							.getCusSerNo()[j]) {
-						resourcesUnions.remove(i);
-					}
-				}
-			}
-
-			Iterator<ResourcesUnion> iterator = resourcesUnions.iterator();
-			while (iterator.hasNext()) {
-				resourcesUnion = (ResourcesUnion) iterator.next();
-				resourcesUnionService.deleteBySerNo(resourcesUnion.getSerNo());
-			}
-
-			int i = 0;
-			while (i < getEntity().getCusSerNo().length) {
-				if (!resourcesUnionService.isExist(database, Database.class,
-						getEntity().getCusSerNo()[i])) {
-					resourcesUnionService.save(
-							new ResourcesUnion(customerService
-									.getBySerNo(getEntity().getCusSerNo()[i]),
-									0L, database.getSerNo(), 0L),
-							getLoginUser());
-				}
-
-				i++;
-			}
-
-			List<ResourcesUnion> resourceUnions = resourcesUnionService
-					.getResourcesUnionsByObj(database, Database.class);
-			List<Customer> customers = new ArrayList<Customer>();
-
-			iterator = resourceUnions.iterator();
-			while (iterator.hasNext()) {
-				resourcesUnion = iterator.next();
-				customers.add(resourcesUnion.getCustomer());
-			}
-
-			database.setCustomers(customers);
+			database = databaseService.update(getEntity(), getLoginUser());
 			setEntity(database);
+			addActionMessage("修改成功");
 			return VIEW;
 		} else {
 			setCategoryList();
-
-			List<Customer> customers = new ArrayList<Customer>();
-			if (ArrayUtils.isNotEmpty(getEntity().getCusSerNo())) {
-				int i = 0;
-				while (i < getEntity().getCusSerNo().length) {
-					if (getEntity().getCusSerNo()[i] != null) {
-						customers.add(customerService.getBySerNo(getEntity()
-								.getCusSerNo()[i]));
-					}
-					i++;
-				}
-			}
-
 			database = getEntity();
-			database.setCustomers(customers);
-			getRequest().setAttribute("uncheckCustomers",
-					customerService.getUncheckCustomers(customers));
+
+			getRequest().setAttribute(
+					"uncheckReferenceOwners",
+					referenceOwnerService.getUncheckOwners(getEntity()
+							.getOwners()));
 			setEntity(database);
 			return EDIT;
 		}
@@ -455,24 +379,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			int j = 0;
-			while (j < getEntity().getCheckItem().length) {
-				List<ResourcesUnion> resourcesUnions = resourcesUnionService
-						.getResourcesUnionsByObj(databaseService
-								.getBySerNo(getEntity().getCheckItem()[j]),
-								Database.class);
-				resourcesUnion = resourcesUnions.get(0);
-
-				Iterator<ResourcesUnion> iterator = resourcesUnions.iterator();
-				while (iterator.hasNext()) {
-					resourcesUnion = iterator.next();
-					resourcesUnionService.deleteBySerNo(resourcesUnion
-							.getSerNo());
-				}
-
-				databaseService.deleteBySerNo(getEntity().getCheckItem()[j]);
-
-				j++;
+			int i = 0;
+			while (i < getEntity().getCheckItem().length) {
+				databaseService.deleteBySerNo(getEntity().getCheckItem()[i]);
+				i++;
 			}
 
 			list();
@@ -486,17 +396,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
-			List<ResourcesUnion> resourceUnions = resourcesUnionService
-					.getResourcesUnionsByObj(database, Database.class);
-			List<Customer> customers = new ArrayList<Customer>();
-
-			Iterator<ResourcesUnion> iterator = resourceUnions.iterator();
-			while (iterator.hasNext()) {
-				resourcesUnion = iterator.next();
-				customers.add(resourcesUnion.getCustomer());
-			}
-
-			database.setCustomers(customers);
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
 			setEntity(database);
 		} else {
@@ -533,7 +432,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[13];
+			String[] rowTitles = new String[14];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -592,7 +491,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					continue;
 				}
 
-				String[] rowValues = new String[13];
+				String[] rowValues = new String[14];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -665,27 +564,35 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					}
 				}
 
+				boolean openAccess = false;
+				if (rowValues[11].toLowerCase().equals("yes")
+						|| rowValues[11].toLowerCase().equals("true")
+						|| rowValues[11].equals("是")) {
+					openAccess = true;
+				}
+
 				resourcesBuyers = new ResourcesBuyers(rowValues[7],
 						rowValues[8], Category.valueOf(category),
-						Type.valueOf(type), rowValues[0], rowValues[1]);
+						Type.valueOf(type), rowValues[0], rowValues[1],
+						rowValues[6], openAccess);
 
-				customer = new Customer();
-				customer.setName(rowValues[11].trim());
-				customer.setEngName(rowValues[12].trim());
+				referenceOwner = new ReferenceOwner();
+				referenceOwner.setName(rowValues[12].trim());
+				referenceOwner.setEngName(rowValues[13].trim());
 
-				List<Customer> customers = new ArrayList<Customer>();
-				customers.add(customer);
+				List<ReferenceOwner> owners = new LinkedList<ReferenceOwner>();
+				owners.add(referenceOwner);
 
 				database = new Database(rowValues[0].trim(),
 						rowValues[1].trim(), rowValues[3], rowValues[4],
-						rowValues[2], rowValues[5], rowValues[6], "", "", "",
-						resourcesBuyers);
-				database.setCustomers(customers);
+						rowValues[2], rowValues[5], "", "", "", resourcesBuyers);
+				database.setOwners(owners);
 
-				long cusSerNo = customerService.getCusSerNoByName(rowValues[11]
-						.trim());
+				long refSerNo = referenceOwnerService
+						.getRefSerNoByName(rowValues[12].trim());
 
-				if (cusSerNo != 0) {
+				if (refSerNo != 0) {
+					database.getOwners().get(0).setSerNo(refSerNo);
 					if (StringUtils.isNotBlank(database.getDbChtTitle())
 							|| StringUtils.isNotBlank(database.getDbEngTitle())) {
 						long datSerNoByChtName = databaseService
@@ -695,9 +602,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 						if (datSerNoByChtName != 0 && datSerNoByEngName != 0
 								&& datSerNoByChtName == datSerNoByEngName) {
-							if (resourcesUnionService.isExist(databaseService
-									.getBySerNo(datSerNoByChtName),
-									Database.class, cusSerNo)) {
+							if (databaseService.isExist(datSerNoByChtName,
+									refSerNo)) {
 								database.setDataStatus("已存在");
 							}
 
@@ -713,10 +619,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 									database.getDbEngTitle()) == 0) {
 								database.setDataStatus("資料庫名稱混亂");
 
-							} else if (resourcesUnionService.isExist(
-									databaseService
-											.getBySerNo(datSerNoByEngName),
-									Database.class, cusSerNo)) {
+							} else if (databaseService.isExist(
+									datSerNoByEngName, refSerNo)) {
 								database.setDataStatus("已存在");
 							}
 
@@ -727,10 +631,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 									database.getDbEngTitle()) == 0) {
 								database.setDataStatus("資料庫名稱混亂");
 
-							} else if (resourcesUnionService.isExist(
-									databaseService
-											.getBySerNo(datSerNoByChtName),
-									Database.class, cusSerNo)) {
+							} else if (databaseService.isExist(
+									datSerNoByChtName, refSerNo)) {
 								database.setDataStatus("已存在");
 							}
 
@@ -750,8 +652,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				}
 
-				if (!isURL(database.getUrl())) {
-					database.setUrl(null);
+				if (!isURL(database.getResourcesBuyers().getUrl())) {
+					database.getResourcesBuyers().setUrl(null);
 				}
 
 				if (database.getDataStatus() == null) {
@@ -762,7 +664,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						&& !originalData.contains(database)) {
 
 					if (checkRepeatRow.containsKey(database.getDbChtTitle()
-							+ database.getDbEngTitle() + customer.getName())) {
+							+ database.getDbEngTitle()
+							+ referenceOwner.getName())) {
 						database.setDataStatus("資料重複");
 
 					} else if (checkErrorRow.containsKey(database
@@ -782,7 +685,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						checkRepeatRow.put(
 								database.getDbChtTitle()
 										+ database.getDbEngTitle()
-										+ customer.getName(), database);
+										+ referenceOwner.getName(), database);
 						if (StringUtils.isNotBlank(database.getDbEngTitle())) {
 							checkErrorRow.put(
 									database.getDbEngTitle(),
@@ -977,24 +880,18 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				int index = (Integer) iterator.next();
 				database = (Database) importList.get(index);
 
-				long datSerNo = databaseService.getDatSerNoByBothName(
+				targetDb = databaseService.getDbByBothName(
 						database.getDbChtTitle(), database.getDbEngTitle());
-				long cusSerNo = customerService.getCusSerNoByName(database
-						.getCustomers().get(0).getName());
 
-				if (datSerNo == 0) {
+				if (targetDb == null) {
+					database.setReferenceOwners(new HashSet<ReferenceOwner>(
+							database.getOwners()));
 					database = databaseService.save(database, getLoginUser());
 
-					resourcesUnionService.save(
-							new ResourcesUnion(customerService
-									.getBySerNo(cusSerNo), 0L, database
-									.getSerNo(), 0L), getLoginUser());
 				} else {
-					resourcesUnion = resourcesUnionService.getByObjSerNo(
-							datSerNo, Database.class);
-					resourcesUnionService.save(new ResourcesUnion(
-							customerService.getBySerNo(cusSerNo), 0L, datSerNo,
-							0L), getLoginUser());
+					targetDb.getReferenceOwners().add(
+							database.getOwners().get(0));
+					database = databaseService.update(targetDb, getLoginUser());
 				}
 
 				++successCount;
@@ -1021,15 +918,15 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 		empinfo.put("1", new Object[] { "資料庫中文題名", "資料庫英文題名",
 				"publishname/出版社", "語文", "IncludedSpecies/收錄種類",
-				"Content/收錄內容", "URL", "起始日", "到期日", "資源類型", "資源種類", "購買單位名稱",
-				"購買單位英文名稱" });
+				"Content/收錄內容", "URL", "起始日", "到期日", "資源類型", "資源種類", "公開資源",
+				"購買人名稱", "購買人英文名稱" });
 
 		empinfo.put("2", new Object[] { "BMJ 醫學期刊", "BMJ  Journal",
 				"The BMJ Publishing Group Ltd", "eng", "", "", "", "N/A",
-				"N/A", "租貸", " 資料庫", "衛生福利部基隆醫院", "" });
-		empinfo.put("2", new Object[] { "BMJ 醫學期刊", "BMJ  Journal",
+				"N/A", "租貸", " 資料庫", "是", "李靖", "" });
+		empinfo.put("3", new Object[] { "BMJ 醫學期刊", "BMJ  Journal",
 				"The BMJ Publishing Group Ltd", "eng", "", "", "", "N/A",
-				"N/A", "租貸", " 資料庫", "衛生福利部臺北醫院", "" });
+				"N/A", "租貸", " 資料庫", "否", "毛民福", "" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();

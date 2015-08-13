@@ -1,9 +1,13 @@
 package com.shouyang.syazs.module.apply.journal;
 
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
@@ -85,6 +90,11 @@ public class Journal extends ModuleProperties {
 	@JoinColumn(name = "res_serNo", nullable = false)
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
+
+	// ReferenceOwner
+	@ManyToMany
+	@JoinTable(name = "ref_jou", joinColumns = @JoinColumn(name = "jou_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
+	private Set<ReferenceOwner> referenceOwners;
 
 	/**
 	 * @return the chineseTitle
@@ -309,6 +319,21 @@ public class Journal extends ModuleProperties {
 	 */
 	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
 		this.resourcesBuyers = resourcesBuyers;
+	}
+
+	/**
+	 * @return the referenceOwners
+	 */
+	public Set<ReferenceOwner> getReferenceOwners() {
+		return referenceOwners;
+	}
+
+	/**
+	 * @param referenceOwners
+	 *            the referenceOwners to set
+	 */
+	public void setReferenceOwners(Set<ReferenceOwner> referenceOwners) {
+		this.referenceOwners = referenceOwners;
 	}
 
 	public Journal() {

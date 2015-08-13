@@ -1,6 +1,5 @@
 package com.shouyang.syazs.core.apply.ipRange;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -27,7 +26,7 @@ public class IpRange extends GenericEntityFull {
 	/**
 	 * 用戶流水號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	@Autowired
 	private Customer customer;

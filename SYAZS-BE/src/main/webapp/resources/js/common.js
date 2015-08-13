@@ -168,9 +168,9 @@ function closeDetail_2() {
 	UI_Resize();
 }
 //
-// 打開Customers畫面之函式
-function goCustomers(argURL, argTitle) {
-	$("#div_Customers .content > .header > .title").html(argTitle);
+// 打開ReferenceOwners畫面之函式
+function goReferenceOwners(argURL, argTitle) {
+	$("#div_ReferenceOwners .content > .header > .title").html(argTitle);
 	showLoading();
 	$.ajax({
 		url : argURL,
@@ -181,16 +181,16 @@ function goCustomers(argURL, argTitle) {
 			closeLoading();
 		},
 		success : function(msg) {
-			//$("#div_Customers").show();
+			//$("#div_ReferenceOwners").show();
 			$(window).scrollTop(0);
-			$("#div_Customers .content > .contain").html(msg);
+			$("#div_ReferenceOwners .content > .contain").html(msg);
 			closeLoading();
 		}
 	});
 }
-// 關閉Customers畫面之函式
-function closeCustomers() {
-	$("#div_Customers").hide();
+// 關閉ReferenceOwners畫面之函式
+function closeReferenceOwners() {
+	$("#div_ReferenceOwners").hide();
 	UI_Resize();
 }
 //
@@ -219,8 +219,8 @@ function UI_Resize() {
 	$("#div_Detail_2 > .overlay").css("width", $(window).width());
 	$("#div_Detail_2 > .overlay").css("height", $(window).height());
 	//
-	$("#div_Customers > .overlay").css("width", $(window).width());
-	$("#div_Customers > .overlay").css("height", $(window).height());
+	$("#div_ReferenceOwners > .overlay").css("width", $(window).width());
+	$("#div_ReferenceOwners > .overlay").css("height", $(window).height());
 	//
 	$("#div_Alert > .overlay").css("width", $(window).width());
 	$("#div_Alert > .overlay").css("height", $(window).height());
@@ -238,8 +238,8 @@ function UI_Scroll() {
 	$("#div_Detail_2 > .overlay").css("top", $(window).scrollTop());
 	$("#div_Detail_2 > .overlay").css("left", $(window).scrollLeft());
 	//
-	$("#div_Customers > .overlay").css("top", $(window).scrollTop());
-	$("#div_Customers > .overlay").css("left", $(window).scrollLeft());
+	$("#div_ReferenceOwners > .overlay").css("top", $(window).scrollTop());
+	$("#div_ReferenceOwners > .overlay").css("left", $(window).scrollLeft());
 	//
 	$("#div_Alert > .overlay").css("top", $(window).scrollTop());
 	$("#div_Alert > .overlay").css("left", $(window).scrollLeft());

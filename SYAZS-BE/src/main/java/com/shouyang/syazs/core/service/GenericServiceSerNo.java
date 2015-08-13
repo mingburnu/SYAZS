@@ -60,23 +60,6 @@ public abstract class GenericServiceSerNo<T extends GenericEntitySerNo> extends
 	}
 
 	@Override
-	public T merge(T entity, AccountNumber user, String... ignoreProperties)
-			throws Exception {
-		Assert.notNull(entity);
-
-		T dbEntity = getDao().findBySerNo(entity.getSerNo());
-
-		if (ignoreProperties.length == 0) {
-			BeanUtils.copyProperties(entity, dbEntity);
-		} else {
-			BeanUtils.copyProperties(entity, dbEntity, ignoreProperties);
-		}
-
-		getDao().merge(dbEntity);
-		return dbEntity;
-	}
-
-	@Override
 	public void deleteBySerNo(Long serNo) throws Exception {
 		Assert.notNull(serNo);
 		getDao().deleteBySerNo(serNo);

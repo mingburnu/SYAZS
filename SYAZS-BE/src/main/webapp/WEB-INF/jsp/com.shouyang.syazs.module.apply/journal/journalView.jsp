@@ -97,6 +97,17 @@
 						<td>${entity.congressClassification }</td>
 					</tr>
 					<tr>
+						<th width="130">公開資源</th>
+						<td><c:choose>
+								<c:when test="${true eq entity.resourcesBuyers.openAccess}">是</c:when>
+								<c:otherwise>否</c:otherwise>
+							</c:choose></td>
+					</tr>
+					<tr>
+						<th width="130">URL</th>
+						<td><a href="${entity.resourcesBuyers.url }" target="_blank">${entity.resourcesBuyers.url }</a></td>
+					</tr>
+					<tr>
 						<th width="130">起始日</th>
 						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML></td>
 					</tr>
@@ -122,7 +133,7 @@
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${entity.customers}"
+						<td><c:forEach var="item" items="${entity.referenceOwners}"
 								varStatus="status">
 								<div>${item.name}</div>
 							</c:forEach></td>

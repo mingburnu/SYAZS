@@ -15,7 +15,7 @@ public abstract class CheckArray extends SearchProperties {
 	private Long[] checkItem;
 
 	@Transient
-	private Long[] cusSerNo;
+	private Long[] refSerNo;
 
 	@Transient
 	private Integer[] importItem;
@@ -29,18 +29,18 @@ public abstract class CheckArray extends SearchProperties {
 	}
 
 	/**
-	 * @return the cusSerNo
+	 * @return the refSerNo
 	 */
-	public Long[] getCusSerNo() {
-		return cusSerNo;
+	public Long[] getRefSerNo() {
+		return refSerNo;
 	}
 
 	/**
-	 * @param cusSerNo
-	 *            the cusSerNo to set
+	 * @param refSerNo
+	 *            the refSerNo to set
 	 */
-	public void setCusSerNo(Long[] cusSerNo) {
-		this.cusSerNo = cusSerNo;
+	public void setRefSerNo(Long[] refSerNo) {
+		this.refSerNo = refSerNo;
 	}
 
 	/**

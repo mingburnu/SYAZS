@@ -2,7 +2,6 @@ package com.shouyang.syazs.core.apply.groupMapping;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -30,7 +29,7 @@ public class GroupMapping extends GenericEntitySerNo {
 	/**
 	 * 上層編號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	@JoinColumn(name = "parentGID", nullable = true)
 	private GroupMapping parentGroupMapping;
 

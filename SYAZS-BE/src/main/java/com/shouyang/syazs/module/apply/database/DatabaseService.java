@@ -1,5 +1,7 @@
 package com.shouyang.syazs.module.apply.database;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -16,6 +18,9 @@ import com.shouyang.syazs.core.service.GenericServiceFull;
 public class DatabaseService extends GenericServiceFull<Database> {
 
 	@Autowired
+	private Database entity;
+
+	@Autowired
 	private DatabaseDao dao;
 
 	@Override
@@ -23,7 +28,7 @@ public class DatabaseService extends GenericServiceFull<Database> {
 			throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
-		Database entity = ds.getEntity();
+		entity = ds.getEntity();
 		DsRestrictions restrictions = getDsRestrictions();
 
 		if (entity.getOption().equals("entity.dbChtTitle")) {
@@ -32,7 +37,7 @@ public class DatabaseService extends GenericServiceFull<Database> {
 						entity.getDbChtTitle(), MatchMode.ANYWHERE);
 			}
 		}
-		
+
 		if (entity.getOption().equals("entity.dbEngTitle")) {
 			if (StringUtils.isNotBlank(entity.getDbEngTitle())) {
 				restrictions.likeIgnoreCase("dbEngTitle",
@@ -56,10 +61,26 @@ public class DatabaseService extends GenericServiceFull<Database> {
 				Restrictions.ilike("dbChtTitle", dbChtTitle, MatchMode.EXACT),
 				Restrictions.ilike("dbEngTitle", dbEngTitle, MatchMode.EXACT)));
 
-		if (dao.findByRestrictions(restrictions).size() > 0) {
-			return (dao.findByRestrictions(restrictions).get(0)).getSerNo();
+		List<Database> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return (result.get(0)).getSerNo();
 		} else {
 			return 0;
+		}
+	}
+
+	public Database getDbByBothName(String dbChtTitle, String dbEngTitle)
+			throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.customCriterion(Restrictions.and(
+				Restrictions.ilike("dbChtTitle", dbChtTitle, MatchMode.EXACT),
+				Restrictions.ilike("dbEngTitle", dbEngTitle, MatchMode.EXACT)));
+
+		List<Database> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return result.get(0);
+		} else {
+			return null;
 		}
 	}
 
@@ -73,8 +94,9 @@ public class DatabaseService extends GenericServiceFull<Database> {
 			return 0;
 		}
 
-		if (dao.findByRestrictions(restrictions).size() > 0) {
-			return (dao.findByRestrictions(restrictions).get(0)).getSerNo();
+		List<Database> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return (result.get(0)).getSerNo();
 		} else {
 			return 0;
 		}
@@ -90,10 +112,21 @@ public class DatabaseService extends GenericServiceFull<Database> {
 			return 0;
 		}
 
-		if (dao.findByRestrictions(restrictions).size() > 0) {
-			return (dao.findByRestrictions(restrictions).get(0)).getSerNo();
+		List<Database> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return (result.get(0)).getSerNo();
 		} else {
 			return 0;
 		}
+	}
+
+	public boolean isExist(long datSerNo, long refSerNo) {
+		entity = dao.findByDatSerNoRefSeNo(datSerNo, refSerNo);
+
+		if (entity != null) {
+			return true;
+		}
+
+		return false;
 	}
 }

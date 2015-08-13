@@ -57,24 +57,18 @@ public class ClassNotFoundFilter implements Filter {
 						entityName = " ";
 					}
 
-					String className = moduleEntityPackge
-							+ "."
-							+ entityName
-							+ "."
-							+ entityName.replace(entityName.substring(0, 1),
-									entityName.substring(0, 1).toUpperCase())
+					String className = moduleEntityPackge + "." + entityName
+							+ "." + entityName.substring(0, 1).toUpperCase()
+							+ entityName.substring(1, entityName.length())
 							+ "Action";
 					Class.forName(className);
 
 				} catch (ClassNotFoundException e) {
 					try {
-						String className = coreEntityPackage
+						String className = coreEntityPackage + "." + entityName
 								+ "."
-								+ entityName
-								+ "."
-								+ entityName.replace(
-										entityName.substring(0, 1), entityName
-												.substring(0, 1).toUpperCase())
+								+ entityName.substring(0, 1).toUpperCase()
+								+ entityName.substring(1, entityName.length())
 								+ "Action";
 						Class.forName(className);
 					} catch (ClassNotFoundException e1) {
@@ -96,23 +90,18 @@ public class ClassNotFoundFilter implements Filter {
 					entityName = " ";
 				}
 
-				String className = moduleEntityPackge
-						+ "."
-						+ entityName
-						+ "."
-						+ entityName.replace(entityName.substring(0, 1),
-								entityName.substring(0, 1).toUpperCase())
+				String className = moduleEntityPackge + "." + entityName + "."
+						+ entityName.substring(0, 1).toUpperCase()
+						+ entityName.substring(1, entityName.length())
 						+ "Action";
 				Class.forName(className);
 
 			} catch (ClassNotFoundException e) {
 				try {
-					String className = coreEntityPackage
-							+ "."
-							+ entityName
-							+ "."
-							+ entityName.replace(entityName.substring(0, 1),
-									entityName.substring(0, 1).toUpperCase())
+					System.out.println(entityName);
+					String className = coreEntityPackage + "." + entityName
+							+ "." + entityName.substring(0, 1).toUpperCase()
+							+ entityName.substring(1, entityName.length())
 							+ "Action";
 					Class.forName(className);
 				} catch (ClassNotFoundException e1) {

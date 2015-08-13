@@ -7,13 +7,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
-<c:if test="${empty successCount }">
-	<script type="text/javascript">
-		$(document).ready(function() {
-			closeDetail_ToQuery();
-		});
-	</script>
-</c:if>
 <script type="text/javascript">
 	//關閉並更新上一層資料
 	function closeDetail_ToQuery() {
@@ -32,6 +25,13 @@
 		resetCloseDetail_2();
 	}
 </script>
+<c:if test="${empty successCount }">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			closeDetail_ToQuery();
+		});
+	</script>
+</c:if>
 </head>
 <body>
 	<c:choose>

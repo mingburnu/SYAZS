@@ -519,13 +519,13 @@ iframe {
 	/*height:500px;*/
 }
 
-/* 自訂div_Customers
+/* 自訂div_ReferenceOwners
 ----------------------------------*/
-#div_Customers {
+#div_ReferenceOwners {
 	display: none;
 }
 
-#div_Customers .overlay {
+#div_ReferenceOwners .overlay {
 	background-color: #000000;
 	opacity: 0.5;
 	filter: Alpha(Opacity = 50);
@@ -537,7 +537,7 @@ iframe {
 	/*display:none;*/
 }
 
-#div_Customers .content {
+#div_ReferenceOwners .content {
 	width: 600px;
 	position: absolute;
 	top: 0%;
@@ -546,14 +546,14 @@ iframe {
 	padding: 0px;
 }
 
-#div_Customers .content .header {
+#div_ReferenceOwners .content .header {
 	background: #FFFFFF url(../images/footer.jpg) 0px 0px repeat-x;
 	color: #FFFFFF;
 	margin: 0px;
 	padding: 0px 10px;
 }
 
-#div_Customers .content .header .title {
+#div_ReferenceOwners .content .header .title {
 	font-size: 13px;
 	line-height: 25px;
 	font-weight: bold;
@@ -561,7 +561,7 @@ iframe {
 	text-decoration: none;
 }
 
-#div_Customers .content .header .close {
+#div_ReferenceOwners .content .header .close {
 	/**/
 	position: absolute;
 	right: 10px;
@@ -569,8 +569,8 @@ iframe {
 	background: url(../images/close.gif) no-repeat right center;
 }
 
-#div_Customers .content .header .close a,#div_Customers .content .header .close a:link,#div_Customers .content .header .close a:visited
-#div_Customers .content .header .close a:hover,#div_Customers .content .header .close a:active
+#div_ReferenceOwners .content .header .close a,#div_ReferenceOwners .content .header .close a:link,#div_ReferenceOwners .content .header .close a:visited
+#div_ReferenceOwners .content .header .close a:hover,#div_ReferenceOwners .content .header .close a:active
 	{
 	margin: 0px;
 	padding: 0px 25px 0px 0px;
@@ -580,7 +580,7 @@ iframe {
 	text-decoration: none;
 }
 
-#div_Customers .content .contain {
+#div_ReferenceOwners .content .contain {
 	background-color: #ffffff;
 	margin: 0px;
 	padding: 10px;

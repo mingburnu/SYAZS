@@ -10,24 +10,26 @@
 <script type="text/javascript">
 	//重設所有欄位(清空)
 	function resetData() {
-		$("[id^='apply_customer_save_entity']").val("");
+		goDetail('<%=request.getContextPath()%>/crud/apply.referenceOwner.edit.action?'
+						+ 'entity.serNo=${entity.serNo}', '客戶-修改');
 	}
 
 	//遞交表單
 	function submitData() {
-		var data = $('#apply_customer_save').serialize();
+		var data = $('#apply_referenceOwner_update').serialize();
 		closeDetail();
-		goDetail("<c:url value = '/'/>crud/apply.customer.save.action",
-				'客戶-新增', data);
+		goDetail(
+				"<c:url value = '/'/>crud/apply.referenceOwner.update.action?entity.serNo=${entity.serNo}",
+				'客戶-修改', data);
 	}
 </script>
 </head>
 <body>
-	<s:form namespace="/crud" action="apply.customer.save">
+	<s:form namespace="/crud" action="apply.referenceOwner.update">
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.name" cssClass="input_text" /></td>
+				<td>${entity.name }</td>
 			</tr>
 			<tr>
 				<th width="130">用戶英文名稱</th>

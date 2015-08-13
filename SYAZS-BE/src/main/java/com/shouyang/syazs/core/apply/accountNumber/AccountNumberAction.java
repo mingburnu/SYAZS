@@ -266,6 +266,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			accountNumber = accountNumberService.getBySerNo(accountNumber
 					.getSerNo());
 			setEntity(accountNumber);
+			addActionMessage("新增成功");
 			return VIEW;
 		} else {
 			setEntity(getEntity());
@@ -501,7 +502,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[6];
+			String[] rowTitles = new String[7];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -560,7 +561,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 					continue;
 				}
 
-				String[] rowValues = new String[6];
+				String[] rowValues = new String[7];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -608,15 +609,15 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 				String role = "";
 				boolean isLegalRole = false;
-				if (StringUtils.isBlank(rowValues[4])) {
+				if (StringUtils.isBlank(rowValues[5])) {
 					role = Role.不明.getRole();
 				} else {
 					Object object = getEnum(
-							new String[] { rowValues[4].trim() }, Role.class);
+							new String[] { rowValues[5].trim() }, Role.class);
 					if (object != null
-							&& roleList.contains(Role.valueOf(rowValues[4]
+							&& roleList.contains(Role.valueOf(rowValues[5]
 									.trim()))) {
-						role = rowValues[4].trim();
+						role = rowValues[5].trim();
 						isLegalRole = true;
 					} else {
 						role = Role.不明.getRole();
@@ -624,13 +625,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				}
 
 				String status = "";
-				if (StringUtils.isBlank(rowValues[5])) {
+				if (StringUtils.isBlank(rowValues[6])) {
 					status = Status.審核中.getStatus();
 				} else {
 					Object object = getEnum(
-							new String[] { rowValues[5].trim() }, Status.class);
+							new String[] { rowValues[6].trim() }, Status.class);
 					if (object != null) {
-						status = rowValues[5].trim();
+						status = rowValues[6].trim();
 					} else {
 						status = Status.審核中.getStatus();
 					}
@@ -639,7 +640,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				customer = new Customer();
 				customer.setName(rowValues[3].trim());
 				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
-						rowValues[2], Role.valueOf(role),
+						rowValues[2], rowValues[4], Role.valueOf(role),
 						Status.valueOf(status), customer);
 
 				if (StringUtils.isBlank(accountNumber.getUserId())) {
@@ -654,12 +655,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 						if (serNo != 0) {
 							accountNumber.setDataStatus("已存在");
 						} else {
-							if (customerService.getCusSerNoByName(customer
-									.getName()) != 0) {
-								accountNumber.setCustomer(customerService
-										.getBySerNo(customerService
-												.getCusSerNoByName(rowValues[3]
-														.trim())));
+							long cusSerNo = customerService
+									.getCusSerNoByName(customer.getName());
+							if (cusSerNo != 0) {
+								accountNumber.getCustomer().setSerNo(cusSerNo);
 							}
 
 							if (getLoginUser().getRole().equals(Role.管理員)) {
@@ -915,11 +914,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "userID/使用者", "userPW/使用者密碼",
-				"userName/姓名", "fk_name/用戶名稱", "role/角色", "status/狀態" });
+		empinfo.put("1",
+				new Object[] { "userID/使用者", "userPW/使用者密碼", "userName/姓名",
+						"fk_name/用戶名稱", "email", "role/角色", "status/狀態" });
 
-		empinfo.put("2", new Object[] { "cdc", "cdc", "XXX", "疾病管制局", "管理員",
-				"生效" });
+		empinfo.put("2", new Object[] { "cdc", "cdc", "XXX", "疾病管制局",
+				"cdc@cdc.org", "管理員", "生效" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();

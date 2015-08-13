@@ -1,12 +1,12 @@
-package com.shouyang.syazs.core.entity;
+package com.shouyang.syazs.core.apply.group;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import com.shouyang.syazs.core.apply.group.Group;
+import com.shouyang.syazs.core.entity.GenericEntityGroup;
 
 @MappedSuperclass
-public class GroupProperties implements Entity {
+public class GroupProperties extends GenericEntityGroup {
 	/**
 	 * 
 	 */

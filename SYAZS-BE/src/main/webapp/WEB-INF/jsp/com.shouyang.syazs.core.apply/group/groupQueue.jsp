@@ -47,16 +47,15 @@
 	}
 
 	function getCheckedItem(index) {
-		$
-				.ajax({
-					type : "POST",
-					url : "<c:url value = '/'/>crud/apply.group.getCheckedItem.action",
-					dataType : "html",
-					data : "entity.importItem=" + index,
-					success : function(message) {
+		$.ajax({
+			type : "POST",
+			url : "<c:url value = '/'/>crud/apply.group.getCheckedItem.action",
+			dataType : "html",
+			data : "entity.importItem=" + index,
+			success : function(message) {
 
-					}
-				});
+			}
+		});
 	}
 
 	function checkData() {
@@ -93,9 +92,7 @@
 				<tr>
 					<th></th>
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
-						<c:if test="${(0 eq status.index) || (1 eq status.index) || (2 eq status.index)}">
-							<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
-						</c:if>
+						<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
 					</c:forEach>
 					<th></th>
 				</tr>

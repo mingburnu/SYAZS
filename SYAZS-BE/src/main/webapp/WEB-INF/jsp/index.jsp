@@ -178,13 +178,13 @@
 		</div>
 	</div>
 
-	<div id="div_Customers">
+	<div id="div_ReferenceOwners">
 		<div class="overlay"></div>
 		<div class="content">
 			<div class="header">
 				<div class="title"></div>
 				<div class="close">
-					<a href="#" onclick="closeCustomers();">&nbsp;</a>
+					<a href="#" onclick="closeReferenceOwners();">&nbsp;</a>
 				</div>
 			</div>
 			<div class="contain"></div>

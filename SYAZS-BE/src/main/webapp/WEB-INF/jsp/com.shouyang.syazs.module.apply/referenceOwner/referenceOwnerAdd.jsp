@@ -10,20 +10,20 @@
 <script type="text/javascript">
 	//重設所有欄位(清空)
 	function resetData() {
-		$("[id^='apply_customer_save_entity']").val("");
+		$("[id^='apply_referenceOwner_save_entity']").val("");
 	}
 
 	//遞交表單
 	function submitData() {
-		var data = $('#apply_customer_save').serialize();
+		var data = $('#apply_referenceOwner_save').serialize();
 		closeDetail();
-		goDetail("<c:url value = '/'/>crud/apply.customer.save.action",
+		goDetail("<c:url value = '/'/>crud/apply.referenceOwner.save.action",
 				'客戶-新增', data);
 	}
 </script>
 </head>
 <body>
-	<s:form namespace="/crud" action="apply.customer.save">
+	<s:form namespace="/crud" action="apply.referenceOwner.save">
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>

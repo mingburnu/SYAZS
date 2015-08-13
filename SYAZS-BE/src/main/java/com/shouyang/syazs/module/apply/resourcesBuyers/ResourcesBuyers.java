@@ -42,6 +42,12 @@ public class ResourcesBuyers extends GenericEntityFull {
 	@Column(name = "DBengtitle")
 	private String dbEngTitle;
 
+	@Column(name = "URL")
+	private String url;
+
+	@Column(name = "openAccess")
+	private Boolean openAccess;
+
 	/**
 	 * @return the startDate
 	 */
@@ -132,13 +138,44 @@ public class ResourcesBuyers extends GenericEntityFull {
 		this.dbEngTitle = dbEngTitle;
 	}
 
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url
+	 *            the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the openAccess
+	 */
+	public Boolean getOpenAccess() {
+		return openAccess;
+	}
+
+	/**
+	 * @param openAccess
+	 *            the openAccess to set
+	 */
+	public void setOpenAccess(Boolean openAccess) {
+		this.openAccess = openAccess;
+	}
+
 	public ResourcesBuyers() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public ResourcesBuyers(String startDate, String maturityDate,
-			Category category, Type type, String dbChtTitle, String dbEngTitle) {
+			Category category, Type type, String dbChtTitle, String dbEngTitle,
+			String url, Boolean openAccess) {
 		super();
 		this.startDate = startDate;
 		this.maturityDate = maturityDate;
@@ -146,6 +183,8 @@ public class ResourcesBuyers extends GenericEntityFull {
 		this.type = type;
 		this.dbChtTitle = dbChtTitle;
 		this.dbEngTitle = dbEngTitle;
+		this.url = url;
+		this.openAccess = openAccess;
 	}
 
 }

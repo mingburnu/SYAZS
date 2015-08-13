@@ -13,12 +13,11 @@ import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
-import com.shouyang.syazs.core.entity.GenericEntityGroup;
 
 @Entity
 @Table(name = "groups")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Group extends GenericEntityGroup {
+public class Group extends GroupProperties {
 
 	/**
 	 * 
@@ -36,7 +35,7 @@ public class Group extends GenericEntityGroup {
 	/**
 	 * 用戶流水號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	@Autowired
 	private Customer customer;

@@ -6,7 +6,7 @@ import javax.persistence.Transient;
 import org.joda.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class SearchProperties extends GroupProperties {
+public abstract class SearchProperties implements Entity {
 
 	/**
 	 * 

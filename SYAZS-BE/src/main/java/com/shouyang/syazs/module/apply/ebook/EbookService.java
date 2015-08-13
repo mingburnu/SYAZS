@@ -1,5 +1,7 @@
 package com.shouyang.syazs.module.apply.ebook;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import com.shouyang.syazs.core.service.GenericServiceFull;
 
 @Service
 public class EbookService extends GenericServiceFull<Ebook> {
+
+	@Autowired
+	private Ebook entity;
 
 	@Autowired
 	private EbookDao dao;
@@ -50,10 +55,33 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("isbn", isbn);
 
-		if (dao.findByRestrictions(restrictions).size() > 0) {
-			return dao.findByRestrictions(restrictions).get(0).getSerNo();
+		List<Ebook> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return (result.get(0)).getSerNo();
 		} else {
 			return 0;
 		}
+	}
+
+	public Ebook getEbkByIsbn(long isbn) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.eq("isbn", isbn);
+
+		List<Ebook> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return result.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public boolean isExist(long ebkSerNo, long refSerNo) {
+		entity = dao.findByEbkSerNoRefSeNo(ebkSerNo, refSerNo);
+
+		if (entity != null) {
+			return true;
+		}
+
+		return false;
 	}
 }

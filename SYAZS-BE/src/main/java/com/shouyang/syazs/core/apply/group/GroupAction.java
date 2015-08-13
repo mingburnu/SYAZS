@@ -594,6 +594,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 				}
 			}
 
+			addActionMessage("新增成功");
 			return VIEW;
 		} else {
 			getEntity().setCustomer(
@@ -677,7 +678,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 								getEntity().getFirstLevelSelect())
 								.getGroupMapping());
 
-				groupService.merge(getEntity(), getLoginUser());
+				groupService.update(getEntity(), getLoginUser());
 			}
 
 			if (group.getGroupMapping().getLevel() == 3) {
@@ -690,9 +691,10 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 								getEntity().getSecondLevelSelect())
 								.getGroupMapping());
 
-				groupService.merge(getEntity(), getLoginUser());
+				groupService.update(getEntity(), getLoginUser());
 			}
 
+			addActionMessage("修改成功");
 			return VIEW;
 		} else {
 			getEntity().setCustomer(

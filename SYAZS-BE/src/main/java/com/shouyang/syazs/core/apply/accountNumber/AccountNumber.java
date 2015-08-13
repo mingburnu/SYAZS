@@ -1,6 +1,5 @@
 package com.shouyang.syazs.core.apply.accountNumber;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -76,7 +75,7 @@ public class AccountNumber extends GenericEntityFull {
 	/**
 	 * 用戶流水號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	@Autowired
 	private Customer customer;
@@ -186,14 +185,14 @@ public class AccountNumber extends GenericEntityFull {
 	}
 
 	public AccountNumber(String userId, String userPw, String userName,
-			Role role, Status status, Customer customer) {
+			String email, Role role, Status status, Customer customer) {
 		super();
 		this.userId = userId;
 		this.userPw = userPw;
 		this.userName = userName;
+		this.email = email;
 		this.role = role;
 		this.status = status;
 		this.customer = customer;
 	}
-
 }

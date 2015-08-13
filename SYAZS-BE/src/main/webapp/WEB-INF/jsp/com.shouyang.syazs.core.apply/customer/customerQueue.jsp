@@ -94,10 +94,7 @@
 				<tr>
 					<th></th>
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
-						<c:if
-							test="${(0 eq status.index) || (1 eq status.index)||(2 eq status.index)||(3 eq status.index)||(4 eq status.index)}">
-							<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
-						</c:if>
+						<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
 					</c:forEach>
 					<th></th>
 				</tr>
