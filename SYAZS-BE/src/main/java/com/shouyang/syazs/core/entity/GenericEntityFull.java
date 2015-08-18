@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 
 /**
@@ -232,4 +233,58 @@ public abstract class GenericEntityFull extends FileIoProperties {
 				ToStringStyle.DEFAULT_STYLE);
 	}
 
+	/** transient properties */
+	@Transient
+	private String option;
+
+	@Transient
+	private Integer listNo;
+
+	@Transient
+	private Long[] checkItem;
+
+	/**
+	 * @return the option
+	 */
+	public String getOption() {
+		return option;
+	}
+
+	/**
+	 * @param option
+	 *            the option to set
+	 */
+	public void setOption(String option) {
+		this.option = option;
+	}
+
+	/**
+	 * @return the listNo
+	 */
+	public Integer getListNo() {
+		return listNo;
+	}
+
+	/**
+	 * @param listNo
+	 *            the listNo to set
+	 */
+	public void setListNo(Integer listNo) {
+		this.listNo = listNo;
+	}
+
+	/**
+	 * @return the checkItem
+	 */
+	public Long[] getCheckItem() {
+		return checkItem;
+	}
+
+	/**
+	 * @param checkItem
+	 *            the checkItem to set
+	 */
+	public void setCheckItem(Long[] checkItem) {
+		this.checkItem = checkItem;
+	}
 }

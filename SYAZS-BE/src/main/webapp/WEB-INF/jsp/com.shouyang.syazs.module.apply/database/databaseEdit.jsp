@@ -79,12 +79,8 @@ input#referenceOwner_name {
 	<s:form namespace="/crud" action="apply.database.update">
 		<table cellspacing="1" class="detail-table">
 			<tr>
-				<th width="130">資料庫中文題名</th>
-				<td><s:textfield name="entity.dbChtTitle" cssClass="input_text" /></td>
-			</tr>
-			<tr>
-				<th width="130">資料庫英文題名</th>
-				<td><s:textfield name="entity.dbEngTitle" cssClass="input_text" /></td>
+				<th width="130">資料庫題名<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.dbTitle" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>

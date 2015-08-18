@@ -94,10 +94,10 @@
 				<tr>
 					<th></th>
 					<th><esapi:encodeForHTML>${cellNames[0]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[1]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[6]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[5]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[8]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[9]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[10]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[11]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[12]}</esapi:encodeForHTML></th>
 					<th></th>
 				</tr>
@@ -113,11 +113,14 @@
 									<input type="checkbox" disabled="disabled">
 								</c:otherwise>
 							</c:choose></td>
-						<td><esapi:encodeForHTML>${item.dbChtTitle }</esapi:encodeForHTML></td>
-						<td><esapi:encodeForHTML>${item.dbEngTitle }</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></td>
 						<td>${item.resourcesBuyers.url }</td>
 						<td>${item.resourcesBuyers.category.category }</td>
 						<td>${item.resourcesBuyers.type.type }</td>
+						<td><c:choose>
+								<c:when test="${true eq item.resourcesBuyers.openAccess}">是</c:when>
+								<c:otherwise>否</c:otherwise>
+							</c:choose></td>
 						<td align="center"><esapi:encodeForHTML>${item.owners[0].name }</esapi:encodeForHTML>
 						</td>
 						<td align="center">${item.dataStatus }</td>

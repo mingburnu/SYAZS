@@ -99,19 +99,15 @@ function goImport(){
 						<tr>
 							<td align="left"><s:select name="entity.option"
 									id="listForm_searchCondition"
-									list="#{'entity.chineseTitle':'中文刊名','entity.englishTitle':'英文刊名','entity.issn':'ISSN'}"></s:select>
+									list="#{'entity.title':'刊名','entity.issn':'ISSN'}"></s:select>
 							</td>
 							<c:choose>
 								<c:when test="${entity.option=='entity.issn' }">
 									<td align="left"><s:textfield name="entity.issn"
 											id="search" cssClass="input_text" /></td>
 								</c:when>
-								<c:when test="${entity.option=='entity.englishTitle' }">
-									<td align="left"><s:textfield name="entity.englishTitle"
-											id="search" cssClass="input_text" /></td>
-								</c:when>
 								<c:otherwise>
-									<td align="left"><s:textfield name="entity.chineseTitle"
+									<td align="left"><s:textfield name="entity.title"
 											id="search" cssClass="input_text" /></td>
 								</c:otherwise>
 							</c:choose>
@@ -160,7 +156,7 @@ function goImport(){
 							<td align="center" class="td_first" nowrap><input
 								type="checkbox" class="checkbox" name="entity.checkItem"
 								value="${item.serNo}"></td>
-							<td><esapi:encodeForHTML>${item.englishTitle }</esapi:encodeForHTML></td>
+							<td><esapi:encodeForHTML>${item.title }</esapi:encodeForHTML></td>
 							<td align="center">${item.resourcesBuyers.type }</td>
 							<td>${item.cUid }</td>
 							<td align="center">${item.uUid }</td>

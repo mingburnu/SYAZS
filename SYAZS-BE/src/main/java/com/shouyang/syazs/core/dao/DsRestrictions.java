@@ -203,7 +203,5 @@ public interface DsRestrictions extends Serializable {
 	 */
 	public void addOrderDesc(String propertyName);
 
-	public void sqlQuery(String sql);
-	
 	public void customCriterion(Criterion criterion);
 }

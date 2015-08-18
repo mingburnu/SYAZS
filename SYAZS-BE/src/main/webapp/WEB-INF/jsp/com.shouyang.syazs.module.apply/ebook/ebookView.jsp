@@ -114,12 +114,8 @@
 						<td>${entity.resourcesBuyers.type}</td>
 					</tr>
 					<tr>
-						<th width="130">資料庫中文題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbChtTitle}</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">資料庫英文題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbEngTitle}</esapi:encodeForHTML></td>
+						<th width="130">資料庫題名</th>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbTitle}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>

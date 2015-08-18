@@ -61,12 +61,8 @@
 			<table cellspacing="1" class="detail-table">
 				<tbody>
 					<tr>
-						<th width="130">資料庫中文題名</th>
-						<td><esapi:encodeForHTML>${entity.dbChtTitle }</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">資料庫英文題名</th>
-						<td><esapi:encodeForHTML>${entity.dbEngTitle }</esapi:encodeForHTML></td>
+						<th width="130">資料庫題名</th>
+						<td><esapi:encodeForHTML>${entity.dbTitle }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">出版社</th>

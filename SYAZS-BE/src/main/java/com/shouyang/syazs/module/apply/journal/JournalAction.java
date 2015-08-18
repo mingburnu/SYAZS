@@ -85,8 +85,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	protected void validateSave() throws Exception {
-		if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
-			errorMessages.add("英文刊名不得空白");
+		if (StringUtils.isBlank(getEntity().getTitle())) {
+			errorMessages.add("刊名不得空白");
 		}
 
 		if (StringUtils.isBlank(getEntity().getIssn())) {
@@ -161,8 +161,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			if (StringUtils.isBlank(getEntity().getEnglishTitle())) {
-				errorMessages.add("英文刊名不得空白");
+			if (StringUtils.isBlank(getEntity().getTitle())) {
+				errorMessages.add("刊名不得空白");
 			}
 
 			if (StringUtils.isBlank(getEntity().getIssn())) {
@@ -293,24 +293,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	@Override
 	public String list() throws Exception {
 		if (StringUtils.isNotEmpty(getEntity().getOption())) {
-			if (!getEntity().getOption().equals("entity.chineseTitle")
-					&& !getEntity().getOption().equals("entity.englishTitle")
+			if (!getEntity().getOption().equals("entity.title")
 					&& !getEntity().getOption().equals("entity.issn")) {
-				getEntity().setOption("entity.chineseTitle");
+				getEntity().setOption("entity.title");
 			}
 		} else {
 			getEntity().setOption("entity.chineseTitle");
 		}
 
-		if (getEntity().getOption().equals("entity.chineseTitle")) {
-			getEntity().setEnglishTitle(null);
-			getEntity().setIssn(null);
-		} else if (getEntity().getOption().equals("entity.englishTitle")) {
-			getEntity().setChineseTitle(null);
+		if (getEntity().getOption().equals("entity.title")) {
 			getEntity().setIssn(null);
 		} else {
-			getEntity().setChineseTitle(null);
-			getEntity().setEnglishTitle(null);
+			getEntity().setTitle(null);
 		}
 
 		DataSet<Journal> ds = journalService.getByRestrictions(initDataSet());
@@ -450,7 +444,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[19];
+			String[] rowTitles = new String[17];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -508,7 +502,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					continue;
 				}
 
-				String[] rowValues = new String[19];
+				String[] rowValues = new String[17];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -557,56 +551,55 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				}
 
 				String category = "";
-				if (rowValues[13] == null || rowValues[13].trim().equals("")) {
+				if (StringUtils.isBlank(rowValues[11])) {
 					category = Category.未註明.getCategory();
 				} else {
 					Object object = getEnum(
-							new String[] { rowValues[13].trim() },
+							new String[] { rowValues[11].trim() },
 							Category.class);
 					if (object != null) {
-						category = rowValues[13].trim();
+						category = rowValues[11].trim();
 					} else {
 						category = Category.不明.getCategory();
 					}
 				}
 
 				String type = "";
-				if (rowValues[14] == null || rowValues[14].trim().equals("")) {
-					type = Type.資料庫.getType();
+				if (StringUtils.isBlank(rowValues[12])) {
+					type = Type.期刊.getType();
 				} else {
 					Object object = getEnum(
-							new String[] { rowValues[14].trim() }, Type.class);
+							new String[] { rowValues[12].trim() }, Type.class);
 					if (object != null) {
-						type = rowValues[14].trim();
+						type = rowValues[12].trim();
 					} else {
-						type = Type.資料庫.getType();
+						type = Type.期刊.getType();
 					}
 				}
 
 				boolean openAccess = false;
-				if (rowValues[16].toLowerCase().equals("yes")
-						|| rowValues[16].toLowerCase().equals("true")
-						|| rowValues[16].equals("是")) {
+				if (rowValues[15].toLowerCase().equals("yes")
+						|| rowValues[15].toLowerCase().equals("true")
+						|| rowValues[15].equals("是")) {
 					openAccess = true;
 				}
 
 				resourcesBuyers = new ResourcesBuyers(rowValues[9],
 						rowValues[10], Category.valueOf(category),
 						Type.valueOf(type), rowValues[13], rowValues[14],
-						rowValues[15], openAccess);
+						openAccess);
 
-				String issn = rowValues[3].trim().toUpperCase();
+				String issn = rowValues[2].trim().toUpperCase();
 
 				referenceOwner = new ReferenceOwner();
-				referenceOwner.setName(rowValues[17].trim());
-				referenceOwner.setEngName(rowValues[18].trim());
+				referenceOwner.setName(rowValues[16].trim());
 
 				List<ReferenceOwner> owners = new LinkedList<ReferenceOwner>();
 				owners.add(referenceOwner);
 
-				journal = new Journal(rowValues[0], rowValues[1], rowValues[2],
-						"", issn, rowValues[4], rowValues[5], rowValues[6], "",
-						"", "", rowValues[7], rowValues[8], null,
+				journal = new Journal(rowValues[0], rowValues[1], "", issn,
+						rowValues[3], rowValues[4], rowValues[5], "", "",
+						rowValues[6], rowValues[7], null, rowValues[8],
 						resourcesBuyers);
 				journal.setOwners(owners);
 
@@ -615,7 +608,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 							.replace("-", ""));
 
 					long refSerNo = referenceOwnerService
-							.getRefSerNoByName(rowValues[17].trim());
+							.getRefSerNoByName(referenceOwner.getName());
 					if (refSerNo != 0) {
 						journal.getOwners().get(0).setSerNo(refSerNo);
 						if (jouSerNo != 0) {
@@ -876,19 +869,16 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "中文刊名", "英文刊名", "英文縮寫刊名", "ISSN", "語文",
-				"出版項/出版社", "出版年", "刊別/期刊頻率", "國會分類號", "起始日", "到期日",
-				"資源類型(買斷/租用)", "資源分類", "資料庫中文題名", "資料庫英文題名", "URL", "公開資源",
-				"購買人名稱", "購買人英文名稱" });
+		empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "ISSN", "語文",
+				"出版項/出版社", "出版年", "刊別/期刊頻率", "國會分類號", "出版時間差", "起始日", "到期日",
+				"資源類型(買斷/租用)", "資源分類", "資料庫題名", "URL", "公開資源", "購買人名稱" });
 
-		empinfo.put("2", new Object[] { "N/A",
-				"The New England Journal of Medicine", "", "15334406", "eng",
-				"NEJM", "1812", "weekly", "N/A", "N/A", "N/A", "租貸", "期刊", "",
-				"", "", "是", "獨孤寧珂", "" });
-		empinfo.put("3", new Object[] { "N/A",
-				"The New England Journal of Medicine", "", "15334406", "eng",
-				"NEJM", "1812", "weekly", "N/A", "N/A", "N/A", "租貸", "期刊", "",
-				"", "", "否", "劉季", "" });
+		empinfo.put("2", new Object[] { "The New England Journal of Medicine",
+				"", "15334406", "eng", "NEJM", "1812", "weekly", "N/A", "",
+				"N/A", "N/A", "租貸", "期刊", "", "", "是", "獨孤寧珂" });
+		empinfo.put("3", new Object[] { "The New England Journal of Medicine",
+				"", "15334406", "eng", "NEJM", "1812", "weekly", "N/A", "",
+				"N/A", "N/A", "租貸", "期刊", "", "", "否", "劉季" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();

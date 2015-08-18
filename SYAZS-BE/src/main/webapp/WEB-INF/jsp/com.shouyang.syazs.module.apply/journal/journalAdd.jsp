@@ -88,13 +88,8 @@ input#referenceOwner_name {
 	<s:form namespace="/crud" action="apply.journal.save">
 		<table cellspacing="1" class="detail-table">
 			<tr>
-				<th width="130">中文刊名</th>
-				<td><s:textfield name="entity.chineseTitle"
-						cssClass="input_text" /></td>
-			</tr>
-			<tr>
-				<th width="130">英文刊名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.englishTitle"
+				<th width="130">刊名<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.title"
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>

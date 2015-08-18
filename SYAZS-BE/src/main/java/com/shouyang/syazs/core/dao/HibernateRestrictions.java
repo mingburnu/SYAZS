@@ -166,11 +166,6 @@ public class HibernateRestrictions implements DsRestrictions {
 	}
 
 	@Override
-	public void sqlQuery(String sql) {
-		criterions.add(Restrictions.sqlRestriction(sql));
-	}
-
-	@Override
 	public void customCriterion(Criterion criterion) {
 		criterions.add(criterion);
 	}

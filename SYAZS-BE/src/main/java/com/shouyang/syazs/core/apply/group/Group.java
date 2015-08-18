@@ -7,17 +7,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
+import com.shouyang.syazs.core.entity.GenericEntityGroup;
 
 @Entity
 @Table(name = "groups")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class Group extends GroupProperties {
+public class Group extends GenericEntityGroup {
 
 	/**
 	 * 

@@ -104,18 +104,9 @@ function goImport(){
 						<tr>
 							<td align="left"><s:select name="entity.option"
 									id="listForm_searchCondition"
-									list="#{'entity.dbChtTitle':'資料庫中文題名','entity.dbEngTitle':'資料庫英文題名'}"></s:select>
-							</td>
-							<c:choose>
-								<c:when test="${entity.option=='entity.dbEngTitle' }">
-									<td align="left"><s:textfield name="entity.dbEngTitle"
-											id="search" cssClass="input_text" /></td>
-								</c:when>
-								<c:otherwise>
-									<td align="left"><s:textfield name="entity.dbChtTitle"
-											id="search" cssClass="input_text" /></td>
-								</c:otherwise>
-							</c:choose>
+									list="#{'entity.dbTitle':'資料庫題名'}" /></td>
+							<td align="left"><s:textfield name="entity.dbTitle"
+									id="search" cssClass="input_text" /></td>
 							<td align="left"><a class="state-default"
 								onclick="goSearch();">查詢</a></td>
 						</tr>
@@ -161,14 +152,8 @@ function goImport(){
 							<td align="center" class="td_first" nowrap><input
 								type="checkbox" class="checkbox" name="entity.checkItem"
 								value="${item.serNo}"></td>
-							<td><c:choose>
-									<c:when test="${not empty item.dbEngTitle }">
-										<esapi:encodeForHTML>${item.dbEngTitle }</esapi:encodeForHTML>
-									</c:when>
-									<c:otherwise>
-										<esapi:encodeForHTML>${item.dbChtTitle }</esapi:encodeForHTML>
-									</c:otherwise>
-								</c:choose></td>
+							<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML>
+							</td>
 							<td align="center">${item.resourcesBuyers.type }</td>
 							<td><c:out value="${item.cUid }" /></td>
 							<td align="center"><c:out value="${item.uUid }" /></td>

@@ -100,7 +100,7 @@ input#referenceOwner_name {
 				<td><s:textfield name="entity.bookName" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">ISBN<span class="required">(&#8226;)</span></th>
+				<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_save_entity_isbn"
 					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>">

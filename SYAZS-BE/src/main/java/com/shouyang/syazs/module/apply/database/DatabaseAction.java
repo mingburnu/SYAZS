@@ -83,18 +83,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	protected void validateSave() throws Exception {
-		if (StringUtils.isBlank(getEntity().getDbChtTitle())
-				&& StringUtils.isBlank(getEntity().getDbEngTitle())) {
+		if (StringUtils.isBlank(getEntity().getDbTitle())) {
 			errorMessages.add("沒有資料庫名稱");
 		} else {
-			if (databaseService.getDatSerNoByChtName(getEntity()
-					.getDbChtTitle()) != 0) {
-				errorMessages.add("資料庫中文名稱已存在");
-			}
-
-			if (databaseService.getDatSerNoByEngName(getEntity()
-					.getDbEngTitle()) != 0) {
-				errorMessages.add("資料庫英文名稱已存在");
+			long datSerNo = databaseService.getDatSerNoByTitle(getEntity()
+					.getDbTitle());
+			if (datSerNo != 0) {
+				errorMessages.add("資料庫名稱已存在");
 			}
 		}
 
@@ -155,21 +150,16 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			if (StringUtils.isBlank(getEntity().getDbChtTitle())
-					&& StringUtils.isBlank(getEntity().getDbEngTitle())) {
+			if (StringUtils.isBlank(getEntity().getDbTitle())
+					&& StringUtils.isBlank(getEntity().getDbTitle())) {
 				errorMessages.add("沒有資料庫名稱");
 			} else {
-				long datSerNo = databaseService
-						.getDatSerNoByChtName(getEntity().getDbChtTitle());
+				long datSerNo = databaseService.getDatSerNoByTitle(getEntity()
+						.getDbTitle());
 				if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
-					errorMessages.add("資料庫中文名稱已存在");
+					errorMessages.add("資料庫名稱已存在");
 				}
 
-				datSerNo = databaseService.getDatSerNoByEngName(getEntity()
-						.getDbEngTitle());
-				if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
-					errorMessages.add("資料庫英文文名稱已存在");
-				}
 			}
 
 			if (!isURL(getEntity().getResourcesBuyers().getUrl())) {
@@ -283,12 +273,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Override
 	public String list() throws Exception {
 		if (StringUtils.isNotBlank(getEntity().getOption())) {
-			if (!getEntity().getOption().equals("entity.dbChtTitle")
-					&& !getEntity().getOption().equals("entity.dbEngTitle")) {
-				getEntity().setOption("entity.dbChtTitle");
+			if (!getEntity().getOption().equals("entity.dbTitle")) {
+				getEntity().setOption("entity.dbTitle");
 			}
 		} else {
-			getEntity().setOption("entity.dbChtTitle");
+			getEntity().setOption("entity.dbTitle");
 		}
 
 		DataSet<Database> ds = databaseService.getByRestrictions(initDataSet());
@@ -310,13 +299,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotEmpty(getEntity().getDbChtTitle())) {
-				getEntity().setDbChtTitle(getEntity().getDbChtTitle().trim());
-			}
-
-			if (StringUtils.isNotEmpty(getEntity().getDbEngTitle())) {
-				getEntity().setDbEngTitle(getEntity().getDbEngTitle().trim());
-			}
+			getEntity().setDbTitle(getEntity().getDbTitle().trim());
+			getEntity().getResourcesBuyers().setDbTitle(
+					getEntity().getDbTitle());
 
 			getEntity().setReferenceOwners(
 					new HashSet<ReferenceOwner>(getEntity().getOwners()));
@@ -345,13 +330,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotEmpty(getEntity().getDbChtTitle())) {
-				getEntity().setDbChtTitle(getEntity().getDbChtTitle().trim());
-			}
-
-			if (StringUtils.isNotEmpty(getEntity().getDbEngTitle())) {
-				getEntity().setDbEngTitle(getEntity().getDbEngTitle().trim());
-			}
+			getEntity().setDbTitle(getEntity().getDbTitle().trim());
+			getEntity().getResourcesBuyers().setDbTitle(
+					getEntity().getDbTitle());
 
 			getEntity().setReferenceOwners(
 					new HashSet<ReferenceOwner>(getEntity().getOwners()));
@@ -432,7 +413,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[14];
+			String[] rowTitles = new String[13];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -482,7 +463,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			LinkedHashSet<Database> originalData = new LinkedHashSet<Database>();
 			Map<String, Database> checkRepeatRow = new LinkedHashMap<String, Database>();
-			Map<String, String> checkErrorRow = new LinkedHashMap<String, String>();
 			int normal = 0;
 
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -491,7 +471,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					continue;
 				}
 
-				String[] rowValues = new String[14];
+				String[] rowValues = new String[13];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -573,19 +553,18 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				resourcesBuyers = new ResourcesBuyers(rowValues[7],
 						rowValues[8], Category.valueOf(category),
-						Type.valueOf(type), rowValues[0], rowValues[1],
-						rowValues[6], openAccess);
+						Type.valueOf(type), rowValues[0], rowValues[5],
+						openAccess);
 
 				referenceOwner = new ReferenceOwner();
 				referenceOwner.setName(rowValues[12].trim());
-				referenceOwner.setEngName(rowValues[13].trim());
 
 				List<ReferenceOwner> owners = new LinkedList<ReferenceOwner>();
 				owners.add(referenceOwner);
 
-				database = new Database(rowValues[0].trim(),
-						rowValues[1].trim(), rowValues[3], rowValues[4],
-						rowValues[2], rowValues[5], "", "", "", resourcesBuyers);
+				database = new Database(rowValues[0].trim(), rowValues[2],
+						rowValues[3], rowValues[1], rowValues[4], "", "", "",
+						rowValues[6], resourcesBuyers);
 				database.setOwners(owners);
 
 				long refSerNo = referenceOwnerService
@@ -593,67 +572,29 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 				if (refSerNo != 0) {
 					database.getOwners().get(0).setSerNo(refSerNo);
-					if (StringUtils.isNotBlank(database.getDbChtTitle())
-							|| StringUtils.isNotBlank(database.getDbEngTitle())) {
-						long datSerNoByChtName = databaseService
-								.getDatSerNoByChtName(database.getDbChtTitle());
-						long datSerNoByEngName = databaseService
-								.getDatSerNoByEngName(database.getDbEngTitle());
 
-						if (datSerNoByChtName != 0 && datSerNoByEngName != 0
-								&& datSerNoByChtName == datSerNoByEngName) {
-							if (databaseService.isExist(datSerNoByChtName,
-									refSerNo)) {
-								database.setDataStatus("已存在");
-							}
-
-						} else if (datSerNoByChtName != 0
-								&& datSerNoByEngName != 0
-								&& datSerNoByChtName != datSerNoByEngName) {
-							database.setDataStatus("資料庫名稱混亂");
-
-						} else if (datSerNoByChtName == 0
-								&& datSerNoByEngName != 0) {
-							if (databaseService.getDatSerNoByBothName(
-									database.getDbChtTitle(),
-									database.getDbEngTitle()) == 0) {
-								database.setDataStatus("資料庫名稱混亂");
-
-							} else if (databaseService.isExist(
-									datSerNoByEngName, refSerNo)) {
-								database.setDataStatus("已存在");
-							}
-
-						} else if (datSerNoByChtName != 0
-								&& datSerNoByEngName == 0) {
-							if (databaseService.getDatSerNoByBothName(
-									database.getDbChtTitle(),
-									database.getDbEngTitle()) == 0) {
-								database.setDataStatus("資料庫名稱混亂");
-
-							} else if (databaseService.isExist(
-									datSerNoByChtName, refSerNo)) {
-								database.setDataStatus("已存在");
-							}
-
+					long datSerNo = databaseService.getDatSerNoByTitle(database
+							.getDbTitle());
+					if (datSerNo != 0) {
+						if (databaseService.isExist(datSerNo, refSerNo)) {
+							database.setDataStatus("已存在");
+						}
+					} else {
+						if (database.getResourcesBuyers().getCategory()
+								.equals(Category.不明)) {
+							database.setDataStatus("資源類型不明");
 						} else {
-							if (database.getResourcesBuyers().getCategory()
-									.equals(Category.不明)) {
-								database.setDataStatus("資源類型不明");
+							if (StringUtils.isBlank(database.getDbTitle())) {
+								database.setDataStatus("沒有資料庫名稱");
 							}
 						}
-
-					} else {
-						database.setDataStatus("資料庫名稱空白");
-
 					}
 				} else {
 					database.setDataStatus("無此客戶");
-
 				}
 
 				if (!isURL(database.getResourcesBuyers().getUrl())) {
-					database.getResourcesBuyers().setUrl(null);
+					database.getResourcesBuyers().setUrl("");
 				}
 
 				if (database.getDataStatus() == null) {
@@ -663,43 +604,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				if (database.getDataStatus().equals("正常")
 						&& !originalData.contains(database)) {
 
-					if (checkRepeatRow.containsKey(database.getDbChtTitle()
-							+ database.getDbEngTitle()
+					if (checkRepeatRow.containsKey(referenceOwner.getMemo()
 							+ referenceOwner.getName())) {
 						database.setDataStatus("資料重複");
 
-					} else if (checkErrorRow.containsKey(database
-							.getDbEngTitle())
-							&& !checkErrorRow.get(database.getDbEngTitle())
-									.equals(database.getDbChtTitle()
-											+ database.getDbEngTitle())) {
-						database.setDataStatus("不能新增");
-
-					} else if (checkErrorRow.containsKey(database
-							.getDbChtTitle())
-							&& !checkErrorRow.get(database.getDbChtTitle())
-									.equals(database.getDbChtTitle()
-											+ database.getDbEngTitle())) {
-						database.setDataStatus("不能新增");
 					} else {
-						checkRepeatRow.put(
-								database.getDbChtTitle()
-										+ database.getDbEngTitle()
-										+ referenceOwner.getName(), database);
-						if (StringUtils.isNotBlank(database.getDbEngTitle())) {
-							checkErrorRow.put(
-									database.getDbEngTitle(),
-									database.getDbChtTitle()
-											+ database.getDbEngTitle());
-						}
-
-						if (StringUtils.isNotBlank(database.getDbChtTitle())) {
-							checkErrorRow.put(
-									database.getDbChtTitle(),
-									database.getDbChtTitle()
-											+ database.getDbEngTitle());
-						}
-
+						checkRepeatRow.put(referenceOwner.getMemo()
+								+ referenceOwner.getName(), database);
 						++normal;
 					}
 				}
@@ -880,8 +791,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				int index = (Integer) iterator.next();
 				database = (Database) importList.get(index);
 
-				targetDb = databaseService.getDbByBothName(
-						database.getDbChtTitle(), database.getDbEngTitle());
+				targetDb = databaseService.getDbByTitle(database.getDbTitle());
 
 				if (targetDb == null) {
 					database.setReferenceOwners(new HashSet<ReferenceOwner>(
@@ -916,17 +826,16 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "資料庫中文題名", "資料庫英文題名",
-				"publishname/出版社", "語文", "IncludedSpecies/收錄種類",
-				"Content/收錄內容", "URL", "起始日", "到期日", "資源類型", "資源種類", "公開資源",
-				"購買人名稱", "購買人英文名稱" });
+		empinfo.put("1", new Object[] { "資料庫題名", "publishname/出版社", "語文",
+				"IncludedSpecies/收錄種類", "Content/收錄內容", "URL", "出版時間差", "起始日",
+				"到期日", "資源類型", "資源種類", "公開資源", "購買人名稱" });
 
-		empinfo.put("2", new Object[] { "BMJ 醫學期刊", "BMJ  Journal",
-				"The BMJ Publishing Group Ltd", "eng", "", "", "", "N/A",
+		empinfo.put("2", new Object[] { "BMJ 醫學期刊 BMJ  Journal",
+				"The BMJ Publishing Group Ltd", "eng", "", "", "", "", "N/A",
 				"N/A", "租貸", " 資料庫", "是", "李靖", "" });
-		empinfo.put("3", new Object[] { "BMJ 醫學期刊", "BMJ  Journal",
-				"The BMJ Publishing Group Ltd", "eng", "", "", "", "N/A",
-				"N/A", "租貸", " 資料庫", "否", "毛民福", "" });
+		empinfo.put("3", new Object[] { "BMJ 醫學期刊 BMJ  Journal",
+				"The BMJ Publishing Group Ltd", "eng", "", "", "", "", "N/A",
+				"N/A", "租貸", " 資料庫", "否", "毛民福" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();

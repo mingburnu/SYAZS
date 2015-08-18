@@ -72,10 +72,6 @@ public class Ebook extends ModuleProperties {
 	@Column(name = "bookinfoIntegeregral")
 	private String bookInfoIntegral;
 
-	// URL
-	@Column(name = "URL")
-	private String url;
-
 	// 類型
 	@Column(name = "style")
 	private String style;
@@ -261,21 +257,6 @@ public class Ebook extends ModuleProperties {
 	}
 
 	/**
-	 * @return the url
-	 */
-	public String getUrl() {
-		return url;
-	}
-
-	/**
-	 * @param url
-	 *            the url to set
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	/**
 	 * @return the style
 	 */
 	public String getStyle() {
@@ -343,8 +324,8 @@ public class Ebook extends ModuleProperties {
 	public Ebook(String bookName, Long isbn, String publishName,
 			String autherName, String authers, String uppeName, String pubDate,
 			String languages, Integer version, String cnClassBzStr,
-			String bookInfoIntegral, String url, String style,
-			String publication, ResourcesBuyers resourcesBuyers) {
+			String bookInfoIntegral, String style, String publication,
+			ResourcesBuyers resourcesBuyers) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;
@@ -357,7 +338,6 @@ public class Ebook extends ModuleProperties {
 		this.version = version;
 		this.cnClassBzStr = cnClassBzStr;
 		this.bookInfoIntegral = bookInfoIntegral;
-		this.url = url;
 		this.style = style;
 		this.publication = publication;
 		this.resourcesBuyers = resourcesBuyers;

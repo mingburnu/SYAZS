@@ -30,12 +30,8 @@ public class Journal extends ModuleProperties {
 	private static final long serialVersionUID = 8359789887877536098L;
 
 	// 中文刊名
-	@Column(name = "chinesetitle")
-	private String chineseTitle;
-
-	// 英文刊名
-	@Column(name = "englishtitle")
-	private String englishTitle;
+	@Column(name = "title")
+	private String title;
 
 	// 英文縮寫刊名
 	@Column(name = "abbreviationtitle")
@@ -65,10 +61,6 @@ public class Journal extends ModuleProperties {
 	@Column(name = "caption")
 	private String caption;
 
-	// URL
-	@Column(name = "URL")
-	private String url;
-
 	// 編號
 	@Column(name = "numB")
 	private String numB;
@@ -85,6 +77,10 @@ public class Journal extends ModuleProperties {
 	@Column(name = "version")
 	private Integer version;
 
+	// 出版時間差
+	@Column(name = "embargo")
+	private String embargo;
+
 	// ResourcesBuyers
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "res_serNo", nullable = false)
@@ -97,33 +93,18 @@ public class Journal extends ModuleProperties {
 	private Set<ReferenceOwner> referenceOwners;
 
 	/**
-	 * @return the chineseTitle
+	 * @return the title
 	 */
-	public String getChineseTitle() {
-		return chineseTitle;
+	public String getTitle() {
+		return title;
 	}
 
 	/**
-	 * @param chineseTitle
-	 *            the chineseTitle to set
+	 * @param title
+	 *            the title to set
 	 */
-	public void setChineseTitle(String chineseTitle) {
-		this.chineseTitle = chineseTitle;
-	}
-
-	/**
-	 * @return the englishTitle
-	 */
-	public String getEnglishTitle() {
-		return englishTitle;
-	}
-
-	/**
-	 * @param englishTitle
-	 *            the englishTitle to set
-	 */
-	public void setEnglishTitle(String englishTitle) {
-		this.englishTitle = englishTitle;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	/**
@@ -232,21 +213,6 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
-	 * @return the url
-	 */
-	public String getUrl() {
-		return url;
-	}
-
-	/**
-	 * @param url
-	 *            the url to set
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	/**
 	 * @return the numB
 	 */
 	public String getNumB() {
@@ -307,6 +273,21 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
+	 * @return the embargo
+	 */
+	public String getEmbargo() {
+		return embargo;
+	}
+
+	/**
+	 * @param embargo
+	 *            the embargo to set
+	 */
+	public void setEmbargo(String embargo) {
+		this.embargo = embargo;
+	}
+
+	/**
 	 * @return the resourcesBuyers
 	 */
 	public ResourcesBuyers getResourcesBuyers() {
@@ -341,15 +322,13 @@ public class Journal extends ModuleProperties {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Journal(String chineseTitle, String englishTitle,
-			String abbreviationTitle, String titleEvolution, String issn,
-			String languages, String publishName, String publishYear,
-			String caption, String url, String numB, String publication,
-			String congressClassification, Integer version,
-			ResourcesBuyers resourcesBuyers) {
+	public Journal(String title, String abbreviationTitle,
+			String titleEvolution, String issn, String languages,
+			String publishName, String publishYear, String caption,
+			String numB, String publication, String congressClassification,
+			Integer version, String embargo, ResourcesBuyers resourcesBuyers) {
 		super();
-		this.chineseTitle = chineseTitle;
-		this.englishTitle = englishTitle;
+		this.title = title;
 		this.abbreviationTitle = abbreviationTitle;
 		this.titleEvolution = titleEvolution;
 		this.issn = issn;
@@ -357,11 +336,11 @@ public class Journal extends ModuleProperties {
 		this.publishName = publishName;
 		this.publishYear = publishYear;
 		this.caption = caption;
-		this.url = url;
 		this.numB = numB;
 		this.publication = publication;
 		this.congressClassification = congressClassification;
 		this.version = version;
+		this.embargo = embargo;
 		this.resourcesBuyers = resourcesBuyers;
 	}
 }

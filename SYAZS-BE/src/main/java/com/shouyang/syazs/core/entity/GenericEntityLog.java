@@ -15,6 +15,7 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 
 /**
@@ -132,4 +133,76 @@ public abstract class GenericEntityLog extends FileIoProperties {
 				ToStringStyle.DEFAULT_STYLE);
 	}
 
+	/** transient properties */
+	@Transient
+	private LocalDateTime start;
+
+	@Transient
+	private LocalDateTime end;
+
+	@Transient
+	private Integer count;
+
+	@Transient
+	private Integer rank;
+
+	/**
+	 * @return the start
+	 */
+	public LocalDateTime getStart() {
+		return start;
+	}
+
+	/**
+	 * @param start
+	 *            the start to set
+	 */
+	public void setStart(LocalDateTime start) {
+		this.start = start;
+	}
+
+	/**
+	 * @return the end
+	 */
+	public LocalDateTime getEnd() {
+		return end;
+	}
+
+	/**
+	 * @param end
+	 *            the end to set
+	 */
+	public void setEnd(LocalDateTime end) {
+		this.end = end;
+	}
+
+	/**
+	 * @return the count
+	 */
+	public Integer getCount() {
+		return count;
+	}
+
+	/**
+	 * @param count
+	 *            the count to set
+	 */
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	/**
+	 * @return the rank
+	 */
+	public Integer getRank() {
+		return rank;
+	}
+
+	/**
+	 * @param rank
+	 *            the rank to set
+	 */
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
 }

@@ -7,7 +7,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 @MappedSuperclass
-public abstract class FileIoProperties extends CheckArray {
+public abstract class FileIoProperties implements Entity {
 
 	/**
 	 * 
@@ -26,12 +26,15 @@ public abstract class FileIoProperties extends CheckArray {
 	@Transient
 	private String dataStatus;
 
+	@Transient
+	private Integer[] importItem;
+
 	/** export file name */
 	@Transient
 	private String reportFile;
-	
+
 	@Transient
-	private InputStream inputStream; 
+	private InputStream inputStream;
 
 	public File[] getFile() {
 		return file;
@@ -65,6 +68,21 @@ public abstract class FileIoProperties extends CheckArray {
 		this.dataStatus = dataStatus;
 	}
 
+	/**
+	 * @return the importItem
+	 */
+	public Integer[] getImportItem() {
+		return importItem;
+	}
+
+	/**
+	 * @param importItem
+	 *            the importItem to set
+	 */
+	public void setImportItem(Integer[] importItem) {
+		this.importItem = importItem;
+	}
+
 	public String getReportFile() {
 		return reportFile;
 	}
@@ -81,7 +99,8 @@ public abstract class FileIoProperties extends CheckArray {
 	}
 
 	/**
-	 * @param inputStream the inputStream to set
+	 * @param inputStream
+	 *            the inputStream to set
 	 */
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;

@@ -31,17 +31,10 @@ public class JournalService extends GenericServiceFull<Journal> {
 		Assert.notNull(ds.getEntity());
 		Journal entity = ds.getEntity();
 		DsRestrictions restrictions = getDsRestrictions();
-		if (entity.getOption().equals("entity.chineseTitle")) {
-			if (StringUtils.isNotBlank(entity.getChineseTitle())) {
-				restrictions.likeIgnoreCase("chineseTitle",
-						entity.getChineseTitle(), MatchMode.ANYWHERE);
-			}
-		}
-
-		if (entity.getOption().equals("entity.englishTitle")) {
-			if (StringUtils.isNotBlank(entity.getEnglishTitle())) {
-				restrictions.likeIgnoreCase("englishTitle",
-						entity.getEnglishTitle(), MatchMode.ANYWHERE);
+		if (entity.getOption().equals("entity.title")) {
+			if (StringUtils.isNotBlank(entity.getTitle())) {
+				restrictions.likeIgnoreCase("title", entity.getTitle(),
+						MatchMode.ANYWHERE);
 			}
 		}
 
@@ -49,7 +42,7 @@ public class JournalService extends GenericServiceFull<Journal> {
 			if (StringUtils.isNotBlank(entity.getIssn())) {
 				String issn = entity.getIssn().trim();
 				Pattern pattern = Pattern
-						.compile("(\\d{4})(\\-{1})(\\d{3})[\\dX]");
+						.compile("(\\d{4})(\\-?)(\\d{3})[\\dX]");
 				Matcher matcher = pattern.matcher(issn.toUpperCase());
 				if (matcher.matches()) {
 					issn = issn.replace("-", "");

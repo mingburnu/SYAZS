@@ -98,7 +98,8 @@
 					<th><esapi:encodeForHTML>${cellNames[10]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[13]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[14]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[19]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[17]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[18]}</esapi:encodeForHTML></th>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -119,6 +120,10 @@
 						<td><esapi:encodeForHTML>${item.bookInfoIntegral }</esapi:encodeForHTML></td>
 						<td>${item.resourcesBuyers.category.category }</td>
 						<td>${item.resourcesBuyers.type.type }</td>
+						<td><c:choose>
+								<c:when test="${true eq item.resourcesBuyers.openAccess}">是</c:when>
+								<c:otherwise>否</c:otherwise>
+							</c:choose></td>
 						<td align="center"><esapi:encodeForHTML>${item.owners[0].name }</esapi:encodeForHTML>
 						</td>
 						<td align="center">${item.dataStatus }</td>

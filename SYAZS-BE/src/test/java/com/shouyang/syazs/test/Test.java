@@ -31,13 +31,13 @@ public class Test {
 
 		}
 
-		String isbn = "978-0-12-374994-9";
-		String regexCodeDash = "(97)([8-9])(\\-)(\\d)(\\-)(\\d{2})(\\-)(\\d{6})(\\-)(\\d)";
-		// (\\-?)(\\d{3})[\\dX]
-		Pattern patternCodeDash = Pattern.compile(regexCodeDash);
-		Matcher matcherCodeDash = patternCodeDash.matcher(isbn);
-
-		System.out.println(matcherCodeDash.matches());
+		Pattern pattern = Pattern
+				.compile("(\\d{4})(\\-?)(\\d{3})[\\dX]");
+		String issn="1345-457X";
+		Matcher matcher = pattern.matcher(issn.toUpperCase());
+		if (matcher.matches()) {
+			System.out.println(true);
+		}
 	}
 
 	public static boolean isLCC(String LCC) {

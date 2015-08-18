@@ -30,13 +30,9 @@ public class Database extends ModuleProperties {
 	 */
 	private static final long serialVersionUID = 1647915342720534484L;
 
-	// 資料庫中文題名
-	@Column(name = "DBchttitle")
-	private String dbChtTitle;
-
-	// 資料庫英文題名
-	@Column(name = "DBengtitle")
-	private String dbEngTitle;
+	// 資料庫題名
+	@Column(name = "DBtitle")
+	private String dbTitle;
 
 	// 語系
 	@Column(name = "languages")
@@ -67,6 +63,10 @@ public class Database extends ModuleProperties {
 	@Column(name = "IndexedYears")
 	private String indexedYears;
 
+	// 出版時間差
+	@Column(name = "embargo")
+	private String embargo;
+
 	// ResourcesBuyers
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "res_serNo", nullable = false)
@@ -79,33 +79,18 @@ public class Database extends ModuleProperties {
 	private Set<ReferenceOwner> referenceOwners;
 
 	/**
-	 * @return the dbChtTitle
+	 * @return the dbTitle
 	 */
-	public String getDbChtTitle() {
-		return dbChtTitle;
+	public String getDbTitle() {
+		return dbTitle;
 	}
 
 	/**
-	 * @param dbChtTitle
-	 *            the dbChtTitle to set
+	 * @param dbTitle
+	 *            the dbTitle to set
 	 */
-	public void setDbChtTitle(String dbChtTitle) {
-		this.dbChtTitle = dbChtTitle;
-	}
-
-	/**
-	 * @return the dbEngTitle
-	 */
-	public String getDbEngTitle() {
-		return dbEngTitle;
-	}
-
-	/**
-	 * @param dbEngTitle
-	 *            the dbEngTitle to set
-	 */
-	public void setDbEngTitle(String dbEngTitle) {
-		this.dbEngTitle = dbEngTitle;
+	public void setDbTitle(String dbTitle) {
+		this.dbTitle = dbTitle;
 	}
 
 	/**
@@ -214,6 +199,21 @@ public class Database extends ModuleProperties {
 	}
 
 	/**
+	 * @return the embargo
+	 */
+	public String getEmbargo() {
+		return embargo;
+	}
+
+	/**
+	 * @param embargo
+	 *            the embargo to set
+	 */
+	public void setEmbargo(String embargo) {
+		this.embargo = embargo;
+	}
+
+	/**
 	 * @return the resourcesBuyers
 	 */
 	public ResourcesBuyers getResourcesBuyers() {
@@ -248,13 +248,12 @@ public class Database extends ModuleProperties {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Database(String dbChtTitle, String dbEngTitle, String languages,
-			String includedSpecies, String publishName, String content,
-			String topic, String classification, String indexedYears,
+	public Database(String dbTitle, String languages, String includedSpecies,
+			String publishName, String content, String topic,
+			String classification, String indexedYears, String embargo,
 			ResourcesBuyers resourcesBuyers) {
 		super();
-		this.dbChtTitle = dbChtTitle;
-		this.dbEngTitle = dbEngTitle;
+		this.dbTitle = dbTitle;
 		this.languages = languages;
 		this.includedSpecies = includedSpecies;
 		this.publishName = publishName;
@@ -262,6 +261,7 @@ public class Database extends ModuleProperties {
 		this.topic = topic;
 		this.classification = classification;
 		this.indexedYears = indexedYears;
+		this.embargo = embargo;
 		this.resourcesBuyers = resourcesBuyers;
 	}
 }

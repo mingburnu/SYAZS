@@ -36,11 +36,8 @@ public class ResourcesBuyers extends GenericEntityFull {
 	@Enumerated(EnumType.STRING)
 	private Type type;
 
-	@Column(name = "DBchttitle")
-	private String dbChtTitle;
-
-	@Column(name = "DBengtitle")
-	private String dbEngTitle;
+	@Column(name = "DBtitle")
+	private String dbTitle;
 
 	@Column(name = "URL")
 	private String url;
@@ -109,33 +106,18 @@ public class ResourcesBuyers extends GenericEntityFull {
 	}
 
 	/**
-	 * @return the dbChtTitle
+	 * @return the dbTitle
 	 */
-	public String getDbChtTitle() {
-		return dbChtTitle;
+	public String getDbTitle() {
+		return dbTitle;
 	}
 
 	/**
-	 * @param dbChtTitle
-	 *            the dbChtTitle to set
+	 * @param dbTitle
+	 *            the dbTitle to set
 	 */
-	public void setDbChtTitle(String dbChtTitle) {
-		this.dbChtTitle = dbChtTitle;
-	}
-
-	/**
-	 * @return the dbEngTitle
-	 */
-	public String getDbEngTitle() {
-		return dbEngTitle;
-	}
-
-	/**
-	 * @param dbEngTitle
-	 *            the dbEngTitle to set
-	 */
-	public void setDbEngTitle(String dbEngTitle) {
-		this.dbEngTitle = dbEngTitle;
+	public void setDbTitle(String dbTitle) {
+		this.dbTitle = dbTitle;
 	}
 
 	/**
@@ -174,15 +156,14 @@ public class ResourcesBuyers extends GenericEntityFull {
 	}
 
 	public ResourcesBuyers(String startDate, String maturityDate,
-			Category category, Type type, String dbChtTitle, String dbEngTitle,
-			String url, Boolean openAccess) {
+			Category category, Type type, String dbTitle, String url,
+			Boolean openAccess) {
 		super();
 		this.startDate = startDate;
 		this.maturityDate = maturityDate;
 		this.category = category;
 		this.type = type;
-		this.dbChtTitle = dbChtTitle;
-		this.dbEngTitle = dbEngTitle;
+		this.dbTitle = dbTitle;
 		this.url = url;
 		this.openAccess = openAccess;
 	}

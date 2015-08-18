@@ -61,12 +61,8 @@
 			<table cellspacing="1" class="detail-table">
 				<tbody>
 					<tr>
-						<th width="130">中文刊名</th>
-						<td><esapi:encodeForHTML>${entity.chineseTitle }</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">英文刊名<span class="required">(&#8226;)</span></th>
-						<td><esapi:encodeForHTML>${entity.englishTitle }</esapi:encodeForHTML></td>
+						<th width="130">刊名<span class="required">(&#8226;)</span></th>
+						<td><esapi:encodeForHTML>${entity.title }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">英文縮寫刊名</th>
@@ -125,11 +121,11 @@
 					</tr>
 					<tr>
 						<th width="130">資料庫中文題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbChtTitle}</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbTitle}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">資料庫英文題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbEngTitle}</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbTitle}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>

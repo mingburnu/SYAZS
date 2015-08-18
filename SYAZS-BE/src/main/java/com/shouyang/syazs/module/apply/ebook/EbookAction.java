@@ -495,7 +495,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[21];
+			String[] rowTitles = new String[19];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -554,7 +554,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					continue;
 				}
 
-				String[] rowValues = new String[21];
+				String[] rowValues = new String[19];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -616,28 +616,28 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 				String type = "";
 				if (rowValues[14] == null || rowValues[14].trim().equals("")) {
-					type = Type.資料庫.getType();
+					type = Type.電子書.getType();
 				} else {
 					Object object = getEnum(
 							new String[] { rowValues[14].trim() }, Type.class);
 					if (object != null) {
 						type = rowValues[14].trim();
 					} else {
-						type = Type.資料庫.getType();
+						type = Type.電子書.getType();
 					}
 				}
 
 				boolean openAccess = false;
-				if (rowValues[18].toLowerCase().equals("yes")
-						|| rowValues[18].toLowerCase().equals("true")
-						|| rowValues[18].equals("是")) {
+				if (rowValues[17].toLowerCase().equals("yes")
+						|| rowValues[17].toLowerCase().equals("true")
+						|| rowValues[17].equals("是")) {
 					openAccess = true;
 				}
 
 				resourcesBuyers = new ResourcesBuyers(rowValues[11],
 						rowValues[12], Category.valueOf(category),
 						Type.valueOf(type), rowValues[15], rowValues[16],
-						rowValues[17], openAccess);
+						openAccess);
 
 				String isbn = rowValues[1].trim();
 
@@ -648,8 +648,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 
 				referenceOwner = new ReferenceOwner();
-				referenceOwner.setName(rowValues[19].trim());
-				referenceOwner.setEngName(rowValues[20].trim());
+				referenceOwner.setName(rowValues[18].trim());
 
 				List<ReferenceOwner> owners = new LinkedList<ReferenceOwner>();
 				owners.add(referenceOwner);
@@ -658,13 +657,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
 							rowValues[2], rowValues[3], rowValues[4],
 							rowValues[5], rowValues[6], rowValues[7], version,
-							rowValues[9], rowValues[10], "", "", "",
+							rowValues[9], rowValues[10], "", "",
 							resourcesBuyers);
 				} else {
 					ebook = new Ebook(rowValues[0], null, rowValues[2],
 							rowValues[3], rowValues[4], rowValues[5],
 							rowValues[6], rowValues[7], version, rowValues[9],
-							rowValues[10], "", "", "", resourcesBuyers);
+							rowValues[10], "", "", resourcesBuyers);
 					owners.get(0).setMemo(isbn);
 				}
 
@@ -676,7 +675,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 								.parseLong(isbn));
 
 						long refSerNo = referenceOwnerService
-								.getRefSerNoByName(rowValues[19].trim());
+								.getRefSerNoByName(referenceOwner.getName());
 						if (refSerNo != 0) {
 							ebook.getOwners().get(0).setSerNo(refSerNo);
 							if (ebkSerNo != 0) {
@@ -982,19 +981,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				"authers/第二第三作者等", "uppername/系列叢書名", "電子書出版日期", "語文", "版本",
 				"cnclassbzstr/中國圖書分類碼", "美國國家圖書館分類號", "startdate/起始日",
 				"maturitydate/到期日", "Rcategory/資源類型", "Rtype/資源種類",
-				"Dbchttitle/資料庫中文題名", "Dbengtitle/資料庫英文題名", "URL", "公開資源",
-				"購買人名稱", "購買人英文名稱" });
+				"Dbtitle/資料庫題名", "URL", "公開資源", "購買人名稱" });
 
 		empinfo.put("2", new Object[] { "Ophthalmic Clinical Procedures",
 				"9780080449784", "Elsevier(ClinicalKey)",
 				"Frank Eperjesi & Hannah Bartlett & Mark Dunne", "", "",
 				"2008/2/7", "eng", "", "001", "001", "", "", "", "電子書", "", "",
-				"", "是", "陸承軒", "" });
+				"是", "陸承軒" });
 		empinfo.put("3", new Object[] { "Ophthalmic Clinical Procedures",
 				"9780080449784", "Elsevier(ClinicalKey)",
 				"Frank Eperjesi & Hannah Bartlett & Mark Dunne", "", "",
 				"2008/2/7", "eng", "", "011", "011", "", "", "", "電子書", "", "",
-				"", "否", "夏柔", "" });
+				"否", "夏柔" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
