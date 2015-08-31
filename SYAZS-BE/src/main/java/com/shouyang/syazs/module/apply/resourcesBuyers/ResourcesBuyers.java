@@ -9,14 +9,13 @@ import javax.persistence.Table;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.shouyang.syazs.core.entity.GenericEntityFull;
+import com.shouyang.syazs.core.entity.GenericEntitySerNo;
 import com.shouyang.syazs.module.apply.enums.Category;
-import com.shouyang.syazs.module.apply.enums.Type;
 
 @Entity
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Table(name = "resourcesBuyers")
-public class ResourcesBuyers extends GenericEntityFull {
+public class ResourcesBuyers extends GenericEntitySerNo {
 
 	/**
 	 * 
@@ -31,19 +30,6 @@ public class ResourcesBuyers extends GenericEntityFull {
 	@Column(name = "Rcategory")
 	@Enumerated(EnumType.STRING)
 	private Category category;
-
-	@Column(name = "Rtype")
-	@Enumerated(EnumType.STRING)
-	private Type type;
-
-	@Column(name = "DBtitle")
-	private String dbTitle;
-
-	@Column(name = "URL")
-	private String url;
-
-	@Column(name = "openAccess")
-	private Boolean openAccess;
 
 	/**
 	 * @return the startDate
@@ -90,82 +76,16 @@ public class ResourcesBuyers extends GenericEntityFull {
 		this.category = category;
 	}
 
-	/**
-	 * @return the rType
-	 */
-	public Type getType() {
-		return type;
-	}
-
-	/**
-	 * @param rType
-	 *            the rType to set
-	 */
-	public void setType(Type type) {
-		this.type = type;
-	}
-
-	/**
-	 * @return the dbTitle
-	 */
-	public String getDbTitle() {
-		return dbTitle;
-	}
-
-	/**
-	 * @param dbTitle
-	 *            the dbTitle to set
-	 */
-	public void setDbTitle(String dbTitle) {
-		this.dbTitle = dbTitle;
-	}
-
-	/**
-	 * @return the url
-	 */
-	public String getUrl() {
-		return url;
-	}
-
-	/**
-	 * @param url
-	 *            the url to set
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	/**
-	 * @return the openAccess
-	 */
-	public Boolean getOpenAccess() {
-		return openAccess;
-	}
-
-	/**
-	 * @param openAccess
-	 *            the openAccess to set
-	 */
-	public void setOpenAccess(Boolean openAccess) {
-		this.openAccess = openAccess;
-	}
-
 	public ResourcesBuyers() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public ResourcesBuyers(String startDate, String maturityDate,
-			Category category, Type type, String dbTitle, String url,
-			Boolean openAccess) {
+			Category category) {
 		super();
 		this.startDate = startDate;
 		this.maturityDate = maturityDate;
 		this.category = category;
-		this.type = type;
-		this.dbTitle = dbTitle;
-		this.url = url;
-		this.openAccess = openAccess;
 	}
-
 }

@@ -3,6 +3,7 @@ package com.shouyang.syazs.core.dao;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
@@ -18,6 +19,8 @@ public interface DsRestrictions extends Serializable {
 	public List<?> getCriterions();
 
 	public List<?> getOrders();
+
+	public Map<String, String> getAliases();
 
 	/**
 	 * Apply an "equal" constraint to the named property
@@ -204,4 +207,6 @@ public interface DsRestrictions extends Serializable {
 	public void addOrderDesc(String propertyName);
 
 	public void customCriterion(Criterion criterion);
+
+	public void createAlias(String associationPath, String alias);
 }

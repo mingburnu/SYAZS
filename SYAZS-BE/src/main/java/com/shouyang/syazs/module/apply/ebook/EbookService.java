@@ -12,6 +12,7 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
+import com.shouyang.syazs.module.apply.database.Database;
 
 @Service
 public class EbookService extends GenericServiceFull<Ebook> {
@@ -51,6 +52,20 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		return dao;
 	}
 
+	public Ebook getRepeatEbookInDb(long isbn, Database database)
+			throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.eq("database.serNo", database.getSerNo());
+		restrictions.eq("isbn", isbn);
+
+		List<Ebook> result = dao.findByRestrictions(restrictions);
+		if (result.size() > 0) {
+			return result.get(0);
+		} else {
+			return null;
+		}
+	}
+
 	public long getEbkSerNoByIsbn(long isbn) throws Exception {
 		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("isbn", isbn);
@@ -75,8 +90,12 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		}
 	}
 
-	public boolean isExist(long ebkSerNo, long refSerNo) {
-		entity = dao.findByEbkSerNoRefSeNo(ebkSerNo, refSerNo);
+	public boolean isExist(long ebkSerNo, long refSerNo) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.createAlias("referenceOwners", "referenceOwners");
+		restrictions.eq("serNo", ebkSerNo);
+		restrictions.eq("referenceOwners.serNo", refSerNo);
+		entity = dao.findByRestrictions(restrictions).get(0);
 
 		if (entity != null) {
 			return true;

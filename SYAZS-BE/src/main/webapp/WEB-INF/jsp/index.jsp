@@ -177,6 +177,19 @@
 			<div class="contain"></div>
 		</div>
 	</div>
+	
+	<div id="div_Detail_3">
+		<div class="overlay"></div>
+		<div class="content">
+			<div class="header">
+				<div class="title"></div>
+				<div class="close">
+					<a href="#" onclick="closeDetail_3();">關閉</a>
+				</div>
+			</div>
+			<div class="contain"></div>
+		</div>
+	</div>
 
 	<div id="div_ReferenceOwners">
 		<div class="overlay"></div>
@@ -185,6 +198,19 @@
 				<div class="title"></div>
 				<div class="close">
 					<a href="#" onclick="closeReferenceOwners();">&nbsp;</a>
+				</div>
+			</div>
+			<div class="contain"></div>
+		</div>
+	</div>
+
+	<div id="div_ResDbs">
+		<div class="overlay"></div>
+		<div class="content">
+			<div class="header">
+				<div class="title"></div>
+				<div class="close">
+					<a href="#" onclick="closeResDbs();">&nbsp;</a>
 				</div>
 			</div>
 			<div class="contain"></div>

@@ -43,6 +43,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
@@ -586,8 +587,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 				resourcesBuyers = new ResourcesBuyers(rowValues[9],
 						rowValues[10], Category.valueOf(category),
-						Type.valueOf(type), rowValues[13], rowValues[14],
-						openAccess);
+						Type.valueOf(type), new Database(), rowValues[14],
+						openAccess);// rowValues[13]TODO
 
 				String issn = rowValues[2].trim().toUpperCase();
 

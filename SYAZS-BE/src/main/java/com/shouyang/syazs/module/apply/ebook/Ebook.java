@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
@@ -79,6 +81,20 @@ public class Ebook extends ModuleProperties {
 	// 出版地
 	@Column(name = "publication")
 	private String publication;
+
+	// URL
+	@Column(name = "URL")
+	private String url;
+
+	// 公開存取
+	@Column(name = "openAccess")
+	private Boolean openAccess;
+
+	// 來源資料庫
+	@ManyToOne
+	@JoinColumn(name = "dat_serNo")
+	@Autowired
+	private Database database;
 
 	// ResourcesBuyers
 	@OneToOne(cascade = CascadeType.ALL)
@@ -287,6 +303,51 @@ public class Ebook extends ModuleProperties {
 	}
 
 	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url
+	 *            the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the openAccess
+	 */
+	public Boolean getOpenAccess() {
+		return openAccess;
+	}
+
+	/**
+	 * @param openAccess
+	 *            the openAccess to set
+	 */
+	public void setOpenAccess(Boolean openAccess) {
+		this.openAccess = openAccess;
+	}
+
+	/**
+	 * @return the database
+	 */
+	public Database getDatabase() {
+		return database;
+	}
+
+	/**
+	 * @param database
+	 *            the database to set
+	 */
+	public void setDatabase(Database database) {
+		this.database = database;
+	}
+
+	/**
 	 * @return the resourcesBuyers
 	 */
 	public ResourcesBuyers getResourcesBuyers() {
@@ -325,7 +386,8 @@ public class Ebook extends ModuleProperties {
 			String autherName, String authers, String uppeName, String pubDate,
 			String languages, Integer version, String cnClassBzStr,
 			String bookInfoIntegral, String style, String publication,
-			ResourcesBuyers resourcesBuyers) {
+			String url, Boolean openAccess, Database database,
+			ResourcesBuyers resourcesBuyers, Set<ReferenceOwner> referenceOwners) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;
@@ -340,6 +402,10 @@ public class Ebook extends ModuleProperties {
 		this.bookInfoIntegral = bookInfoIntegral;
 		this.style = style;
 		this.publication = publication;
+		this.url = url;
+		this.openAccess = openAccess;
+		this.database = database;
 		this.resourcesBuyers = resourcesBuyers;
+		this.referenceOwners = referenceOwners;
 	}
 }

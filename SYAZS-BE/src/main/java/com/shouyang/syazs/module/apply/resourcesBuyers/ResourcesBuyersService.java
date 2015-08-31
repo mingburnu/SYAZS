@@ -7,10 +7,10 @@ import org.springframework.util.Assert;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.service.GenericServiceFull;
+import com.shouyang.syazs.core.service.GenericServiceSerNo;
 
 @Service
-public class ResourcesBuyersService extends GenericServiceFull<ResourcesBuyers> {
+public class ResourcesBuyersService extends GenericServiceSerNo<ResourcesBuyers> {
 
 	@Autowired
 	private ResourcesBuyersDao dao;

@@ -142,6 +142,7 @@ function goImport(){
 					<tr>
 						<th width="50" align="center">&nbsp;</th>
 						<th>名稱</th>
+						<th>UUID</th>
 						<th>種類</th>
 						<th>建立者</th>
 						<th>更新者</th>
@@ -154,7 +155,8 @@ function goImport(){
 								value="${item.serNo}"></td>
 							<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML>
 							</td>
-							<td align="center">${item.resourcesBuyers.type }</td>
+							<td>${item.uuIdentifier }</td>
+							<td align="center">${item.type }</td>
 							<td><c:out value="${item.cUid }" /></td>
 							<td align="center"><c:out value="${item.uUid }" /></td>
 							<td align="center"><a class="state-default2"

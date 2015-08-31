@@ -1,6 +1,7 @@
 package com.shouyang.syazs.module.apply.database;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -46,43 +49,41 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dao;
 	}
 
-	public Database getDbByTitle(String dbTitle) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.likeIgnoreCase("dbTitle", dbTitle, MatchMode.EXACT);
-
-		List<Database> result = dao.findByRestrictions(restrictions);
-		if (result.size() > 0) {
-			return result.get(0);
+	@SuppressWarnings("unchecked")
+	public List<Long> getDbSerNosByTitle(String dbTitle) throws Exception {
+		if (StringUtils.isNotBlank(dbTitle)) {
+			DsQueryLanguage queryLanguage = getDsQueryLanguage();
+			queryLanguage
+					.setSql("SELECT serNo FROM Database WHERE LOWER(dbTitle) = :dbTitle");
+			queryLanguage.addParameter("dbTitle", dbTitle.trim().toLowerCase());
+			return (List<Long>) dao.findByQL(queryLanguage);
 		} else {
 			return null;
 		}
 	}
 
-	public long getDatSerNoByTitle(String dbTitle) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-
-		if (StringUtils.isNotBlank(dbTitle)) {
-			restrictions.likeIgnoreCase("dbTitle", dbTitle.trim(),
-					MatchMode.EXACT);
-		} else {
-			return 0;
-		}
-
-		List<Database> result = dao.findByRestrictions(restrictions);
-		if (result.size() > 0) {
-			return (result.get(0)).getSerNo();
-		} else {
-			return 0;
-		}
+	@SuppressWarnings("unchecked")
+	public List<String> getAllDbTitles() throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage.setSql("SELECT LOWER(dbTitle) FROM Database");
+		return (List<String>) dao.findByQL(queryLanguage);
 	}
 
-	public boolean isExist(long datSerNo, long refSerNo) {
-		entity = dao.findByDatSerNoRefSeNo(datSerNo, refSerNo);
+	public List<Database> getAllDbs() throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		return dao.findByRestrictions(restrictions);
+	}
 
-		if (entity != null) {
-			return true;
-		}
+	@Override
+	public Database save(Database entity, AccountNumber user) throws Exception {
+		Assert.notNull(entity);
 
-		return false;
+		entity.initInsert(user);
+		entity.setUuIdentifier(UUID.randomUUID().toString());
+
+		Database dbEntity = dao.save(entity);
+		makeUserInfo(dbEntity);
+
+		return dbEntity;
 	}
 }

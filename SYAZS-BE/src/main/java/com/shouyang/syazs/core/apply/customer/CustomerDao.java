@@ -19,11 +19,6 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 				.getSessionFactory().getAllClassMetadata();
 
 		for (String entityName : map.keySet()) {
-			if (!entityName
-					.equals("com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion")) {
-				continue;
-			}
-
 			Query resourceQuery = getSession().createQuery(
 					"SELECT COUNT(*) FROM " + entityName
 							+ " WHERE customer.serNo=?");

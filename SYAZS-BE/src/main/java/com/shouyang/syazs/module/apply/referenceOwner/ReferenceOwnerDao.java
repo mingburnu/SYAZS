@@ -18,11 +18,6 @@ public class ReferenceOwnerDao extends ModuleDaoFull<ReferenceOwner> {
 				.getSessionFactory().getAllClassMetadata();
 
 		for (String entityName : map.keySet()) {
-			if (!entityName
-					.equals("com.shouyang.syazs.module.apply.resourcesUnion.ResourcesUnion")) {
-				continue;
-			}
-
 			Query resourceQuery = getSession().createQuery(
 					"SELECT COUNT(*) FROM " + entityName
 							+ " WHERE serNo=?");

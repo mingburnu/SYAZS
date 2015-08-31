@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -77,6 +79,16 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 		Criteria dataCri = getSession().createCriteria(entityClass);
 		Criteria countCri = getSession().createCriteria(entityClass);
 
+		// createAlias
+		Map<String, String> aliases = restrictions.getAliases();
+		Iterator<Entry<String, String>> iterator = aliases.entrySet()
+				.iterator();
+		while (iterator.hasNext()) {
+			Entry<String, String> entry = iterator.next();
+			dataCri.createAlias(entry.getKey(), entry.getValue());
+			countCri.createAlias(entry.getKey(), entry.getValue());
+		}
+
 		// add restrictions
 		List<Criterion> crions = (List<Criterion>) restrictions.getCriterions();
 		for (Criterion crion : crions) {
@@ -124,7 +136,7 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 		Assert.notNull(entity);
 		getSession().update(entity);
 	}
-	
+
 	@Override
 	public void merge(T entity) throws Exception {
 		Assert.notNull(entity);

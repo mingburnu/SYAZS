@@ -65,7 +65,7 @@ function goDetail(argURL, argTitle, argData) {
 		cache : false,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			var response = XMLHttpRequest.responseText;
-			var text = response.replace("<style>", "").replace("</style>","");
+			var text = response.replace("<style>", "").replace("</style>", "");
 			$("div#div_Detail").hide();
 			goAlert("結果", text);
 			closeLoading();
@@ -95,7 +95,7 @@ function goDetail_import(argURL, argTitle, argData, argFormId) {
 		cache : false,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			var response = XMLHttpRequest.responseText;
-			var text = response.replace("<style>", "").replace("</style>","");
+			var text = response.replace("<style>", "").replace("</style>", "");
 			$("div#div_Detail").hide();
 			goAlert("結果", text);
 			closeLoading();
@@ -132,11 +132,13 @@ function goDetailNloading(argURL, argTitle, argData) {
 		}
 	});
 }
+
 // 關閉Detail畫面之函式
 function closeDetail() {
 	$("#div_Detail").hide();
 	UI_Resize();
 }
+
 // 打開Detail_2畫面之函式
 function goDetail_2(argURL, argTitle, argData) {
 	$("#div_Detail_2 .content > .header > .title").html(argTitle);
@@ -149,7 +151,7 @@ function goDetail_2(argURL, argTitle, argData) {
 		cache : false,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			var response = XMLHttpRequest.responseText;
-			var text = response.replace("<style>", "").replace("</style>","");
+			var text = response.replace("<style>", "").replace("</style>", "");
 			goAlert("結果", text);
 			closeLoading();
 		},
@@ -162,12 +164,45 @@ function goDetail_2(argURL, argTitle, argData) {
 		}
 	});
 }
+
 // 關閉Detail_2畫面之函式
 function closeDetail_2() {
 	$("#div_Detail_2").hide();
 	UI_Resize();
 }
-//
+
+// 打開Detail_3畫面之函式
+function goDetail_3(argURL, argTitle, argData) {
+	$("#div_Detail_3 .content > .header > .title").html(argTitle);
+	showLoading();
+	$.ajax({
+		type : "POST",
+		url : argURL,
+		data : argData,
+		async : true,
+		cache : false,
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			var response = XMLHttpRequest.responseText;
+			var text = response.replace("<style>", "").replace("</style>", "");
+			goAlert("結果", text);
+			closeLoading();
+		},
+		success : function(msg) {
+			$("#div_Detail_3").show();
+			UI_Resize();
+			$(window).scrollTop(0);
+			$("#div_Detail_3 .content > .contain").html(msg);
+			closeLoading();
+		}
+	});
+}
+
+// 關閉Detail_3畫面之函式
+function closeDetail_3() {
+	$("#div_Detail_3").hide();
+	UI_Resize();
+}
+
 // 打開ReferenceOwners畫面之函式
 function goReferenceOwners(argURL, argTitle) {
 	$("#div_ReferenceOwners .content > .header > .title").html(argTitle);
@@ -181,19 +216,46 @@ function goReferenceOwners(argURL, argTitle) {
 			closeLoading();
 		},
 		success : function(msg) {
-			//$("#div_ReferenceOwners").show();
+			// $("#div_ReferenceOwners").show();
 			$(window).scrollTop(0);
 			$("#div_ReferenceOwners .content > .contain").html(msg);
 			closeLoading();
 		}
 	});
 }
+
 // 關閉ReferenceOwners畫面之函式
 function closeReferenceOwners() {
 	$("#div_ReferenceOwners").hide();
 	UI_Resize();
 }
-//
+
+// 打開ResDbs畫面之函式
+function goResDbs(argURL, argTitle) {
+	$("#div_ResDbs .content > .header > .title").html(argTitle);
+	showLoading();
+	$.ajax({
+		url : argURL,
+		async : true,
+		cache : false,
+		error : function(msq) {
+			goAlert("結果", "連結失敗.");
+			closeLoading();
+		},
+		success : function(msg) {
+			// $("#div_ResDbs").show();
+			$(window).scrollTop(0);
+			$("#div_ResDbs .content > .contain").html(msg);
+			closeLoading();
+		}
+	});
+}
+
+// 關閉ResDbs畫面之函式
+function closeResDbs() {
+	$("#div_ResDbs").hide();
+	UI_Resize();
+}
 
 // 關閉Alert畫面之函式
 function closeAlert() {
@@ -218,9 +280,14 @@ function UI_Resize() {
 	$("#div_Detail > .overlay").css("height", $(window).height());
 	$("#div_Detail_2 > .overlay").css("width", $(window).width());
 	$("#div_Detail_2 > .overlay").css("height", $(window).height());
+	$("#div_Detail_3 > .overlay").css("width", $(window).width());
+	$("#div_Detail_3 > .overlay").css("height", $(window).height());
 	//
 	$("#div_ReferenceOwners > .overlay").css("width", $(window).width());
 	$("#div_ReferenceOwners > .overlay").css("height", $(window).height());
+	//
+	$("#div_ResDbs > .overlay").css("width", $(window).width());
+	$("#div_ResDbs > .overlay").css("height", $(window).height());
 	//
 	$("#div_Alert > .overlay").css("width", $(window).width());
 	$("#div_Alert > .overlay").css("height", $(window).height());
@@ -228,15 +295,19 @@ function UI_Resize() {
 	$("#div_Loading > .overlay").css("width", $(window).width());
 	$("#div_Loading > .overlay").css("height", $(window).height());
 }
+
 $(window).resize(function() {
 	UI_Resize();
 });
+
 // UI_Scroll
 function UI_Scroll() {
 	$("#div_Detail > .overlay").css("top", $(window).scrollTop());
 	$("#div_Detail > .overlay").css("left", $(window).scrollLeft());
 	$("#div_Detail_2 > .overlay").css("top", $(window).scrollTop());
 	$("#div_Detail_2 > .overlay").css("left", $(window).scrollLeft());
+	$("#div_Detail_3 > .overlay").css("top", $(window).scrollTop());
+	$("#div_Detail_3 > .overlay").css("left", $(window).scrollLeft());
 	//
 	$("#div_ReferenceOwners > .overlay").css("top", $(window).scrollTop());
 	$("#div_ReferenceOwners > .overlay").css("left", $(window).scrollLeft());
@@ -247,6 +318,7 @@ function UI_Scroll() {
 	$("#div_Loading > .overlay").css("top", $(window).scrollTop());
 	$("#div_Loading > .overlay").css("left", $(window).scrollLeft());
 }
+
 $(window).scroll(function() {
 	UI_Scroll();
 });
@@ -320,6 +392,26 @@ function goDetail_Sub(argURL, argFormId, argData) {
 		},
 		success : function(msg) {
 			$("#div_Detail_2 .content > .contain").empty().html(msg);
+			closeLoading();
+		}
+	});
+}
+
+function goDetail_Sub_2(argURL, argFormId, argData) {
+	showLoading();
+	$.ajax({
+		type : "POST",
+		url : argURL,
+		async : true,
+		cache : false,
+		data : $(argFormId).serialize() + argData,
+		error : function(msq) {
+			// goAlert("結果","連結失敗.");
+			goAlert("結果", XMLHttpRequest.responseText);
+			closeLoading();
+		},
+		success : function(msg) {
+			$("#div_Detail_3 .content > .contain").empty().html(msg);
 			closeLoading();
 		}
 	});
@@ -424,4 +516,30 @@ function resetCloseDetail_2() {
 							+ "script>"
 							+ "function closeDetail_2(){$('#div_Detail_2').hide();UI_Resize();}"
 							+ "</" + "script>");
+}
+
+function resetCloseDetail_3() {
+	$("#div_Detail_3 .content .header .title").html("");
+	$("#div_Detail_3 .content .contain")
+			.html(
+					"<"
+							+ "script>"
+							+ "function closeDetail_3(){$('#div_Detail_3').hide();UI_Resize();}"
+							+ "</" + "script>");
+}
+
+function goTip(argURL) {
+	$.ajax({
+		url : argURL,
+		async : true,
+		cache : false,
+		error : function(msq) {
+			goAlert("結果", "連結失敗.");
+			closeLoading();
+		},
+		success : function(msg) {
+			$("#span-tip").html(msg);
+			closeLoading();
+		}
+	});
 }

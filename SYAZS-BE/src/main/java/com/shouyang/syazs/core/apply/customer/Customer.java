@@ -186,5 +186,4 @@ public class Customer extends GenericEntityFull {
 		this.contactUserName = contactUserName;
 		this.memo = memo;
 	}
-
 }

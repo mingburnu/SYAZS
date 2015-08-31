@@ -65,6 +65,10 @@
 						<td><esapi:encodeForHTML>${entity.dbTitle }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
+						<th width="130">UUID</th>
+						<td>${entity.uuIdentifier }</td>
+					</tr>
+					<tr>
 						<th width="130">出版社</th>
 						<td><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 					</tr>
@@ -73,15 +77,31 @@
 						<td><esapi:encodeForHTML>${entity.languages }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
+						<th width="130">收錄種類</th>
+						<td><esapi:encodeForHTML>${entity.includedSpecies }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
 						<th width="130">公開資源</th>
 						<td><c:choose>
-								<c:when test="${true eq entity.resourcesBuyers.openAccess}">是</c:when>
+								<c:when test="${true eq entity.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
 							</c:choose></td>
 					</tr>
 					<tr>
 						<th width="130">URL</th>
-						<td><a href="${entity.resourcesBuyers.url }" target="_blank">${entity.resourcesBuyers.url }</a></td>
+						<td><a href="${entity.url }" target="_blank">${entity.url }</a></td>
+					</tr>
+					<tr>
+						<th width="130">主題</th>
+						<td><esapi:encodeForHTML>${entity.topic }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">分類</th>
+						<td><esapi:encodeForHTML>${entity.classification }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">收錄年代</th>
+						<td><esapi:encodeForHTML>${entity.indexedYears }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
@@ -97,7 +117,7 @@
 					</tr>
 					<tr>
 						<th width="130">資源種類</th>
-						<td>${entity.resourcesBuyers.type}</td>
+						<td>${entity.type}</td>
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>
@@ -106,7 +126,11 @@
 								<div>${item.name}</div>
 							</c:forEach></td>
 					</tr>
-
+					<tr>
+						<th width="130">內容</th>
+						<td height="auto"><s:textarea id="content"
+								value="%{entity.content}" readonly="true" /></td>
+					</tr>
 				</tbody>
 			</table>
 		</c:when>

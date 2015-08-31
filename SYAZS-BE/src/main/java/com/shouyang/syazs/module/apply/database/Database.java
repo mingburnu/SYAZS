@@ -5,23 +5,28 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.enums.Type;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Entity
 @Table(name = "db")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Database extends ModuleProperties {
 
@@ -48,7 +53,7 @@ public class Database extends ModuleProperties {
 
 	// 內容
 	@Column(name = "Content")
-	@Type(type = "text")
+	@org.hibernate.annotations.Type(type = "text")
 	private String content;
 
 	// 主題
@@ -66,6 +71,23 @@ public class Database extends ModuleProperties {
 	// 出版時間差
 	@Column(name = "embargo")
 	private String embargo;
+
+	// 資料庫資源種類
+	@Column(name = "Rtype")
+	@Enumerated(EnumType.STRING)
+	private Type type;
+
+	// URL
+	@Column(name = "URL")
+	private String url;
+
+	// 公開存取
+	@Column(name = "openAccess")
+	private Boolean openAccess;
+
+	// Universally Unique Identifier
+	@Column(name = "uuIdentifier", updatable = false, unique = true)
+	private String uuIdentifier;
 
 	// ResourcesBuyers
 	@OneToOne(cascade = CascadeType.ALL)
@@ -214,6 +236,66 @@ public class Database extends ModuleProperties {
 	}
 
 	/**
+	 * @return the rType
+	 */
+	public Type getType() {
+		return type;
+	}
+
+	/**
+	 * @param rType
+	 *            the rType to set
+	 */
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the url
+	 */
+	public String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url
+	 *            the url to set
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 * @return the openAccess
+	 */
+	public Boolean getOpenAccess() {
+		return openAccess;
+	}
+
+	/**
+	 * @param openAccess
+	 *            the openAccess to set
+	 */
+	public void setOpenAccess(Boolean openAccess) {
+		this.openAccess = openAccess;
+	}
+
+	/**
+	 * @return the uuIdentifier
+	 */
+	public String getUuIdentifier() {
+		return uuIdentifier;
+	}
+
+	/**
+	 * @param uuIdentifier
+	 *            the uuIdentifier to set
+	 */
+	public void setUuIdentifier(String uuIdentifier) {
+		this.uuIdentifier = uuIdentifier;
+	}
+
+	/**
 	 * @return the resourcesBuyers
 	 */
 	public ResourcesBuyers getResourcesBuyers() {
@@ -251,7 +333,8 @@ public class Database extends ModuleProperties {
 	public Database(String dbTitle, String languages, String includedSpecies,
 			String publishName, String content, String topic,
 			String classification, String indexedYears, String embargo,
-			ResourcesBuyers resourcesBuyers) {
+			Type type, String url, Boolean openAccess, String uuIdentifier,
+			ResourcesBuyers resourcesBuyers, Set<ReferenceOwner> referenceOwners) {
 		super();
 		this.dbTitle = dbTitle;
 		this.languages = languages;
@@ -262,6 +345,11 @@ public class Database extends ModuleProperties {
 		this.classification = classification;
 		this.indexedYears = indexedYears;
 		this.embargo = embargo;
+		this.type = type;
+		this.url = url;
+		this.openAccess = openAccess;
+		this.uuIdentifier = uuIdentifier;
 		this.resourcesBuyers = resourcesBuyers;
+		this.referenceOwners = referenceOwners;
 	}
 }

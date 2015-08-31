@@ -97,31 +97,31 @@ insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, con
 insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(15, 'admin', 'admin', sysdate(), sysdate(), '皇甫卓', 'Huangfu', '王小明');
 
 --resourcesBuyers
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', '', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(6, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(7, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(8, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', '', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(9, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(10, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(11, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(12, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', '', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(13, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(14, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(15, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(16, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', '', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(17, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(18, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(19, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(20, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', '', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(21, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(22, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(23, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(24, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', '', false);
-insert into resourcesBuyers(serNo, cUid, uUid, cDTime, uDTime, startdate, maturitydate, Rcategory, Rtype, DBtitle, openAccess) values(25, 'admin', 'admin', sysdate(), sysdate(),'1980', '2020', '買斷', '資料庫', 'Medcine', true);
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(1, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(2, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(3, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(4, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(5, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(6, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(7, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(8, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(9, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(10, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(11, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(12, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(13, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(14, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(15, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(16, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(17, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(18, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(19, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(20, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(21, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(22, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(23, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(24, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(25, '1980', '2020', '買斷');
 
 --journal
 insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(1, 'admin', 'admin', sysdate(), sysdate(), 'New England', '15334406', 1, 1);
@@ -142,15 +142,15 @@ insert into ref_jou(ref_serNo, jou_serNo) values(3, 6);
 insert into ref_jou(ref_serNo, jou_serNo) values(3, 7);
 
 --database
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(1, 'admin', 'admin', sysdate(), sysdate(), 'History', 8);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Medicine', 9);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Physics', 10);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Math', 11);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Chemistry', 12);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(6, 'admin', 'admin', sysdate(), sysdate(), 'Geography', 13);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(7, 'admin', 'admin', sysdate(), sysdate(), 'Law', 14);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(8, 'admin', 'admin', sysdate(), sysdate(), 'Biology', 15);
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, res_serNo) values(9, 'admin', 'admin', sysdate(), sysdate(), 'Femem', 16);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate() , 'Medicine', '資料庫', 9, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate() , 'Physics', '資料庫', 10, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate() , 'Math', '資料庫', 11, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate() , 'Chemistry', '資料庫', 12, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(6, 'admin', 'admin', sysdate(), sysdate() , 'Geography', '資料庫', 13, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(7, 'admin', 'admin', sysdate(), sysdate() , 'Law', '資料庫', 14, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(8, 'admin', 'admin', sysdate(), sysdate() , 'Biology', '資料庫', 15, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(9, 'admin', 'admin', sysdate(), sysdate() , 'Femem', '資料庫', 16, random_uuid(), true);
 
 --ref_dat
 insert into ref_dat(ref_serNo, dat_serNo) values(2, 1);

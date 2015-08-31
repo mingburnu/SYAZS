@@ -2,12 +2,15 @@ package com.shouyang.syazs.core.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+
 import com.shouyang.syazs.core.dao.DsRestrictions;
 
 /**
@@ -27,9 +30,12 @@ public class HibernateRestrictions implements DsRestrictions {
 
 	private List<Order> orders;
 
+	private Map<String, String> aliases;
+
 	public HibernateRestrictions() {
 		criterions = new ArrayList<Criterion>();
 		orders = new ArrayList<Order>();
+		aliases = new HashMap<String, String>();
 	}
 
 	@Override
@@ -40,6 +46,16 @@ public class HibernateRestrictions implements DsRestrictions {
 	@Override
 	public List<Order> getOrders() {
 		return orders;
+	}
+
+	@Override
+	public Map<String, String> getAliases() {
+		return aliases;
+	}
+
+	@Override
+	public void createAlias(String associationPath, String alias) {
+		aliases.put(associationPath, alias);
 	}
 
 	@Override
@@ -169,5 +185,4 @@ public class HibernateRestrictions implements DsRestrictions {
 	public void customCriterion(Criterion criterion) {
 		criterions.add(criterion);
 	}
-
 }

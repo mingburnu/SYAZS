@@ -11,6 +11,19 @@ input#listForm_currentPageHeader,input#listForm_currentRowHeader {
 	width: 11.6%;
 }
 
+span#span-tip {
+    color: red;
+}
+
+textarea#content {
+    border: 0px;
+    background-color: white;
+    color: black;
+    padding: 0px;
+    width: 100%;
+    resize: none;
+}
+
 <%
 UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
 if (userAgent.getBrowser().getGroup().equals(Browser.MOZILLA)

@@ -123,6 +123,8 @@
 			</result>
 			<result name="import">${entity.location}{1}/{1}Import.jsp
 			</result>
+			<result name="tip">${entity.location}{1}/{1}Tip.jsp
+			</result>
 			<result name="xlsx" type="stream">
 				<param name="contentDisposition">attachment;filename="${entity.reportFile}"</param>
 				<param name="contentType">application/vnd.ms-excel</param>

@@ -43,6 +43,16 @@
 		});
 	});
 
+	$(document).ready(function() {
+		checkTitle();
+	});
+
+	$(document).ready(function() {
+		$("input#apply_database_save_entity_dbTitle").bind('input', function() {
+			checkTitle();
+		});
+	});
+
 	//重設所有欄位(清空)
 	function resetData() {
 		$("[id^='apply_database_save_entity'][type!='radio']").val("");
@@ -62,6 +72,12 @@
 		goDetail("<c:url value = '/'/>crud/apply.database.save.action",
 				'資料庫-新增', data);
 	}
+
+	function checkTitle() {
+		var dbTitle = $("input#apply_database_save_entity_dbTitle").val();
+		goTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.dbTitle='
+				+ dbTitle);
+	}
 </script>
 <style type="text/css">
 #div_Detail_2 {
@@ -77,6 +93,11 @@ img#add,img#minus {
 input#referenceOwner_name {
 	background-color: #aaaaaa;
 }
+
+textarea#apply_database_save_entity_content {
+	resize: none;
+	width: 617px;
+}
 </style>
 </head>
 <body>
@@ -84,7 +105,8 @@ input#referenceOwner_name {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">資料庫題名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.dbTitle" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.dbTitle" cssClass="input_text" /><span
+					id="span-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>
@@ -102,12 +124,30 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">收錄內容</th>
-				<td><s:textfield name="entity.content" cssClass="input_text" /></td>
+				<td><s:textarea name="entity.content" cssClass="input_text" />
+				</td>
 			</tr>
 			<tr>
-				<th width="130">URL</th>
-				<td><s:textfield name="entity.resourcesBuyers.url"
+				<th width="130">主題</th>
+				<td><s:textfield name="entity.topics" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">分類</th>
+				<td><s:textfield name="entity.classification"
 						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">收錄年代</th>
+				<td><s:textfield name="entity.indexedYears"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">URL<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">出版時間差</th>
+				<td><s:textfield name="entity.embargo" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
@@ -125,41 +165,27 @@ input#referenceOwner_name {
 						<c:when
 							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="category"
+								list="categoryList" listKey="name()" listValue="name()"
 								value="'未註明'" />
 						</c:when>
 						<c:otherwise>
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="category" />
-						</c:otherwise>
-					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">資源種類</th>
-				<td><c:choose>
-						<c:when test="${empty entity.resourcesBuyers.type }">
-							<s:radio name="entity.resourcesBuyers.type"
-								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-								listKey="name()" listValue="type" value="'資料庫'" />
-						</c:when>
-						<c:otherwise>
-							<s:radio name="entity.resourcesBuyers.type"
-								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-								listKey="name()" listValue="type" />
+								list="categoryList" listKey="name()" listValue="name()" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>
 			<tr>
 				<th width="130">公開資源</th>
 				<td><c:choose>
-						<c:when test="${empty entity.resourcesBuyers.openAccess }">
-							<s:radio name="entity.resourcesBuyers.openAccess"
+						<c:when test="${true eq entity.openAccess }">
+							<s:radio name="entity.openAccess"
 								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
-								value="false" />
+								value="true" />
 						</c:when>
 						<c:otherwise>
-							<s:radio name="entity.resourcesBuyers.openAccess"
-								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}" />
+							<s:radio name="entity.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
+								value="false" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>

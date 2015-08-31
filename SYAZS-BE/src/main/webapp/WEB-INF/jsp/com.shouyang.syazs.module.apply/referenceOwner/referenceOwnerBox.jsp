@@ -39,7 +39,6 @@
 			$("input#referenceOwner_unit").each(function() {
 				if (value == $(this).val()) {
 					$(this).attr("checked", true);
-					console.log(value);
 				}
 			});
 		});

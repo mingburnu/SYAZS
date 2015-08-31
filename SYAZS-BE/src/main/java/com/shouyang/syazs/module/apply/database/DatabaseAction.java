@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -85,15 +85,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	protected void validateSave() throws Exception {
 		if (StringUtils.isBlank(getEntity().getDbTitle())) {
 			errorMessages.add("沒有資料庫名稱");
-		} else {
-			long datSerNo = databaseService.getDatSerNoByTitle(getEntity()
-					.getDbTitle());
-			if (datSerNo != 0) {
-				errorMessages.add("資料庫名稱已存在");
-			}
 		}
 
-		if (!isURL(getEntity().getResourcesBuyers().getUrl())) {
+		if (!isURL(getEntity().getUrl())) {
 			errorMessages.add("URL格式不正確");
 		}
 
@@ -136,12 +130,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
-		if (getEntity().getResourcesBuyers().getType() == null) {
-			getEntity().getResourcesBuyers().setType(Type.資料庫);
+		if (getEntity().getType() == null) {
+			getEntity().setType(Type.資料庫);
 		}
 
-		if (getEntity().getResourcesBuyers().getOpenAccess() == null) {
-			getEntity().getResourcesBuyers().setOpenAccess(false);
+		if (getEntity().getOpenAccess() == null) {
+			getEntity().setOpenAccess(false);
 		}
 	}
 
@@ -153,16 +147,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			if (StringUtils.isBlank(getEntity().getDbTitle())
 					&& StringUtils.isBlank(getEntity().getDbTitle())) {
 				errorMessages.add("沒有資料庫名稱");
-			} else {
-				long datSerNo = databaseService.getDatSerNoByTitle(getEntity()
-						.getDbTitle());
-				if (datSerNo != 0 && datSerNo != getEntity().getSerNo()) {
-					errorMessages.add("資料庫名稱已存在");
-				}
-
 			}
 
-			if (!isURL(getEntity().getResourcesBuyers().getUrl())) {
+			if (!isURL(getEntity().getUrl())) {
 				errorMessages.add("URL格式不正確");
 			}
 
@@ -205,12 +192,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
-			if (getEntity().getResourcesBuyers().getType() == null) {
-				getEntity().getResourcesBuyers().setType(Type.資料庫);
+			if (getEntity().getType() == null) {
+				getEntity().setType(Type.資料庫);
 			}
 
-			if (getEntity().getResourcesBuyers().getOpenAccess() == null) {
-				getEntity().getResourcesBuyers().setOpenAccess(false);
+			if (getEntity().getOpenAccess() == null) {
+				getEntity().setOpenAccess(false);
 			}
 		}
 	}
@@ -243,10 +230,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String add() throws Exception {
 		setCategoryList();
 
-		List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>();
-		database.setOwners(owners);
-		getRequest().setAttribute("uncheckReferenceOwners",
-				referenceOwnerService.getUncheckOwners(owners));
+		getRequest().setAttribute(
+				"uncheckReferenceOwners",
+				referenceOwnerService
+						.getUncheckOwners(new ArrayList<ReferenceOwner>()));
 
 		setEntity(database);
 
@@ -300,9 +287,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 		if (!hasActionErrors()) {
 			getEntity().setDbTitle(getEntity().getDbTitle().trim());
-			getEntity().getResourcesBuyers().setDbTitle(
-					getEntity().getDbTitle());
-
 			getEntity().setReferenceOwners(
 					new HashSet<ReferenceOwner>(getEntity().getOwners()));
 
@@ -331,13 +315,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 		if (!hasActionErrors()) {
 			getEntity().setDbTitle(getEntity().getDbTitle().trim());
-			getEntity().getResourcesBuyers().setDbTitle(
-					getEntity().getDbTitle());
 
 			getEntity().setReferenceOwners(
 					new HashSet<ReferenceOwner>(getEntity().getOwners()));
-
-			database = databaseService.update(getEntity(), getLoginUser());
+			database = databaseService.update(getEntity(), getLoginUser(),
+					"uuIdentifier");
 			setEntity(database);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -386,6 +368,30 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		return VIEW;
 	}
 
+	public String box() throws Exception {
+		getRequest().setAttribute("resDbs", databaseService.getAllDbs());
+		return BOX;
+	}
+
+	public String tip() throws Exception {
+		List<Long> results = databaseService.getDbSerNosByTitle(getEntity()
+				.getDbTitle());
+
+		if (getEntity().getSerNo() != null) {
+			if (CollectionUtils.isNotEmpty(results)) {
+				if (results.size() > 1
+						|| !results.contains(getEntity().getSerNo())) {
+					getRequest().setAttribute("tip", "已有同名資料庫");
+				}
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(results)) {
+				getRequest().setAttribute("tip", "已有同名資料庫");
+			}
+		}
+		return TIP;
+	}
+
 	public String imports() {
 		return IMPORT;
 	}
@@ -413,7 +419,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[13];
+			String[] rowTitles = new String[16];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -461,8 +467,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				n++;
 			}
 
-			LinkedHashSet<Database> originalData = new LinkedHashSet<Database>();
-			Map<String, Database> checkRepeatRow = new LinkedHashMap<String, Database>();
+			List<Database> originalData = new LinkedList<Database>();
+			List<String> titles = databaseService.getAllDbTitles();
+			Map<String, Integer> checkRepeatTitle = new HashMap<String, Integer>();
 			int normal = 0;
 
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -471,7 +478,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					continue;
 				}
 
-				String[] rowValues = new String[13];
+				String[] rowValues = new String[16];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -517,31 +524,29 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					k++;
 				}
 
-				String category = "";
-				if (StringUtils.isBlank(rowValues[9])) {
-					category = Category.未註明.getCategory();
+				StringBuilder objStatus = new StringBuilder();
+
+				Category category = null;
+				Object objCategory = getEnum(
+						new String[] { rowValues[14].trim() }, Category.class);
+				if (objCategory != null) {
+					category = (Category) objCategory;
 				} else {
-					Object object = getEnum(
-							new String[] { rowValues[9].trim() },
-							Category.class);
-					if (object != null) {
-						category = rowValues[9].trim();
+					if (StringUtils.isBlank(rowValues[14])) {
+						category = Category.未註明;
 					} else {
-						category = Category.不明.getCategory();
+						category = Category.不明;
+						objStatus.append("資源類別不明<br>");
 					}
 				}
 
-				String type = "";
-				if (StringUtils.isBlank(rowValues[10])) {
-					type = Type.資料庫.getType();
+				Type type = null;
+				Object objType = getEnum(new String[] { rowValues[9].trim() },
+						Type.class);
+				if (objType != null) {
+					type = (Type) objType;
 				} else {
-					Object object = getEnum(
-							new String[] { rowValues[10].trim() }, Type.class);
-					if (object != null) {
-						type = rowValues[10].trim();
-					} else {
-						type = Type.資料庫.getType();
-					}
+					type = Type.資料庫;
 				}
 
 				boolean openAccess = false;
@@ -551,68 +556,79 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					openAccess = true;
 				}
 
-				resourcesBuyers = new ResourcesBuyers(rowValues[7],
-						rowValues[8], Category.valueOf(category),
-						Type.valueOf(type), rowValues[0], rowValues[5],
-						openAccess);
+				resourcesBuyers = new ResourcesBuyers(rowValues[12],
+						rowValues[13], category);
 
-				referenceOwner = new ReferenceOwner();
-				referenceOwner.setName(rowValues[12].trim());
+				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
+				if (StringUtils.isNotBlank(rowValues[15].replace("、", ""))) {
+					String[] names = rowValues[15].trim().split("、");
 
-				List<ReferenceOwner> owners = new LinkedList<ReferenceOwner>();
-				owners.add(referenceOwner);
+					int j = 0;
+					while (j < names.length) {
+						if (StringUtils.isNotBlank(names[j])) {
+							referenceOwner = new ReferenceOwner();
+							referenceOwner.setName(names[j].trim());
+							referenceOwner
+									.setSerNo(referenceOwnerService
+											.getRefSerNoByName(referenceOwner
+													.getName()));
 
-				database = new Database(rowValues[0].trim(), rowValues[2],
-						rowValues[3], rowValues[1], rowValues[4], "", "", "",
-						rowValues[6], resourcesBuyers);
-				database.setOwners(owners);
-
-				long refSerNo = referenceOwnerService
-						.getRefSerNoByName(rowValues[12].trim());
-
-				if (refSerNo != 0) {
-					database.getOwners().get(0).setSerNo(refSerNo);
-
-					long datSerNo = databaseService.getDatSerNoByTitle(database
-							.getDbTitle());
-					if (datSerNo != 0) {
-						if (databaseService.isExist(datSerNo, refSerNo)) {
-							database.setDataStatus("已存在");
-						}
-					} else {
-						if (database.getResourcesBuyers().getCategory()
-								.equals(Category.不明)) {
-							database.setDataStatus("資源類型不明");
-						} else {
-							if (StringUtils.isBlank(database.getDbTitle())) {
-								database.setDataStatus("沒有資料庫名稱");
+							if (referenceOwner.getSerNo() == 0) {
+								objStatus.append(referenceOwner.getName()
+										+ "不存在<br>");
 							}
+							owners.add(referenceOwner);
 						}
+						j++;
 					}
-				} else {
-					database.setDataStatus("無此客戶");
+
 				}
 
-				if (!isURL(database.getResourcesBuyers().getUrl())) {
-					database.getResourcesBuyers().setUrl("");
+				database = new Database(rowValues[0].trim(), rowValues[1],
+						rowValues[2], rowValues[3], rowValues[4], rowValues[5],
+						rowValues[6], rowValues[7], rowValues[8], type,
+						rowValues[10], openAccess, null, resourcesBuyers,
+						new HashSet<ReferenceOwner>(owners));
+
+				if (CollectionUtils.isEmpty(database.getReferenceOwners())) {
+					objStatus.append("沒有擁有者<br>");
 				}
 
-				if (database.getDataStatus() == null) {
+				if (StringUtils.isBlank(database.getDbTitle())) {
+					objStatus.append("沒有資料庫名稱<br>");
+				}
+
+				if (!isURL(database.getUrl())) {
+					objStatus.append("url不正確<br>");
+				}
+
+				database.setDataStatus(objStatus.toString());
+				database.getResourcesBuyers().setDataStatus("");
+
+				if (titles.contains(database.getDbTitle().toLowerCase())) {
+					database.getResourcesBuyers().setDataStatus("已有同名資源<br>");
+				}
+
+				if (checkRepeatTitle.containsKey(database.getDbTitle())) {
+					String prevResStatus = (originalData
+							.get(checkRepeatTitle.get(database.getDbTitle()))
+							.getResourcesBuyers().getDataStatus() + "清單有同名資料庫<br>")
+							.replace("清單有同名資料庫<br>清單有同名資料庫<br>", "清單有同名資料庫<br>");
+					originalData
+							.get(checkRepeatTitle.get(database.getDbTitle()))
+							.getResourcesBuyers().setDataStatus(prevResStatus);
+
+					String nextResStatus = database.getResourcesBuyers()
+							.getDataStatus() + "清單有同名資料庫<br>";
+					database.getResourcesBuyers().setDataStatus(nextResStatus);
+				}
+
+				checkRepeatTitle
+						.put(database.getDbTitle(), originalData.size());
+
+				if (StringUtils.isEmpty(database.getDataStatus())) {
 					database.setDataStatus("正常");
-				}
-
-				if (database.getDataStatus().equals("正常")
-						&& !originalData.contains(database)) {
-
-					if (checkRepeatRow.containsKey(referenceOwner.getMemo()
-							+ referenceOwner.getName())) {
-						database.setDataStatus("資料重複");
-
-					} else {
-						checkRepeatRow.put(referenceOwner.getMemo()
-								+ referenceOwner.getName(), database);
-						++normal;
-					}
+					++normal;
 				}
 
 				originalData.add(database);
@@ -790,20 +806,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			while (iterator.hasNext()) {
 				int index = (Integer) iterator.next();
 				database = (Database) importList.get(index);
-
-				targetDb = databaseService.getDbByTitle(database.getDbTitle());
-
-				if (targetDb == null) {
-					database.setReferenceOwners(new HashSet<ReferenceOwner>(
-							database.getOwners()));
-					database = databaseService.save(database, getLoginUser());
-
-				} else {
-					targetDb.getReferenceOwners().add(
-							database.getOwners().get(0));
-					database = databaseService.update(targetDb, getLoginUser());
-				}
-
+				database = databaseService.save(database, getLoginUser());
 				++successCount;
 			}
 
@@ -826,16 +829,26 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "資料庫題名", "publishname/出版社", "語文",
-				"IncludedSpecies/收錄種類", "Content/收錄內容", "URL", "出版時間差", "起始日",
-				"到期日", "資源類型", "資源種類", "公開資源", "購買人名稱" });
 
-		empinfo.put("2", new Object[] { "BMJ 醫學期刊 BMJ  Journal",
-				"The BMJ Publishing Group Ltd", "eng", "", "", "", "", "N/A",
-				"N/A", "租貸", " 資料庫", "是", "李靖", "" });
-		empinfo.put("3", new Object[] { "BMJ 醫學期刊 BMJ  Journal",
-				"The BMJ Publishing Group Ltd", "eng", "", "", "", "", "N/A",
-				"N/A", "租貸", " 資料庫", "否", "毛民福" });
+		empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
+				"主題", "分類", "收錄年代", "出版時間差", "資源種類", "URL", "公開資源", "起始日",
+				"到期日", "資源類型", "購買人名稱" });
+
+		empinfo.put(
+				"2",
+				new Object[] {
+						"遠足台灣(台灣行旅)電子書",
+						"中文",
+						"電子書",
+						"碩亞數碼",
+						"本選輯專為台灣地理空間、人文風情與歷史社會風貌打造的平台檢索系統，精心挑選遠足文化出版社最具代表性的出版品，並經由台灣百餘位學界教授、地方文史工作者、公部門專業研究員共同編撰，以豐富的數位內容與專業平台檢索系統的結合，引領讀者按圖索驥，開啟「台灣學」新視野。 @內容皆採全文本(pure –efile)格式製作，可支援關鍵字全文檢索。@提供讀者二大閱讀模式：(1)【下載】離線閱讀授權範圍內下載並安裝”L&B專屬之SMART Reader閱讀器”至您的桌機/筆電，即使無法網際網路連線，也能進行閱讀、管理下載書目(離線閱讀檔案共可使用30天)。運用章節標引導航、全文檢索、文字引用及底線等標註多樣化常用文具，為使用者節省並增加資訊檢索的正確率，有效提升學術研究、主題討論之品質。(2)【線上閱讀】連線閱讀：Flash翻頁式電子書@本平臺之電子書不限制同時使用人數，目前提供約60本電子書。",
+						"台灣行旅", "地理、人文、歷史 、社會", "N/A", "N/A", "電子書",
+						"http://lb20.tpml.libraryandbook.net/FE", "否", "N/A",
+						"N/A", "租貸", "李靖、于小雪" });
+		empinfo.put("3", new Object[] { "Tesuka Manga手塚治虫系列漫畫電子書", "中文", "漫畫",
+				"iGroup", "繁體中文12種157冊、日文15種377冊、英文6種55冊", "手塚治虫系列漫畫", "N/A",
+				"N/A", "N/A", "電子書", "http://www.mymanga365.com/tezuka/", "否",
+				"N/A", "N/A", "租貸", "毛民福" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
@@ -860,7 +873,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	protected boolean isURL(String url) {
 		return ESAPI.validator().isValidInput("Database URL", url, "URL",
-				Integer.MAX_VALUE, true);
+				Integer.MAX_VALUE, false);
 	}
 
 	protected void setCategoryList() {

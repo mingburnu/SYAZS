@@ -29,4 +29,6 @@ public interface Action<T extends Entity> {
 	public final static String XLSX = "xlsx";
 
 	public final static String IMPORT = "import";
+	
+	public final static String TIP = "tip";
 }

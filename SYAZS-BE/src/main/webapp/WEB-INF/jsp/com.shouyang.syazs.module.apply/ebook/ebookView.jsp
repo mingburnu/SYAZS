@@ -63,7 +63,7 @@
 						<td><esapi:encodeForHTML>${entity.bookName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">ISBN<span class="required">(&#8226;)</span></th>
+						<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
 						<td>${entity.isbn }</td>
 					</tr>
 					<tr>
@@ -71,12 +71,28 @@
 						<td><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">作者</th>
+						<th width="130">第一作者</th>
 						<td><esapi:encodeForHTML>${entity.autherName }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">次要作者</th>
+						<td><esapi:encodeForHTML>${entity.authers }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">系列叢書名</th>
+						<td><esapi:encodeForHTML>${entity.uppeName }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">出版日期</th>
+						<td><esapi:encodeForHTML>${entity.pubDate }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">語文</th>
 						<td><esapi:encodeForHTML>${entity.languages }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">版本</th>
+						<td><esapi:encodeForHTML>${entity.version }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">中國圖書分類法</th>
@@ -87,44 +103,67 @@
 						<td>${entity.bookInfoIntegral }</td>
 					</tr>
 					<tr>
+						<th width="130">URL</th>
+						<td><a href="${entity.url }" target="_blank">${entity.url }</a></td>
+					</tr>
+					<tr>
 						<th width="130">公開資源</th>
 						<td><c:choose>
-								<c:when test="${true eq entity.resourcesBuyers.openAccess}">是</c:when>
+								<c:when test="${true eq entity.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
 							</c:choose></td>
 					</tr>
-					<tr>
-						<th width="130">URL</th>
-						<td><a href="${entity.resourcesBuyers.url }" target="_blank">${entity.resourcesBuyers.url }</a></td>
-					</tr>
-					<tr>
-						<th width="130">起始日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">到期日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">資源類型</th>
-						<td>${entity.resourcesBuyers.category}</td>
-					</tr>
-					<tr>
-						<th width="130">資源種類</th>
-						<td>${entity.resourcesBuyers.type}</td>
-					</tr>
-					<tr>
-						<th width="130">資料庫題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbTitle}</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${entity.referenceOwners}"
-								varStatus="status">
-								<div>${item.name}</div>
-							</c:forEach></td>
-					</tr>
-
+					<c:choose>
+						<c:when test="${empty entity.database }">
+							<tr>
+								<th width="130">起始日</th>
+								<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML>
+								</td>
+							</tr>
+							<tr>
+								<th width="130">到期日</th>
+								<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
+							</tr>
+							<tr>
+								<th width="130">資源類型</th>
+								<td>${entity.resourcesBuyers.category}</td>
+							</tr>
+							<tr>
+								<th width="130">購買單位名稱</th>
+								<td><c:forEach var="item" items="${entity.referenceOwners}">
+										<div>${item.name}</div>
+									</c:forEach></td>
+							</tr>
+						</c:when>
+						<c:otherwise>
+							<tr>
+								<th width="130">資料庫題名</th>
+								<td><a
+									href='<esapi:encodeForHTMLAttribute>${entity.database.url }</esapi:encodeForHTMLAttribute>'
+									target="_blank">${entity.database.dbTitle}</a></td>
+							</tr>
+							<tr>
+								<th width="130">起始日</th>
+								<td><esapi:encodeForHTML>${entity.database.resourcesBuyers.startDate}</esapi:encodeForHTML>
+								</td>
+							</tr>
+							<tr>
+								<th width="130">到期日</th>
+								<td><esapi:encodeForHTML>${entity.database.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
+							</tr>
+							<tr>
+								<th width="130">資源類型</th>
+								<td>${entity.database.resourcesBuyers.category}</td>
+							</tr>
+							<tr>
+								<th width="130">購買單位名稱</th>
+								<td><c:forEach var="item"
+										items="${entity.database.referenceOwners}">
+										<div>${item.name}</div>
+									</c:forEach></td>
+							</tr>
+						</c:otherwise>
+					</c:choose>
 				</tbody>
 			</table>
 		</c:when>

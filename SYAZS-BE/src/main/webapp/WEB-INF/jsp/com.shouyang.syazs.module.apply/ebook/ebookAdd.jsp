@@ -26,9 +26,21 @@
 	$(document)
 			.ready(
 					function() {
+						var contain = $("#div_Detail_3 .content .header .title")
+								.html();
+						if (contain != '資料庫-選擇') {
+							goResDbs(
+									"<c:url value = '/'/>crud/apply.database.box.action",
+									'資料庫-選擇');
+						}
+					});
+
+	$(document)
+			.ready(
+					function() {
 						$("#div_Detail .content .header .close")
 								.html(
-										'<a href="#" onclick="clearReferenceOwners();closeDetail();">關閉</a>');
+										'<a href="#" onclick="clearReferenceOwners();clearResDbs();closeDetail();">關閉</a>');
 					});
 
 	$(document).ready(function() {
@@ -45,6 +57,37 @@
 		});
 	});
 
+	$(document).ready(function() {
+		$("input[name='entity.database.serNo']").click(function() {
+			var box = $(this).attr("checked");
+			$("input[name='entity.database.serNo']").attr("checked", false);
+			$(this).attr("checked", box);
+			setResField();
+		});
+	});
+
+	$(document).ready(function() {
+		setResField();
+	});
+
+	function setResField() {
+		if ($("input[name='entity.database.serNo']:checked").length > 0) {
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.prev().hide();
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.hide();
+			$("input#referenceOwner_name").parent().parent().prev().hide();
+			$("input#referenceOwner_name").parent().parent().hide();
+		} else {
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.prev().show();
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.show();
+			$("input#referenceOwner_name").parent().parent().prev().show();
+			$("input#referenceOwner_name").parent().parent().show();
+		}
+	}
+
 	//重設所有欄位(清空)
 	function resetData() {
 		$("[id^='apply_ebook_save_entity'][type!='radio']").val("");
@@ -54,11 +97,13 @@
 					$("input[type='radio']:eq(" + i + ")").next().html());
 		}
 
-		$("input[type='radio']:eq(2)").attr("checked", true);
-		$("input[type='radio']:eq(3)").attr("checked", true);
+		$("input[type='radio']:eq(1)").attr("checked", true);
+		$("input[type='radio']:eq(4)").attr("checked", true);
 
 		allSelect_referenceOwners(0);
 		checkData();
+		$("input[name='entity.database.serNo']").attr("checked", false);
+		setResField();
 	}
 
 	//遞交表單
@@ -81,8 +126,8 @@ img#add,img#minus {
 	left: 5px;
 }
 
-input#referenceOwner_name {
-	background-color: #aaaaaa;
+input[type="text"]:disabled {
+	background: #aaaaaa;
 }
 </style>
 </head>
@@ -112,8 +157,12 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">作者</th>
+				<th width="130">第一作者</th>
 				<td><s:textfield name="entity.autherName" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">次要作者</th>
+				<td><s:textfield name="entity.authers" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">系列叢書名</th>
@@ -128,6 +177,10 @@ input#referenceOwner_name {
 				<td><s:textfield name="entity.languages" cssClass="input_text" /></td>
 			</tr>
 			<tr>
+				<th width="130">版本</th>
+				<td><s:textfield name="entity.version" cssClass="input_text" /></td>
+			</tr>
+			<tr>
 				<th width="130">中國圖書分類碼</th>
 				<td><s:textfield name="entity.cnClassBzStr"
 						cssClass="input_text" /></td>
@@ -136,6 +189,38 @@ input#referenceOwner_name {
 				<th width="130">杜威十進位分類號</th>
 				<td><s:textfield name="entity.bookInfoIntegral"
 						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">URL<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">類型</th>
+				<td><s:textfield name="entity.style" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">出版地</th>
+				<td><s:textfield name="entity.publication"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">公開資源</th>
+				<td><c:choose>
+						<c:when test="${true eq entity.openAccess }">
+							<s:radio name="entity.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
+								value="true" />
+						</c:when>
+						<c:otherwise>
+							<s:radio name="entity.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
+								value="false" />
+						</c:otherwise>
+					</c:choose></td>
+			</tr>
+			<tr>
+				<th>資料庫題名</th>
+				<td><a class="state-default" onclick="addResDb()">select</a></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
@@ -148,63 +233,19 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">URL</th>
-				<td><s:textfield name="entity.resourcesBuyers.url"
-						cssClass="input_text" /></td>
-			</tr>
-			<tr>
 				<th width="130">資源類型</th>
 				<td><c:choose>
 						<c:when
 							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="category"
+								list="categoryList" listKey="name()" listValue="name()"
 								value="'未註明'" />
 						</c:when>
 						<c:otherwise>
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="category" />
+								list="categoryList" listKey="name()" listValue="name()" />
 						</c:otherwise>
 					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">資源種類</th>
-				<td><c:choose>
-						<c:when test="${empty entity.resourcesBuyers.type }">
-							<s:radio name="entity.resourcesBuyers.type"
-								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-								listKey="name()" listValue="type" value="'電子書'" />
-						</c:when>
-						<c:otherwise>
-							<s:radio name="entity.resourcesBuyers.type"
-								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-								listKey="name()" listValue="type" />
-						</c:otherwise>
-					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">公開資源</th>
-				<td><c:choose>
-						<c:when test="${empty entity.resourcesBuyers.openAccess }">
-							<s:radio name="entity.resourcesBuyers.openAccess"
-								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
-								value="false" />
-						</c:when>
-						<c:otherwise>
-							<s:radio name="entity.resourcesBuyers.openAccess"
-								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}" />
-						</c:otherwise>
-					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">資料庫中文題名</th>
-				<td><s:textfield name="entity.resourcesBuyers.dbChtTitle"
-						cssClass="input_text" /></td>
-			</tr>
-			<tr>
-				<th width="130">資料庫英文題名</th>
-				<td><s:textfield name="entity.resourcesBuyers.dbEngTitle"
-						cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
@@ -212,7 +253,7 @@ input#referenceOwner_name {
 					class="input_text" disabled="disabled" value="增加單位"><img
 					id="add" src="<c:url value = '/'/>resources/images/add.png"
 					onclick="addReferenceOwner();"> <c:forEach var="item"
-						items="${entity.owners}" varStatus="status2">
+						items="${entity.owners}">
 						<div style="">
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"
@@ -220,8 +261,7 @@ input#referenceOwner_name {
 								id="unit" type="hidden" value="${item.serNo }"
 								name="entity.refSerNo">
 						</div>
-					</c:forEach> <c:forEach var="item" items="${uncheckReferenceOwners}"
-						varStatus="status">
+					</c:forEach> <c:forEach var="item" items="${uncheckReferenceOwners}">
 						<div style="display: none;">
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"

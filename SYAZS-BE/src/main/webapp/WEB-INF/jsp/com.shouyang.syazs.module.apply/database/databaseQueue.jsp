@@ -95,10 +95,13 @@
 					<th></th>
 					<th><esapi:encodeForHTML>${cellNames[0]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[5]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[8]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[9]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[10]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[11]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[12]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[13]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[14]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[15]}</esapi:encodeForHTML></th>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -113,16 +116,23 @@
 									<input type="checkbox" disabled="disabled">
 								</c:otherwise>
 							</c:choose></td>
-						<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></td>
-						<td>${item.resourcesBuyers.url }</td>
-						<td>${item.resourcesBuyers.category.category }</td>
-						<td>${item.resourcesBuyers.type.type }</td>
+						<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML><br>
+							<span id="span-tip">${item.resourcesBuyers.dataStatus }</span></td>
+						<td>${item.topic }</td>
+						<td>${item.type }</td>
+						<td>${item.url }</td>
 						<td><c:choose>
-								<c:when test="${true eq item.resourcesBuyers.openAccess}">是</c:when>
+								<c:when test="${true eq item.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
 							</c:choose></td>
-						<td align="center"><esapi:encodeForHTML>${item.owners[0].name }</esapi:encodeForHTML>
-						</td>
+						<td>${item.resourcesBuyers.startDate }</td>
+						<td>${item.resourcesBuyers.maturityDate }</td>
+						<td>${item.resourcesBuyers.category }</td>
+						<td align="center"><c:forEach var="owner"
+								items="${item.referenceOwners }">
+								<esapi:encodeForHTML>${owner.name }</esapi:encodeForHTML>
+								<br>
+							</c:forEach></td>
 						<td align="center">${item.dataStatus }</td>
 					</tr>
 				</c:forEach>

@@ -519,6 +519,75 @@ iframe {
 	/*height:500px;*/
 }
 
+/* 自訂Detail_3
+----------------------------------*/
+#div_Detail_3 {
+	display: none;
+}
+
+#div_Detail_3 .overlay {
+	background-color: #000000;
+	opacity: 0.5;
+	filter: Alpha(Opacity = 50);
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 1700px;
+	height: 1100px;
+	/*display:none;*/
+}
+
+#div_Detail_3 .content {
+	width: 600px;
+	position: absolute;
+	top: 10%;
+	left: 50%;
+	margin-left: -300px;
+	padding: 0px;
+}
+
+#div_Detail_3 .content .header {
+	background: #FFFFFF url(../images/footer.jpg) 0px 0px repeat-x;
+	color: #FFFFFF;
+	margin: 0px;
+	padding: 0px 10px;
+}
+
+#div_Detail_3 .content .header .title {
+	font-size: 13px;
+	line-height: 25px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+#div_Detail_3 .content .header .close {
+	/**/
+	position: absolute;
+	right: 10px;
+	top: 0px;
+	background: url(../images/close.gif) no-repeat right center;
+}
+
+#div_Detail_3 .content .header .close a,#div_Detail_3 .content .header .close a:link,#div_Detail_3 .content .header .close a:visited
+#div_Detail_3 .content .header .close a:hover,#div_Detail_3 .content .header .close a:active
+	{
+	margin: 0px;
+	padding: 0px 25px 0px 0px;
+	line-height: 25px;
+	font-size: 13px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+#div_Detail_3 .content .contain {
+	background-color: #ffffff;
+	margin: 0px;
+	padding: 10px;
+	width: 580px;
+	/*height:500px;*/
+}
+
 /* 自訂div_ReferenceOwners
 ----------------------------------*/
 #div_ReferenceOwners {
@@ -581,6 +650,75 @@ iframe {
 }
 
 #div_ReferenceOwners .content .contain {
+	background-color: #ffffff;
+	margin: 0px;
+	padding: 10px;
+	width: 580px;
+	/*height:500px;*/
+}
+
+/* 自訂div_ResDbs
+----------------------------------*/
+#div_ResDbs {
+	display: none;
+}
+
+#div_ResDbs .overlay {
+	background-color: #000000;
+	opacity: 0.5;
+	filter: Alpha(Opacity = 50);
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 1700px;
+	height: 1100px;
+	/*display:none;*/
+}
+
+#div_ResDbs .content {
+	width: 600px;
+	position: absolute;
+	top: 0%;
+	left: 50%;
+	margin-left: -300px;
+	padding: 0px;
+}
+
+#div_ResDbs .content .header {
+	background: #FFFFFF url(../images/footer.jpg) 0px 0px repeat-x;
+	color: #FFFFFF;
+	margin: 0px;
+	padding: 0px 10px;
+}
+
+#div_ResDbs .content .header .title {
+	font-size: 13px;
+	line-height: 25px;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+#div_ResDbs .content .header .close {
+	/**/
+	position: absolute;
+	right: 10px;
+	top: 0px;
+	background: url(../images/close.gif) no-repeat right center;
+}
+
+#div_ResDbs .content .header .close a,#div_ResDbs .content .header .close a:link,#div_ResDbs .content .header .close a:visited
+#div_ResDbs .content .header .close a:hover,#div_ResDbs .content .header .close a:active
+	{
+	margin: 0px;
+	padding: 0px 25px 0px 0px;
+	line-height: 25px;
+	font-size: 13px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+#div_ResDbs .content .contain {
 	background-color: #ffffff;
 	margin: 0px;
 	padding: 10px;

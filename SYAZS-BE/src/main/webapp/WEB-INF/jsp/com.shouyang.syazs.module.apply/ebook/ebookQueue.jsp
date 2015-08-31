@@ -96,7 +96,6 @@
 					<th><esapi:encodeForHTML>${cellNames[1]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[9]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[10]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[13]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[14]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[17]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[18]}</esapi:encodeForHTML></th>
@@ -119,7 +118,6 @@
 						<td><esapi:encodeForHTML>${item.cnClassBzStr }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.bookInfoIntegral }</esapi:encodeForHTML></td>
 						<td>${item.resourcesBuyers.category.category }</td>
-						<td>${item.resourcesBuyers.type.type }</td>
 						<td><c:choose>
 								<c:when test="${true eq item.resourcesBuyers.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
