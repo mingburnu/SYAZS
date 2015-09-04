@@ -13,41 +13,85 @@
 <script type="text/javascript">
 	//勾選單位
 	$(document).ready(function() {
-		$("input#referenceOwner_unit").click(function() {
-			if ($(this).is(':checked')) {
-				var value = $(this).val();
-				$("input#unit").each(function() {
-					if (value == $(this).val()) {
-						$(this).attr("name", "entity.refSerNo");
-						$(this).parent().show();
-					}
-				});
-			} else {
-				var value = $(this).val();
-				$("input#unit").each(function() {
-					if (value == $(this).val()) {
-						$(this).attr("name", "");
-						$(this).parent().hide();
-					}
-				});
-			}
+		$("input#dat").click(function() {
+			selectUnits();
 		});
 	});
 
 	//載入選項
 	$(document).ready(function() {
-		$("input[name='entity.refSerNo']").each(function() {
-			var value = $(this).val();
-			$("input#referenceOwner_unit").each(function() {
-				if (value == $(this).val()) {
-					$(this).attr("checked", true);
-				}
-			});
+		var value = $("input[name='entity.database.serNo']").val();
+		$("input#dat").each(function() {
+			if (value == $(this).val()) {
+				$(this).attr("checked", true);
+				$("input#datName").val($(this).next().html());
+			}
 		});
 	});
 
+	$(document).ready(function() {
+		$("input#dat").click(function() {
+			var box = $(this).attr("checked");
+			$("input#dat").attr("checked", false);
+			$(this).attr("checked", box);
+			setResField();
+		});
+	});
+
+	$(document).ready(function() {
+		$("input#dat").mouseenter(function() {
+			$("div#box_detail").html($(this).next().next().html());
+		});
+
+		$("input#dat").next().mouseenter(function() {
+			$("div#box_detail").html($(this).next().html());
+		});
+	});
+
+	function selectUnits() {
+		if ($(this).is(':checked')) {
+			var value = $(this).val();
+			$("input[name='entity.database.serNo']").val(value).trigger(
+					'change');
+			$("input#datName").val($(this).next().html());
+			$("input[name='entity.resourcesBuyers.startDate']")
+					.val(
+							$(this).next().next().find("#startDate").html()
+									.split("：")[1].trim());
+			$("input[name='entity.resourcesBuyers.maturityDate']").val(
+					$(this).next().next().find("#maturityDate").html().split(
+							"：")[1].trim());
+			$("input[name='entity.resourcesBuyers.category']").filter(
+					'[value='
+							+ $(this).next().next().find("#category").html()
+									.split("：")[1].trim() + ']').attr(
+					'checked', true);
+			allSelect_referenceOwners(0);
+			checkData();
+			var allOwners = $(this).next().next().find("#owners").find("input");
+			for (var i = 0; i < allOwners.length; i++) {
+				var serNo = $(allOwners[i]).val();
+				$("input#referenceOwner_unit").filter('[value=' + serNo + ']')
+						.attr("checked", true);
+				$("input#unit").filter('[value=' + serNo + ']').attr("name",
+						"entity.refSerNo");
+				$("input#unit").filter('[value=' + serNo + ']').parent().show();
+			}
+		} else {
+			$("input[name='entity.database.serNo']").val("").trigger('change');
+			$("input#datName").val("");
+		}
+	}
+
 	function addResDb() {
 		$("#div_ResDbs").show();
+	}
+
+	function clearRes() {
+		$("input#dat").attr("checked", false);
+		$("input#datName").val("");
+		$("input[name='entity.database.serNo']").val("").trigger('change');
+		setResField();
 	}
 
 	function clearResDbs() {
@@ -55,36 +99,61 @@
 		$("#div_ResDbs .content .contain").html("");
 	}
 </script>
+<style type="text/css">
+div#resDbRow {
+	display: inline-block;
+}
+div
+</style>
 </head>
 <body>
-	<table>
-		<tr>
-			<th>名稱</th>
-			<th>起始日</th>
-			<th>到期日</th>
-			<th>資源類別</th>
-			<th>資源種類</th>
-			<th>購買單位</th>
-			<th>UUID</th>
-		</tr>
-		<c:forEach var="item" items="${resDbs}">
-			<tr>
-				<td><input id="dat" type="checkbox" value="${item.serNo }"
-					name="resDbSerNo"> <label><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></label></td>
-				<td>${item.resourcesBuyers.startDate }</td>
-				<td>${item.resourcesBuyers.maturityDate }</td>
-				<td>${item.resourcesBuyers.category }</td>
-				<td>${item.type }</td>
-				<td><c:forEach var="owner" items="${item.referenceOwners }"
+	<c:forEach var="item" items="${resDbs}">
+		<div id=resDbRow>
+			<input id="dat" type="checkbox" value="${item.serNo }"> <label
+				id="resDbTitle"><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></label>
+			<div id="detail" style="display: none;">
+				<div id="dbTitle">
+					<label>資料庫題名</label>：${item.dbTitle }
+				</div>
+				<div id="uuid">
+					<label>UUID</label>：${item.uuIdentifier }
+				</div>
+				<div id="startDate">
+					<label>起始日</label>：
+					<esapi:encodeForHTML>${item.resourcesBuyers.startDate }</esapi:encodeForHTML>
+				</div>
+				<div id="maturityDate">
+					<label>到期日</label>：
+					<esapi:encodeForHTML>${item.resourcesBuyers.maturityDate }</esapi:encodeForHTML>
+				</div>
+				<div id="category">
+					<label>資源類別</label>：${item.resourcesBuyers.category }
+				</div>
+				<div id="type">
+					<label>資源種類</label>：${item.type }
+				</div>
+				<div id="owners">
+					<label>購買單位</label>：
+					<c:forEach var="owner" items="${item.referenceOwners }"
 						varStatus="index">
+						<input type="hidden" value="${owner.serNo }" id="ownerSerNo" />
 						<c:choose>
 							<c:when test="${!index.last }">${owner.name }、</c:when>
 							<c:otherwise>${owner.name }</c:otherwise>
 						</c:choose>
-					</c:forEach></td>
-				<td>${item.uuIdentifier }</td>
-			</tr>
-		</c:forEach>
-	</table>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+	</c:forEach>
+	<div class="button_box">
+		<div class="detail-func-button">
+			<a class="state-default" onclick="closeResDbs();">確認</a>
+		</div>
+	</div>
+	<div class="detail_note">
+		<div class="detail_note_title">Note</div>
+		<div id="box_detail" class="box_note_content"></div>
+	</div>
 </body>
 </html>

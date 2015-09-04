@@ -104,9 +104,17 @@ function goImport(){
 						<tr>
 							<td align="left"><s:select name="entity.option"
 									id="listForm_searchCondition"
-									list="#{'entity.dbTitle':'資料庫題名'}" /></td>
-							<td align="left"><s:textfield name="entity.dbTitle"
-									id="search" cssClass="input_text" /></td>
+									list="#{'entity.dbTitle':'資料庫題名','entity.uuIdentifier':'UUID'}" /></td>
+							<td align="left"><c:choose>
+									<c:when test="${entity.option=='entity.uuIdentifier' }">
+										<td align="left"><s:textfield name="entity.uuIdentifier"
+												id="search" cssClass="input_text" /></td>
+									</c:when>
+									<c:otherwise>
+										<s:textfield name="entity.dbTitle" id="search"
+											cssClass="input_text" />
+									</c:otherwise>
+								</c:choose></td>
 							<td align="left"><a class="state-default"
 								onclick="goSearch();">查詢</a></td>
 						</tr>

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -52,18 +53,23 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		return dao;
 	}
 
-	public Ebook getRepeatEbookInDb(long isbn, Database database)
-			throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.eq("database.serNo", database.getSerNo());
-		restrictions.eq("isbn", isbn);
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosByIsbn(long isbn) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage.setSql("SELECT serNo FROM Ebook WHERE isbn = :isbn");
+		queryLanguage.addParameter("isbn", isbn);
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
 
-		List<Ebook> result = dao.findByRestrictions(restrictions);
-		if (result.size() > 0) {
-			return result.get(0);
-		} else {
-			return null;
-		}
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosInDbByIsbn(long isbn, Database database)
+			throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setSql("SELECT serNo FROM Ebook WHERE isbn = :isbn AND database.serNo = :datSerNo");
+		queryLanguage.addParameter("isbn", isbn);
+		queryLanguage.addParameter("datSerNo", database.getSerNo());
+		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 
 	public long getEbkSerNoByIsbn(long isbn) throws Exception {

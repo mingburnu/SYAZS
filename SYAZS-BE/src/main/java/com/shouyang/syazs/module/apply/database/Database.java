@@ -12,6 +12,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.ebook.Ebook;
 import com.shouyang.syazs.module.apply.enums.Type;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
@@ -99,6 +101,9 @@ public class Database extends ModuleProperties {
 	@ManyToMany
 	@JoinTable(name = "ref_dat", joinColumns = @JoinColumn(name = "dat_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
 	private Set<ReferenceOwner> referenceOwners;
+
+	@OneToMany(mappedBy = "database")
+	private Set<Ebook> ebooks;
 
 	/**
 	 * @return the dbTitle
@@ -323,6 +328,20 @@ public class Database extends ModuleProperties {
 	 */
 	public void setReferenceOwners(Set<ReferenceOwner> referenceOwners) {
 		this.referenceOwners = referenceOwners;
+	}
+	
+	/**
+	 * @return the ebooks
+	 */
+	public Set<Ebook> getEbooks() {
+		return ebooks;
+	}
+
+	/**
+	 * @param ebooks the ebooks to set
+	 */
+	public void setEbooks(Set<Ebook> ebooks) {
+		this.ebooks = ebooks;
 	}
 
 	public Database() {

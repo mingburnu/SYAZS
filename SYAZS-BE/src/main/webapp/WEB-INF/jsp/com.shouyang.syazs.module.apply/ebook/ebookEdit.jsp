@@ -26,9 +26,21 @@
 	$(document)
 			.ready(
 					function() {
+						var contain = $("#div_Detail_3 .content .header .title")
+								.html();
+						if (contain != '資料庫-選擇') {
+							goResDbs(
+									"<c:url value = '/'/>crud/apply.database.box.action",
+									'資料庫-選擇');
+						}
+					});
+
+	$(document)
+			.ready(
+					function() {
 						$("#div_Detail .content .header .close")
 								.html(
-										'<a href="#" onclick="clearReferenceOwners();closeDetail();">關閉</a>');
+										'<a href="#" onclick="clearReferenceOwners();clearResDbs();closeDetail();">關閉</a>');
 					});
 
 	$(document).ready(function() {
@@ -58,21 +70,38 @@
 		setResField();
 	});
 
+	$(document).ready(function() {
+		checkIsbn();
+	});
+
+	$(document).ready(function() {
+		$("input#apply_ebook_update_entity_isbn").bind('input', function() {
+			checkIsbn();
+		});
+	});
+
+	$(document).ready(function() {
+		$("input[name='entity.database.serNo']").change(function() {
+			checkIsbn();
+		});
+	});
+
 	function setResField() {
-		if ($("input[name='entity.database.serNo']:checked").length > 0) {
-			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.prev().hide();
-			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.hide();
-			$("input#referenceOwner_name").parent().parent().prev().hide();
-			$("input#referenceOwner_name").parent().parent().hide();
-		} else {
+		var datSerNo = $("input[name='entity.database.serNo']").val();
+		if (datSerNo == null || datSerNo == "") {
 			$("input#referenceOwner_name").parent().parent().prev().prev()
 					.prev().show();
 			$("input#referenceOwner_name").parent().parent().prev().prev()
 					.show();
 			$("input#referenceOwner_name").parent().parent().prev().show();
 			$("input#referenceOwner_name").parent().parent().show();
+		} else {
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.prev().hide();
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.hide();
+			$("input#referenceOwner_name").parent().parent().prev().hide();
+			$("input#referenceOwner_name").parent().parent().hide();
 		}
 	}
 
@@ -86,10 +115,18 @@
 	function submitData() {
 		var data = $('#apply_ebook_update').serialize();
 		closeDetail();
+		clearResDbs();
 		clearReferenceOwners();
 		goDetail(
 				"<c:url value = '/'/>crud/apply.ebook.update.action?entity.serNo=${entity.serNo}",
 				'電子書-修改', data);
+	}
+
+	function checkIsbn() {
+		var isbn = $("input#apply_ebook_update_entity_isbn").val();
+		var datSerNo = $("input#apply_ebook_update_entity_database_serNo").val();
+		goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
+				+ isbn + '&entity.database.serNo=' + datSerNo);
 	}
 </script>
 <style type="text/css">
@@ -128,9 +165,9 @@ input#referenceOwner_name {
 			<tr>
 				<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
 				<td><input type="text" name="entity.isbn" class="input_text"
-					id="apply_ebook_save_entity_isbn"
-					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>">
-				</td>
+					id="apply_ebook_update_entity_isbn"
+					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>"><span
+					id="span-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>
@@ -201,21 +238,10 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th>資料庫題名</th>
-				<td><c:forEach var="item" items="${entity.resDbs}">
-						<div>
-							<c:choose>
-								<c:when test="${entity.database.serNo eq item.serNo }">
-									<input id="dat" type="checkbox" value="${item.serNo }"
-										name="entity.database.serNo" checked="checked">
-								</c:when>
-								<c:otherwise>
-									<input id="dat" type="checkbox" value="${item.serNo }"
-										name="entity.database.serNo">
-								</c:otherwise>
-							</c:choose>
-							<label><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></label>
-						</div>
-					</c:forEach></td>
+				<td><s:hidden name="entity.database.serNo" /><input
+					id="datName" class="input_text" disabled="disabled">&nbsp;<a
+					class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
+					class="state-default" onclick="clearRes()">清除</a></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>

@@ -58,26 +58,34 @@
 	});
 
 	$(document).ready(function() {
-		$("input[name='entity.database.serNo']").click(function() {
-			var box = $(this).attr("checked");
-			$("input[name='entity.database.serNo']").attr("checked", false);
-			$(this).attr("checked", box);
-			setResField();
+		setResField();
+	});
+
+	$(document).ready(function() {
+		checkIsbn();
+	});
+
+	$(document).ready(function() {
+		$("input#apply_ebook_save_entity_isbn").bind('input', function() {
+			checkIsbn();
 		});
 	});
 
 	$(document).ready(function() {
-		setResField();
+		$("input[name='entity.database.serNo']").change(function() {
+			checkIsbn();
+		});
 	});
 
 	function setResField() {
-		if ($("input[name='entity.database.serNo']:checked").length > 0) {
+		var datSerNo = $("input[name='entity.database.serNo']").val();
+		if (datSerNo == null || datSerNo == "") {
 			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.prev().hide();
+					.prev().show();
 			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.hide();
-			$("input#referenceOwner_name").parent().parent().prev().hide();
-			$("input#referenceOwner_name").parent().parent().hide();
+					.show();
+			$("input#referenceOwner_name").parent().parent().prev().show();
+			$("input#referenceOwner_name").parent().parent().show();
 		} else {
 			$("input#referenceOwner_name").parent().parent().prev().prev()
 					.prev().show();
@@ -102,17 +110,24 @@
 
 		allSelect_referenceOwners(0);
 		checkData();
-		$("input[name='entity.database.serNo']").attr("checked", false);
-		setResField();
+		clearRes();
 	}
 
 	//遞交表單
 	function submitData() {
 		var data = $('#apply_ebook_save').serialize();
 		closeDetail();
+		clearResDbs();
 		clearReferenceOwners();
 		goDetail("<c:url value = '/'/>crud/apply.ebook.save.action", '電子書-新增',
 				data);
+	}
+
+	function checkIsbn() {
+		var isbn = $("input#apply_ebook_save_entity_isbn").val();
+		var datSerNo = $("input#apply_ebook_save_entity_database_serNo").val();
+		goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.isbn='
+				+ isbn + '&entity.database.serNo=' + datSerNo);
 	}
 </script>
 <style type="text/css">
@@ -148,8 +163,8 @@ input[type="text"]:disabled {
 				<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_save_entity_isbn"
-					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>">
-				</td>
+					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>"><span
+					id="span-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>
@@ -220,7 +235,10 @@ input[type="text"]:disabled {
 			</tr>
 			<tr>
 				<th>資料庫題名</th>
-				<td><a class="state-default" onclick="addResDb()">select</a></td>
+				<td><s:hidden name="entity.database.serNo" /><input
+					id="datName" class="input_text" disabled="disabled">&nbsp;<a
+					class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
+					class="state-default" onclick="clearRes()">清除</a></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
@@ -274,8 +292,8 @@ input[type="text"]:disabled {
 		<div class="button_box">
 			<div class="detail-func-button">
 				<a class="state-default"
-					onclick="clearReferenceOwners();closeDetail();">取消</a> &nbsp;<a
-					class="state-default" onclick="resetData();">重設</a>&nbsp; <a
+					onclick="clearResDbs();clearReferenceOwners();closeDetail();">取消</a>
+				&nbsp;<a class="state-default" onclick="resetData();">重設</a>&nbsp; <a
 					class="state-default" onclick="submitData();">確認</a>
 			</div>
 		</div>

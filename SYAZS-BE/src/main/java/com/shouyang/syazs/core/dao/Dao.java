@@ -88,10 +88,10 @@ public interface Dao<T extends Entity> {
 	/**
 	 * Use the Query Language
 	 * 
-	 * @param iQL
+	 * @param dsQL
 	 * @return
 	 */
-	public List<?> findByQL(DsQueryLanguage iQL);
+	public List<?> findByHQL(DsQueryLanguage queryLanguage);
 
 	/**
 	 * Turn on or off Foreign Key

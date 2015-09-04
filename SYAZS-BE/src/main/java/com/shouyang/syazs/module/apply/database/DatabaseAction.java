@@ -260,7 +260,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Override
 	public String list() throws Exception {
 		if (StringUtils.isNotBlank(getEntity().getOption())) {
-			if (!getEntity().getOption().equals("entity.dbTitle")) {
+			if (!getEntity().getOption().equals("entity.dbTitle")
+					&& !getEntity().getOption().equals("entity.uuIdentifier")) {
 				getEntity().setOption("entity.dbTitle");
 			}
 		} else {
@@ -374,21 +375,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String tip() throws Exception {
-		List<Long> results = databaseService.getDbSerNosByTitle(getEntity()
-				.getDbTitle());
+		Long serNo = getEntity().getSerNo();
+		String dbTitle = getEntity().getDbTitle();
 
-		if (getEntity().getSerNo() != null) {
-			if (CollectionUtils.isNotEmpty(results)) {
-				if (results.size() > 1
-						|| !results.contains(getEntity().getSerNo())) {
-					getRequest().setAttribute("tip", "已有同名資料庫");
-				}
-			}
-		} else {
-			if (CollectionUtils.isNotEmpty(results)) {
-				getRequest().setAttribute("tip", "已有同名資料庫");
-			}
+		if (hasRepeatDbTitle(dbTitle, serNo)) {
+			getRequest().setAttribute("tip", "有同名資料庫");
 		}
+
 		return TIP;
 	}
 
@@ -589,6 +582,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						rowValues[6], rowValues[7], rowValues[8], type,
 						rowValues[10], openAccess, null, resourcesBuyers,
 						new HashSet<ReferenceOwner>(owners));
+				database.getResourcesBuyers().setDataStatus("");
 
 				if (CollectionUtils.isEmpty(database.getReferenceOwners())) {
 					objStatus.append("沒有擁有者<br>");
@@ -603,28 +597,32 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 
 				database.setDataStatus(objStatus.toString());
-				database.getResourcesBuyers().setDataStatus("");
 
 				if (titles.contains(database.getDbTitle().toLowerCase())) {
 					database.getResourcesBuyers().setDataStatus("已有同名資源<br>");
 				}
 
-				if (checkRepeatTitle.containsKey(database.getDbTitle())) {
-					String prevResStatus = (originalData
-							.get(checkRepeatTitle.get(database.getDbTitle()))
-							.getResourcesBuyers().getDataStatus() + "清單有同名資料庫<br>")
-							.replace("清單有同名資料庫<br>清單有同名資料庫<br>", "清單有同名資料庫<br>");
-					originalData
-							.get(checkRepeatTitle.get(database.getDbTitle()))
-							.getResourcesBuyers().setDataStatus(prevResStatus);
+				if (StringUtils.isNotBlank(database.getDbTitle())) {
+					if (checkRepeatTitle.containsKey(database.getDbTitle())) {
+						String prevResStatus = (originalData
+								.get(checkRepeatTitle.get(database.getDbTitle()))
+								.getResourcesBuyers().getDataStatus() + "清單有同名資料庫<br>")
+								.replace("清單有同名資料庫<br>清單有同名資料庫<br>",
+										"清單有同名資料庫<br>");
+						originalData
+								.get(checkRepeatTitle.get(database.getDbTitle()))
+								.getResourcesBuyers()
+								.setDataStatus(prevResStatus);
 
-					String nextResStatus = database.getResourcesBuyers()
-							.getDataStatus() + "清單有同名資料庫<br>";
-					database.getResourcesBuyers().setDataStatus(nextResStatus);
+						String nextResStatus = database.getResourcesBuyers()
+								.getDataStatus() + "清單有同名資料庫<br>";
+						database.getResourcesBuyers().setDataStatus(
+								nextResStatus);
+					}
+
+					checkRepeatTitle.put(database.getDbTitle(),
+							originalData.size());
 				}
-
-				checkRepeatTitle
-						.put(database.getDbTitle(), originalData.size());
 
 				if (StringUtils.isEmpty(database.getDataStatus())) {
 					database.setDataStatus("正常");
@@ -895,6 +893,27 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		return true;
+	}
+
+	protected boolean hasRepeatDbTitle(String dbTitle, Long serNo)
+			throws Exception {
+		List<Long> results = databaseService.getSerNosByTitle(getEntity()
+				.getDbTitle());
+
+		if (serNo != null) {
+			if (CollectionUtils.isNotEmpty(results)) {
+				results.remove(serNo);
+				if (results.size() != 0) {
+					return true;
+				}
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(results)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	// 判斷文件類型

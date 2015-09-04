@@ -3,6 +3,7 @@ package com.shouyang.syazs.module.apply.database;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,12 @@ public class DatabaseService extends GenericServiceFull<Database> {
 			}
 		}
 
+		if (entity.getOption().equals("entity.uuIdentifier")) {
+			if (StringUtils.isNotBlank(entity.getUuIdentifier())) {
+				restrictions.eq("uuIdentifier", entity.getUuIdentifier());
+			}
+		}
+
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
@@ -50,13 +57,13 @@ public class DatabaseService extends GenericServiceFull<Database> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Long> getDbSerNosByTitle(String dbTitle) throws Exception {
+	public List<Long> getSerNosByTitle(String dbTitle) throws Exception {
 		if (StringUtils.isNotBlank(dbTitle)) {
 			DsQueryLanguage queryLanguage = getDsQueryLanguage();
 			queryLanguage
 					.setSql("SELECT serNo FROM Database WHERE LOWER(dbTitle) = :dbTitle");
 			queryLanguage.addParameter("dbTitle", dbTitle.trim().toLowerCase());
-			return (List<Long>) dao.findByQL(queryLanguage);
+			return (List<Long>) dao.findByHQL(queryLanguage);
 		} else {
 			return null;
 		}
@@ -66,7 +73,7 @@ public class DatabaseService extends GenericServiceFull<Database> {
 	public List<String> getAllDbTitles() throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
 		queryLanguage.setSql("SELECT LOWER(dbTitle) FROM Database");
-		return (List<String>) dao.findByQL(queryLanguage);
+		return (List<String>) dao.findByHQL(queryLanguage);
 	}
 
 	public List<Database> getAllDbs() throws Exception {
@@ -74,16 +81,43 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dao.findByRestrictions(restrictions);
 	}
 
+	public Database getByUUID(String uuid) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.eq("uuIdentifier", uuid);
+
+		List<Database> results = dao.findByRestrictions(restrictions);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public Database save(Database entity, AccountNumber user) throws Exception {
 		Assert.notNull(entity);
 
+		String uuid = UUID.randomUUID().toString();
+		while (!isUnusedUUID(uuid)) {
+			uuid = UUID.randomUUID().toString();
+		}
+
 		entity.initInsert(user);
-		entity.setUuIdentifier(UUID.randomUUID().toString());
+		entity.setUuIdentifier(uuid);
 
 		Database dbEntity = dao.save(entity);
 		makeUserInfo(dbEntity);
 
 		return dbEntity;
+	}
+
+	public boolean isUnusedUUID(String uuid) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.eq("uuIdentifier", uuid);
+		if (CollectionUtils.isEmpty(dao.findByRestrictions(restrictions))) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

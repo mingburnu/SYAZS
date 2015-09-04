@@ -157,7 +157,7 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 	}
 
 	@Override
-	public List<?> findByQL(DsQueryLanguage dsQL) {
+	public List<?> findByHQL(DsQueryLanguage dsQL) {
 		Assert.notNull(dsQL);
 		Assert.notNull(dsQL.getSql());
 
