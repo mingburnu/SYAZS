@@ -3,6 +3,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -94,9 +95,20 @@
 				<tr>
 					<th></th>
 					<th><esapi:encodeForHTML>${cellNames[0]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[2]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[11]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[16]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[1]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[3]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[14]}</esapi:encodeForHTML></th>
+					<c:choose>
+						<c:when test="${16 eq fn:length(cellNames)}">
+							<th><esapi:encodeForHTML>來源資料庫</esapi:encodeForHTML></th>
+							<th><esapi:encodeForHTML>資源類型</esapi:encodeForHTML></th>
+							<th><esapi:encodeForHTML>擁有者</esapi:encodeForHTML></th>
+						</c:when>
+						<c:otherwise>
+							<th><esapi:encodeForHTML>${cellNames[17]}</esapi:encodeForHTML></th>
+							<th><esapi:encodeForHTML>${cellNames[18]}</esapi:encodeForHTML></th>
+						</c:otherwise>
+					</c:choose>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -112,10 +124,26 @@
 								</c:otherwise>
 							</c:choose></td>
 						<td><esapi:encodeForHTML>${item.title }</esapi:encodeForHTML></td>
-						<td><esapi:encodeForHTML>${item.issn }</esapi:encodeForHTML></td>
-						<td>${item.resourcesBuyers.category.category }</td>
-						<td align="center"><esapi:encodeForHTML>${item.owners[0].name }</esapi:encodeForHTML>
-						</td>
+						<td><esapi:encodeForHTML>${item.abbreviationTitle }</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${item.issn }</esapi:encodeForHTML><br>
+							<span id="span-tip">${item.resourcesBuyers.dataStatus }</span></td>
+						<td><c:choose>
+								<c:when test="${true eq item.openAccess}">是</c:when>
+								<c:otherwise>否</c:otherwise>
+							</c:choose></td>
+						<c:if test="${16 eq fn:length(cellNames)}">
+							<td><c:if test="${not empty item.database}">${item.database.dbTitle }<br>
+								</c:if></td>
+						</c:if>
+						<td>${item.resourcesBuyers.category }${item.database.resourcesBuyers.category }</td>
+						<td align="center"><c:forEach var="owner"
+								items="${item.referenceOwners }">
+								<esapi:encodeForHTML>${owner.name }</esapi:encodeForHTML>
+								<br>
+							</c:forEach> <c:forEach var="owner" items="${item.database.referenceOwners }">
+								<esapi:encodeForHTML>${owner.name }</esapi:encodeForHTML>
+								<br>
+							</c:forEach></td>
 						<td align="center">${item.dataStatus }</td>
 					</tr>
 				</c:forEach>

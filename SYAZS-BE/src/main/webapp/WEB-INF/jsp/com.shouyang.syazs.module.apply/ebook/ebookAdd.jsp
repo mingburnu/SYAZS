@@ -16,10 +16,10 @@
 					function() {
 						var contain = $("#div_Detail_2 .content .header .title")
 								.html();
-						if (contain != '單位-新增') {
+						if (contain != '擁有人-新增') {
 							goReferenceOwners(
 									"<c:url value = '/'/>crud/apply.referenceOwner.box.action",
-									'單位-新增');
+									'擁有人-新增');
 						}
 					});
 
@@ -59,9 +59,6 @@
 
 	$(document).ready(function() {
 		setResField();
-	});
-
-	$(document).ready(function() {
 		checkIsbn();
 	});
 
@@ -69,9 +66,7 @@
 		$("input#apply_ebook_save_entity_isbn").bind('input', function() {
 			checkIsbn();
 		});
-	});
 
-	$(document).ready(function() {
 		$("input[name='entity.database.serNo']").change(function() {
 			checkIsbn();
 		});
@@ -88,11 +83,11 @@
 			$("input#referenceOwner_name").parent().parent().show();
 		} else {
 			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.prev().show();
+					.prev().hide();
 			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.show();
-			$("input#referenceOwner_name").parent().parent().prev().show();
-			$("input#referenceOwner_name").parent().parent().show();
+					.hide();
+			$("input#referenceOwner_name").parent().parent().prev().hide();
+			$("input#referenceOwner_name").parent().parent().hide();
 		}
 	}
 
@@ -126,8 +121,13 @@
 	function checkIsbn() {
 		var isbn = $("input#apply_ebook_save_entity_isbn").val();
 		var datSerNo = $("input#apply_ebook_save_entity_database_serNo").val();
-		goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.isbn='
-				+ isbn + '&entity.database.serNo=' + datSerNo);
+
+		if (isbn == null || isbn.trim() == "") {
+			$("#span-tip").html("ISBN未填寫");
+		} else {
+			goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.isbn='
+					+ isbn + '&entity.database.serNo=' + datSerNo);
+		}
 	}
 </script>
 <style type="text/css">
@@ -163,7 +163,7 @@ input[type="text"]:disabled {
 				<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_save_entity_isbn"
-					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>"><span
+					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>">&nbsp;<span
 					id="span-tip"></span></td>
 			</tr>
 			<tr>
@@ -253,15 +253,15 @@ input[type="text"]:disabled {
 			<tr>
 				<th width="130">資源類型</th>
 				<td><c:choose>
-						<c:when
-							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
+						<c:when test="${empty entity.resourcesBuyers.category }">
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="name()"
-								value="'未註明'" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" value="'未註明'" />
 						</c:when>
 						<c:otherwise>
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="name()" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>

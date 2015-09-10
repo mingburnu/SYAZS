@@ -40,7 +40,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
@@ -63,9 +62,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Autowired
 	private Ebook ebook;
-
-	@Autowired
-	private Ebook targetEbk;
 
 	@Autowired
 	private Database database;
@@ -103,7 +99,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		} else {
 			if (StringUtils.isBlank(getRequest().getParameter("entity.isbn"))) {
-				errorMessages.add("ISBN必須填寫");
+				// errorMessages.add("ISBN必須填寫");TODO
 			} else {
 				if (!isIsbn(getRequest().getParameter("entity.isbn"))) {
 					errorMessages.add("ISBN不正確");
@@ -201,9 +197,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		}
 
-		if (getEntity().getResourcesBuyers().getCategory() == null
-				|| getEntity().getResourcesBuyers().getCategory()
-						.equals(Category.不明)) {
+		if (getEntity().getResourcesBuyers().getCategory() == null) {
 			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
@@ -327,9 +321,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
-			if (getEntity().getResourcesBuyers().getCategory() == null
-					|| getEntity().getResourcesBuyers().getCategory()
-							.equals(Category.不明)) {
+			if (getEntity().getResourcesBuyers().getCategory() == null) {
 				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
@@ -365,9 +357,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Override
 	public String add() throws Exception {
-		setCategoryList();
-
-		ebook.setResDbs(databaseService.getAllDbs());
 		getRequest().setAttribute(
 				"uncheckReferenceOwners",
 				referenceOwnerService
@@ -381,12 +370,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			setCategoryList();
-
 			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
 					ebook.getReferenceOwners());
 			ebook.setOwners(owners);
-			ebook.setResDbs(databaseService.getAllDbs());
 			getRequest().setAttribute("uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(owners));
 
@@ -443,23 +429,16 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			getEntity().setIsbn(
-					Long.parseLong(getRequest().getParameter("entity.isbn")
-							.trim().replace("-", "")));
+			if (StringUtils
+					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
+				getEntity().setIsbn(
+						Long.parseLong(getRequest().getParameter("entity.isbn")
+								.trim().replace("-", "")));
+			}
 
 			if (getEntity().getDatabase().getSerNo() != null) {
-				getEntity().getResourcesBuyers().setStartDate(
-						getEntity().getDatabase().getResourcesBuyers()
-								.getStartDate());
-				getEntity().getResourcesBuyers().setMaturityDate(
-						getEntity().getDatabase().getResourcesBuyers()
-								.getMaturityDate());
-				getEntity().getResourcesBuyers().setCategory(
-						getEntity().getDatabase().getResourcesBuyers()
-								.getCategory());
-				getEntity().setReferenceOwners(
-						new HashSet<ReferenceOwner>(getEntity().getDatabase()
-								.getReferenceOwners()));
+				getEntity().setResourcesBuyers(new ResourcesBuyers());
+				getEntity().setReferenceOwners(null);
 			} else {
 				getEntity().setDatabase(null);
 				getEntity().setReferenceOwners(
@@ -471,14 +450,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
-			setCategoryList();
-
 			getRequest().setAttribute(
 					"uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(getEntity()
 							.getOwners()));
 
-			getEntity().setResDbs(databaseService.getAllDbs());
 			setEntity(getEntity());
 			return ADD;
 		}
@@ -490,23 +466,16 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			getEntity().setIsbn(
-					Long.parseLong(getRequest().getParameter("entity.isbn")
-							.trim().replace("-", "")));
+			if (StringUtils
+					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
+				getEntity().setIsbn(
+						Long.parseLong(getRequest().getParameter("entity.isbn")
+								.trim().replace("-", "")));
+			}
 
 			if (getEntity().getDatabase().getSerNo() != null) {
-				getEntity().getResourcesBuyers().setStartDate(
-						getEntity().getDatabase().getResourcesBuyers()
-								.getStartDate());
-				getEntity().getResourcesBuyers().setMaturityDate(
-						getEntity().getDatabase().getResourcesBuyers()
-								.getMaturityDate());
-				getEntity().getResourcesBuyers().setCategory(
-						getEntity().getDatabase().getResourcesBuyers()
-								.getCategory());
-				getEntity().setReferenceOwners(
-						new HashSet<ReferenceOwner>(getEntity().getDatabase()
-								.getReferenceOwners()));
+				getEntity().setResourcesBuyers(new ResourcesBuyers());
+				getEntity().setReferenceOwners(null);
 			} else {
 				getEntity().setDatabase(null);
 				getEntity().setReferenceOwners(
@@ -518,14 +487,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
-			setCategoryList();
-
 			getRequest().setAttribute(
 					"uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(getEntity()
 							.getOwners()));
 
-			getEntity().setResDbs(databaseService.getAllDbs());
 			setEntity(getEntity());
 			return EDIT;
 		}
@@ -609,6 +575,22 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		if (!hasActionErrors()) {
+			if (StringUtils.isNotBlank(getEntity().getOption())) {
+				if (!getEntity().getOption().equals("package")
+						&& !getEntity().getOption().equals("individual")) {
+					getEntity().setOption("package");
+				}
+			} else {
+				getEntity().setOption("package");
+			}
+
+			int length = 0;
+			if (getEntity().getOption().equals("package")) {
+				length = 16;
+			} else {
+				length = 19;
+			}
+
 			Workbook book = createWorkBook(new FileInputStream(getEntity()
 					.getFile()[0]));
 			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
@@ -621,7 +603,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[20];
+
+			String[] rowTitles = new String[length];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -680,7 +663,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					continue;
 				}
 
-				String[] rowValues = new String[20];
+				String[] rowValues = new String[length];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -729,31 +712,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				StringBuilder objStatus = new StringBuilder();
 				StringBuilder resStatus = new StringBuilder();
 
-				Database database = databaseService.getByUUID(rowValues[15]
-						.trim());
-
-				Category category = null;
-				Object objCategory = getEnum(
-						new String[] { rowValues[18].trim() }, Category.class);
-				if (objCategory != null) {
-					category = (Category) objCategory;
-				} else {
-					if (StringUtils.isBlank(rowValues[18])) {
-						category = Category.未註明;
-					} else {
-						category = Category.不明;
-					}
-				}
-
 				boolean openAccess = false;
 				if (rowValues[14].toLowerCase().equals("yes")
 						|| rowValues[14].toLowerCase().equals("true")
 						|| rowValues[14].equals("是")) {
 					openAccess = true;
 				}
-
-				resourcesBuyers = new ResourcesBuyers(rowValues[16],
-						rowValues[17], category);
 
 				String isbn = rowValues[1].trim();
 
@@ -763,77 +727,99 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					version = (int) d;
 				}
 
-				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
-				if (StringUtils.isNotBlank(rowValues[19].replace("、", ""))) {
-					String[] names = rowValues[19].trim().split("、");
-
-					int j = 0;
-					while (j < names.length) {
-						if (StringUtils.isNotBlank(names[j])) {
-							referenceOwner = new ReferenceOwner();
-							referenceOwner.setName(names[j].trim());
-							referenceOwner
-									.setSerNo(referenceOwnerService
-											.getRefSerNoByName(referenceOwner
-													.getName()));
-
-							if (referenceOwner.getSerNo() == 0) {
-								objStatus.append(referenceOwner.getName()
-										+ "不存在<br>");
-							}
-							owners.add(referenceOwner);
-						}
-						j++;
-					}
-				}
-
-				if (NumberUtils.isDigits(isbn)) {// TODO
-					ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
-							rowValues[2], rowValues[3], rowValues[4],
-							rowValues[5], rowValues[6], rowValues[7], version,
-							rowValues[9], rowValues[10], rowValues[12],
-							rowValues[13], rowValues[11], openAccess, database,
-							resourcesBuyers, owners);
-					ebook.getResourcesBuyers().setDataStatus("");
-				} else {
-					ebook = new Ebook(rowValues[0], null, rowValues[2],
-							rowValues[3], rowValues[4], rowValues[5],
-							rowValues[6], rowValues[7], version, rowValues[9],
-							rowValues[10], rowValues[12], rowValues[13],
-							rowValues[11], openAccess, database,
-							resourcesBuyers, owners);
-					ebook.setOption(isbn);
-					ebook.getResourcesBuyers().setDataStatus("");
-				}
-
-				if (StringUtils.isNotBlank(rowValues[15])) {
-					if (database == null) {
-						objStatus.append("資料庫代碼錯誤<br>");
+				if (length > 16) {
+					Category category = null;
+					Object objCategory = getEnum(
+							new String[] { rowValues[17].trim() },
+							Category.class);
+					if (objCategory != null) {
+						category = (Category) objCategory;
 					} else {
-						ebook.getResourcesBuyers().setStartDate(
-								database.getResourcesBuyers().getStartDate());
-						ebook.getResourcesBuyers()
-								.setMaturityDate(
-										database.getResourcesBuyers()
-												.getMaturityDate());
-						ebook.getResourcesBuyers().setCategory(
-								database.getResourcesBuyers().getCategory());
-						ebook.setReferenceOwners(database.getReferenceOwners());
-						resStatus.append("部分資料與來源DB同步<br>");
+						category = Category.未註明;
 					}
-				} else {
+
+					resourcesBuyers = new ResourcesBuyers(rowValues[15],
+							rowValues[16], category);
+
+					Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
+					if (StringUtils.isNotBlank(rowValues[18].replace("、", ""))) {
+						String[] names = rowValues[18].trim().split("、");
+
+						int j = 0;
+						while (j < names.length) {
+							if (StringUtils.isNotBlank(names[j])) {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setName(names[j].trim());
+								referenceOwner.setSerNo(referenceOwnerService
+										.getRefSerNoByName(referenceOwner
+												.getName()));
+
+								if (referenceOwner.getSerNo() == 0) {
+									objStatus.append(referenceOwner.getName()
+											+ "不存在<br>");
+								}
+								owners.add(referenceOwner);
+							}
+							j++;
+						}
+					}
+
+					if (NumberUtils.isDigits(isbn)) {
+						ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
+								rowValues[2], rowValues[3], rowValues[4],
+								rowValues[5], rowValues[6], rowValues[7],
+								version, rowValues[9], rowValues[10],
+								rowValues[12], rowValues[13], rowValues[11],
+								openAccess, null, null, resourcesBuyers, owners);
+						ebook.getResourcesBuyers().setDataStatus("");
+					} else {
+						ebook = new Ebook(rowValues[0], null, rowValues[2],
+								rowValues[3], rowValues[4], rowValues[5],
+								rowValues[6], rowValues[7], version,
+								rowValues[9], rowValues[10], rowValues[12],
+								rowValues[13], rowValues[11], openAccess, null,
+								null, resourcesBuyers, owners);
+						ebook.setTempNote(isbn);
+						ebook.getResourcesBuyers().setDataStatus("");
+					}
+
 					if (CollectionUtils.isEmpty(ebook.getReferenceOwners())) {
 						objStatus.append("沒有擁有者<br>");
+					}
+				} else {
+					database = databaseService.getByUUID(rowValues[15].trim());
+
+					if (NumberUtils.isDigits(isbn)) {
+						ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
+								rowValues[2], rowValues[3], rowValues[4],
+								rowValues[5], rowValues[6], rowValues[7],
+								version, rowValues[9], rowValues[10],
+								rowValues[12], rowValues[13], rowValues[11],
+								openAccess, database, null,
+								new ResourcesBuyers(), null);
+						ebook.getResourcesBuyers().setDataStatus("");
+					} else {
+						ebook = new Ebook(rowValues[0], null, rowValues[2],
+								rowValues[3], rowValues[4], rowValues[5],
+								rowValues[6], rowValues[7], version,
+								rowValues[9], rowValues[10], rowValues[12],
+								rowValues[13], rowValues[11], openAccess,
+								database, null, new ResourcesBuyers(), null);
+						ebook.setTempNote(isbn);
+						ebook.getResourcesBuyers().setDataStatus("");
+					}
+
+					if (StringUtils.isNotBlank(rowValues[15])) {
+						if (database == null) {
+							objStatus.append("資料庫代碼錯誤<br>");
+						}
+					} else {
+						objStatus.append("資料庫代碼空白<br>");
 					}
 				}
 
 				if (!isURL(ebook.getUrl())) {
 					objStatus.append("url不正確<br>");
-				}
-
-				if (ebook.getResourcesBuyers().getCategory()
-						.equals(Category.不明)) {
-					objStatus.append("資源類型不明<br>");
 				}
 
 				if (StringUtils.isNotEmpty(ebook.getCnClassBzStr())) {
@@ -855,8 +841,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						if (hasRepeatIsbn(isbn, null)) {
 							resStatus.append("已有相同ISBN<br>");
 						}
-						
-						if(database!=null && dbHasRepeatIsbn(isbn, null, database.getSerNo())){
+
+						if (ebook.getDatabase() != null
+								&& dbHasRepeatIsbn(isbn, null, ebook
+										.getDatabase().getSerNo())) {
 							resStatus.append("DB有相同ISBN<br>");
 						}
 
@@ -886,8 +874,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						if (hasRepeatIsbn(isbn, null)) {
 							resStatus.append("已有相同ISBN<br>");
 						}
-						
-						if(database!=null && dbHasRepeatIsbn(isbn, null, database.getSerNo())){
+
+						if (ebook.getDatabase() != null
+								&& dbHasRepeatIsbn(isbn, null, ebook
+										.getDatabase().getSerNo())) {
 							resStatus.append("DB有相同ISBN<br>");
 						}
 
@@ -918,8 +908,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					}
 				}
 
-				ebook.setDataStatus(objStatus.toString());
 				ebook.getResourcesBuyers().setDataStatus(resStatus.toString());
+				ebook.setDataStatus(objStatus.toString());
 
 				if (StringUtils.isEmpty(ebook.getDataStatus())) {
 					ebook.setDataStatus("正常");
@@ -1100,8 +1090,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				ebook = (Ebook) importList.get(index);
 
 				if (ebook.getIsbn() == null) {
-					ebook.setIsbn(Long.parseLong(ebook.getOption().replace("-",
-							"")));
+					ebook.setIsbn(Long.parseLong(ebook.getTempNote().replace(
+							"-", "")));
 				}
 
 				ebookService.save(ebook, getLoginUser());
@@ -1127,23 +1117,66 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "書名", "ISBN/13碼", "出版社", "第一作者",
-				"次要作者", "系列叢書名", "出版日期", "語文", "版本", "中國圖書分類碼", "杜威十進位分類號",
-				"URL", "類型", "出版地", "公開資源", "資料庫UUID", "起始日", "到期日", "資源類型",
-				"購買人名稱" });
 
-		empinfo.put("2", new Object[] {
-				"Ophthalmic clinical procedures：a multimedia guide",
-				"978-0-08-044978-4", "Elsevier(ClinicalKey)", "Frank Eperjesi",
-				"Hannah Bartlett & Mark Dunne", "N/A", "2008/2/7", "eng", "1",
-				"410", "617",
-				"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
-				"Netherlands", "是", "","2000", "2005", "租貸", "陸承軒、毛民福" });
-		empinfo.put("3", new Object[] { "C嘉魔法彩繪", "978-9-88-807293-4", "青森文化",
-				"陳嘉慧", "N/A", "N/A", "2011", "cht", "N/A", "961", "752",
-				"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
-				"醫學", "Taiwan", "是", "7e123992-bc2d-4edd-a98a-0a290738bea8",
-				"N/A", "N/A", "買斷", "夏柔" });
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getEntity().setOption("package");
+		} else {
+			if (!getEntity().getOption().equals("package")
+					&& !getEntity().getOption().equals("individual")) {
+				getEntity().setOption("package");
+			}
+		}
+
+		if (getEntity().getOption().equals("package")) {
+			empinfo.put("1", new Object[] { "書名", "ISBN/13碼", "出版社", "第一作者",
+					"次要作者", "系列叢書名", "出版日期", "語文", "版本", "中國圖書分類碼", "杜威十進位分類號",
+					"URL", "類型", "出版地", "公開資源", "資料庫UUID" });
+
+			empinfo.put(
+					"2",
+					new Object[] {
+							"Ophthalmic clinical procedures：a multimedia guide",
+							"978-0-08-044978-4", "Elsevier(ClinicalKey)",
+							"Frank Eperjesi", "Hannah Bartlett & Mark Dunne",
+							"N/A", "2008/2/7", "eng", "1", "410", "617",
+							"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi",
+							"醫學", "Netherlands", "是",
+							"7e123992-bc2d-4edd-a98a-0a290738bea8" });
+			empinfo.put(
+					"3",
+					new Object[] {
+							"C嘉魔法彩繪",
+							"978-9-88-807293-4",
+							"青森文化",
+							"陳嘉慧",
+							"N/A",
+							"N/A",
+							"2011",
+							"cht",
+							"N/A",
+							"961",
+							"752",
+							"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+							"醫學", "Taiwan", "是",
+							"7e123992-bc2d-4edd-a98a-0a290738bea8" });
+		} else {
+			empinfo.put("1", new Object[] { "書名", "ISBN/13碼", "出版社", "第一作者",
+					"次要作者", "系列叢書名", "出版日期", "語文", "版本", "中國圖書分類碼", "杜威十進位分類號",
+					"URL", "類型", "出版地", "公開資源", "起始日", "到期日", "資源類型", "購買人名稱" });
+
+			empinfo.put("2", new Object[] {
+					"Ophthalmic clinical procedures：a multimedia guide",
+					"978-0-08-044978-4", "Elsevier(ClinicalKey)",
+					"Frank Eperjesi", "Hannah Bartlett & Mark Dunne", "N/A",
+					"2008/2/7", "eng", "1", "410", "617",
+					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
+					"Netherlands", "是", "2000", "2005", "租貸", "陸承軒、毛民福" });
+			empinfo.put("3", new Object[] { "C嘉魔法彩繪", "978-9-88-807293-4",
+					"青森文化", "陳嘉慧", "N/A", "N/A", "2011", "cht", "N/A", "961",
+					"752",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"醫學", "Taiwan", "是", "N/A", "N/A", "買斷", "夏柔" });
+		}
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
@@ -1217,14 +1250,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	protected boolean isURL(String url) {
 		return ESAPI.validator().isValidInput("Ebook URL", url, "URL",
 				Integer.MAX_VALUE, false);
-	}
-
-	protected void setCategoryList() {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-		ActionContext.getContext().getValueStack()
-				.set("categoryList", categoryList);
 	}
 
 	protected boolean hasEntity() throws Exception {

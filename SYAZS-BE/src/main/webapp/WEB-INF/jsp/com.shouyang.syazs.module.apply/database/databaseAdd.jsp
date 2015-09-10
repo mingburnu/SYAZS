@@ -75,8 +75,12 @@
 
 	function checkTitle() {
 		var dbTitle = $("input#apply_database_save_entity_dbTitle").val();
-		goTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.dbTitle='
-				+ dbTitle);
+		if (dbTitle == null || dbTitle.trim() == "") {
+			$("#span-tip").html("");
+		} else {
+			goTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.dbTitle='
+					+ dbTitle);
+		}
 	}
 </script>
 <style type="text/css">
@@ -162,15 +166,30 @@ textarea#apply_database_save_entity_content {
 			<tr>
 				<th width="130">資源類型</th>
 				<td><c:choose>
-						<c:when
-							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
+						<c:when test="${empty entity.resourcesBuyers.category }">
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="name()"
-								value="'未註明'" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" value="'未註明'" />
 						</c:when>
 						<c:otherwise>
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="name()" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" />
+						</c:otherwise>
+					</c:choose></td>
+			</tr>
+			<tr>
+				<th width="130">資源種類</th>
+				<td><c:choose>
+						<c:when test="${empty entity.type }">
+							<s:radio name="entity.type"
+								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
+								listKey="name()" listValue="type" value="'資料庫'" />
+						</c:when>
+						<c:otherwise>
+							<s:radio name="entity.type"
+								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
+								listKey="name()" listValue="type" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>

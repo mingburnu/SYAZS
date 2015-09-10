@@ -1,13 +1,16 @@
 package com.shouyang.syazs.module.apply.ebook;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
@@ -72,41 +75,31 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 
-	public long getEbkSerNoByIsbn(long isbn) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.eq("isbn", isbn);
+	@Override
+	public Ebook save(Ebook entity, AccountNumber user) throws Exception {
+		Assert.notNull(entity);
 
-		List<Ebook> result = dao.findByRestrictions(restrictions);
-		if (result.size() > 0) {
-			return (result.get(0)).getSerNo();
-		} else {
-			return 0;
+		String uuid = UUID.randomUUID().toString();
+		while (!isUnusedUUID(uuid)) {
+			uuid = UUID.randomUUID().toString();
 		}
+
+		entity.initInsert(user);
+		entity.setUuIdentifier(uuid);
+
+		Ebook dbEntity = dao.save(entity);
+		makeUserInfo(dbEntity);
+
+		return dbEntity;
 	}
 
-	public Ebook getEbkByIsbn(long isbn) throws Exception {
+	public boolean isUnusedUUID(String uuid) throws Exception {
 		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.eq("isbn", isbn);
-
-		List<Ebook> result = dao.findByRestrictions(restrictions);
-		if (result.size() > 0) {
-			return result.get(0);
-		} else {
-			return null;
-		}
-	}
-
-	public boolean isExist(long ebkSerNo, long refSerNo) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.createAlias("referenceOwners", "referenceOwners");
-		restrictions.eq("serNo", ebkSerNo);
-		restrictions.eq("referenceOwners.serNo", refSerNo);
-		entity = dao.findByRestrictions(restrictions).get(0);
-
-		if (entity != null) {
+		restrictions.eq("uuIdentifier", uuid);
+		if (CollectionUtils.isEmpty(dao.findByRestrictions(restrictions))) {
 			return true;
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 }

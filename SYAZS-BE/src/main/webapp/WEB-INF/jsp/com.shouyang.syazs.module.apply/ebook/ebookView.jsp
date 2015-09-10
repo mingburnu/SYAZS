@@ -121,20 +121,23 @@
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}${entity.database.resourcesBuyers.startDate}</esapi:encodeForHTML>
 						</td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}${entity.database.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>
-						<td>${entity.resourcesBuyers.category}</td>
+						<td>${entity.resourcesBuyers.category}${entity.database.resourcesBuyers.category}</td>
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>
 						<td><c:forEach var="item" items="${entity.referenceOwners}">
+								<div>${item.name}</div>
+							</c:forEach>
+							<c:forEach var="item" items="${entity.database.referenceOwners}">
 								<div>${item.name}</div>
 							</c:forEach></td>
 					</tr>

@@ -37,7 +37,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
@@ -59,9 +58,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Autowired
 	private Database database;
-
-	@Autowired
-	private Database targetDb;
 
 	@Autowired
 	private DatabaseService databaseService;
@@ -124,9 +120,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 		}
 
-		if (getEntity().getResourcesBuyers().getCategory() == null
-				|| getEntity().getResourcesBuyers().getCategory()
-						.equals(Category.不明)) {
+		if (getEntity().getResourcesBuyers().getCategory() == null) {
 			getEntity().getResourcesBuyers().setCategory(Category.未註明);
 		}
 
@@ -186,9 +180,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 			}
 
-			if (getEntity().getResourcesBuyers().getCategory() == null
-					|| getEntity().getResourcesBuyers().getCategory()
-							.equals(Category.不明)) {
+			if (getEntity().getResourcesBuyers().getCategory() == null) {
 				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
@@ -228,8 +220,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	public String add() throws Exception {
-		setCategoryList();
-
 		getRequest().setAttribute(
 				"uncheckReferenceOwners",
 				referenceOwnerService
@@ -243,8 +233,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			setCategoryList();
-
 			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
 					database.getReferenceOwners());
 			database.setOwners(owners);
@@ -296,8 +284,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
-			setCategoryList();
-
 			database = getEntity();
 
 			getRequest().setAttribute(
@@ -325,7 +311,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
-			setCategoryList();
 			database = getEntity();
 
 			getRequest().setAttribute(
@@ -525,12 +510,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				if (objCategory != null) {
 					category = (Category) objCategory;
 				} else {
-					if (StringUtils.isBlank(rowValues[14])) {
-						category = Category.未註明;
-					} else {
-						category = Category.不明;
-						objStatus.append("資源類別不明<br>");
-					}
+					category = Category.未註明;
 				}
 
 				Type type = null;
@@ -872,14 +852,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	protected boolean isURL(String url) {
 		return ESAPI.validator().isValidInput("Database URL", url, "URL",
 				Integer.MAX_VALUE, false);
-	}
-
-	protected void setCategoryList() {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-		ActionContext.getContext().getValueStack()
-				.set("categoryList", categoryList);
 	}
 
 	protected boolean hasEntity() throws Exception {

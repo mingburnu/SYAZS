@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,13 +40,12 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.database.DatabaseService;
 import com.shouyang.syazs.module.apply.enums.Category;
-import com.shouyang.syazs.module.apply.enums.Type;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
@@ -64,10 +64,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	private Journal journal;
 
 	@Autowired
-	private Journal targetJou;
+	private Database database;
 
 	@Autowired
 	private JournalService journalService;
+
+	@Autowired
+	private DatabaseService databaseService;
 
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
@@ -91,15 +94,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (StringUtils.isBlank(getEntity().getIssn())) {
-			errorMessages.add("ISSN不得空白");
+//			errorMessages.add("ISSN不得空白");TODO
 		} else {
 			if (!isIssn(getEntity().getIssn())) {
 				errorMessages.add("ISSN不正確");
-			} else {
-				if (journalService.getJouSerNoByIssn(getEntity().getIssn()
-						.replace("-", "").trim()) != 0) {
-					errorMessages.add("ISSN不可重複");
-				}
 			}
 		}
 
@@ -109,84 +107,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 		}
 
-		if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
-			errorMessages.add("至少選擇一筆以上擁有人");
-		} else {
-			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
-					.getRefSerNo()));
-			getEntity().setRefSerNo(
-					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
-			getEntity().setOwners(new LinkedList<ReferenceOwner>());
-
-			int i = 0;
-			while (i < getEntity().getRefSerNo().length) {
-				if (getEntity().getRefSerNo()[i] == null) {
-					errorMessages.add("null為不可利用的流水號");
-				} else {
-					if (getEntity().getRefSerNo()[i] < 1) {
-						errorMessages.add(getEntity().getRefSerNo()[i]
-								+ "為不可利用的流水號");
-					} else {
-						referenceOwner = referenceOwnerService
-								.getBySerNo(getEntity().getRefSerNo()[i]);
-						if (referenceOwner == null) {
-							errorMessages.add(getEntity().getRefSerNo()[i]
-									+ "為不可利用的流水號");
-						} else {
-							getEntity().getOwners().add(referenceOwner);
-						}
-					}
-				}
-
-				i++;
-			}
+		if (!isURL(getEntity().getUrl())) {
+			errorMessages.add("URL必須填寫");
 		}
 
-		if (getEntity().getResourcesBuyers().getCategory() == null
-				|| getEntity().getResourcesBuyers().getCategory()
-						.equals(Category.不明)) {
-			getEntity().getResourcesBuyers().setCategory(Category.未註明);
-		}
-
-		if (getEntity().getResourcesBuyers().getType() == null) {
-			getEntity().getResourcesBuyers().setType(Type.期刊);
-		}
-
-		if (getEntity().getResourcesBuyers().getOpenAccess() == null) {
-			getEntity().getResourcesBuyers().setOpenAccess(false);
-		}
-	}
-
-	@Override
-	protected void validateUpdate() throws Exception {
-		if (!hasEntity()) {
-			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-		} else {
-			if (StringUtils.isBlank(getEntity().getTitle())) {
-				errorMessages.add("刊名不得空白");
-			}
-
-			if (StringUtils.isBlank(getEntity().getIssn())) {
-				errorMessages.add("ISSN不得空白");
-			} else {
-				if (!isIssn(getEntity().getIssn())) {
-					errorMessages.add("ISSN不正確");
-				} else {
-					long jouSerNo = journalService
-							.getJouSerNoByIssn(getEntity().getIssn().trim()
-									.replace("-", ""));
-					if (jouSerNo != 0 && jouSerNo != getEntity().getSerNo()) {
-						errorMessages.add("ISSN不可重複");
-					}
-				}
-			}
-
-			if (StringUtils.isNotEmpty(getEntity().getCongressClassification())) {
-				if (!isLCC(getEntity().getCongressClassification())) {
-					errorMessages.add("國會分類號格式不正確");
-				}
-			}
-
+		if (!getEntity().getDatabase().hasSerNo()) {
 			if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
 				errorMessages.add("至少選擇一筆以上擁有人");
 			} else {
@@ -219,19 +144,160 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					i++;
 				}
 			}
+		} else {
+			database = databaseService.getBySerNo(getEntity().getDatabase()
+					.getSerNo());
+			if (database == null) {
+				errorMessages.add("不可利用的流水號");
+			} else {
+				getEntity().setDatabase(database);
+			}
 
-			if (getEntity().getResourcesBuyers().getCategory() == null
-					|| getEntity().getResourcesBuyers().getCategory()
-							.equals(Category.不明)) {
+			if (ArrayUtils.isNotEmpty(getEntity().getRefSerNo())) {
+				Set<Long> deRepeatSet = new HashSet<Long>(
+						Arrays.asList(getEntity().getRefSerNo()));
+				getEntity().setRefSerNo(
+						deRepeatSet.toArray(new Long[deRepeatSet.size()]));
+				getEntity().setOwners(new LinkedList<ReferenceOwner>());
+
+				int i = 0;
+				while (i < getEntity().getRefSerNo().length) {
+					if (getEntity().getRefSerNo()[i] == null) {
+						continue;
+					} else {
+						if (getEntity().getRefSerNo()[i] < 1) {
+							continue;
+						} else {
+							referenceOwner = referenceOwnerService
+									.getBySerNo(getEntity().getRefSerNo()[i]);
+							if (referenceOwner == null) {
+								continue;
+							} else {
+								getEntity().getOwners().add(referenceOwner);
+							}
+						}
+					}
+
+					i++;
+				}
+			}
+		}
+
+		if (getEntity().getResourcesBuyers().getCategory() == null) {
+			getEntity().getResourcesBuyers().setCategory(Category.未註明);
+		}
+
+		if (getEntity().getOpenAccess() == null) {
+			getEntity().setOpenAccess(false);
+		}
+	}
+
+	@Override
+	protected void validateUpdate() throws Exception {
+		if (!hasEntity()) {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		} else {
+			if (StringUtils.isBlank(getEntity().getTitle())) {
+				errorMessages.add("刊名不得空白");
+			}
+
+			if (StringUtils.isBlank(getEntity().getIssn())) {
+				errorMessages.add("ISSN不得空白");
+			} else {
+				if (!isIssn(getEntity().getIssn())) {
+					errorMessages.add("ISSN不正確");
+				}
+			}
+
+			if (StringUtils.isNotEmpty(getEntity().getCongressClassification())) {
+				if (!isLCC(getEntity().getCongressClassification())) {
+					errorMessages.add("國會分類號格式不正確");
+				}
+			}
+
+			if (!isURL(getEntity().getUrl())) {
+				errorMessages.add("URL必須填寫");
+			}
+
+			if (!getEntity().getDatabase().hasSerNo()) {
+				if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
+					errorMessages.add("至少選擇一筆以上擁有人");
+				} else {
+					Set<Long> deRepeatSet = new HashSet<Long>(
+							Arrays.asList(getEntity().getRefSerNo()));
+					getEntity().setRefSerNo(
+							deRepeatSet.toArray(new Long[deRepeatSet.size()]));
+					getEntity().setOwners(new LinkedList<ReferenceOwner>());
+
+					int i = 0;
+					while (i < getEntity().getRefSerNo().length) {
+						if (getEntity().getRefSerNo()[i] == null) {
+							errorMessages.add("null為不可利用的流水號");
+						} else {
+							if (getEntity().getRefSerNo()[i] < 1) {
+								errorMessages.add(getEntity().getRefSerNo()[i]
+										+ "為不可利用的流水號");
+							} else {
+								referenceOwner = referenceOwnerService
+										.getBySerNo(getEntity().getRefSerNo()[i]);
+								if (referenceOwner == null) {
+									errorMessages
+											.add(getEntity().getRefSerNo()[i]
+													+ "為不可利用的流水號");
+								} else {
+									getEntity().getOwners().add(referenceOwner);
+								}
+							}
+						}
+
+						i++;
+					}
+				}
+			} else {
+				database = databaseService.getBySerNo(getEntity().getDatabase()
+						.getSerNo());
+				if (database == null) {
+					errorMessages.add("不可利用的流水號");
+				} else {
+					getEntity().setDatabase(database);
+				}
+
+				if (ArrayUtils.isNotEmpty(getEntity().getRefSerNo())) {
+					Set<Long> deRepeatSet = new HashSet<Long>(
+							Arrays.asList(getEntity().getRefSerNo()));
+					getEntity().setRefSerNo(
+							deRepeatSet.toArray(new Long[deRepeatSet.size()]));
+					getEntity().setOwners(new LinkedList<ReferenceOwner>());
+
+					int i = 0;
+					while (i < getEntity().getRefSerNo().length) {
+						if (getEntity().getRefSerNo()[i] == null) {
+							continue;
+						} else {
+							if (getEntity().getRefSerNo()[i] < 1) {
+								continue;
+							} else {
+								referenceOwner = referenceOwnerService
+										.getBySerNo(getEntity().getRefSerNo()[i]);
+								if (referenceOwner == null) {
+									continue;
+								} else {
+									getEntity().getOwners().add(referenceOwner);
+								}
+							}
+						}
+
+						i++;
+					}
+				}
+			}
+
+			if (getEntity().getResourcesBuyers().getCategory() == null) {
 				getEntity().getResourcesBuyers().setCategory(Category.未註明);
 			}
 
-			if (getEntity().getResourcesBuyers().getType() == null) {
-				getEntity().getResourcesBuyers().setType(Type.期刊);
-			}
-
-			if (getEntity().getResourcesBuyers().getOpenAccess() == null) {
-				getEntity().getResourcesBuyers().setOpenAccess(false);
+			if (getEntity().getOpenAccess() == null) {
+				getEntity().setOpenAccess(false);
 			}
 		}
 	}
@@ -262,28 +328,24 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	public String add() throws Exception {
-		setCategoryList();
-
-		List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>();
-		journal.setOwners(owners);
-		getRequest().setAttribute("uncheckReferenceOwners",
-				referenceOwnerService.getUncheckOwners(owners));
+		getRequest().setAttribute(
+				"uncheckReferenceOwners",
+				referenceOwnerService
+						.getUncheckOwners(new ArrayList<ReferenceOwner>()));
 
 		setEntity(journal);
-
 		return ADD;
 	}
 
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			setCategoryList();
-
 			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
 					journal.getReferenceOwners());
 			journal.setOwners(owners);
 			getRequest().setAttribute("uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(owners));
+
 			setEntity(journal);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -299,13 +361,19 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				getEntity().setOption("entity.title");
 			}
 		} else {
-			getEntity().setOption("entity.chineseTitle");
+			getEntity().setOption("entity.title");
 		}
 
 		if (getEntity().getOption().equals("entity.title")) {
 			getEntity().setIssn(null);
 		} else {
 			getEntity().setTitle(null);
+
+			if (StringUtils.isNotBlank(getEntity().getIssn())) {
+				if (!isIssn(getEntity().getIssn())) {
+					return LIST;
+				}
+			}
 		}
 
 		DataSet<Journal> ds = journalService.getByRestrictions(initDataSet());
@@ -332,24 +400,26 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 							getEntity().getIssn().toUpperCase()
 									.replace("-", "").trim());
 
-			getEntity().setReferenceOwners(
-					new HashSet<ReferenceOwner>(getEntity().getOwners()));
+			if (getEntity().getDatabase().getSerNo() != null) {
+				getEntity().setResourcesBuyers(new ResourcesBuyers());
+				getEntity().setReferenceOwners(null);
+			} else {
+				getEntity().setDatabase(null);
+				getEntity().setReferenceOwners(
+						new HashSet<ReferenceOwner>(getEntity().getOwners()));
+			}
 
 			journal = journalService.save(getEntity(), getLoginUser());
-
 			setEntity(journal);
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
-			setCategoryList();
-
-			journal = getEntity();
-
 			getRequest().setAttribute(
 					"uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(getEntity()
 							.getOwners()));
-			setEntity(journal);
+
+			setEntity(getEntity());
 			return ADD;
 		}
 	}
@@ -365,25 +435,28 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 							getEntity().getIssn().toUpperCase()
 									.replace("-", "").trim());
 
-			getEntity().setReferenceOwners(
-					new HashSet<ReferenceOwner>(getEntity().getOwners()));
-			journal = journalService.update(getEntity(), getLoginUser());
+			if (getEntity().getDatabase().getSerNo() != null) {
+				getEntity().setResourcesBuyers(new ResourcesBuyers());
+				getEntity().setReferenceOwners(null);
+			} else {
+				getEntity().setDatabase(null);
+				getEntity().setReferenceOwners(
+						new HashSet<ReferenceOwner>(getEntity().getOwners()));
+			}
 
+			journal = journalService.update(getEntity(), getLoginUser());
 			setEntity(journal);
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
-			setCategoryList();
-			journal = getEntity();
-
 			getRequest().setAttribute(
 					"uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(getEntity()
 							.getOwners()));
-			setEntity(journal);
+
+			setEntity(getEntity());
 			return EDIT;
 		}
-
 	}
 
 	@Override
@@ -418,6 +491,24 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		return VIEW;
 	}
 
+	public String tip() throws Exception {
+		Long serNo = getEntity().getSerNo();
+		Long datserNo = getEntity().getDatabase().getSerNo();
+
+		if (StringUtils.isNotBlank(getEntity().getIssn())) {
+			if (isIssn(getEntity().getIssn())) {
+				if (hasRepeatIssn(getEntity().getIssn(), serNo)) {
+					getRequest().setAttribute("tip", "已有相同ISBN");
+				}
+
+				if (dbHasRepeatIssn(getEntity().getIssn(), serNo, datserNo)) {
+					getRequest().setAttribute("repeat", "資料庫有重複資源");
+				}
+			}
+		}
+		return TIP;
+	}
+
 	public String imports() {
 		return IMPORT;
 	}
@@ -433,6 +524,22 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (!hasActionErrors()) {
+			if (StringUtils.isNotBlank(getEntity().getOption())) {
+				if (!getEntity().getOption().equals("package")
+						&& !getEntity().getOption().equals("individual")) {
+					getEntity().setOption("package");
+				}
+			} else {
+				getEntity().setOption("package");
+			}
+
+			int length = 0;
+			if (getEntity().getOption().equals("package")) {
+				length = 16;
+			} else {
+				length = 19;
+			}
+
 			Workbook book = createWorkBook(new FileInputStream(getEntity()
 					.getFile()[0]));
 			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
@@ -445,7 +552,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[17];
+			String[] rowTitles = new String[length];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -493,8 +600,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				n++;
 			}
 
-			LinkedHashSet<Journal> originalData = new LinkedHashSet<Journal>();
-			Map<String, Journal> checkRepeatRow = new LinkedHashMap<String, Journal>();
+			List<Journal> originalData = new ArrayList<Journal>();
+			Map<String, Integer> checkRepeatIssn = new HashMap<String, Integer>();
+
 			int normal = 0;
 
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -503,7 +611,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					continue;
 				}
 
-				String[] rowValues = new String[17];
+				String[] rowValues = new String[length];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -551,111 +659,142 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					k++;
 				}
 
-				String category = "";
-				if (StringUtils.isBlank(rowValues[11])) {
-					category = Category.未註明.getCategory();
-				} else {
-					Object object = getEnum(
-							new String[] { rowValues[11].trim() },
-							Category.class);
-					if (object != null) {
-						category = rowValues[11].trim();
-					} else {
-						category = Category.不明.getCategory();
-					}
-				}
-
-				String type = "";
-				if (StringUtils.isBlank(rowValues[12])) {
-					type = Type.期刊.getType();
-				} else {
-					Object object = getEnum(
-							new String[] { rowValues[12].trim() }, Type.class);
-					if (object != null) {
-						type = rowValues[12].trim();
-					} else {
-						type = Type.期刊.getType();
-					}
-				}
+				StringBuilder objStatus = new StringBuilder();
+				StringBuilder resStatus = new StringBuilder();
 
 				boolean openAccess = false;
-				if (rowValues[15].toLowerCase().equals("yes")
-						|| rowValues[15].toLowerCase().equals("true")
-						|| rowValues[15].equals("是")) {
+				if (rowValues[14].toLowerCase().equals("yes")
+						|| rowValues[14].toLowerCase().equals("true")
+						|| rowValues[14].equals("是")) {
 					openAccess = true;
 				}
 
-				resourcesBuyers = new ResourcesBuyers(rowValues[9],
-						rowValues[10], Category.valueOf(category),
-						Type.valueOf(type), new Database(), rowValues[14],
-						openAccess);// rowValues[13]TODO
+				Integer version = null;
+				if (NumberUtils.isNumber(rowValues[11])) {
+					double d = Double.parseDouble(rowValues[11]);
+					version = (int) d;
+				}
 
-				String issn = rowValues[2].trim().toUpperCase();
+				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
 
-				referenceOwner = new ReferenceOwner();
-				referenceOwner.setName(rowValues[16].trim());
-
-				List<ReferenceOwner> owners = new LinkedList<ReferenceOwner>();
-				owners.add(referenceOwner);
-
-				journal = new Journal(rowValues[0], rowValues[1], "", issn,
-						rowValues[3], rowValues[4], rowValues[5], "", "",
-						rowValues[6], rowValues[7], null, rowValues[8],
-						resourcesBuyers);
-				journal.setOwners(owners);
-
-				if (isIssn(issn)) {
-					long jouSerNo = journalService.getJouSerNoByIssn(issn
-							.replace("-", ""));
-
-					long refSerNo = referenceOwnerService
-							.getRefSerNoByName(referenceOwner.getName());
-					if (refSerNo != 0) {
-						journal.getOwners().get(0).setSerNo(refSerNo);
-						if (jouSerNo != 0) {
-							if (journalService.isExist(jouSerNo, refSerNo)) {
-								journal.setDataStatus("已存在");
-							}
-						} else {
-							if (journal.getResourcesBuyers().getCategory()
-									.equals(Category.不明)) {
-								journal.setDataStatus("資源類型不明");
-							}
-						}
+				if (length > 16) {
+					Category category = null;
+					Object objCategory = getEnum(
+							new String[] { rowValues[17].trim() },
+							Category.class);
+					if (objCategory != null) {
+						category = (Category) objCategory;
 					} else {
-						journal.setDataStatus("無此客戶");
+						category = Category.未註明;
+					}
+
+					resourcesBuyers = new ResourcesBuyers(rowValues[15],
+							rowValues[16], category);
+
+					if (StringUtils.isNotBlank(rowValues[18].replace("、", ""))) {
+						String[] names = rowValues[18].trim().split("、");
+
+						int j = 0;
+						while (j < names.length) {
+							if (StringUtils.isNotBlank(names[j])) {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setName(names[j].trim());
+								referenceOwner.setSerNo(referenceOwnerService
+										.getRefSerNoByName(referenceOwner
+												.getName()));
+
+								if (referenceOwner.getSerNo() == 0) {
+									objStatus.append(referenceOwner.getName()
+											+ "不存在<br>");
+								}
+								owners.add(referenceOwner);
+							}
+							j++;
+						}
+					}
+
+					journal = new Journal(rowValues[0], rowValues[1],
+							rowValues[2], rowValues[3].trim(), rowValues[4],
+							rowValues[5], rowValues[6], rowValues[7],
+							rowValues[8], rowValues[9], rowValues[10], version,
+							rowValues[12], rowValues[13], openAccess, null,
+							null, resourcesBuyers, owners);
+					journal.getResourcesBuyers().setDataStatus("");
+
+					if (CollectionUtils.isEmpty(journal.getReferenceOwners())) {
+						objStatus.append("沒有擁有者<br>");
 					}
 				} else {
-					journal.setDataStatus("ISSN異常");
+					database = databaseService.getByUUID(rowValues[15].trim());
+
+					journal = new Journal(rowValues[0], rowValues[1],
+							rowValues[2], rowValues[3].trim(), rowValues[4],
+							rowValues[5], rowValues[6], rowValues[7],
+							rowValues[8], rowValues[9], rowValues[10], version,
+							rowValues[12], rowValues[13], openAccess, database,
+							null, new ResourcesBuyers(), null);
+					journal.getResourcesBuyers().setDataStatus("");
+
+					if (StringUtils.isNotBlank(rowValues[15])) {
+						if (database == null) {
+							objStatus.append("資料庫代碼錯誤<br>");
+						}
+					} else {
+						objStatus.append("資料庫代碼空白<br>");
+					}
+				}
+
+				if (!isURL(journal.getUrl())) {
+					objStatus.append("url不正確<br>");
 				}
 
 				if (StringUtils.isNotEmpty(journal.getCongressClassification())) {
 					if (!isLCC(journal.getCongressClassification())) {
-						journal.setCongressClassification(null);
+						objStatus.append("LCC不正確<br>");
 					}
 				}
 
-				if (!isURL(journal.getResourcesBuyers().getUrl())) {
-					journal.getResourcesBuyers().setUrl(null);
+				if (isIssn(journal.getIssn())) {
+					String issn = journal.getIssn().replace("-", "")
+							.toUpperCase();
+					if (hasRepeatIssn(issn, null)) {
+						resStatus.append("已有相同ISSN<br>");
+					}
+
+					if (journal.getDatabase() != null
+							&& dbHasRepeatIssn(issn, null, journal
+									.getDatabase().getSerNo())) {
+						resStatus.append("DB有相同ISSN<br>");
+					}
+
+					if (checkRepeatIssn.containsKey(issn)) {
+						resStatus.append("清單有同ISSN資源<br>");
+
+						String status = originalData
+								.get(checkRepeatIssn.get(issn))
+								.getResourcesBuyers().getDataStatus()
+								+ "清單有同ISSN資源<br>";
+						originalData
+								.get(checkRepeatIssn.get(issn))
+								.getResourcesBuyers()
+								.setDataStatus(
+										status.replace(
+												"清單有同ISSN資源<br>清單有同ISSN資源<br>",
+												"清單有同ISSN資源<br>"));
+					}
+
+					checkRepeatIssn.put(issn, originalData.size());
+				} else {
+					objStatus.append("ISSN不正確<br>");
 				}
 
-				if (journal.getDataStatus() == null) {
+				journal.getResourcesBuyers()
+						.setDataStatus(resStatus.toString());
+				journal.setDataStatus(objStatus.toString());
+
+				if (StringUtils.isEmpty(journal.getDataStatus())) {
 					journal.setDataStatus("正常");
-				}
-
-				if (journal.getDataStatus().equals("正常")
-						&& !originalData.contains(journal)) {
-
-					if (checkRepeatRow.containsKey(journal.getIssn()
-							+ referenceOwner.getName())) {
-						journal.setDataStatus("資料重複");
-
-					} else {
-						checkRepeatRow.put(
-								journal.getIssn() + referenceOwner.getName(),
-								journal);
-						++normal;
-					}
+					++normal;
 				}
 
 				originalData.add(journal);
@@ -833,21 +972,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				int index = (Integer) iterator.next();
 				journal = (Journal) importList.get(index);
 
-				targetJou = journalService.getJouByIssn(journal.getIssn()
-						.replace("-", ""));
+				journal.setIssn(journal.getIssn().replace("-", "")
+						.toUpperCase());
 
-				if (targetJou == null) {
-					journal.setReferenceOwners(new HashSet<ReferenceOwner>(
-							journal.getOwners()));
-					journal.setIssn(journal.getIssn().replace("-", ""));
-					journal = journalService.save(journal, getLoginUser());
-
-				} else {
-					targetJou.getReferenceOwners().add(
-							journal.getOwners().get(0));
-					journal = journalService.update(targetJou, getLoginUser());
-				}
-
+				journalService.save(journal, getLoginUser());
 				++successCount;
 			}
 
@@ -870,16 +998,67 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "ISSN", "語文",
-				"出版項/出版社", "出版年", "刊別/期刊頻率", "國會分類號", "出版時間差", "起始日", "到期日",
-				"資源類型(買斷/租用)", "資源分類", "資料庫題名", "URL", "公開資源", "購買人名稱" });
 
-		empinfo.put("2", new Object[] { "The New England Journal of Medicine",
-				"", "15334406", "eng", "NEJM", "1812", "weekly", "N/A", "",
-				"N/A", "N/A", "租貸", "期刊", "", "", "是", "獨孤寧珂" });
-		empinfo.put("3", new Object[] { "The New England Journal of Medicine",
-				"", "15334406", "eng", "NEJM", "1812", "weekly", "N/A", "",
-				"N/A", "N/A", "租貸", "期刊", "", "", "否", "劉季" });
+		if (StringUtils.isNotBlank(getEntity().getOption())) {
+			if (!getEntity().getOption().equals("package")
+					&& !getEntity().getOption().equals("individual")) {
+				getEntity().setOption("package");
+			}
+		} else {
+			getEntity().setOption("package");
+		}
+
+		if (getEntity().getOption().equals("package")) {
+			empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
+					"語文", "出版項", "出版年", "標題", "編號", "刊別", "國會分類號", "版本",
+					"出版時間差", "URL", "公開資源", "資料庫UUID" });
+
+			empinfo.put(
+					"2",
+					new Object[] {
+							"The New England Journal of Medicine",
+							"N. Engl. j. med.",
+							"＜Boston medical and surgical journal 0096-6762",
+							"15334406",
+							"eng",
+							"Boston, Massachusetts Medical Society.",
+							"1928",
+							"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
+							"000955", "Weekly", "R11", "N/A", "N/A",
+							"http://www.nejm.org/", "是",
+							"afa7bfd4-7571-4e71-a5d4-c93bbe671e06" });
+
+			empinfo.put("3", new Object[] { "Cell", "Cell", "", "00928674",
+					"eng", "Cambridge, Mass. : MIT Press.", "1974",
+					"Cytology--Periodicals ; Virology--Periodicals", "002064",
+					"Biweekly", "QH573", "N/A", "N/A", "http://www.cell.com/",
+					"否", "afa7bfd4-7571-4e71-a5d4-c93bbe671e06" });
+		} else {
+			empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
+					"語文", "出版項", "出版年", "標題", "編號", "刊別", "國會分類號", "版本",
+					"出版時間差", "URL", "公開資源", "起始日", "到期日", "資源類型", "購買人名稱" });
+
+			empinfo.put(
+					"2",
+					new Object[] {
+							"The New England Journal of Medicine",
+							"N. Engl. j. med.",
+							"＜Boston medical and surgical journal 0096-6762",
+							"15334406",
+							"eng",
+							"Boston, Massachusetts Medical Society.",
+							"1928",
+							"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
+							"000955", "Weekly", "R11", "N/A", "N/A",
+							"http://www.nejm.org/", "是", "2000", "2005", "租貸",
+							"獨孤寧珂、劉季" });
+
+			empinfo.put("3", new Object[] { "Cell", "Cell", "", "00928674",
+					"eng", "Cambridge, Mass. : MIT Press.", "1974",
+					"Cytology--Periodicals ; Virology--Periodicals", "002064",
+					"Biweekly", "QH573", "N/A", "N/A", "http://www.cell.com/",
+					"否", "1998", "2020", "買斷", "夏柔" });
+		}
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
@@ -950,7 +1129,52 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	protected boolean isURL(String url) {
 		return ESAPI.validator().isValidInput("Journal URL", url, "URL",
-				Integer.MAX_VALUE, true);
+				Integer.MAX_VALUE, false);
+	}
+
+	protected boolean hasRepeatIssn(String issn, Long serNo) throws Exception {
+		List<Long> results = journalService.getSerNosByIssn(issn.trim()
+				.replace("-", ""));
+		if (serNo != null) {
+			if (CollectionUtils.isNotEmpty(results)) {
+				results.remove(serNo);
+				if (results.size() != 0) {
+					return true;
+				}
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(results)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean dbHasRepeatIssn(String issn, Long serNo, Long datSerNo)
+			throws Exception {
+		if (datSerNo != null) {
+			database = databaseService.getBySerNo(datSerNo);
+
+			if (database != null) {
+				List<Long> results = journalService.getSerNosInDbByIssn(issn
+						.trim().replace("-", ""), database);
+				if (serNo != null) {
+					if (CollectionUtils.isNotEmpty(results)) {
+						results.remove(serNo);
+						if (results.size() != 0) {
+							return true;
+						}
+					}
+				} else {
+					if (CollectionUtils.isNotEmpty(results)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	// 判斷文件類型
@@ -968,14 +1192,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		return null;
-	}
-
-	protected void setCategoryList() {
-		List<Category> categoryList = new ArrayList<Category>(
-				Arrays.asList(Category.values()));
-		categoryList.remove(categoryList.size() - 1);
-		ActionContext.getContext().getValueStack()
-				.set("categoryList", categoryList);
 	}
 
 	protected boolean hasEntity() throws Exception {

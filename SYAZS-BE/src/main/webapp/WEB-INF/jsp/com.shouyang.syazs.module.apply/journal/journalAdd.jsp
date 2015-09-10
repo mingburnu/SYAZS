@@ -14,10 +14,22 @@
 					function() {
 						var contain = $("#div_Detail_2 .content .header .title")
 								.html();
-						if (contain != '單位-新增') {
+						if (contain != '擁有人-新增') {
 							goReferenceOwners(
 									"<c:url value = '/'/>crud/apply.referenceOwner.box.action",
-									'單位-新增');
+									'擁有人-新增');
+						}
+					});
+
+	$(document)
+			.ready(
+					function() {
+						var contain = $("#div_Detail_3 .content .header .title")
+								.html();
+						if (contain != '資料庫-選擇') {
+							goResDbs(
+									"<c:url value = '/'/>crud/apply.database.box.action",
+									'資料庫-選擇');
 						}
 					});
 
@@ -26,7 +38,7 @@
 					function() {
 						$("#div_Detail .content .header .close")
 								.html(
-										'<a href="#" onclick="clearReferenceOwners();closeDetail();">關閉</a>');
+										'<a href="#" onclick="clearReferenceOwners();clearResDbs();closeDetail();">關閉</a>');
 					});
 
 	$(document).ready(function() {
@@ -42,6 +54,40 @@
 			});
 		});
 	});
+
+	$(document).ready(function() {
+		setResField();
+		checkIssn();
+	});
+
+	$(document).ready(function() {
+		$("input#apply_journal_save_entity_issn").bind('input', function() {
+			checkIssn();
+		});
+
+		$("input[name='entity.database.serNo']").change(function() {
+			checkIssn();
+		});
+	});
+
+	function setResField() {
+		var datSerNo = $("input[name='entity.database.serNo']").val();
+		if (datSerNo == null || datSerNo == "") {
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.prev().show();
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.show();
+			$("input#referenceOwner_name").parent().parent().prev().show();
+			$("input#referenceOwner_name").parent().parent().show();
+		} else {
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.prev().hide();
+			$("input#referenceOwner_name").parent().parent().prev().prev()
+					.hide();
+			$("input#referenceOwner_name").parent().parent().prev().hide();
+			$("input#referenceOwner_name").parent().parent().hide();
+		}
+	}
 
 	//重設所有欄位(清空)
 	function resetData() {
@@ -67,6 +113,45 @@
 		goDetail("<c:url value = '/'/>crud/apply.journal.save.action", '期刊-新增',
 				data);
 	}
+
+	function checkIssn() {
+		var issn = $("input#apply_journal_save_entity_issn").val();
+		var datSerNo = $("input#apply_journal_save_entity_database_serNo")
+				.val();
+
+		if (issn == null || issn.trim() == "") {
+			$("#span-tip").html("ISSN未填寫");
+		} else {
+			if (isValidISSN(issn.trim())) {
+				goTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.issn='
+						+ issn + '&entity.database.serNo=' + datSerNo);
+			} else{
+				$("#span-tip").html("");
+			}
+		}
+	}
+
+	function isValidISSN(issn) {
+		var patt = /\d\d\d\d\-?\d\d\d+[0-9Xx]/;
+		if (!patt.test(issn.trim())) {
+			return false;
+		}
+
+		issn = issn.replace("-", "");
+		if (issn.length != 8) {
+			return false;
+		}
+		var chars = issn.split('');
+		if (chars[7].toUpperCase() == 'X') {
+			chars[7] = 10;
+		}
+		var sum = 0;
+		for (var i = 0; i < chars.length; i++) {
+			sum += ((8 - i) * parseInt(chars[i]));
+		}
+
+		return ((sum % 11) == 0);
+	}
 </script>
 <style type="text/css">
 #div_Detail_2 {
@@ -89,8 +174,7 @@ input#referenceOwner_name {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">刊名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.title"
-						cssClass="input_text" /></td>
+				<td><s:textfield name="entity.title" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">英文縮寫刊名</th>
@@ -98,12 +182,22 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
+				<th width="130">刊名演變</th>
+				<td><s:textfield name="entity.titleEvolution"
+						cssClass="input_text" /></td>
+			</tr>
+			<tr>
 				<th width="130">ISSN<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.issn" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.issn" cssClass="input_text" />&nbsp;<span
+					id="span-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">語文</th>
 				<td><s:textfield name="entity.languages" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">標題</th>
+				<td><s:textfield name="entity.caption" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">出版項</th>
@@ -121,9 +215,46 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
+				<th width="130">編號</th>
+				<td><s:textfield name="entity.numB" cssClass="input_text" /></td>
+			</tr>
+			<tr>
 				<th width="130">國會分類號</th>
 				<td><s:textfield name="entity.congressClassification"
 						cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">版本</th>
+				<td><s:textfield name="entity.version" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">出版時間差</th>
+				<td><s:textfield name="entity.embargo" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">URL<span class="required">(&#8226;)</span></th>
+				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
+			</tr>
+			<tr>
+				<th width="130">公開資源</th>
+				<td><c:choose>
+						<c:when test="${empty entity.openAccess }">
+							<s:radio name="entity.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
+								value="false" />
+						</c:when>
+						<c:otherwise>
+							<s:radio name="entity.openAccess"
+								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}" />
+						</c:otherwise>
+					</c:choose></td>
+			</tr>
+			<tr>
+				<th>資料庫題名</th>
+				<td><s:hidden name="entity.database.serNo" /><input
+					id="datName" class="input_text" disabled="disabled">&nbsp;<a
+					class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
+					class="state-default" onclick="clearRes()">清除</a></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
@@ -136,63 +267,19 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">URL</th>
-				<td><s:textfield name="entity.resourcesBuyers.url"
-						cssClass="input_text" /></td>
-			</tr>
-			<tr>
 				<th width="130">資源類型</th>
 				<td><c:choose>
-						<c:when
-							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
+						<c:when test="${empty entity.resourcesBuyers.category }">
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="category"
-								value="'未註明'" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" value="'未註明'" />
 						</c:when>
 						<c:otherwise>
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="category" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" />
 						</c:otherwise>
 					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">資源種類</th>
-				<td><c:choose>
-						<c:when test="${empty entity.resourcesBuyers.type }">
-							<s:radio name="entity.resourcesBuyers.type"
-								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-								listKey="name()" listValue="type" value="'期刊'" />
-						</c:when>
-						<c:otherwise>
-							<s:radio name="entity.resourcesBuyers.type"
-								list="@com.shouyang.syazs.module.apply.enums.Type@values()"
-								listKey="name()" listValue="type" />
-						</c:otherwise>
-					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">公開資源</th>
-				<td><c:choose>
-						<c:when test="${empty entity.resourcesBuyers.openAccess }">
-							<s:radio name="entity.resourcesBuyers.openAccess"
-								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}"
-								value="false" />
-						</c:when>
-						<c:otherwise>
-							<s:radio name="entity.resourcesBuyers.openAccess"
-								list="#@java.util.LinkedHashMap@{true:'是',false:'否'}" />
-						</c:otherwise>
-					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">資料庫中文題名</th>
-				<td><s:textfield name="resourcesBuyers.dbChtTitle"
-						cssClass="input_text" /></td>
-			</tr>
-			<tr>
-				<th width="130">資料庫英文題名</th>
-				<td><s:textfield name="resourcesBuyers.dbEngTitle"
-						cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
@@ -200,10 +287,10 @@ input#referenceOwner_name {
 					class="input_text" disabled="disabled" value="增加單位"><img
 					id="add" src="<c:url value = '/'/>resources/images/add.png"
 					onclick="addReferenceOwner();"> <c:forEach var="item"
-						items="${entity.referenceOwners}" varStatus="status2">
+						items="${entity.owners}" varStatus="status2">
 						<div style="">
 							<input class="input_text" disabled="disabled"
-								value='${item.name}'><img id="minus"
+								value="${item.name}"><img id="minus"
 								src="<c:url value = '/'/>resources/images/minus.png"><input
 								id="unit" type="hidden" value="${item.serNo }"
 								name="entity.refSerNo">
@@ -212,7 +299,7 @@ input#referenceOwner_name {
 						varStatus="status">
 						<div style="display: none;">
 							<input class="input_text" disabled="disabled"
-								value='${item.name}'><img id="minus"
+								value="${item.name}"><img id="minus"
 								src="<c:url value = '/'/>resources/images/minus.png"><input
 								id="unit" type="hidden" value="${item.serNo }">
 						</div>
@@ -222,8 +309,8 @@ input#referenceOwner_name {
 		<div class="button_box">
 			<div class="detail-func-button">
 				<a class="state-default"
-					onclick="clearReferenceOwners();closeDetail();">取消</a> &nbsp;<a
-					class="state-default" onclick="resetData();">重設</a>&nbsp; <a
+					onclick="clearResDbs();clearReferenceOwners();closeDetail();">取消</a>
+				&nbsp;<a class="state-default" onclick="resetData();">重設</a>&nbsp; <a
 					class="state-default" onclick="submitData();">確認</a>
 			</div>
 		</div>

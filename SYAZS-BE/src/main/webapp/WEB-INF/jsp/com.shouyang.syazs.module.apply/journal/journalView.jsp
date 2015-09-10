@@ -85,6 +85,14 @@
 						<td><esapi:encodeForHTML>${entity.publishYear }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
+						<th width="130">標題</th>
+						<td><esapi:encodeForHTML>${entity.caption }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">編號</th>
+						<td><esapi:encodeForHTML>${entity.numB }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
 						<th width="130">刊別</th>
 						<td><esapi:encodeForHTML>${entity.publication }</esapi:encodeForHTML></td>
 					</tr>
@@ -93,48 +101,51 @@
 						<td>${entity.congressClassification }</td>
 					</tr>
 					<tr>
+						<th width="130">版本</th>
+						<td><esapi:encodeForHTML>${entity.version }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">出版時間差</th>
+						<td><esapi:encodeForHTML>${entity.embargo }</esapi:encodeForHTML></td>
+					</tr>
+					<tr>
+						<th width="130">URL<span class="required">(&#8226;)</span></th>
+						<td><a href="${entity.url }" target="_blank">${entity.url }</a></td>
+					</tr>
+					<tr>
 						<th width="130">公開資源</th>
 						<td><c:choose>
-								<c:when test="${true eq entity.resourcesBuyers.openAccess}">是</c:when>
+								<c:when test="${true eq entity.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
 							</c:choose></td>
 					</tr>
 					<tr>
-						<th width="130">URL</th>
-						<td><a href="${entity.resourcesBuyers.url }" target="_blank">${entity.resourcesBuyers.url }</a></td>
+						<th width="130">資料庫題名</th>
+						<td><a
+							href='<esapi:encodeForHTMLAttribute>${entity.database.url }</esapi:encodeForHTMLAttribute>'
+							target="_blank">${entity.database.dbTitle}</a></td>
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}${entity.database.resourcesBuyers.startDate}</esapi:encodeForHTML>
+						</td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
+						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}${entity.database.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>
-						<td>${entity.resourcesBuyers.category}</td>
-					</tr>
-					<tr>
-						<th width="130">資源種類</th>
-						<td>${entity.resourcesBuyers.type}</td>
-					</tr>
-					<tr>
-						<th width="130">資料庫中文題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbTitle}</esapi:encodeForHTML></td>
-					</tr>
-					<tr>
-						<th width="130">資料庫英文題名</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.dbTitle}</esapi:encodeForHTML></td>
+						<td>${entity.resourcesBuyers.category}${entity.database.resourcesBuyers.category}</td>
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${entity.referenceOwners}"
-								varStatus="status">
+						<td><c:forEach var="item" items="${entity.referenceOwners}">
+								<div>${item.name}</div>
+							</c:forEach> <c:forEach var="item" items="${entity.database.referenceOwners}">
 								<div>${item.name}</div>
 							</c:forEach></td>
 					</tr>
-
 				</tbody>
 			</table>
 		</c:when>
@@ -145,13 +156,6 @@
 	<div class="detail-func-button">
 		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
 	</div>
-	<s:if test="hasActionMessages()">
-		<script language="javascript" type="text/javascript">
-			var msg = "";
-			<s:iterator value="actionMessages">msg += '<s:property escape="true"/>\n';
-			</s:iterator>;
-			goAlert('訊息', msg);
-		</script>
-	</s:if>
+	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>

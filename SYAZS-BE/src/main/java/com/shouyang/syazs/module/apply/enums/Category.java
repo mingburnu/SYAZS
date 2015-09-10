@@ -14,10 +14,7 @@ public enum Category {
 	租貸("租貸"),
 
 	/** 未註明. */
-	未註明(""),
-
-	/** 不明. */
-	不明("不明");
+	未註明("");
 
 	private String category;
 

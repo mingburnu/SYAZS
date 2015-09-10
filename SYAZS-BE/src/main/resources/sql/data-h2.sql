@@ -123,24 +123,6 @@ insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(23
 insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(24, '1980', '2020', '買斷');
 insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(25, '1980', '2020', '買斷');
 
---journal
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(1, 'admin', 'admin', sysdate(), sysdate(), 'New England', '15334406', 1, 1);
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Nature', '00280836', 3, 2);
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Science', '00368075', 2, 3);
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Lancet', '01406736', 4, 4);
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Cell',  '00928674', 2, 5);
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(6, 'admin', 'admin', sysdate(), sysdate(), 'Proceedings of the National Academy of Sciences, USA', '10916490', 2, 6);
-insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo) values(7, 'admin', 'admin', sysdate(), sysdate(), 'Journal of Biological Chemistry', '00219258', 2, 7);
-
---ref_jou
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 1);
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 2);
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 3);
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 4);
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 5);
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 6);
-insert into ref_jou(ref_serNo, jou_serNo) values(3, 7);
-
 --database
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true);
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate() , 'Medicine', '資料庫', 9, random_uuid(), true);
@@ -170,16 +152,34 @@ insert into ref_dat(ref_serNo, dat_serNo) values(3, 7);
 insert into ref_dat(ref_serNo, dat_serNo) values(3, 8);
 insert into ref_dat(ref_serNo, dat_serNo) values(3, 9);
 
+--journal
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(), 'New England', '15334406', 1, 1, true);
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Nature', '00280836', 3, 2, false);
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Science', '00368075', 2, 3, true);
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Lancet', '01406736', 4, 4, false);
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Cell',  '00928674', 2, 5, true);
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(6, 'admin', 'admin', sysdate(), sysdate(), 'Proceedings of the National Academy of Sciences, USA', '10916490', 2, 6, false);
+insert into journal(serNo, cUid, uUid, cDTime, uDTime, title, ISSN, version, res_serNo, openAccess) values(7, 'admin', 'admin', sysdate(), sysdate(), 'Journal of Biological Chemistry', '00219258', 2, 7, true);
+
+--ref_jou
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 1);
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 2);
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 3);
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 4);
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 5);
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 6);
+insert into ref_jou(ref_serNo, jou_serNo) values(3, 7);
+
 --ebook
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 2, 'Melanie Goldfarb MD' , ' Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Metal Cats', 9781576876770, 1, 'Alexandra Crockett' , '', 19);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Hitler: A Biography', 9780393337617, 3, 'Ian Kershaw' , '', 20);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Edison - A Biography', 9780965569934, 2, 'Matthew Josephson' , '', 21);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(6, 'admin', 'admin', sysdate(), sysdate(), 'The Normans', 9781405149655, 1, 'Marjorie Chibnall' , '', 22);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(7, 'admin', 'admin', sysdate(), sysdate(), 'The Huns', 9780631214434, 3, 'E. A. Thompson' , '', 23);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(8, 'admin', 'admin', sysdate(), sysdate(), 'Racist', 9780753821503, 2, 'Kunal Basu' , '', 24);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo) values(9, 'admin', 'admin', sysdate(), sysdate(), 'Ten Little Indians', 9780802141170, 1, 'Sherman Alexie' , '',25);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 2, 'Melanie Goldfarb MD' , ' Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Metal Cats', 9781576876770, 1, 'Alexandra Crockett' , '', 19, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Hitler: A Biography', 9780393337617, 3, 'Ian Kershaw' , '', 20, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Edison - A Biography', 9780965569934, 2, 'Matthew Josephson' , '', 21, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(6, 'admin', 'admin', sysdate(), sysdate(), 'The Normans', 9781405149655, 1, 'Marjorie Chibnall' , '', 22, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(7, 'admin', 'admin', sysdate(), sysdate(), 'The Huns', 9780631214434, 3, 'E. A. Thompson' , '', 23, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(8, 'admin', 'admin', sysdate(), sysdate(), 'Racist', 9780753821503, 2, 'Kunal Basu' , '', 24, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(9, 'admin', 'admin', sysdate(), sysdate(), 'Ten Little Indians', 9780802141170, 1, 'Sherman Alexie' , '', 25, random_uuid(), true);
 
 --ref_ebk
 insert into ref_ebk(ref_serNo, ebk_serNo) values(4, 1);

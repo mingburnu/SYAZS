@@ -7,7 +7,6 @@ import javax.persistence.Transient;
 
 import com.google.common.collect.Lists;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
-import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @MappedSuperclass
@@ -22,13 +21,13 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	private List<ReferenceOwner> owners = Lists.newArrayList();
 
 	@Transient
-	private List<Database> resDbs = Lists.newArrayList();
-
-	@Transient
 	private Long[] refSerNo;
 
 	@Transient
 	private Long[] resDbSerNo;
+
+	@Transient
+	private String tempNote;
 
 	/**
 	 * @return the owners
@@ -43,21 +42,6 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	 */
 	public void setOwners(List<ReferenceOwner> owners) {
 		this.owners = owners;
-	}
-
-	/**
-	 * @return the resDbs
-	 */
-	public List<Database> getResDbs() {
-		return resDbs;
-	}
-
-	/**
-	 * @param resDbs
-	 *            the resDbs to set
-	 */
-	public void setResDbs(List<Database> resDbs) {
-		this.resDbs = resDbs;
 	}
 
 	/**
@@ -88,5 +72,20 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	 */
 	public void setResDbSerNo(Long[] resDbSerNo) {
 		this.resDbSerNo = resDbSerNo;
+	}
+
+	/**
+	 * @return the tempNote
+	 */
+	public String getTempNote() {
+		return tempNote;
+	}
+
+	/**
+	 * @param tempNote
+	 *            the tempNote to set
+	 */
+	public void setTempNote(String tempNote) {
+		this.tempNote = tempNote;
 	}
 }

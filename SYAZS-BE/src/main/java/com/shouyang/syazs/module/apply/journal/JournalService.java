@@ -1,19 +1,22 @@
 package com.shouyang.syazs.module.apply.journal;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
+import com.shouyang.syazs.module.apply.database.Database;
 
 @Service
 public class JournalService extends GenericServiceFull<Journal> {
@@ -40,15 +43,9 @@ public class JournalService extends GenericServiceFull<Journal> {
 
 		if (entity.getOption().equals("entity.issn")) {
 			if (StringUtils.isNotBlank(entity.getIssn())) {
-				String issn = entity.getIssn().trim();
-				Pattern pattern = Pattern
-						.compile("(\\d{4})(\\-?)(\\d{3})[\\dX]");
-				Matcher matcher = pattern.matcher(issn.toUpperCase());
-				if (matcher.matches()) {
-					issn = issn.replace("-", "");
-				}
+				String issn = entity.getIssn().trim().replace("-", "");
 
-				restrictions.likeIgnoreCase("issn", issn.toString());
+				restrictions.likeIgnoreCase("issn", issn);
 			}
 		}
 
@@ -61,37 +58,50 @@ public class JournalService extends GenericServiceFull<Journal> {
 		return dao;
 	}
 
-	public long getJouSerNoByIssn(String issn) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.eq("issn", issn);
-
-		List<Journal> result = dao.findByRestrictions(restrictions);
-		if (result.size() > 0) {
-			return result.get(0).getSerNo();
-		} else {
-			return 0;
-		}
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosByIssn(String issn) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage.setSql("SELECT serNo FROM Journal WHERE issn = :issn");
+		queryLanguage.addParameter("issn", issn);
+		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 
-	public Journal getJouByIssn(String issn) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.eq("issn", issn);
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosInDbByIssn(String issn, Database database)
+			throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setSql("SELECT serNo FROM Journal WHERE issn = :issn AND database.serNo = :datSerNo");
+		queryLanguage.addParameter("issn", issn);
+		queryLanguage.addParameter("datSerNo", database.getSerNo());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
+	
+	@Override
+	public Journal save(Journal entity, AccountNumber user) throws Exception {
+		Assert.notNull(entity);
 
-		List<Journal> result = dao.findByRestrictions(restrictions);
-		if (dao.findByRestrictions(restrictions).size() > 0) {
-			return result.get(0);
-		} else {
-			return null;
+		String uuid = UUID.randomUUID().toString();
+		while (!isUnusedUUID(uuid)) {
+			uuid = UUID.randomUUID().toString();
 		}
+
+		entity.initInsert(user);
+		entity.setUuIdentifier(uuid);
+
+		Journal dbEntity = dao.save(entity);
+		makeUserInfo(dbEntity);
+
+		return dbEntity;
 	}
 
-	public boolean isExist(long jouSerNo, long refSerNo) {
-		entity = dao.findByJouSerNoRefSeNo(jouSerNo, refSerNo);
-
-		if (entity != null) {
+	public boolean isUnusedUUID(String uuid) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.eq("uuIdentifier", uuid);
+		if (CollectionUtils.isEmpty(dao.findByRestrictions(restrictions))) {
 			return true;
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 }

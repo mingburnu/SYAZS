@@ -27,9 +27,9 @@
 		location="classpath:config/system.properties" />
 
 	<beans profile="dev">
-		<!--<context:property-placeholder location="classpath:datasource/datasource-h2.properties" 
-			/> -->
 		<context:property-placeholder
 			location="classpath:datasource/datasource-h2.properties" />
+		<!-- <context:property-placeholder location="classpath:datasource/datasource-mysql.properties" 
+			/> -->
 	</beans>
 </beans>

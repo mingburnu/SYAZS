@@ -146,7 +146,6 @@ function goImport(){
 					<tr>
 						<th width="50" align="center">&nbsp;</th>
 						<th>名稱</th>
-						<th>種類</th>
 						<th>建立者</th>
 						<th>更新者</th>
 						<th>操作</th>
@@ -157,7 +156,6 @@ function goImport(){
 								type="checkbox" class="checkbox" name="entity.checkItem"
 								value="${item.serNo}"></td>
 							<td><esapi:encodeForHTML>${item.title }</esapi:encodeForHTML></td>
-							<td align="center">${item.resourcesBuyers.type }</td>
 							<td>${item.cUid }</td>
 							<td align="center">${item.uUid }</td>
 							<td align="center"><a class="state-default2"

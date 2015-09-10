@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.module.apply.ebook.Ebook;
 import com.shouyang.syazs.module.apply.enums.Type;
+import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
@@ -104,6 +105,9 @@ public class Database extends ModuleProperties {
 
 	@OneToMany(mappedBy = "database")
 	private Set<Ebook> ebooks;
+
+	@OneToMany(mappedBy = "database")
+	private Set<Journal> journals;
 
 	/**
 	 * @return the dbTitle
@@ -329,7 +333,7 @@ public class Database extends ModuleProperties {
 	public void setReferenceOwners(Set<ReferenceOwner> referenceOwners) {
 		this.referenceOwners = referenceOwners;
 	}
-	
+
 	/**
 	 * @return the ebooks
 	 */
@@ -338,10 +342,26 @@ public class Database extends ModuleProperties {
 	}
 
 	/**
-	 * @param ebooks the ebooks to set
+	 * @param ebooks
+	 *            the ebooks to set
 	 */
 	public void setEbooks(Set<Ebook> ebooks) {
 		this.ebooks = ebooks;
+	}
+
+	/**
+	 * @return the journals
+	 */
+	public Set<Journal> getJournals() {
+		return journals;
+	}
+
+	/**
+	 * @param journals
+	 *            the journals to set
+	 */
+	public void setJournals(Set<Journal> journals) {
+		this.journals = journals;
 	}
 
 	public Database() {

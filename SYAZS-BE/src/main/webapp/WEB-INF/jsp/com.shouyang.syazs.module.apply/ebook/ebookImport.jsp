@@ -15,7 +15,10 @@
 
 	//匯出範本
 	function goExample() {
-		var url = "<c:url value = '/'/>crud/apply.ebook.example.action";
+		var option = $("input[name='entity.option']:checked",
+				"form#apply_ebook_queue").val();
+		var url = "<c:url value = '/'/>crud/apply.ebook.example.action"
+				+ "?entity.option=" + option;
 		window.open(url, "_top");
 	}
 
@@ -49,7 +52,8 @@
 		showLoading();
 		//alert(document.getElementById("apply_ebook_queue"));
 		var formObj = $("form#apply_ebook_queue");
-		var formURL = $("form#apply_ebook_queue").attr("action");
+		var formURL = $("form#apply_ebook_queue").attr("action")
+				+ "?entity.option=package";
 
 		if (window.FormData !== undefined) // for HTML5 browsers
 		//			if(false)
@@ -118,7 +122,23 @@
 <body>
 	<s:form namespace="/crud" action="apply.ebook.queue"
 		enctype="multipart/form-data" method="post">
+
 		<table cellspacing="1" class="detail-table">
+			<tr>
+				<th>匯入選項</th>
+				<td><c:choose>
+						<c:when test="${not empty entity.option }">
+							<s:radio
+								list="#@java.util.LinkedHashMap@{'package':'資料庫資源','individual':'個別資源'}"
+								name="entity.option" />
+						</c:when>
+						<c:otherwise>
+							<s:radio
+								list="#@java.util.LinkedHashMap@{'package':'資料庫資源','individual':'個別資源'}"
+								name="entity.option" value="'package'" />
+						</c:otherwise>
+					</c:choose></td>
+			</tr>
 			<tr>
 				<th width="130">匯入檔案<span class="required">(•)</span>(<a
 					href="#" onclick="goExample();">範例</a>)

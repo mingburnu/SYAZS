@@ -14,7 +14,7 @@
 	//勾選單位
 	$(document).ready(function() {
 		$("input#dat").click(function() {
-			selectUnits();
+			selectUnits($(this));
 		});
 	});
 
@@ -48,27 +48,27 @@
 		});
 	});
 
-	function selectUnits() {
-		if ($(this).is(':checked')) {
-			var value = $(this).val();
+	function selectUnits(datBox) {
+		if (datBox.is(':checked')) {
+			var value = datBox.val();
 			$("input[name='entity.database.serNo']").val(value).trigger(
 					'change');
-			$("input#datName").val($(this).next().html());
+			$("input#datName").val(datBox.next().html());
 			$("input[name='entity.resourcesBuyers.startDate']")
 					.val(
-							$(this).next().next().find("#startDate").html()
+							datBox.next().next().find("#startDate").html()
 									.split("：")[1].trim());
 			$("input[name='entity.resourcesBuyers.maturityDate']").val(
-					$(this).next().next().find("#maturityDate").html().split(
-							"：")[1].trim());
+					datBox.next().next().find("#maturityDate").html()
+							.split("：")[1].trim());
 			$("input[name='entity.resourcesBuyers.category']").filter(
 					'[value='
-							+ $(this).next().next().find("#category").html()
+							+ datBox.next().next().find("#category").html()
 									.split("：")[1].trim() + ']').attr(
 					'checked', true);
 			allSelect_referenceOwners(0);
 			checkData();
-			var allOwners = $(this).next().next().find("#owners").find("input");
+			var allOwners = datBox.next().next().find("#owners").find("input");
 			for (var i = 0; i < allOwners.length; i++) {
 				var serNo = $(allOwners[i]).val();
 				$("input#referenceOwner_unit").filter('[value=' + serNo + ']')

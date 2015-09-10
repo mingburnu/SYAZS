@@ -14,10 +14,10 @@
 					function() {
 						var contain = $("#div_Detail_2 .content .header .title")
 								.html();
-						if (contain != '單位-新增') {
+						if (contain != '擁有人-新增') {
 							goReferenceOwners(
 									"<c:url value = '/'/>crud/apply.referenceOwner.box.action",
-									'單位-新增');
+									'擁有人-新增');
 						}
 					});
 
@@ -73,8 +73,12 @@
 
 	function checkTitle() {
 		var dbTitle = $("input#apply_database_update_entity_dbTitle").val();
-		goTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.serNo=${entity.serNo}&entity.dbTitle='
-				+ dbTitle);
+		if (dbTitle == null || dbTitle.trim() == "") {
+			$("#span-tip").html("");
+		} else {
+			goTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.serNo=${entity.serNo}&entity.dbTitle='
+					+ dbTitle);
+		}
 	}
 </script>
 <style type="text/css">
@@ -160,15 +164,15 @@ textarea#apply_database_update_entity_content {
 			<tr>
 				<th width="130">資源類型</th>
 				<td><c:choose>
-						<c:when
-							test="${(empty entity.resourcesBuyers.category) || ('不明' eq entity.resourcesBuyers.category) }">
+						<c:when test="${empty entity.resourcesBuyers.category }">
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="name()"
-								value="'未註明'" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" value="'未註明'" />
 						</c:when>
 						<c:otherwise>
 							<s:radio name="entity.resourcesBuyers.category"
-								list="categoryList" listKey="name()" listValue="name()" />
+								list="@com.shouyang.syazs.module.apply.enums.Category@values()"
+								listKey="name()" listValue="name()" />
 						</c:otherwise>
 					</c:choose></td>
 			</tr>
@@ -208,7 +212,7 @@ textarea#apply_database_update_entity_content {
 					class="input_text" disabled="disabled" value="增加單位"><img
 					id="add" src="<c:url value = '/'/>resources/images/add.png"
 					onclick="addReferenceOwner();"> <c:forEach var="item"
-						items="${entity.referenceOwners}" varStatus="status">
+						items="${entity.owners}" varStatus="status2">
 						<div style="">
 							<input class="input_text" disabled="disabled"
 								value="${item.name}"><img id="minus"

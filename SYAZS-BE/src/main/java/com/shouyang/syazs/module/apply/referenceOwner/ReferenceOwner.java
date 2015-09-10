@@ -44,7 +44,7 @@ public class ReferenceOwner extends GenericEntityFull {
 	@Column(name = "memo")
 	@Type(type = "text")
 	private String memo;
-
+	
 	/**
 	 * @return the name
 	 */

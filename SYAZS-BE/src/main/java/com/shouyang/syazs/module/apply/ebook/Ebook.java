@@ -96,6 +96,10 @@ public class Ebook extends ModuleProperties {
 	@Autowired
 	private Database database;
 
+	// Universally Unique Identifier
+	@Column(name = "uuIdentifier", updatable = false, unique = true)
+	private String uuIdentifier;
+
 	// ResourcesBuyers
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "res_serNo", nullable = false)
@@ -348,6 +352,21 @@ public class Ebook extends ModuleProperties {
 	}
 
 	/**
+	 * @return the uuIdentifier
+	 */
+	public String getUuIdentifier() {
+		return uuIdentifier;
+	}
+
+	/**
+	 * @param uuIdentifier
+	 *            the uuIdentifier to set
+	 */
+	public void setUuIdentifier(String uuIdentifier) {
+		this.uuIdentifier = uuIdentifier;
+	}
+
+	/**
 	 * @return the resourcesBuyers
 	 */
 	public ResourcesBuyers getResourcesBuyers() {
@@ -387,7 +406,8 @@ public class Ebook extends ModuleProperties {
 			String languages, Integer version, String cnClassBzStr,
 			String bookInfoIntegral, String style, String publication,
 			String url, Boolean openAccess, Database database,
-			ResourcesBuyers resourcesBuyers, Set<ReferenceOwner> referenceOwners) {
+			String uuIdentifier, ResourcesBuyers resourcesBuyers,
+			Set<ReferenceOwner> referenceOwners) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;
@@ -405,6 +425,7 @@ public class Ebook extends ModuleProperties {
 		this.url = url;
 		this.openAccess = openAccess;
 		this.database = database;
+		this.uuIdentifier = uuIdentifier;
 		this.resourcesBuyers = resourcesBuyers;
 		this.referenceOwners = referenceOwners;
 	}
