@@ -75,6 +75,26 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosByName(String bookName) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setSql("SELECT serNo FROM Ebook WHERE lower(bookName) = :bookName AND isbn = null");
+		queryLanguage.addParameter("bookName", bookName.toLowerCase());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosInDbByName(String bookName, Database database)
+			throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setSql("SELECT serNo FROM Ebook WHERE lower(bookName) = :bookName AND database.serNo = :datSerNo AND isbn = null");
+		queryLanguage.addParameter("bookName", bookName.toLowerCase());
+		queryLanguage.addParameter("datSerNo", database.getSerNo());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
+
 	@Override
 	public Ebook save(Ebook entity, AccountNumber user) throws Exception {
 		Assert.notNull(entity);

@@ -58,15 +58,22 @@
 	$(document).ready(function() {
 		setResField();
 		checkIssn();
+		checkTitle();
 	});
 
 	$(document).ready(function() {
 		$("input#apply_journal_update_entity_issn").bind('input', function() {
 			checkIssn();
+			checkTitle();
 		});
 
 		$("input[name='entity.database.serNo']").change(function() {
 			checkIssn();
+			checkTitle();
+		});
+
+		$("input#apply_journal_update_entity_title").bind('input', function() {
+			checkTitle();
 		});
 	});
 
@@ -111,37 +118,28 @@
 				.val();
 
 		if (issn == null || issn.trim() == "") {
-			$("#span-tip").html("ISSN未填寫");
+			$("#span-num-tip").html("ISSN未填寫");
 		} else {
 			if (isValidISSN(issn.trim())) {
-				goTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.serNo=${entity.serNo}&entity.issn='
+				goNumTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.serNo=${entity.serNo}&entity.issn='
 						+ issn + '&entity.database.serNo=' + datSerNo);
 			} else {
-				$("#span-tip").html("");
+				$("#span-num-tip").html("");
 			}
 		}
 	}
 
-	function isValidISSN(issn) {
-		var patt = /\d\d\d\d\-?\d\d\d+[0-9Xx]/;
-		if (!patt.test(issn.trim())) {
-			return false;
+	function checkTitle() {
+		var title = $("input#apply_journal_update_entity_title").val();
+		var issn = $("input#apply_journal_update_entity_issn").val();
+		var datSerNo = $("input#apply_journal_update_entity_database_serNo")
+				.val();
+		if (issn == null || issn.trim() == "") {
+			goTitleNameTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.serNo=${entity.serNo}&entity.title='
+					+ title + '&entity.database.serNo=' + datSerNo);
+		} else {
+			$("#span-title-tip").html("");
 		}
-
-		issn = issn.replace("-", "");
-		if (issn.length != 8) {
-			return false;
-		}
-		var chars = issn.split('');
-		if (chars[7].toUpperCase() == 'X') {
-			chars[7] = 10;
-		}
-		var sum = 0;
-		for (var i = 0; i < chars.length; i++) {
-			sum += ((8 - i) * parseInt(chars[i]));
-		}
-
-		return ((sum % 11) == 0);
 	}
 </script>
 <style type="text/css">
@@ -165,7 +163,8 @@ input#referenceOwner_name {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">刊名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.title" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.title" cssClass="input_text" />&nbsp;<span
+					id="span-title-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">英文縮寫刊名</th>
@@ -178,9 +177,9 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">ISSN<span class="required">(&#8226;)</span></th>
+				<th width="130">ISSN</th>
 				<td><s:textfield name="entity.issn" cssClass="input_text" />&nbsp;<span
-					id="span-tip"></span></td>
+					id="span-title-name-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">語文</th>

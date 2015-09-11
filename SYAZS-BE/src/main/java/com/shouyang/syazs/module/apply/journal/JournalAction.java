@@ -93,9 +93,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			errorMessages.add("刊名不得空白");
 		}
 
-		if (StringUtils.isBlank(getEntity().getIssn())) {
-//			errorMessages.add("ISSN不得空白");TODO
-		} else {
+		if (StringUtils.isNotEmpty(getEntity().getIssn())) {
 			if (!isIssn(getEntity().getIssn())) {
 				errorMessages.add("ISSN不正確");
 			}
@@ -201,9 +199,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				errorMessages.add("刊名不得空白");
 			}
 
-			if (StringUtils.isBlank(getEntity().getIssn())) {
-				errorMessages.add("ISSN不得空白");
-			} else {
+			if (StringUtils.isNotEmpty(getEntity().getIssn())) {
 				if (!isIssn(getEntity().getIssn())) {
 					errorMessages.add("ISSN不正確");
 				}
@@ -395,6 +391,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
+			getEntity().setTitle(getEntity().getTitle().trim());
 			getEntity()
 					.setIssn(
 							getEntity().getIssn().toUpperCase()
@@ -430,6 +427,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
+			getEntity().setTitle(getEntity().getTitle().trim());
 			getEntity()
 					.setIssn(
 							getEntity().getIssn().toUpperCase()
@@ -494,6 +492,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String tip() throws Exception {
 		Long serNo = getEntity().getSerNo();
 		Long datserNo = getEntity().getDatabase().getSerNo();
+		if (datserNo != null) {
+			database = databaseService.getBySerNo(datserNo);
+		}
 
 		if (StringUtils.isNotBlank(getEntity().getIssn())) {
 			if (isIssn(getEntity().getIssn())) {
@@ -501,8 +502,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
 
-				if (dbHasRepeatIssn(getEntity().getIssn(), serNo, datserNo)) {
+				if (dbHasRepeatIssn(getEntity().getIssn(), serNo, database)) {
 					getRequest().setAttribute("repeat", "資料庫有重複資源");
+				}
+			}
+		} else {
+			if (StringUtils.isNotBlank(getEntity().getTitle())) {
+				if (hasRepeatTitle(getEntity().getTitle(), serNo)) {
+					getRequest().setAttribute("tip", "相同名稱且無ISSN資源存在");
+				}
+
+				if (dbHasRepeatTitle(getEntity().getTitle(), serNo, database)) {
+					getRequest().setAttribute("repeat", "資料庫有相同名稱且無ISSN資源存在");
 				}
 			}
 		}
@@ -602,6 +613,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 			List<Journal> originalData = new ArrayList<Journal>();
 			Map<String, Integer> checkRepeatIssn = new HashMap<String, Integer>();
+			Map<String, Integer> checkRepeatTitle = new HashMap<String, Integer>();
 
 			int normal = 0;
 
@@ -744,6 +756,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					}
 				}
 
+				if (StringUtils.isBlank(journal.getTitle())) {
+					objStatus.append("標題空白<br>");
+				}
+
 				if (!isURL(journal.getUrl())) {
 					objStatus.append("url不正確<br>");
 				}
@@ -754,38 +770,70 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					}
 				}
 
-				if (isIssn(journal.getIssn())) {
-					String issn = journal.getIssn().replace("-", "")
-							.toUpperCase();
-					if (hasRepeatIssn(issn, null)) {
-						resStatus.append("已有相同ISSN<br>");
+				if (StringUtils.isNotEmpty(journal.getIssn())) {
+					if (isIssn(journal.getIssn())) {
+						String issn = journal.getIssn().replace("-", "")
+								.toUpperCase();
+						if (hasRepeatIssn(issn, null)) {
+							resStatus.append("已有相同ISSN<br>");
+						}
+
+						if (dbHasRepeatIssn(issn, null, journal.getDatabase())) {
+							resStatus.append("DB有相同ISSN<br>");
+						}
+
+						if (checkRepeatIssn.containsKey(issn)) {
+							resStatus.append("清單有同ISSN資源<br>");
+
+							String status = originalData
+									.get(checkRepeatIssn.get(issn))
+									.getResourcesBuyers().getDataStatus()
+									+ "清單有同ISSN資源<br>";
+							originalData
+									.get(checkRepeatIssn.get(issn))
+									.getResourcesBuyers()
+									.setDataStatus(
+											status.replace(
+													"清單有同ISSN資源<br>清單有同ISSN資源<br>",
+													"清單有同ISSN資源<br>"));
+						}
+
+						checkRepeatIssn.put(issn, originalData.size());
+					} else {
+						objStatus.append("ISSN不正確<br>");
 					}
-
-					if (journal.getDatabase() != null
-							&& dbHasRepeatIssn(issn, null, journal
-									.getDatabase().getSerNo())) {
-						resStatus.append("DB有相同ISSN<br>");
-					}
-
-					if (checkRepeatIssn.containsKey(issn)) {
-						resStatus.append("清單有同ISSN資源<br>");
-
-						String status = originalData
-								.get(checkRepeatIssn.get(issn))
-								.getResourcesBuyers().getDataStatus()
-								+ "清單有同ISSN資源<br>";
-						originalData
-								.get(checkRepeatIssn.get(issn))
-								.getResourcesBuyers()
-								.setDataStatus(
-										status.replace(
-												"清單有同ISSN資源<br>清單有同ISSN資源<br>",
-												"清單有同ISSN資源<br>"));
-					}
-
-					checkRepeatIssn.put(issn, originalData.size());
 				} else {
-					objStatus.append("ISSN不正確<br>");
+					if (StringUtils.isNotBlank(journal.getTitle())) {
+						if (hasRepeatTitle(journal.getTitle(), null)) {
+							resStatus.append("已有無ISSN同名資源<br>");
+						}
+
+						if (dbHasRepeatTitle(journal.getTitle(), null,
+								journal.getDatabase())) {
+							resStatus.append("Db有無ISSN同名資源<br>");
+						}
+
+						if (checkRepeatTitle.containsKey(journal.getTitle())) {
+							resStatus.append("清單有無ISSN同名資源<br>");
+
+							String status = originalData
+									.get(checkRepeatTitle.get(journal
+											.getTitle())).getResourcesBuyers()
+									.getDataStatus()
+									+ "清單有無ISSN同名資源<br>";
+							originalData
+									.get(checkRepeatTitle.get(journal
+											.getTitle()))
+									.getResourcesBuyers()
+									.setDataStatus(
+											status.replace(
+													"清單有無ISSN同名資源<br>清單有無ISSN同名資源<br>",
+													"清單有無ISSN同名資源<br>"));
+						}
+
+						checkRepeatTitle.put(journal.getTitle(),
+								originalData.size());
+					}
 				}
 
 				journal.getResourcesBuyers()
@@ -1151,25 +1199,61 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		return false;
 	}
 
-	protected boolean dbHasRepeatIssn(String issn, Long serNo, Long datSerNo)
+	protected boolean dbHasRepeatIssn(String issn, Long serNo, Database db)
 			throws Exception {
-		if (datSerNo != null) {
-			database = databaseService.getBySerNo(datSerNo);
-
-			if (database != null) {
-				List<Long> results = journalService.getSerNosInDbByIssn(issn
-						.trim().replace("-", ""), database);
-				if (serNo != null) {
-					if (CollectionUtils.isNotEmpty(results)) {
-						results.remove(serNo);
-						if (results.size() != 0) {
-							return true;
-						}
-					}
-				} else {
-					if (CollectionUtils.isNotEmpty(results)) {
+		if (db != null && db.hasSerNo()) {
+			List<Long> results = journalService.getSerNosInDbByIssn(issn.trim()
+					.replace("-", ""), db);
+			if (serNo != null) {
+				if (CollectionUtils.isNotEmpty(results)) {
+					results.remove(serNo);
+					if (results.size() != 0) {
 						return true;
 					}
+				}
+			} else {
+				if (CollectionUtils.isNotEmpty(results)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean hasRepeatTitle(String title, Long serNo) throws Exception {
+		List<Long> results = journalService.getSerNosByTitle(title.trim());
+		if (serNo != null) {
+			if (CollectionUtils.isNotEmpty(results)) {
+				results.remove(serNo);
+				if (results.size() != 0) {
+					return true;
+				}
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(results)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean dbHasRepeatTitle(String title, Long serNo, Database db)
+			throws Exception {
+		if (db != null && db.hasSerNo()) {
+			List<Long> results = journalService.getSerNosInDbByTitle(
+					title.trim(), db);
+			if (serNo != null) {
+				if (CollectionUtils.isNotEmpty(results)) {
+					results.remove(serNo);
+					if (results.size() != 0) {
+						return true;
+					}
+				}
+			} else {
+				if (CollectionUtils.isNotEmpty(results)) {
+					return true;
 				}
 			}
 		}

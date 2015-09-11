@@ -69,15 +69,22 @@
 	$(document).ready(function() {
 		setResField();
 		checkIsbn();
+		checkName();
 	});
 
 	$(document).ready(function() {
 		$("input#apply_ebook_update_entity_isbn").bind('input', function() {
 			checkIsbn();
+			checkName();
 		});
 
 		$("input[name='entity.database.serNo']").change(function() {
 			checkIsbn();
+			checkName();
+		});
+
+		$("input#apply_journal_save_entity_bookName").bind('input', function() {
+			checkName();
 		});
 	});
 
@@ -125,8 +132,25 @@
 		if (isbn == null || isbn.trim() == "") {
 			$("#span-tip").html("ISBN未填寫");
 		} else {
-			goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
-					+ isbn + '&entity.database.serNo=' + datSerNo);
+			if (isValidISBN(isbn)) {
+				goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
+						+ isbn + '&entity.database.serNo=' + datSerNo);
+			} else {
+				$("#span-tip").html("");
+			}
+		}
+	}
+
+	function checkName() {
+		var name = $("input#apply_ebook_update_entity_bookName").val();
+		var isbn = $("input#apply_ebook_update_entity_isbn").val();
+		var datSerNo = $("input#apply_ebook_update_entity_database_serNo")
+				.val();
+		if (isbn == null || isbn.trim() == "") {
+			goTitleNameTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.bookName='
+					+ name + '&entity.database.serNo=' + datSerNo);
+		} else {
+			$("#span-title-tip").html("");
 		}
 	}
 </script>
@@ -161,14 +185,15 @@ input#referenceOwner_name {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">書名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.bookName" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.bookName" cssClass="input_text" />&nbsp;<span
+					id="span-title-name-tip"></span></td>
 			</tr>
 			<tr>
-				<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
+				<th width="130">ISBN/13碼</th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_update_entity_isbn"
-					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>">&nbsp;<span
-					id="span-tip"></span></td>
+					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>"><span
+					id="span-num-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>

@@ -76,7 +76,27 @@ public class JournalService extends GenericServiceFull<Journal> {
 		queryLanguage.addParameter("datSerNo", database.getSerNo());
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosByTitle(String title) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setSql("SELECT serNo FROM Journal WHERE lower(title) = :title AND (issn = null OR issn ='')");
+		queryLanguage.addParameter("title", title.toLowerCase());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Long> getSerNosInDbByTitle(String title, Database database)
+			throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setSql("SELECT serNo FROM Journal WHERE lower(title) = :title AND database.serNo = :datSerNo AND (issn = null OR issn ='')");
+		queryLanguage.addParameter("title", title.toLowerCase());
+		queryLanguage.addParameter("datSerNo", database.getSerNo());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
+
 	@Override
 	public Journal save(Journal entity, AccountNumber user) throws Exception {
 		Assert.notNull(entity);

@@ -27,6 +27,10 @@
 	
 </script>
 <script language="javascript" type="text/javascript"
+	src="<c:url value = '/'/>resources/js/check.js">
+	
+</script>
+<script language="javascript" type="text/javascript"
 	src="<c:url value = '/'/>resources/js/jquery.autocomplete.js">
 	
 </script>
@@ -177,7 +181,7 @@
 			<div class="contain"></div>
 		</div>
 	</div>
-	
+
 	<div id="div_Detail_3">
 		<div class="overlay"></div>
 		<div class="content">

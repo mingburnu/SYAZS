@@ -417,54 +417,6 @@ function goDetail_Sub_2(argURL, argFormId, argData) {
 	});
 }
 
-// 檢查英數字
-function validateNumberAndAlphabet(theVar) {
-	var regExpression = /^[a-zA-Z0-9]*$/;
-	return regExpression.test(theVar);
-}
-
-// 檢查IP Address
-function validateIpAddress(theVar) {
-	var regExpression = /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/;
-	return regExpression.test(theVar);
-}
-
-// 檢查數字
-function validateNunber(theVar) {
-	var regExpression = /^[0-9]*$/;
-	return regExpression.test(theVar);
-}
-
-// 檢查電話 (數字須出現一次以上, " ( - ) " 可以任意出現)
-function validateTel(theVar) {
-	// var regExpression = /^[0-9\(\)-]*[0-9]+[0-9\(\)-]*$/;
-	var regExpression = /^[0-9\(\)-]*[0-9]+[0-9\(\)-]*[\#0-9]*$/;
-	return regExpression.test(theVar);
-}
-
-// 檢查email
-function validateEmail(theVar) {
-	var regExpression = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})*$/;
-	return regExpression.test(theVar);
-}
-
-// 去除頭尾空白
-function trim(theVar) {
-	return theVar.replace(/(^\s*)|(\s*$)/g, "");
-}
-
-// 取檔案副檔名
-function file_subName(fileName) {
-	var fileName_array = fileName.split(".");
-	return fileName_array[1];
-}
-
-// 日期檢查 yyyy/MM/dd
-function validateSlashDate(theVar) {
-	var regExpression = /^\d{1,4}[\/](0[1-9]|1[012])[\/](0[1-9]|[12][0-9]|3[01])$/;
-	return regExpression.test(theVar);
-}
-
 function initAutoComplete(url, serNoId, nameId) {
 	$.ajax({
 		type : "POST",
@@ -528,7 +480,7 @@ function resetCloseDetail_3() {
 							+ "</" + "script>");
 }
 
-function goTip(argURL) {
+function goNumTip(argURL) {
 	$.ajax({
 		url : argURL,
 		async : true,
@@ -538,7 +490,23 @@ function goTip(argURL) {
 			closeLoading();
 		},
 		success : function(msg) {
-			$("#span-tip").html(msg);
+			$("#span-num-tip").html(msg);
+			closeLoading();
+		}
+	});
+}
+
+function goTitleNameTip(argURL) {
+	$.ajax({
+		url : argURL,
+		async : true,
+		cache : false,
+		error : function(msq) {
+			goAlert("結果", "連結失敗.");
+			closeLoading();
+		},
+		success : function(msg) {
+			$("#span-title-name-tip").html(msg);
 			closeLoading();
 		}
 	});

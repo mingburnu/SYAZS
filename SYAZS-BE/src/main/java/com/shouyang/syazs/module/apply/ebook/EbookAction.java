@@ -98,9 +98,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				errorMessages.add("ISBN不正確");
 			}
 		} else {
-			if (StringUtils.isBlank(getRequest().getParameter("entity.isbn"))) {
-				// errorMessages.add("ISBN必須填寫");TODO
-			} else {
+			if (StringUtils
+					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
 				if (!isIsbn(getRequest().getParameter("entity.isbn"))) {
 					errorMessages.add("ISBN不正確");
 				}
@@ -220,10 +219,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					errorMessages.add("ISBN不正確");
 				}
 			} else {
-				if (StringUtils.isBlank(getRequest()
-						.getParameter("entity.isbn"))) {
-					errorMessages.add("ISBN必須填寫");
-				} else {
+				if (StringUtils.isNotBlank(getRequest().getParameter(
+						"entity.isbn"))) {
 					if (!isIsbn(getRequest().getParameter("entity.isbn"))) {
 						errorMessages.add("ISBN不正確");
 					}
@@ -533,6 +530,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		Long serNo = getEntity().getSerNo();
 		String isbn = getRequest().getParameter("entity.isbn");
 		Long datserNo = getEntity().getDatabase().getSerNo();
+		if (datserNo != null) {
+			database = databaseService.getBySerNo(datserNo);
+		}
 
 		if (getEntity().getIsbn() != null) {
 			if (isIsbn(getEntity().getIsbn())) {
@@ -540,7 +540,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
 
-				if (dbHasRepeatIsbn(isbn, serNo, datserNo)) {
+				if (dbHasRepeatIsbn(isbn, serNo, database)) {
 					getRequest().setAttribute("repeat", "資料庫有重複資源");
 				}
 			}
@@ -551,8 +551,20 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						getRequest().setAttribute("tip", "已有相同ISBN");
 					}
 
-					if (dbHasRepeatIsbn(isbn, serNo, datserNo)) {
+					if (dbHasRepeatIsbn(isbn, serNo, database)) {
 						getRequest().setAttribute("repeat", "資料庫有重複資源");
+					}
+				}
+			} else {
+				if (StringUtils.isNotBlank(getEntity().getBookName())) {
+					if (hasRepeatName(getEntity().getBookName(), serNo)) {
+						getRequest().setAttribute("tip", "相同名稱且無ISBN資源存在");
+					}
+
+					if (dbHasRepeatName(getEntity().getBookName(), serNo,
+							database)) {
+						getRequest().setAttribute("repeat",
+								"資料庫有相同名稱且無ISBN資源存在");
 					}
 				}
 			}
@@ -654,6 +666,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 			List<Ebook> originalData = new LinkedList<Ebook>();
 			Map<Long, Integer> checkRepeatIsbn = new HashMap<Long, Integer>();
+			Map<String, Integer> checkRepeatName = new HashMap<String, Integer>();
 
 			int normal = 0;
 
@@ -818,6 +831,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					}
 				}
 
+				if (StringUtils.isBlank(ebook.getBookName())) {
+					objStatus.append("書名必須填寫<br>");
+				}
+
 				if (!isURL(ebook.getUrl())) {
 					objStatus.append("url不正確<br>");
 				}
@@ -842,9 +859,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							resStatus.append("已有相同ISBN<br>");
 						}
 
-						if (ebook.getDatabase() != null
-								&& dbHasRepeatIsbn(isbn, null, ebook
-										.getDatabase().getSerNo())) {
+						if (dbHasRepeatIsbn(isbn, null, ebook.getDatabase())) {
 							resStatus.append("DB有相同ISBN<br>");
 						}
 
@@ -870,41 +885,76 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						objStatus.append("ISBN不正確<br>");
 					}
 				} else {
-					if (isIsbn(isbn)) {
-						if (hasRepeatIsbn(isbn, null)) {
-							resStatus.append("已有相同ISBN<br>");
+					if (StringUtils.isNotEmpty(isbn)) {
+						if (isIsbn(isbn)) {
+							if (hasRepeatIsbn(isbn, null)) {
+								resStatus.append("已有相同ISBN<br>");
+							}
+
+							if (dbHasRepeatIsbn(isbn, null, ebook.getDatabase())) {
+								resStatus.append("DB有相同ISBN<br>");
+							}
+
+							if (checkRepeatIsbn.containsKey(Long.parseLong(isbn
+									.replace("-", "")))) {
+								resStatus.append("清單有同ISBN資源<br>");
+
+								String status = originalData
+										.get(checkRepeatIsbn.get(Long
+												.parseLong(isbn
+														.replace("-", ""))))
+										.getResourcesBuyers().getDataStatus()
+										+ "清單有同ISBN資源<br>";
+								originalData
+										.get(checkRepeatIsbn.get(Long
+												.parseLong(isbn
+														.replace("-", ""))))
+										.getResourcesBuyers()
+										.setDataStatus(
+												status.replace(
+														"清單有同ISBN資源<br>清單有同ISBN資源<br>",
+														"清單有同ISBN資源<br>"));
+							}
+
+							checkRepeatIsbn.put(
+									Long.parseLong(isbn.replace("-", "")),
+									originalData.size());
+						} else {
+							objStatus.append("ISBN不正確<br>");
 						}
-
-						if (ebook.getDatabase() != null
-								&& dbHasRepeatIsbn(isbn, null, ebook
-										.getDatabase().getSerNo())) {
-							resStatus.append("DB有相同ISBN<br>");
-						}
-
-						if (checkRepeatIsbn.containsKey(Long.parseLong(isbn
-								.replace("-", "")))) {
-							resStatus.append("清單有同ISBN資源<br>");
-
-							String status = originalData
-									.get(checkRepeatIsbn.get(Long
-											.parseLong(isbn.replace("-", ""))))
-									.getResourcesBuyers().getDataStatus()
-									+ "清單有同ISBN資源<br>";
-							originalData
-									.get(checkRepeatIsbn.get(Long
-											.parseLong(isbn.replace("-", ""))))
-									.getResourcesBuyers()
-									.setDataStatus(
-											status.replace(
-													"清單有同ISBN資源<br>清單有同ISBN資源<br>",
-													"清單有同ISBN資源<br>"));
-						}
-
-						checkRepeatIsbn.put(
-								Long.parseLong(isbn.replace("-", "")),
-								originalData.size());
 					} else {
-						objStatus.append("ISBN不正確<br>");
+						if (StringUtils.isNotBlank(ebook.getBookName())) {
+							if (hasRepeatName(ebook.getBookName(), null)) {
+								resStatus.append("已有無ISBN同名資源<br>");
+							}
+
+							if (dbHasRepeatName(ebook.getBookName(), null,
+									ebook.getDatabase())) {
+								resStatus.append("Db有無ISBN同名資源<br>");
+							}
+
+							if (checkRepeatName
+									.containsKey(ebook.getBookName())) {
+								resStatus.append("清單有無ISBN同名資源<br>");
+
+								String status = originalData
+										.get(checkRepeatName.get(ebook
+												.getBookName()))
+										.getResourcesBuyers().getDataStatus()
+										+ "清單有無ISBN同名資源<br>";
+								originalData
+										.get(checkRepeatName.get(ebook
+												.getBookName()))
+										.getResourcesBuyers()
+										.setDataStatus(
+												status.replace(
+														"清單有無ISBN同名資源<br>清單有無ISBN同名資源<br>",
+														"清單有無ISBN同名資源<br>"));
+							}
+
+							checkRepeatName.put(ebook.getBookName(),
+									originalData.size());
+						}
 					}
 				}
 
@@ -1089,7 +1139,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				int index = (Integer) iterator.next();
 				ebook = (Ebook) importList.get(index);
 
-				if (ebook.getIsbn() == null) {
+				if (ebook.getIsbn() == null
+						&& StringUtils.isNotEmpty(ebook.getTempNote())) {
 					ebook.setIsbn(Long.parseLong(ebook.getTempNote().replace(
 							"-", "")));
 				}
@@ -1285,25 +1336,62 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		return false;
 	}
 
-	protected boolean dbHasRepeatIsbn(String isbn, Long serNo, Long datSerNo)
+	protected boolean dbHasRepeatIsbn(String isbn, Long serNo, Database db)
 			throws Exception {
-		if (datSerNo != null) {
-			database = databaseService.getBySerNo(datSerNo);
-
-			if (database != null) {
-				List<Long> results = ebookService.getSerNosInDbByIsbn(
-						Long.parseLong(isbn.trim().replace("-", "")), database);
-				if (serNo != null) {
-					if (CollectionUtils.isNotEmpty(results)) {
-						results.remove(serNo);
-						if (results.size() != 0) {
-							return true;
-						}
-					}
-				} else {
-					if (CollectionUtils.isNotEmpty(results)) {
+		if (db != null && db.hasSerNo()) {
+			List<Long> results = ebookService.getSerNosInDbByIsbn(
+					Long.parseLong(isbn.trim().replace("-", "")), db);
+			if (serNo != null) {
+				if (CollectionUtils.isNotEmpty(results)) {
+					results.remove(serNo);
+					if (results.size() != 0) {
 						return true;
 					}
+				}
+			} else {
+				if (CollectionUtils.isNotEmpty(results)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean hasRepeatName(String bookName, Long serNo)
+			throws Exception {
+		List<Long> results = ebookService.getSerNosByName(bookName.trim());
+		if (serNo != null) {
+			if (CollectionUtils.isNotEmpty(results)) {
+				results.remove(serNo);
+				if (results.size() != 0) {
+					return true;
+				}
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(results)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean dbHasRepeatName(String bookName, Long serNo, Database db)
+			throws Exception {
+		if (db != null && db.hasSerNo()) {
+			List<Long> results = ebookService.getSerNosInDbByName(
+					bookName.trim(), db);
+			if (serNo != null) {
+				if (CollectionUtils.isNotEmpty(results)) {
+					results.remove(serNo);
+					if (results.size() != 0) {
+						return true;
+					}
+				}
+			} else {
+				if (CollectionUtils.isNotEmpty(results)) {
+					return true;
 				}
 			}
 		}
