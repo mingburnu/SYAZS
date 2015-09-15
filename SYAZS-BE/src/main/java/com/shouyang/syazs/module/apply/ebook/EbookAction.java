@@ -49,7 +49,6 @@ import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
-import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -74,9 +73,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
-
-	@Autowired
-	private ResourcesBuyersService resourcesBuyersService;
 
 	@Autowired
 	private ReferenceOwner referenceOwner;

@@ -45,7 +45,6 @@ import com.shouyang.syazs.module.apply.enums.Type;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
-import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyersService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -64,9 +63,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
-
-	@Autowired
-	private ResourcesBuyersService resourcesBuyersService;
 
 	@Autowired
 	private ReferenceOwner referenceOwner;
