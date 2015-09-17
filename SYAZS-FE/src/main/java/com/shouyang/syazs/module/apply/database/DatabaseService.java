@@ -1,7 +1,5 @@
 package com.shouyang.syazs.module.apply.database;
 
-import java.util.List;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
@@ -15,6 +13,7 @@ import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceFull;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @Service
 public class DatabaseService extends GenericServiceFull<Database> {
@@ -87,8 +86,6 @@ public class DatabaseService extends GenericServiceFull<Database> {
 
 		if (option.equals("中文題名")) {
 			option = "dbChtTitle";
-		} else if (option.equals("英文題名")) {
-			option = "dbEngTitle";
 		} else if (option.equals("出版社")) {
 			option = "publishName";
 		} else if (option.equals("內容描述")) {
@@ -130,18 +127,28 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
-	public DataSet<Database> getByCusSerNo(DataSet<Database> ds)
+	public DataSet<Database> getAllDb(DataSet<Database> ds) throws Exception {
+		Assert.notNull(ds);
+		Assert.notNull(ds.getEntity());
+
+		DsRestrictions restrictions = getDsRestrictions();
+		return dao.findByRestrictions(restrictions, ds);
+	}
+
+	public long countByOwner(ReferenceOwner owner) throws Exception {
+		return dao.count(owner);
+	}
+
+	public DataSet<Database> getByRefSerNo(DataSet<Database> ds)
 			throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
 
 		DsRestrictions restrictions = getDsRestrictions();
 		entity = ds.getEntity();
-		Pager pager = ds.getPager();
+		restrictions.createAlias("referenceOwners", "r");
+		restrictions.eq("r.serNo", entity.getRefSerNo());
 
-		List<Database> results = dao.findByRestrictions(restrictions);
-		ds.setResults(results);
-		ds.setPager(pager);
-		return ds;
+		return dao.findByRestrictions(restrictions, ds);
 	}
 }

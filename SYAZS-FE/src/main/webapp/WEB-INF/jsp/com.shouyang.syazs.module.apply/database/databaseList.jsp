@@ -74,7 +74,7 @@ function view(serNo){
 										<option value="50">50</option>
 										<option value="100">100</option>
 									</select>
-									<s:hidden name="entity.cusSerNo" value="%{ds.entity.cusSerNo}" />
+									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
 							<td align="right" class="p_02"><c:if
 									test="${ds.pager.totalRecord > 0 }"><jsp:include
@@ -212,7 +212,7 @@ function view(serNo){
 										<option value="50">50</option>
 										<option value="100">100</option>
 									</select>
-									<s:hidden name="entity.cusSerNo" value="%{ds.entity.cusSerNo}" />
+									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
 							<td align="right" class="p_02"><c:if
 									test="${ds.pager.totalRecord > 0 }"><jsp:include

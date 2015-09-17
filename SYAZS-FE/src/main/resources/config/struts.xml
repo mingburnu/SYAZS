@@ -72,8 +72,8 @@
 			<result name="success">/WEB-INF/jsp/query.jsp</result>
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 		</action>
-		<action name="adv_query" class="commonMainPageAction">
-			<result name="success">/WEB-INF/jsp/adv_query.jsp</result>
+		<action name="*" class="{1}Action">
+			<result name="success">${entity.location}{1}/{1}Prefix.jsp</result>
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 		</action>
 	</package>
@@ -82,12 +82,12 @@
 		<interceptors>
 			<interceptor name="loginSessionInterceptor"
 				class="com.shouyang.syazs.core.interceptor.LoginSessionInterceptor" />
-			<!-- interceptor name="SearchActionInterceptor"
-				class="com.shouyang.syazs.core.interceptor.SearchActionInterceptor" /-->
+			<interceptor name="SearchActionInterceptor"
+				class="com.shouyang.syazs.core.interceptor.SearchActionInterceptor" />
 
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="loginSessionInterceptor" />
-				<!--  interceptor-ref name="SearchActionInterceptor" /-->
+				<interceptor-ref name="SearchActionInterceptor" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 		</interceptors>
@@ -99,7 +99,7 @@
 				result="error" />
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 			<result name="query">/WEB-INF/jsp/query.jsp</result>
-			<result name="adv_query">/WEB-INF/jsp/adv_query.jsp</result>
+			<result name="prefix">${entity.location}{1}/{1}Prefix.jsp</result>
 			<result name="list">${entity.location}{1}/{1}List.jsp</result>
 			<result name="view">${entity.location}{1}/{1}View.jsp</result>
 			<result name="*"></result>

@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.customer.Customer;
-import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -34,7 +34,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	private Customer customer;
 
 	@Autowired
-	private CustomerService customerService;
+	private ReferenceOwnerService referenceOwnerService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -106,10 +106,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	public String owner() throws Exception {
-		if (getEntity().getCusSerNo() == null
-				|| getEntity().getCusSerNo() <= 0
-				|| customerService.getBySerNo(getEntity().getCusSerNo()) == null) {
-			addActionError("Customer Null");
+		if (getEntity().getRefSerNo() == null
+				|| getEntity().getRefSerNo() <= 0
+				|| referenceOwnerService.getBySerNo(getEntity().getRefSerNo()) == null) {
+			addActionError("Owner Null");
 		}
 
 		if (!hasActionErrors()) {
@@ -118,14 +118,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					getRequest().getContextPath()
 							+ "/crud/apply.ebook.owner.action");
 
-			DataSet<Ebook> ds = ebookService.getByCusSerNo(initDataSet());
+			DataSet<Ebook> ds = ebookService.getByRefSerNo(initDataSet());
 
 			if (ds.getResults().size() == 0
 					&& ds.getPager().getCurrentPage() > 1) {
 				ds.getPager().setCurrentPage(
 						(int) Math.ceil(ds.getPager().getTotalRecord()
 								/ ds.getPager().getRecordPerPage()));
-				ds = ebookService.getByCusSerNo(ds);
+				ds = ebookService.getByRefSerNo(initDataSet());
 			}
 
 			setDs(ds);

@@ -41,13 +41,13 @@
 					<c:when test="${empty item }">
 						<s:radio name="item" cssClass="v_type"
 							onchange="changeFormAction()"
-							list="#{'database':' 資料庫','ebook':' 電子書','journal':' 期刊','customer':' 單位名稱' }"
+							list="#{'database':' 資料庫','ebook':' 電子書','journal':' 期刊','referenceOwner':' 單位名稱' }"
 							value="'database'" />
 					</c:when>
 					<c:otherwise>
 						<s:radio name="item" cssClass="v_type"
 							onchange="changeFormAction()"
-							list="#{'database':' 資料庫','ebook':' 電子書','journal':' 期刊','customer':' 單位名稱' }"
+							list="#{'database':' 資料庫','ebook':' 電子書','journal':' 期刊','referenceOwner':' 單位名稱' }"
 							value="%{item}" />
 					</c:otherwise>
 				</c:choose></td>

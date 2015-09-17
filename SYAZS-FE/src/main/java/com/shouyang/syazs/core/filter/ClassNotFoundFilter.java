@@ -42,6 +42,44 @@ public class ClassNotFoundFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 
+		if (request.getServletPath().startsWith("/page/")
+				&& request.getServletPath().endsWith(".action")) {
+
+			String actionName = request.getServletPath().replaceFirst("/page/",
+					"");
+
+			String entityName = actionName.substring(0,
+					actionName.lastIndexOf("."));
+
+			if (entityName != null && !entityName.equals("index")
+					&& !entityName.equals("query")) {
+				try {
+					if (entityName.length() == 0) {
+						entityName = " ";
+					}
+
+					String className = moduleEntityPackge + "." + entityName
+							+ "." + entityName.substring(0, 1).toUpperCase()
+							+ entityName.substring(1, entityName.length())
+							+ "Action";
+					Class.forName(className);
+
+				} catch (ClassNotFoundException e) {
+					try {
+						String className = coreEntityPackage + "." + entityName
+								+ "."
+								+ entityName.substring(0, 1).toUpperCase()
+								+ entityName.substring(1, entityName.length())
+								+ "Action";
+						Class.forName(className);
+					} catch (ClassNotFoundException e1) {
+						response.sendError(HttpServletResponse.SC_NOT_FOUND);
+						return;
+					}
+				}
+			}
+		}
+
 		if (request.getServletPath().startsWith("/crud/apply.")
 				&& request.getServletPath().endsWith(".action")) {
 
@@ -61,6 +99,7 @@ public class ClassNotFoundFilter implements Filter {
 
 			} catch (ClassNotFoundException e) {
 				try {
+					System.out.println(entityName);
 					String className = coreEntityPackage + "." + entityName
 							+ "." + entityName.substring(0, 1).toUpperCase()
 							+ entityName.substring(1, entityName.length())

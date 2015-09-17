@@ -74,7 +74,7 @@ function view(serNo){
 										<option value="50">50</option>
 										<option value="100">100</option>
 									</select>
-									<s:hidden name="entity.cusSerNo" value="%{ds.entity.cusSerNo}" />
+									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
 							<td align="right" class="p_02"><c:if
 									test="${ds.pager.totalRecord > 0 }"><jsp:include
@@ -136,14 +136,7 @@ function view(serNo){
 						<c:when test="${num > 0}">
 							<tr valign="top">
 								<td>${orderInt}</td>
-								<c:choose>
-									<c:when test="${not empty item.englishTitle}">
-										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.englishTitle}</esapi:encodeForHTML></a></td>
-									</c:when>
-									<c:otherwise>
-										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.chineseTitle}</esapi:encodeForHTML></a></td>
-									</c:otherwise>
-								</c:choose>
+								<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
 								<td><c:choose>
 										<c:when test="${not empty item.publishName}">
 											<esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML>
@@ -161,14 +154,7 @@ function view(serNo){
 						<c:otherwise>
 							<tr valign="top" class="odd">
 								<td>${orderInt}</td>
-								<c:choose>
-									<c:when test="${not empty item.englishTitle}">
-										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.englishTitle}</esapi:encodeForHTML></a></td>
-									</c:when>
-									<c:otherwise>
-										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.chineseTitle}</esapi:encodeForHTML></a></td>
-									</c:otherwise>
-								</c:choose>
+								<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
 								<td><c:choose>
 										<c:when test="${not empty item.publishName}">
 											<esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML>
@@ -236,7 +222,7 @@ function view(serNo){
 										<option value="50">50</option>
 										<option value="100">100</option>
 									</select>
-									<s:hidden name="entity.cusSerNo" value="%{ds.entity.cusSerNo}" />
+									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
 							<td align="right" class="p_02"><c:if
 									test="${ds.pager.totalRecord > 0 }"><jsp:include

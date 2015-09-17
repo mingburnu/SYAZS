@@ -3,6 +3,7 @@ package com.shouyang.syazs.module.apply.referenceOwner;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -44,7 +45,16 @@ public class ReferenceOwner extends GenericEntityFull {
 	@Column(name = "memo")
 	@Type(type = "text")
 	private String memo;
-	
+
+	@Transient
+	private long dbAmount;
+
+	@Transient
+	private long ebookAmount;
+
+	@Transient
+	private long journalAmount;
+
 	/**
 	 * @return the name
 	 */
@@ -135,13 +145,58 @@ public class ReferenceOwner extends GenericEntityFull {
 		this.memo = memo;
 	}
 
+	/**
+	 * @return the dbAmount
+	 */
+	public long getDbAmount() {
+		return dbAmount;
+	}
+
+	/**
+	 * @param dbAmount
+	 *            the dbAmount to set
+	 */
+	public void setDbAmount(long dbAmount) {
+		this.dbAmount = dbAmount;
+	}
+
+	/**
+	 * @return the ebookAmount
+	 */
+	public long getEbookAmount() {
+		return ebookAmount;
+	}
+
+	/**
+	 * @param ebookAmount
+	 *            the ebookAmount to set
+	 */
+	public void setEbookAmount(long ebookAmount) {
+		this.ebookAmount = ebookAmount;
+	}
+
+	/**
+	 * @return the journalAmount
+	 */
+	public long getJournalAmount() {
+		return journalAmount;
+	}
+
+	/**
+	 * @param journalAmount
+	 *            the journalAmount to set
+	 */
+	public void setJournalAmount(long journalAmount) {
+		this.journalAmount = journalAmount;
+	}
+
 	public ReferenceOwner() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ReferenceOwner(String name, String engName, String address, String tel,
-			String contactUserName, String memo) {
+	public ReferenceOwner(String name, String engName, String address,
+			String tel, String contactUserName, String memo) {
 		super();
 		this.name = name;
 		this.engName = engName;

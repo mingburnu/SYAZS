@@ -30,12 +30,10 @@
 
 		<table width="100%" border="0" cellpadding="0" cellspacing="0"
 			class="table_03">
-			<c:if test="${not empty entity.bookName}">
-				<tr>
-					<td class="t_01">題名</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.bookName}</esapi:encodeForHTML></td>
-				</tr>
-			</c:if>
+			<tr>
+				<td class="t_01">題名</td>
+				<td class="t_02"><esapi:encodeForHTML>${entity.bookName}</esapi:encodeForHTML></td>
+			</tr>
 			<c:if
 				test="${(not empty entity.autherName) || (not empty entity.authers) }">
 				<tr>

@@ -3,10 +3,7 @@ package com.shouyang.syazs.module.entity;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.shouyang.syazs.core.entity.GenericEntityFull;
-import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 
 @MappedSuperclass
 public abstract class ModuleProperties extends GenericEntityFull {
@@ -17,36 +14,24 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	private static final long serialVersionUID = -5011709439415119645L;
 
 	@Transient
-	@Autowired
-	private ResourcesBuyers resourcesBuyers;
+	private Long refSerNo;
 
-	@Transient
-	private Long cusSerNo;
-	
 	@Transient
 	private String backURL;
 
-	public ResourcesBuyers getResourcesBuyers() {
-		return resourcesBuyers;
-	}
-
-	public void setResourcesBuyers(ResourcesBuyers resourcesBuyers) {
-		this.resourcesBuyers = resourcesBuyers;
+	/**
+	 * @return the refSerNo
+	 */
+	public Long getRefSerNo() {
+		return refSerNo;
 	}
 
 	/**
-	 * @return the cusSerNo
+	 * @param refSerNo
+	 *            the refSerNo to set
 	 */
-	public Long getCusSerNo() {
-		return cusSerNo;
-	}
-
-	/**
-	 * @param cusSerNo
-	 *            the cusSerNo to set
-	 */
-	public void setCusSerNo(Long cusSerNo) {
-		this.cusSerNo = cusSerNo;
+	public void setRefSerNo(Long refSerNo) {
+		this.refSerNo = refSerNo;
 	}
 
 	/**

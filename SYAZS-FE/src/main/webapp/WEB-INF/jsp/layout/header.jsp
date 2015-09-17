@@ -28,12 +28,15 @@
 			<td><a class="a_hover"
 				href="javascript:goURL('<c:url value = '/'/>page/query.action')"
 				onclick="switchMenu(this)">綜 合 查 詢</a></td>
-			<td><a href="query_B.html" onclick="switchMenu(this)">僅 電 子 期 刊</a></td>
-			<td><a href="javascript:goURL('<c:url value = '/'/>ebook.jsp')"
-				onclick="switchMenu(this)">僅 電 子
-					書</a></td>
-			<td><a href="query_C.html" onclick="switchMenu(this)">僅 資 料
-					庫</a></td>
+			<td><a
+				href="javascript:goURL('<c:url value = '/'/>page/journal.action')"
+				onclick="switchMenu(this)">僅 電 子 期 刊</a></td>
+			<td><a
+				href="javascript:goURL('<c:url value = '/'/>page/ebook.action')"
+				onclick="switchMenu(this)">僅 電 子 書</a></td>
+			<td><a
+				href="javascript:goURL('<c:url value = '/'/>crud/apply.database.db.action')"
+				onclick="switchMenu(this)">僅 資 料 庫</a></td>
 		</tr>
 	</table>
 </div>

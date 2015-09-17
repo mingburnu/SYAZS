@@ -11,7 +11,7 @@
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
 				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
-				+ "&entity.cusSerNo=" + "${ds.entity.cusSerNo}"
+				+ "&entity.refSerNo=" + "${ds.entity.refSerNo}"
 				+ "&pager.recordPoint=" + "${ds.pager.recordPoint}"
 				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}"
 				+ "&pager.offset=" + "${ds.pager.offset}";
@@ -29,12 +29,10 @@
 	<div class="detail">
 		<table width="100%" border="0" cellpadding="0" cellspacing="0"
 			class="table_03">
-			<c:if test="${not empty entity.englishTitle}">
-				<tr>
-					<td class="t_01">刊名</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.englishTitle }</esapi:encodeForHTML></td>
-				</tr>
-			</c:if>
+			<tr>
+				<td class="t_01">刊名</td>
+				<td class="t_02"><esapi:encodeForHTML>${entity.title }</esapi:encodeForHTML></td>
+			</tr>
 			<c:if test="${not empty entity.abbreviationTitle}">
 				<tr>
 					<td class="t_01">縮寫刊名</td>
@@ -53,11 +51,10 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if
-				test="${(not empty entity.resourcesBuyers.dbChtTitle) || (not empty entity.resourcesBuyers.dbEngTitle)}">
+			<c:if test="${not empty entity.database}">
 				<tr>
 					<td class="t_01">資料庫</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.resourcesBuyers.dbEngTitle }</esapi:encodeForHTML></td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
 			<c:if test="${entity.version > 0 }">

@@ -3,8 +3,6 @@ package com.shouyang.syazs.core.interceptor;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,8 +45,6 @@ public class SearchActionInterceptor extends RootInterceptor {
 		removeErrorParameters(invocation);
 
 		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
-
 		Map<String, Object> session = invocation.getInvocationContext()
 				.getSession();
 
@@ -77,17 +73,6 @@ public class SearchActionInterceptor extends RootInterceptor {
 				addActionError(invocation, "．請輸入關鍵字。");
 			}
 
-			if (item.equals("database")) {
-				if (StringUtils.isBlank(option)) {
-					addActionError(invocation, "．請輸入選項。");
-					option = "中文題名";
-				} else if (!option.equals("中文題名") && !option.equals("英文題名")
-						&& !option.equals("出版社") && !option.equals("內容描述")) {
-					addActionError(invocation, "．請輸入選項。");
-					option = "中文題名";
-				}
-			}
-
 			if (item.equals("ebook")) {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
@@ -103,12 +88,12 @@ public class SearchActionInterceptor extends RootInterceptor {
 			if (item.equals("journal")) {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
-					option = "中文刊名";
-				} else if (!option.equals("中文刊名") && !option.equals("英文刊名")
-						&& !option.equals("英文縮寫") && !option.equals("出版商")
-						&& !option.equals("ISSN")) {
+					option = "標題開頭為";
+				} else if (!option.equals("標題開頭為") && !option.equals("標題等於")
+						&& !option.equals("標題包含文字")
+						&& !option.equals("ISSN 等於")) {
 					addActionError(invocation, "．請輸入選項。");
-					option = "中文刊名";
+					option = "標題開頭為";
 				}
 			}
 
@@ -119,9 +104,28 @@ public class SearchActionInterceptor extends RootInterceptor {
 						.set("option", option);
 				invocation.getInvocationContext().getValueStack()
 						.set("indexTerm", indexTerm);
-				response.sendRedirect(request.getContextPath() + "/" + item
-						+ ".jsp");
-				// return "adv_query";
+				return "prefix";
+			}
+		}
+
+		if (method.equals("prefix")) {
+			String item = request.getServletPath().replace("/crud/apply.", "")
+					.replace(".prefix.action", "");
+			String option = request.getParameter("entity.option");
+
+			if (item.equals("ebook") || item.equals("journal")) {
+				if (StringUtils.isBlank(option)) {
+					addActionError(invocation, "．請選擇字首。");
+				} else if (!option.equals("0-9")
+						&& Character.toString(option.charAt(0))
+								.replaceAll("[0a-zA-Z\u3105-\u3126]", "")
+								.length() != 0) {
+					addActionError(invocation, "．請選擇正確字首。");
+				}
+			}
+
+			if (hasActionErrors(invocation)) {
+				return "prefix";
 			}
 		}
 

@@ -54,7 +54,7 @@ public class FeLogs extends GenericEntityLog {
 	/**
 	 * 帳戶流水號
 	 */
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "acc_SerNo", nullable = true)
 	@Autowired
 	private AccountNumber accountNumber;

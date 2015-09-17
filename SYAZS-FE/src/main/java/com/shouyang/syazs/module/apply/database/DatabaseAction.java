@@ -10,11 +10,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.shouyang.syazs.core.apply.customer.Customer;
-import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
-import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -32,13 +30,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	private DatabaseService databaseService;
 
 	@Autowired
-	private ResourcesBuyers resourcesBuyers;
-
-	@Autowired
-	private Customer customer;
-
-	@Autowired
-	private CustomerService customerService;
+	private ReferenceOwnerService referenceOwnerService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -109,10 +101,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String owner() throws Exception {
-		if (getEntity().getCusSerNo() == null
-				|| getEntity().getCusSerNo() <= 0
-				|| customerService.getBySerNo(getEntity().getCusSerNo()) == null) {
-			addActionError("Customer Null");
+		if (getEntity().getRefSerNo() == null
+				|| getEntity().getRefSerNo() <= 0
+				|| referenceOwnerService.getBySerNo(getEntity().getRefSerNo()) == null) {
+			addActionError("Owner Null");
 		}
 
 		if (!hasActionErrors()) {
@@ -120,14 +112,14 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					"owner",
 					getRequest().getContextPath()
 							+ "/crud/apply.database.owner.action");
-			DataSet<Database> ds = databaseService.getByCusSerNo(initDataSet());
+			DataSet<Database> ds = databaseService.getByRefSerNo(initDataSet());
 
 			if (ds.getResults().size() == 0
 					&& ds.getPager().getCurrentPage() > 1) {
 				ds.getPager().setCurrentPage(
 						(int) Math.ceil(ds.getPager().getTotalRecord()
 								/ ds.getPager().getRecordPerPage()));
-				ds = databaseService.getByCusSerNo(ds);
+				ds = databaseService.getByRefSerNo(ds);
 			}
 
 			setDs(ds);
@@ -137,18 +129,18 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	}
 
-	public String focus() throws Exception {
+	public String db() throws Exception {
 		getRequest().setAttribute(
 				"focus",
 				getRequest().getContextPath()
-						+ "/crud/apply.database.focus.action");
-		DataSet<Database> ds = databaseService.getByOption(initDataSet());
+						+ "/crud/apply.database.db.action");
+		DataSet<Database> ds = databaseService.getAllDb(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
 					(int) Math.ceil(ds.getPager().getTotalRecord()
 							/ ds.getPager().getRecordPerPage()));
-			ds = databaseService.getByOption(ds);
+			ds = databaseService.getAllDb(ds);
 		}
 
 		setDs(ds);
@@ -164,7 +156,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					.replace("]", "");
 
 			getRequest().setAttribute("ownerNames", ownerNames);
-			database.setResourcesBuyers(resourcesBuyers);
 			database.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
