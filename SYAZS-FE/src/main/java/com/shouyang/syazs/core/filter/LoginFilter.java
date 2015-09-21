@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginFilter implements Filter {
 
 	final static private List<String> IGNORE_URLS = Arrays.asList("/login.jsp",
-			"/index.jsp", "/authorization/userEntry.action");
+			"/index.jsp", "/authorization/userEntry.action", "/admin/h2");
 
 	/**
 	 * Default constructor.

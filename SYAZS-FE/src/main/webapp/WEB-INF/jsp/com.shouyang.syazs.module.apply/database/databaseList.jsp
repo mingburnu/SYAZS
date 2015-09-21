@@ -6,7 +6,7 @@
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <script type="text/javascript">
 function view(serNo){
-	var data=$("form:eq(0)").serialize()+"&entity.backURL="+"${list}${focus}${owner}";
+	var data=$("form:eq(0)").serialize()+"&entity.backURL="+"${list}${all}${owner}";
 	var url="<%=request.getContextPath()%>"+"/crud/apply.database.view.action?entity.serNo="+serNo+"&pager.recordPoint="+"${ds.pager.recordPoint}";
 	$.ajax({
 		url: url,
@@ -87,15 +87,15 @@ function view(serNo){
 					</table>
 				</div>
 			</c:when>
-			<c:when test="${not empty focus}">
+			<c:when test="${not empty all}">
 				<div class="pager">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td align="left" class="p_01"><s:form
-									action="apply.database.focus.action">
+									action="apply.database.all.action">
 									共 <strong>${ds.pager.totalRecord}</strong>
 									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_database_focus_action_recordPerPage"
+										id="apply_database_all_action_recordPerPage"
 										onchange="upperChangeSize(this.value);">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
@@ -104,14 +104,12 @@ function view(serNo){
 										<option value="50">50</option>
 										<option value="100">100</option>
 									</select>
-									<s:hidden name="entity.option" />
-									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
 							<td align="right" class="p_02"><c:if
 									test="${ds.pager.totalRecord > 0 }"><jsp:include
 										page="/WEB-INF/jsp/layout/pagination.jsp">
 										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.focus" />
+										<jsp:param name="action" value="apply.database.all" />
 										<jsp:param name="pager" value="${ds.pager}" />
 									</jsp:include></c:if></td>
 						</tr>
@@ -225,15 +223,15 @@ function view(serNo){
 					</table>
 				</div>
 			</c:when>
-			<c:when test="${not empty focus}">
+			<c:when test="${not empty all}">
 				<div class="pager">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td align="left" class="p_01"><s:form
-									action="apply.database.focus.action">
+									action="apply.database.all.action">
 									共 <strong>${ds.pager.totalRecord}</strong>
 									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_database_focus_action_recordPerPage"
+										id="apply_database_all_action_recordPerPage"
 										onchange="bottomChangeSize(this.value);">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
@@ -242,14 +240,12 @@ function view(serNo){
 										<option value="50">50</option>
 										<option value="100">100</option>
 									</select>
-									<s:hidden name="entity.option" />
-									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
 							<td align="right" class="p_02"><c:if
 									test="${ds.pager.totalRecord > 0 }"><jsp:include
 										page="/WEB-INF/jsp/layout/pagination.jsp">
 										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.focus" />
+										<jsp:param name="action" value="apply.database.all" />
 										<jsp:param name="pager" value="${ds.pager}" />
 									</jsp:include></c:if></td>
 						</tr>

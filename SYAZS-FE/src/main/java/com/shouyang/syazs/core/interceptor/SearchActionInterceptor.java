@@ -132,7 +132,6 @@ public class SearchActionInterceptor extends RootInterceptor {
 		String result = invocation.invoke();
 
 		if (method.equals("list")) {
-
 			accountNumber = (AccountNumber) session.get("login");
 
 			if (request.getParameter("pager.recordPerPage") == null
@@ -140,15 +139,15 @@ public class SearchActionInterceptor extends RootInterceptor {
 				if (accountNumber.getSerNo() != null) {
 					feLogsService.save(
 							new FeLogs(Act.綜合查詢, request
-									.getParameter("keywords"), accountNumber
-									.getCustomer(), accountNumber, 0L, 0L, 0L),
-							accountNumber);
+									.getParameter("entity.indexTerm"),
+									accountNumber.getCustomer(), accountNumber,
+									0L, 0L, 0L), accountNumber);
 				} else {
 					feLogsService.save(
 							new FeLogs(Act.綜合查詢, request
-									.getParameter("keywords"), accountNumber
-									.getCustomer(), null, 0L, 0L, 0L),
-							accountNumber);
+									.getParameter("entity.indexTerm"),
+									accountNumber.getCustomer(), null, 0L, 0L,
+									0L), accountNumber);
 				}
 
 			}
@@ -162,15 +161,15 @@ public class SearchActionInterceptor extends RootInterceptor {
 				if (accountNumber.getSerNo() != null) {
 					feLogsService.save(
 							new FeLogs(Act.項目查詢, request
-									.getParameter("keywords"), accountNumber
-									.getCustomer(), accountNumber, 0L, 0L, 0L),
-							accountNumber);
+									.getParameter("entity.indexTerm"),
+									accountNumber.getCustomer(), accountNumber,
+									0L, 0L, 0L), accountNumber);
 				} else {
 					feLogsService.save(
 							new FeLogs(Act.項目查詢, request
-									.getParameter("keywords"), accountNumber
-									.getCustomer(), null, 0L, 0L, 0L),
-							accountNumber);
+									.getParameter("entity.indexTerm"),
+									accountNumber.getCustomer(), null, 0L, 0L,
+									0L), accountNumber);
 				}
 			}
 		}

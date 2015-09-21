@@ -1095,13 +1095,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 							"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
 							"000955", "Weekly", "R11", "N/A", "N/A",
 							"http://www.nejm.org/", "是", "2000", "2005", "租貸",
-							"獨孤寧珂、劉季" });
+							"高雄醫學院附設醫院、疾病管制署" });
 
 			empinfo.put("3", new Object[] { "Cell", "Cell", "", "00928674",
 					"eng", "Cambridge, Mass. : MIT Press.", "1974",
 					"Cytology--Periodicals ; Virology--Periodicals", "002064",
 					"Biweekly", "QH573", "N/A", "N/A", "http://www.cell.com/",
-					"否", "1998", "2020", "買斷", "夏柔" });
+					"否", "1998", "2020", "買斷", "高雄醫學院附設醫院" });
 		}
 
 		// Iterate over data and write to sheet

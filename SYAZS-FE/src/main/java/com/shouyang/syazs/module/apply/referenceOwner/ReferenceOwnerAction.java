@@ -1,7 +1,5 @@
 package com.shouyang.syazs.module.apply.referenceOwner;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -27,13 +25,13 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 
 	@Autowired
 	private ReferenceOwnerService referenceOwnerService;
-	
+
 	@Autowired
 	private DatabaseService databaseService;
-	
+
 	@Autowired
 	private EbookService ebookService;
-	
+
 	@Autowired
 	private JournalService journalService;
 
@@ -71,7 +69,8 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 	public String list() throws Exception {
 		getRequest().setAttribute("list", "apply.referenceOwner.list.action");
 
-		DataSet<ReferenceOwner> ds = referenceOwnerService.getByRestrictions(initDataSet());
+		DataSet<ReferenceOwner> ds = referenceOwnerService
+				.getByRestrictions(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
@@ -80,19 +79,7 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 			ds = referenceOwnerService.getByRestrictions(ds);
 		}
 
-		List<ReferenceOwner> results = ds.getResults();
-		for (int i = 0; i < results.size(); i++) {
-			referenceOwner = results.get(i);
-			referenceOwner.setDbAmount(databaseService.countByOwner(referenceOwner));
-			referenceOwner.setEbookAmount(ebookService.countByOwner(referenceOwner));
-			referenceOwner.setJournalAmount(journalService.countByOwner(referenceOwner));
-			results.remove(i);
-			results.add(i, referenceOwner);
-		}
-
-		ds.setResults(results);
 		setDs(ds);
-
 		return LIST;
 	}
 

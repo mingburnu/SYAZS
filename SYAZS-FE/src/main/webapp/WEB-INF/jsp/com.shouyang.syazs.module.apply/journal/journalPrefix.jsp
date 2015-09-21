@@ -45,8 +45,7 @@
 
 	function queryByPrefix(prefix) {
 		var url = "<c:url value = '/'/>crud/apply.journal.prefix.action?entity.option="
-				+ prefix
-				;
+				+ prefix;
 		$.ajax({
 			url : url,
 			success : function(result) {

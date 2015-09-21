@@ -49,7 +49,7 @@ function upperChangeSize(recordPerPage) {
 	var offset=parseInt(recordPerPage)*(page-1);
 	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}"+"&pager.offset="+offset;
 	var data = $("form:eq(0)").serialize();
-	
+	alert(url+data);
 	$.ajax({
 		url: url, 
 		data:data,

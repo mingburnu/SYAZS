@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
@@ -28,6 +29,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Autowired
 	private DatabaseService databaseService;
+
+	@Autowired
+	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private ReferenceOwnerService referenceOwnerService;
@@ -101,10 +105,14 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String owner() throws Exception {
-		if (getEntity().getRefSerNo() == null
-				|| getEntity().getRefSerNo() <= 0
-				|| referenceOwnerService.getBySerNo(getEntity().getRefSerNo()) == null) {
+		if (getEntity().getRefSerNo() == null || getEntity().getRefSerNo() <= 0) {
 			addActionError("Owner Null");
+		} else {
+			referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+					.getRefSerNo());
+			if (referenceOwner == null) {
+				addActionError("Owner Null");
+			}
 		}
 
 		if (!hasActionErrors()) {
@@ -112,14 +120,39 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					"owner",
 					getRequest().getContextPath()
 							+ "/crud/apply.database.owner.action");
-			DataSet<Database> ds = databaseService.getByRefSerNo(initDataSet());
+
+			DataSet<Database> ds = initDataSet();
+			List<Database> databases = new ArrayList<Database>(
+					referenceOwner.getDatabases());
+
+			ds.getPager().setTotalRecord((long) databases.size());
+			int first = ds.getPager().getOffset();
+			int last = first + ds.getPager().getRecordPerPage();
+
+			int i = 0;
+			while (i < databases.size()) {
+				if (i >= first && i < last) {
+					ds.getResults().add(databases.get(i));
+				}
+				i++;
+			}
 
 			if (ds.getResults().size() == 0
 					&& ds.getPager().getCurrentPage() > 1) {
 				ds.getPager().setCurrentPage(
 						(int) Math.ceil(ds.getPager().getTotalRecord()
 								/ ds.getPager().getRecordPerPage()));
-				ds = databaseService.getByRefSerNo(ds);
+				first = ds.getPager().getOffset();
+				last = first + ds.getPager().getRecordPerPage();
+
+				int j = 0;
+				while (j < databases.size()) {
+					if (j >= first && j < last) {
+						ds.getResults().add((Database) databases.get(j));
+					}
+					j++;
+				}
+
 			}
 
 			setDs(ds);
@@ -129,9 +162,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	}
 
-	public String db() throws Exception {
+	public String all() throws Exception {
 		getRequest().setAttribute(
-				"focus",
+				"all",
 				getRequest().getContextPath()
 						+ "/crud/apply.database.db.action");
 		DataSet<Database> ds = databaseService.getAllDb(initDataSet());
@@ -150,12 +183,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	public String view() throws Exception {
 		if (hasEntity()) {
-			List<String> ownerNameList = new ArrayList<String>();
-
-			String ownerNames = ownerNameList.toString().replace("[", "")
-					.replace("]", "");
-
-			getRequest().setAttribute("ownerNames", ownerNames);
 			database.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
@@ -165,6 +192,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		return VIEW;
+	}
+
+	public String count() {
+		getRequest().setAttribute("count", databaseService.countToatal());
+		return COUNT;
 	}
 
 	protected boolean hasEntity() throws Exception {

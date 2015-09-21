@@ -99,6 +99,7 @@
 				result="error" />
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 			<result name="query">/WEB-INF/jsp/query.jsp</result>
+			<result name="count">${entity.location}{1}/{1}Count.jsp</result>
 			<result name="prefix">${entity.location}{1}/{1}Prefix.jsp</result>
 			<result name="list">${entity.location}{1}/{1}List.jsp</result>
 			<result name="view">${entity.location}{1}/{1}View.jsp</result>

@@ -1211,18 +1211,21 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					"次要作者", "系列叢書名", "出版日期", "語文", "版本", "中國圖書分類碼", "杜威十進位分類號",
 					"URL", "類型", "出版地", "公開資源", "起始日", "到期日", "資源類型", "購買人名稱" });
 
-			empinfo.put("2", new Object[] {
-					"Ophthalmic clinical procedures：a multimedia guide",
-					"978-0-08-044978-4", "Elsevier(ClinicalKey)",
-					"Frank Eperjesi", "Hannah Bartlett & Mark Dunne", "N/A",
-					"2008/2/7", "eng", "1", "410", "617",
-					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
-					"Netherlands", "是", "2000", "2005", "租貸", "陸承軒、毛民福" });
+			empinfo.put(
+					"2",
+					new Object[] {
+							"Ophthalmic clinical procedures：a multimedia guide",
+							"978-0-08-044978-4", "Elsevier(ClinicalKey)",
+							"Frank Eperjesi", "Hannah Bartlett & Mark Dunne",
+							"N/A", "2008/2/7", "eng", "1", "410", "617",
+							"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi",
+							"醫學", "Netherlands", "是", "2000", "2005", "租貸",
+							"疾病管制署、高雄醫學院附設醫院" });
 			empinfo.put("3", new Object[] { "C嘉魔法彩繪", "978-9-88-807293-4",
 					"青森文化", "陳嘉慧", "N/A", "N/A", "2011", "cht", "N/A", "961",
 					"752",
 					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
-					"醫學", "Taiwan", "是", "N/A", "N/A", "買斷", "夏柔" });
+					"醫學", "Taiwan", "是", "N/A", "N/A", "買斷", "高雄醫學院附設醫院" });
 		}
 
 		// Iterate over data and write to sheet

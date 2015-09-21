@@ -35,7 +35,7 @@
 				href="javascript:goURL('<c:url value = '/'/>page/ebook.action')"
 				onclick="switchMenu(this)">僅 電 子 書</a></td>
 			<td><a
-				href="javascript:goURL('<c:url value = '/'/>crud/apply.database.db.action')"
+				href="javascript:goURL('<c:url value = '/'/>crud/apply.database.all.action')"
 				onclick="switchMenu(this)">僅 資 料 庫</a></td>
 		</tr>
 	</table>

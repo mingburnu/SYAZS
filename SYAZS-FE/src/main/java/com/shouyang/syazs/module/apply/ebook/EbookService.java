@@ -174,18 +174,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
-	public long countByOwner(ReferenceOwner owner) throws Exception {
-		return dao.count(owner);
-	}
-
-	public DataSet<Ebook> getByRefSerNo(DataSet<Ebook> ds) throws Exception {
-		Assert.notNull(ds);
-		Assert.notNull(ds.getEntity());
-
-		entity = ds.getEntity();
-		referenceOwner = new ReferenceOwner();
-		referenceOwner.setSerNo(ds.getEntity().getRefSerNo());
-
-		return dao.findByOwner(ds, referenceOwner);
+	public long countToatal() {
+		return dao.countAll();
 	}
 }

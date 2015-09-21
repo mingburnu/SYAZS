@@ -180,18 +180,7 @@ public class JournalService extends GenericServiceFull<Journal> {
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
-	public long countByOwner(ReferenceOwner owner) throws Exception {
-		return dao.count(owner);
-	}
-
-	public DataSet<Journal> getByRefSerNo(DataSet<Journal> ds) throws Exception {
-		Assert.notNull(ds);
-		Assert.notNull(ds.getEntity());
-
-		entity = ds.getEntity();
-		referenceOwner = new ReferenceOwner();
-		referenceOwner.setSerNo(ds.getEntity().getRefSerNo());
-
-		return dao.findByOwner(ds, referenceOwner);
+	public long countToatal() {
+		return dao.countAll();
 	}
 }

@@ -12,9 +12,9 @@ import com.shouyang.syazs.core.dao.DsQueryLanguage;
  */
 public interface DsQueryLanguage extends Serializable {
 
-	public String getSql();
+	public String getHql();
 	
-	public void setSql(String sql);
+	public void setHql(String hql);
 	
 	public Map<String, Object> getParameters();
 	

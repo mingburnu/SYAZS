@@ -33,6 +33,10 @@
 				<td class="t_01">刊名</td>
 				<td class="t_02"><esapi:encodeForHTML>${entity.title }</esapi:encodeForHTML></td>
 			</tr>
+			<tr>
+				<td class="t_01">URL</td>
+				<td class="t_02">${entity.url }</td>
+			</tr>
 			<c:if test="${not empty entity.abbreviationTitle}">
 				<tr>
 					<td class="t_01">縮寫刊名</td>

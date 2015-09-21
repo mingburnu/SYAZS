@@ -80,21 +80,21 @@ insert into accountNumber(serNo, cUid, uUid, cDTime, uDTime, cus_serNo, userID, 
 insert into accountNumber(serNo, cUid, uUid, cDTime, uDTime, cus_serNo, userID, userName, userPW, role, status) values(12, 'admin', 'admin', sysdate(), sysdate(), 5, 'user4', 'Default User', '8w5y4CYvLHP69kq5Wm2vHDVfPX1IOcrpskUugS/4KZN6budffcIYbfhpEL6HmNZ0', '使用者','生效');
 
 --referenceOwner
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(1, 'admin', 'admin', sysdate(), sysdate(), '李靖', 'Li', '林麗雯');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(2, 'admin', 'admin', sysdate(), sysdate(), '陳靖仇', 'Chen', '陳小美');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(3, 'admin', 'admin', sysdate(), sysdate(), '于小雪', 'Yu', '陳桔根');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(4, 'admin', 'admin', sysdate(), sysdate(), '拓跋玉兒', 'Tuoba', '曾慧君');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(5, 'admin', 'admin', sysdate(), sysdate(), '張烈', 'Cheng', '歐陽慧');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(6, 'admin', 'admin', sysdate(), sysdate(), '陳輔', 'Chen', '董世勳');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(7, 'admin', 'admin', sysdate(), sysdate(), '宇文拓', 'Yuwen', '郭啟文');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(8, 'admin', 'admin', sysdate(), sysdate(), '獨孤寧珂', 'Dugu', '鄞玉娟');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(9, 'admin', 'admin', sysdate(), sysdate(), '姬良', 'Ji', '謝滄行');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(10, 'admin', 'admin', sysdate(), sysdate(), '屈嫺', 'Chui', '廖振智');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(11, 'admin', 'admin', sysdate(), sysdate(), '劉季', 'Liu', '張大功');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(12, 'admin', 'admin', sysdate(), sysdate(), '陸承軒', 'Lu', '許蕎麟');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(13, 'admin', 'admin', sysdate(), sysdate(), '夏柔', 'Shia', '韓菱紗');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(14, 'admin', 'admin', sysdate(), sysdate(), '毛民福', 'Mau', '王大明');
-insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(15, 'admin', 'admin', sysdate(), sysdate(), '皇甫卓', 'Huangfu', '王小明');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(1, 'admin', 'admin', sysdate(), sysdate(), '長庚紀念醫院', 'CGMH', '林麗雯');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(2, 'admin', 'admin', sysdate(), sysdate(), '國防醫學中心', 'NDMC', '陳小美');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(3, 'admin', 'admin', sysdate(), sysdate(), '成功大學附設醫院', 'NCKUH', '陳桔根');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(4, 'admin', 'admin', sysdate(), sysdate(), '台北醫學院附屬醫院', 'TMUH', '曾慧君');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(5, 'admin', 'admin', sysdate(), sysdate(), '恩主公醫院', 'ECKH', '歐陽慧');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(6, 'admin', 'admin', sysdate(), sysdate(), '中國醫藥大學附設醫院', 'CMUH', '董世勳');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(7, 'admin', 'admin', sysdate(), sysdate(), '宏恩醫院', 'HEH', '郭啟文');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(8, 'admin', 'admin', sysdate(), sysdate(), '馬偕紀念醫院', 'MMH', '鄞玉娟');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(9, 'admin', 'admin', sysdate(), sysdate(), '碩睿資訊公司', 'SRISC', 'Roderick');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(10, 'admin', 'admin', sysdate(), sysdate(), '佛教慈濟綜合醫院', 'BTCGH', '廖振智');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(11, 'admin', 'admin', sysdate(), sysdate(), '高雄醫學院附設醫院', 'KMUH', '張大功');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(12, 'admin', 'admin', sysdate(), sysdate(), '天主教耕莘醫療財團法人耕莘醫院', 'CTH', '許蕎麟');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(13, 'admin', 'admin', sysdate(), sysdate(), '為恭紀念醫院', 'WGMH', '韓菱紗');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(14, 'admin', 'admin', sysdate(), sysdate(), '台灣大學附設醫院', 'NTUH', '王大明');
+insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(15, 'admin', 'admin', sysdate(), sysdate(), '疾病管制署', 'CDC', '王小明');
 
 --resourcesBuyers
 insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(1, '1980', '2020', '買斷');

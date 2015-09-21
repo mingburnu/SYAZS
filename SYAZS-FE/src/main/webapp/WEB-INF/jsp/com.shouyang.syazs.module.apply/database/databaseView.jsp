@@ -34,6 +34,10 @@
 				<td class="t_01">題名</td>
 				<td class="t_02"><esapi:encodeForHTML>${entity.dbTitle }</esapi:encodeForHTML></td>
 			</tr>
+			<tr>
+				<td class="t_01">URL</td>
+				<td class="t_02">${entity.url }</td>
+			</tr>
 			<c:if test="${not empty entity.includedSpecies}">
 				<tr>
 					<td class="t_01">類型</td>
@@ -77,12 +81,11 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.classification }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty ownerNames}">
-				<tr>
-					<td class="t_01">館藏</td>
-					<td class="t_02">${ownerNames }</td>
-				</tr>
-			</c:if>
+			<tr>
+				<td class="t_01">館藏</td>
+				<td class="t_02"><c:forEach items="${entity.referenceOwners }"
+						var="owner">${owner.name }</c:forEach></td>
+			</tr>
 		</table>
 
 		<div align="center">

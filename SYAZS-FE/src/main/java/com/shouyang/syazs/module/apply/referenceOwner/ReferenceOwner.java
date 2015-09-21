@@ -1,15 +1,19 @@
 package com.shouyang.syazs.module.apply.referenceOwner;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.entity.GenericEntityFull;
+import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.ebook.Ebook;
+import com.shouyang.syazs.module.apply.journal.Journal;
 
 @Entity
 @Table(name = "referenceOwner")
@@ -46,14 +50,14 @@ public class ReferenceOwner extends GenericEntityFull {
 	@Type(type = "text")
 	private String memo;
 
-	@Transient
-	private long dbAmount;
+	@ManyToMany(mappedBy = "referenceOwners")
+	public Set<Database> databases;
 
-	@Transient
-	private long ebookAmount;
+	@ManyToMany(mappedBy = "referenceOwners")
+	public Set<Ebook> ebooks;
 
-	@Transient
-	private long journalAmount;
+	@ManyToMany(mappedBy = "referenceOwners")
+	public Set<Journal> journals;
 
 	/**
 	 * @return the name
@@ -146,48 +150,48 @@ public class ReferenceOwner extends GenericEntityFull {
 	}
 
 	/**
-	 * @return the dbAmount
+	 * @return the databases
 	 */
-	public long getDbAmount() {
-		return dbAmount;
+	public Set<Database> getDatabases() {
+		return databases;
 	}
 
 	/**
-	 * @param dbAmount
-	 *            the dbAmount to set
+	 * @param databases
+	 *            the databases to set
 	 */
-	public void setDbAmount(long dbAmount) {
-		this.dbAmount = dbAmount;
+	public void setDatabases(Set<Database> databases) {
+		this.databases = databases;
 	}
 
 	/**
-	 * @return the ebookAmount
+	 * @return the ebooks
 	 */
-	public long getEbookAmount() {
-		return ebookAmount;
+	public Set<Ebook> getEbooks() {
+		return ebooks;
 	}
 
 	/**
-	 * @param ebookAmount
-	 *            the ebookAmount to set
+	 * @param ebooks
+	 *            the ebooks to set
 	 */
-	public void setEbookAmount(long ebookAmount) {
-		this.ebookAmount = ebookAmount;
+	public void setEbooks(Set<Ebook> ebooks) {
+		this.ebooks = ebooks;
 	}
 
 	/**
-	 * @return the journalAmount
+	 * @return the journals
 	 */
-	public long getJournalAmount() {
-		return journalAmount;
+	public Set<Journal> getJournals() {
+		return journals;
 	}
 
 	/**
-	 * @param journalAmount
-	 *            the journalAmount to set
+	 * @param journals
+	 *            the journals to set
 	 */
-	public void setJournalAmount(long journalAmount) {
-		this.journalAmount = journalAmount;
+	public void setJournals(Set<Journal> journals) {
+		this.journals = journals;
 	}
 
 	public ReferenceOwner() {

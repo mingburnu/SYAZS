@@ -159,14 +159,46 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 	@Override
 	public List<?> findByHQL(DsQueryLanguage dsQL) {
 		Assert.notNull(dsQL);
-		Assert.notNull(dsQL.getSql());
+		Assert.notNull(dsQL.getHql());
 
-		Query query = getSession().createQuery(dsQL.getSql());
+		Query data = getSession().createQuery(dsQL.getHql());
 		for (Entry<String, Object> keyValue : dsQL.getParameters().entrySet()) {
-			query.setParameter(keyValue.getKey(), keyValue.getValue());
+			data.setParameter(keyValue.getKey(), keyValue.getValue());
 		}
 
-		return query.list();
+		return data.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DataSet<T> findByHQL(DsQueryLanguage dsQL, DataSet<T> ds) {
+		Assert.notNull(dsQL);
+		Assert.notNull(dsQL.getHql());
+
+		Query data = getSession().createQuery(dsQL.getHql());
+		Query total = getSession().createQuery(dsQL.getHql());
+		for (Entry<String, Object> keyValue : dsQL.getParameters().entrySet()) {
+			data.setParameter(keyValue.getKey(), keyValue.getValue());
+			total.setParameter(keyValue.getKey(), keyValue.getValue());
+		}
+
+		if (ds != null && ds.getPager() != null) { // 分頁
+			Pager pager = ds.getPager();
+
+			// count total records
+			Long totalRecord = (long) total.list().size();
+			log.debug("totalRecord:" + totalRecord);
+			pager.setTotalRecord(totalRecord);
+
+			data.setFirstResult(pager.getOffset());
+			data.setMaxResults(pager.getRecordPerPage());
+		} else {
+			ds = new DataSet<T>();
+		}
+
+		ds.setResults(data.list());
+
+		return ds;
 	}
 
 	@Override

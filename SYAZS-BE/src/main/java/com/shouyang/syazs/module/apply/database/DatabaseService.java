@@ -61,7 +61,7 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		if (StringUtils.isNotBlank(dbTitle)) {
 			DsQueryLanguage queryLanguage = getDsQueryLanguage();
 			queryLanguage
-					.setSql("SELECT serNo FROM Database WHERE LOWER(dbTitle) = :dbTitle");
+					.setHql("SELECT serNo FROM Database WHERE LOWER(dbTitle) = :dbTitle");
 			queryLanguage.addParameter("dbTitle", dbTitle.trim().toLowerCase());
 			return (List<Long>) dao.findByHQL(queryLanguage);
 		} else {
@@ -72,7 +72,7 @@ public class DatabaseService extends GenericServiceFull<Database> {
 	@SuppressWarnings("unchecked")
 	public List<String> getAllDbTitles() throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
-		queryLanguage.setSql("SELECT LOWER(dbTitle) FROM Database");
+		queryLanguage.setHql("SELECT LOWER(dbTitle) FROM Database");
 		return (List<String>) dao.findByHQL(queryLanguage);
 	}
 

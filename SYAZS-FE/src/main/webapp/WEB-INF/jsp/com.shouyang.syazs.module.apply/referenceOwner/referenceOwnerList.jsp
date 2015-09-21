@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <script type="text/javascript">
@@ -83,6 +84,14 @@
 							<s:param name="entity.refSerNo">${item.serNo}</s:param>
 						</s:url>
 					</c:set>
+					<c:set var="ebookAmount" value="${fn:length(item.ebooks)}" />
+					<c:set var="journalAmount" value="${fn:length(item.journals)}" />
+					<c:forEach items="${item.databases }" var="database">
+						<c:set var="ebookAmount"
+							value="${ebookAmount +  fn:length(database.ebooks)}" />
+						<c:set var="journalAmount"
+							value="${journalAmount +  fn:length(database.journals)}" />
+					</c:forEach>
 					<c:choose>
 						<c:when test="${num > 0}">
 							<tr valign="top">
@@ -95,22 +104,22 @@
 									</div></td>
 								<td><div>${item.tel}</div></td>
 								<td><c:choose>
-										<c:when test="${item.dbAmount > 0 }">
-											<a onclick="owner('${ownDb}')">${item.dbAmount}</a>
+										<c:when test="${fn:length(item.databases) > 0 }">
+											<a onclick="owner('${ownDb}')">${fn:length(item.databases)}</a>
 										</c:when>
-										<c:otherwise>${item.dbAmount}</c:otherwise>
+										<c:otherwise>${fn:length(item.databases)}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${item.ebookAmount > 0 }">
-											<a onclick="owner('${ownEbook}')">${item.ebookAmount}</a>
+										<c:when test="${ebookAmount > 0 }">
+											<a onclick="owner('${ownEbook}')">${ebookAmount }</a>
 										</c:when>
-										<c:otherwise>${item.ebookAmount}</c:otherwise>
+										<c:otherwise>${ebookAmount}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${item.journalAmount > 0 }">
-											<a onclick="owner('${ownJorunal}')">${item.journalAmount}</a>
+										<c:when test="${journalAmount > 0 }">
+											<a onclick="owner('${ownJorunal}')">${journalAmount}</a>
 										</c:when>
-										<c:otherwise>${item.journalAmount}</c:otherwise>
+										<c:otherwise>${journalAmount}</c:otherwise>
 									</c:choose></td>
 							</tr>
 						</c:when>
@@ -125,22 +134,22 @@
 									</div></td>
 								<td><div>${item.tel}</div></td>
 								<td><c:choose>
-										<c:when test="${item.dbAmount > 0 }">
-											<a onclick="owner('${ownDb}')">${item.dbAmount}</a>
+										<c:when test="${fn:length(item.databases) > 0 }">
+											<a onclick="owner('${ownDb}')">${fn:length(item.databases)}</a>
 										</c:when>
-										<c:otherwise>${item.dbAmount}</c:otherwise>
+										<c:otherwise>${fn:length(item.databases)}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${item.ebookAmount > 0 }">
-											<a onclick="owner('${ownEbook}')">${item.ebookAmount}</a>
+										<c:when test="${ebookAmount > 0 }">
+											<a onclick="owner('${ownEbook}')">${ebookAmount }</a>
 										</c:when>
-										<c:otherwise>${item.ebookAmount}</c:otherwise>
+										<c:otherwise>${ebookAmount}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${item.journalAmount > 0 }">
-											<a onclick="owner('${ownJorunal}')">${item.journalAmount}</a>
+										<c:when test="${journalAmount > 0 }">
+											<a onclick="owner('${ownJorunal}')">${journalAmount}</a>
 										</c:when>
-										<c:otherwise>${item.journalAmount}</c:otherwise>
+										<c:otherwise>${journalAmount}</c:otherwise>
 									</c:choose></td>
 							</tr>
 						</c:otherwise>

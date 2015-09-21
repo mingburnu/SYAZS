@@ -1,6 +1,7 @@
 package com.shouyang.syazs.module.apply.journal;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.journal.Journal;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
@@ -31,7 +34,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	private JournalService journalService;
 
 	@Autowired
-	private Customer customer;
+	private Database database;
+
+	@Autowired
+	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private ReferenceOwnerService referenceOwnerService;
@@ -105,10 +111,14 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	public String owner() throws Exception {
-		if (getEntity().getRefSerNo() == null
-				|| getEntity().getRefSerNo() <= 0
-				|| referenceOwnerService.getBySerNo(getEntity().getRefSerNo()) == null) {
+		if (getEntity().getRefSerNo() == null || getEntity().getRefSerNo() <= 0) {
 			addActionError("Owner Null");
+		} else {
+			referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+					.getRefSerNo());
+			if (referenceOwner == null) {
+				addActionError("Owner Null");
+			}
 		}
 
 		if (!hasActionErrors()) {
@@ -117,21 +127,53 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					getRequest().getContextPath()
 							+ "/crud/apply.journal.owner.action");
 
-			DataSet<Journal> ds = journalService.getByRefSerNo(initDataSet());
+			DataSet<Journal> ds = initDataSet();
+			List<Journal> journals = new ArrayList<Journal>(
+					referenceOwner.getJournals());
+			List<Database> databases = new ArrayList<Database>(
+					referenceOwner.getDatabases());
+
+			Iterator<Database> iterator = databases.iterator();
+			while (iterator.hasNext()) {
+				database = iterator.next();
+				journals.addAll(database.getJournals());
+			}
+
+			ds.getPager().setTotalRecord((long) journals.size());
+			int first = ds.getPager().getOffset();
+			int last = first + ds.getPager().getRecordPerPage();
+
+			int i = 0;
+			while (i < journals.size()) {
+				if (i >= first && i < last) {
+					ds.getResults().add(journals.get(i));
+				}
+				i++;
+			}
 
 			if (ds.getResults().size() == 0
 					&& ds.getPager().getCurrentPage() > 1) {
 				ds.getPager().setCurrentPage(
 						(int) Math.ceil(ds.getPager().getTotalRecord()
 								/ ds.getPager().getRecordPerPage()));
-				ds = journalService.getByRefSerNo(ds);
+				first = ds.getPager().getOffset();
+				last = first + ds.getPager().getRecordPerPage();
+
+				int j = 0;
+				while (j < databases.size()) {
+					if (j >= first && j < last) {
+						ds.getResults().add(journals.get(j));
+					}
+					j++;
+				}
+
 			}
 
 			setDs(ds);
-
 		}
 
 		return LIST;
+
 	}
 
 	public String focus() throws Exception {
@@ -156,7 +198,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	public String prefix() throws Exception {
 		getRequest().setAttribute(
-				"focus",
+				"prefix",
 				getRequest().getContextPath()
 						+ "/crud/apply.journal.prefix.action");
 		DataSet<Journal> ds = journalService.getByPrefix(initDataSet());
@@ -189,6 +231,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		return VIEW;
+	}
+
+	public String count() {
+		getRequest().setAttribute("count", journalService.countToatal());
+		return COUNT;
 	}
 
 	protected boolean hasEntity() throws Exception {

@@ -64,6 +64,6 @@
 
 	<jdbc:initialize-database data-source="dataSource"
 		ignore-failures="DROPS">
-		<jdbc:script location="${init.data}" />
+		<jdbc:script location="${init.data}" encoding="UTF-8"/>
 	</jdbc:initialize-database>
 </beans>	

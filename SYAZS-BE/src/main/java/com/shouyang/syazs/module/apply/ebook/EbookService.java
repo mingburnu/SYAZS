@@ -59,7 +59,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 	@SuppressWarnings("unchecked")
 	public List<Long> getSerNosByIsbn(long isbn) throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
-		queryLanguage.setSql("SELECT serNo FROM Ebook WHERE isbn = :isbn");
+		queryLanguage.setHql("SELECT serNo FROM Ebook WHERE isbn = :isbn");
 		queryLanguage.addParameter("isbn", isbn);
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
@@ -69,7 +69,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 			throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
 		queryLanguage
-				.setSql("SELECT serNo FROM Ebook WHERE isbn = :isbn AND database.serNo = :datSerNo");
+				.setHql("SELECT serNo FROM Ebook WHERE isbn = :isbn AND database.serNo = :datSerNo");
 		queryLanguage.addParameter("isbn", isbn);
 		queryLanguage.addParameter("datSerNo", database.getSerNo());
 		return (List<Long>) dao.findByHQL(queryLanguage);
@@ -79,7 +79,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 	public List<Long> getSerNosByName(String bookName) throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
 		queryLanguage
-				.setSql("SELECT serNo FROM Ebook WHERE lower(bookName) = :bookName AND isbn = null");
+				.setHql("SELECT serNo FROM Ebook WHERE lower(bookName) = :bookName AND isbn = null");
 		queryLanguage.addParameter("bookName", bookName.toLowerCase());
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
@@ -89,7 +89,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 			throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
 		queryLanguage
-				.setSql("SELECT serNo FROM Ebook WHERE lower(bookName) = :bookName AND database.serNo = :datSerNo AND isbn = null");
+				.setHql("SELECT serNo FROM Ebook WHERE lower(bookName) = :bookName AND database.serNo = :datSerNo AND isbn = null");
 		queryLanguage.addParameter("bookName", bookName.toLowerCase());
 		queryLanguage.addParameter("datSerNo", database.getSerNo());
 		return (List<Long>) dao.findByHQL(queryLanguage);

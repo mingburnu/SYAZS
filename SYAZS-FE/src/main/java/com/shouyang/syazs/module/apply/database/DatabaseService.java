@@ -13,7 +13,6 @@ import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceFull;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @Service
 public class DatabaseService extends GenericServiceFull<Database> {
@@ -135,20 +134,7 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
-	public long countByOwner(ReferenceOwner owner) throws Exception {
-		return dao.count(owner);
-	}
-
-	public DataSet<Database> getByRefSerNo(DataSet<Database> ds)
-			throws Exception {
-		Assert.notNull(ds);
-		Assert.notNull(ds.getEntity());
-
-		DsRestrictions restrictions = getDsRestrictions();
-		entity = ds.getEntity();
-		restrictions.createAlias("referenceOwners", "r");
-		restrictions.eq("r.serNo", entity.getRefSerNo());
-
-		return dao.findByRestrictions(restrictions, ds);
+	public long countToatal() {
+		return dao.countAll();
 	}
 }

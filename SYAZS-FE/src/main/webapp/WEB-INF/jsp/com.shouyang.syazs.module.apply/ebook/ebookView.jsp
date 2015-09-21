@@ -11,7 +11,7 @@
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
 				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
-				+ "&entity.cusSerNo=" + "${ds.entity.cusSerNo}"
+				+ "&entity.refSerNo=" + "${ds.entity.refSerNo}"
 				+ "&pager.recordPoint=" + "${ds.pager.recordPoint}"
 				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}"
 				+ "&pager.offset=" + "${ds.pager.offset}";
@@ -33,6 +33,10 @@
 			<tr>
 				<td class="t_01">題名</td>
 				<td class="t_02"><esapi:encodeForHTML>${entity.bookName}</esapi:encodeForHTML></td>
+			</tr>
+			<tr>
+				<td class="t_01">URL</td>
+				<td class="t_02">${entity.url }</td>
 			</tr>
 			<c:if
 				test="${(not empty entity.autherName) || (not empty entity.authers) }">
@@ -90,12 +94,18 @@
 					<td class="t_02">${entity.bookInfoIntegral}</td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty ownerNames}">
-				<tr>
-					<td class="t_01">館藏</td>
-					<td class="t_02">${ownerNames }</td>
-				</tr>
-			</c:if>
+			<tr>
+				<td class="t_01">館藏</td>
+				<td class="t_02"><c:choose>
+						<c:when test="${not empty entity.database}">
+							<c:forEach items="${entity.database.referenceOwners }"
+								var="owner">${owner.name }</c:forEach>
+						</c:when>
+						<c:otherwise>
+							<c:forEach items="${entity.referenceOwners }" var="owner">${owner.name }</c:forEach>
+						</c:otherwise>
+					</c:choose></td>
+			</tr>
 		</table>
 
 		<div align="center">

@@ -118,6 +118,36 @@ function view(serNo){
 					</table>
 				</div>
 			</c:when>
+			<c:when test="${not empty prefix}">
+				<div class="pager">
+					<table width="100%" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td align="left" class="p_01"><s:form
+									action="apply.journal.prefix.action">
+									共 <strong>${ds.pager.totalRecord}</strong>
+									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
+										id="apply_journal_prefix_action_recordPerPage"
+										onchange="upperChangeSize(this.value);">
+										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
+										<option value="5">5</option>
+										<option value="10">10</option>
+										<option value="20">20</option>
+										<option value="50">50</option>
+										<option value="100">100</option>
+									</select>
+									<s:hidden name="entity.option" />
+								</s:form></td>
+							<td align="right" class="p_02"><c:if
+									test="${ds.pager.totalRecord > 0 }"><jsp:include
+										page="/WEB-INF/jsp/layout/pagination.jsp">
+										<jsp:param name="namespace" value="/crud" />
+										<jsp:param name="action" value="apply.journal.prefix" />
+										<jsp:param name="pager" value="${ds.pager}" />
+									</jsp:include></c:if></td>
+						</tr>
+					</table>
+				</div>
+			</c:when>
 		</c:choose>
 
 		<div class="list">
@@ -260,6 +290,36 @@ function view(serNo){
 										page="/WEB-INF/jsp/layout/pagination.jsp">
 										<jsp:param name="namespace" value="/crud" />
 										<jsp:param name="action" value="apply.journal.focus" />
+										<jsp:param name="pager" value="${ds.pager}" />
+									</jsp:include></c:if></td>
+						</tr>
+					</table>
+				</div>
+			</c:when>
+			<c:when test="${not empty prefix}">
+				<div class="pager">
+					<table width="100%" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td align="left" class="p_01"><s:form
+									action="apply.journal.prefix.action">
+									共 <strong>${ds.pager.totalRecord}</strong>
+									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
+										id="apply_journal_prefix_action_recordPerPage"
+										onchange="bottomChangeSize(this.value);">
+										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
+										<option value="5">5</option>
+										<option value="10">10</option>
+										<option value="20">20</option>
+										<option value="50">50</option>
+										<option value="100">100</option>
+									</select>
+									<s:hidden name="entity.option" />
+								</s:form></td>
+							<td align="right" class="p_02"><c:if
+									test="${ds.pager.totalRecord > 0 }"><jsp:include
+										page="/WEB-INF/jsp/layout/pagination.jsp">
+										<jsp:param name="namespace" value="/crud" />
+										<jsp:param name="action" value="apply.journal.prefix" />
 										<jsp:param name="pager" value="${ds.pager}" />
 									</jsp:include></c:if></td>
 						</tr>
