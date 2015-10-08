@@ -163,19 +163,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String all() throws Exception {
-		getRequest().setAttribute(
-				"all",
-				getRequest().getContextPath()
-						+ "/crud/apply.database.db.action");
-		DataSet<Database> ds = databaseService.getAllDb(initDataSet());
-
-		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			ds.getPager().setCurrentPage(
-					(int) Math.ceil(ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage()));
-			ds = databaseService.getAllDb(ds);
-		}
-
+		DataSet<Database> ds = initDataSet();
+		ds.setResults(databaseService.getAllDb());
 		setDs(ds);
 
 		return LIST;

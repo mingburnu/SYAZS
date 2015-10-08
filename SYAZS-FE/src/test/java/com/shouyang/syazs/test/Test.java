@@ -1,7 +1,15 @@
 package com.shouyang.syazs.test;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.owasp.esapi.ESAPI;
 
 import com.google.common.collect.Sets;
 
@@ -41,5 +49,73 @@ public class Test {
 		while (iterator.hasNext()) {
 			System.out.print(iterator.next());
 		}
+
+		String str = "AAＡｖＶ0α;".replaceAll("[\\w\\d]", "+");
+		System.out.println(str);
+
+		str = Pattern.compile("[\u2000-\u206f]").matcher("。AAＡｖＶ0無α;-⁉")
+				.replaceAll("+");
+		System.out.println(str);
+
+		for (int f = 65281; f < 65375; f++) {
+			System.out.print((char) f);
+		}
+		System.out.println("");
+		for (int h = 65281; h < 65375; h++) {
+			System.out.print((char) (h - 65248));
+		}
+		System.out.println("");
+		System.out
+				.println(StringUtils
+						.replaceChars(
+								"０１２３４５６７８９",
+								"！＂＃＄％＆＇（）＊＋，－．／０１２３４５６７８９：；＜＝＞？＠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ［＼］＾＿｀ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｛｜｝～",
+								"!"
+										+ '"'
+										+ "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"));
+		String nfdNormalizedString = Normalizer.normalize("Àà, Ââ, Ææ, Ää Å 〥",
+				Normalizer.Form.NFD);
+		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+
+		System.out.println(pattern.matcher(nfdNormalizedString).replaceAll(""));
+		System.out.println((int) '[');
+		System.out
+				.println("[]　︙"
+						.replaceAll(
+								"[!"
+										+ '"'
+										+ "#$%&'()*+,-./:;<=>?@\\u005b\\u005c\\u005d^_`{|}~\u3000-\u3003\u3008-\u3011\u3014-\u301f\u303b-\u303d\ufe10-\ufe19\ufe30-\ufe4f\ufe50-\ufe6b]",
+								"a"));
+
+		//
+		System.out.println("[".replaceAll("[\\u005b]", "*"));
+
+		String cjk = "";
+		for (int s = 12288; s < 12352; s++) {
+			cjk = cjk + (char) s;
+		}
+		System.out.println(cjk);
+
+		System.out.println((char) (65437 - 65248));
+		System.out.println((int) '-');
+
+		String[] strArr = " a b    c".split(" ");
+		List<String> list = new ArrayList<String>(Arrays.asList(strArr));
+		System.out.println(list.removeAll(Arrays.asList(new String[] { "", "a",
+				null })));
+		System.out.println(list.toString().replaceAll("[,\\u005b\\u005d]", ""));
+		String letter = "٢ ٣Ａ９9　+۞<>»<>-αβγA>＞B}］C，D&＆E^︿F.．。〄北東ジア文化研究々〣^_`'{|}~*";
+//		System.out.println(letter.replaceAll("[\\p{Punct}\u3000-\u3003\u3008-\u3011\u3014-\u301f\u303b-\u303d\ufe10-\ufe19\ufe30-\ufe4f\ufe50-\ufe6b]", "卍"));
+		System.out.println(letter.replaceAll("[^\\w]", "卍"));
+		System.out.println((char)(((int) '．')-65248));
+		System.out.println(ESAPI.encoder().encodeForHTMLAttribute("<h1>"+'"'+'"'));
+		System.out.println(letter);
+		System.out.println(letter.replaceAll("[\\p{Punct}]", "*"));
+		System.out.println(letter.replaceAll("[\\p{Mc}\\p{Me}\\p{Mn}"+
+				"\\p{Pc}\\p{Pd}\\p{Pe}\\p{Pf}p\\{Pi}\\p{Po}\\p{Ps}"+
+				"\\p{Sc}\\p{Sk}\\p{Sm}\\p{So}"+
+				"\\p{Zl}\\p{Zp}\\p{Zs}"+
+				"\\p{Cc}\\p{Cf}\\p{Cn}\\p{Co}\\p{Cs}]", "*"));
+		System.out.println(letter.replaceAll("[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", "*"));
 	}
 }

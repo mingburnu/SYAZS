@@ -177,6 +177,7 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 
 		Query data = getSession().createQuery(dsQL.getHql());
 		Query total = getSession().createQuery(dsQL.getHql());
+
 		for (Entry<String, Object> keyValue : dsQL.getParameters().entrySet()) {
 			data.setParameter(keyValue.getKey(), keyValue.getValue());
 			total.setParameter(keyValue.getKey(), keyValue.getValue());

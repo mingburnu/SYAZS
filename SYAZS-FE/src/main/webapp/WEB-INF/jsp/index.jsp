@@ -12,7 +12,7 @@
 	src="<c:url value = '/'/>resources/js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		goURL('<c:url value = '/'/>page/query.action');
+		goURL("<c:url value = '/'/>page/query.action");
 	});
 </script>
 </head>

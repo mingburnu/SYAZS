@@ -1,4 +1,4 @@
-<%@ page import="java.util.*"%>
+<%@ page import="org.owasp.esapi.ESAPI"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -192,7 +192,7 @@ input#referenceOwner_name {
 				<th width="130">ISBN/13碼</th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_update_entity_isbn"
-					value="<esapi:encodeForHTMLAttribute><%=isbn%></esapi:encodeForHTMLAttribute>"><span
+					value="<%=ESAPI.encoder().encodeForHTML(isbn)%>"><span
 					id="span-num-tip"></span></td>
 			</tr>
 			<tr>

@@ -42,6 +42,13 @@ public class Test {
 			System.out.println(s);
 		}
 		System.out.println(s);
+
+		String listHql = "SELECT B.accountNumber, B.customer, B.customer.serNo, B.actionType, count(B.accountNumber) FROM BeLogs B WHERE B.cDTime >'";
+		
+		System.out.println(listHql.toLowerCase().indexOf("from "));
+		int index =listHql.toLowerCase().indexOf("from ");
+		System.out.println(listHql.substring(index,listHql.length()));
+
 	}
 
 	private static boolean check(String s) {

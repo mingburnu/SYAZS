@@ -9,6 +9,11 @@
 	<url>http://maven.apache.org</url>
 
 	<dependencies>
+	<dependency>
+	<groupId>com.ibm.icu</groupId>
+	<artifactId>icu4j</artifactId>
+	<version>4.8.1.1</version>
+</dependency>
 		<!-- JUnit Test -->
 		<dependency>
 			<groupId>junit</groupId>

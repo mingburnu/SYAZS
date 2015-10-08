@@ -87,80 +87,78 @@ function view(serNo){
 					</table>
 				</div>
 			</c:when>
-			<c:when test="${not empty all}">
-				<div class="pager">
+		</c:choose>
+
+		<c:choose>
+			<c:when test="${(not empty list) || (not empty owner)}">
+				<div class="list">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td align="left" class="p_01"><s:form
-									action="apply.database.all.action">
-									共 <strong>${ds.pager.totalRecord}</strong>
-									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_database_all_action_recordPerPage"
-										onchange="upperChangeSize(this.value);">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-									</select>
-								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.all" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+						<tr valign="top">
+							<th width="40">序號</th>
+							<th width="545">題名</th>
+							<th width="203">出版社</th>
+							<th width="92">收錄年代</th>
 						</tr>
+						<c:forEach var="item" items="${ds.results}" varStatus="status">
+							<c:set var="num" scope="session" value="${(status.index+1)%2}" />
+							<c:set var="orderInt" scope="session"
+								value="${ds.pager.offset+(status.index+1)}" />
+							<c:choose>
+								<c:when test="${num > 0}">
+									<tr valign="top">
+										<td>${orderInt}</td>
+										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
+										<td><esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML></td>
+										<td><c:choose>
+												<c:when test="${not empty item.indexedYears }">
+													<esapi:encodeForHTML>${item.indexedYears}</esapi:encodeForHTML>
+												</c:when>
+												<c:otherwise>N/A</c:otherwise>
+											</c:choose></td>
+									</tr>
+								</c:when>
+								<c:otherwise>
+									<tr valign="top" class="odd">
+										<td>${orderInt}</td>
+										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
+										<td><esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML></td>
+										<td><c:choose>
+												<c:when test="${not empty item.indexedYears }">
+													<esapi:encodeForHTML>${item.indexedYears}</esapi:encodeForHTML>
+												</c:when>
+												<c:otherwise>N/A</c:otherwise>
+											</c:choose></td>
+									</tr>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
 					</table>
 				</div>
 			</c:when>
+			<c:otherwise>
+				<div class="query_db_list">
+					<c:forEach var="item" items="${ds.results}" varStatus="status">
+						<c:set var="num" scope="session" value="${(status.index+1)%2}" />
+						<c:set var="orderInt" scope="session"
+							value="${ds.pager.offset+(status.index+1)}" />
+						<c:choose>
+							<c:when test="${num > 0}">
+								<div>
+									<esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML>
+									<br> <a href="${item.url }">${item.url }</a>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<div class="odd">
+									<esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML>
+									<br> <a href="${item.url }">${item.url }</a>
+								</div>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</div>
+			</c:otherwise>
 		</c:choose>
-
-		<div class="list">
-			<table width="100%" border="0" cellpadding="0" cellspacing="0">
-				<tr valign="top">
-					<th width="40">序號</th>
-					<th width="545">題名</th>
-					<th width="203">出版社</th>
-					<th width="92">收錄年代</th>
-				</tr>
-				<c:forEach var="item" items="${ds.results}" varStatus="status">
-					<c:set var="num" scope="session" value="${(status.index+1)%2}" />
-					<c:set var="orderInt" scope="session"
-						value="${ds.pager.offset+(status.index+1)}" />
-					<c:choose>
-						<c:when test="${num > 0}">
-							<tr valign="top">
-								<td>${orderInt}</td>
-								<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
-								<td><esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML></td>
-								<td><c:choose>
-										<c:when test="${not empty item.indexedYears }">
-											<esapi:encodeForHTML>${item.indexedYears}</esapi:encodeForHTML>
-										</c:when>
-										<c:otherwise>N/A</c:otherwise>
-									</c:choose></td>
-							</tr>
-						</c:when>
-						<c:otherwise>
-							<tr valign="top" class="odd">
-								<td>${orderInt}</td>
-								<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
-								<td><esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML></td>
-								<td><c:choose>
-										<c:when test="${not empty item.indexedYears }">
-											<esapi:encodeForHTML>${item.indexedYears}</esapi:encodeForHTML>
-										</c:when>
-										<c:otherwise>N/A</c:otherwise>
-									</c:choose></td>
-							</tr>
-						</c:otherwise>
-					</c:choose>
-				</c:forEach>
-			</table>
-		</div>
 
 		<c:choose>
 			<c:when test="${not empty list}">
@@ -217,35 +215,6 @@ function view(serNo){
 										page="/WEB-INF/jsp/layout/pagination.jsp">
 										<jsp:param name="namespace" value="/crud" />
 										<jsp:param name="action" value="apply.database.owner" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
-						</tr>
-					</table>
-				</div>
-			</c:when>
-			<c:when test="${not empty all}">
-				<div class="pager">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td align="left" class="p_01"><s:form
-									action="apply.database.all.action">
-									共 <strong>${ds.pager.totalRecord}</strong>
-									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_database_all_action_recordPerPage"
-										onchange="bottomChangeSize(this.value);">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-									</select>
-								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.all" />
 										<jsp:param name="pager" value="${ds.pager}" />
 									</jsp:include></c:if></td>
 						</tr>

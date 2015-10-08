@@ -1,6 +1,8 @@
 package com.shouyang.syazs.module.apply.ebook;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.criterion.Disjunction;
@@ -40,29 +42,21 @@ public class EbookService extends GenericServiceFull<Ebook> {
 
 		DsRestrictions restrictions = getDsRestrictions();
 		Ebook entity = ds.getEntity();
-		String indexTerm = entity.getIndexTerm();
-
-		char[] cArray = indexTerm.toCharArray();
-		StringBuilder indexTermBuilder = new StringBuilder();
-		for (int i = 0; i < cArray.length; i++) {
-			int charCode = (int) cArray[i];
-			if (charCode > 65280 && charCode < 65375) {
-				int halfChar = charCode - 65248;
-				cArray[i] = (char) halfChar;
-			}
-			indexTermBuilder.append(cArray[i]);
-		}
-
-		indexTerm = indexTermBuilder.toString();
+		String indexTerm = entity.getIndexTerm().trim();
 		indexTerm = indexTerm.replaceAll(
-				"[^-a-zA-Z0-9\u4e00-\u9fa5\u0391-\u03a9\u03b1-\u03c9]", " ");
+				"[^0-9０-９\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}\\u002d]", " ");
 		String[] wordArray = indexTerm.split(" ");
+		Pattern pattern = Pattern
+				.compile("(97)([8-9])(\\-)(\\d)(\\-)(\\d{2})(\\-)(\\d{6})(\\-)(\\d)");
 
 		if (!ArrayUtils.isEmpty(wordArray)) {
 			Junction orGroup = Restrictions.disjunction();
 			for (int i = 0; i < wordArray.length; i++) {
 
-				if (NumberUtils.isDigits(wordArray[i].replace("-", ""))) {
+				if (NumberUtils.isDigits(wordArray[i])) {
+					orGroup.add(Restrictions.eq("isbn",
+							Long.parseLong(wordArray[i])));
+				} else if (pattern.matcher(wordArray[i]).matches()) {
 					orGroup.add(Restrictions.eq("isbn",
 							Long.parseLong(wordArray[i].replace("-", ""))));
 				} else {
@@ -101,7 +95,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 	public DataSet<Ebook> getByOption(DataSet<Ebook> ds) throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
-
+		// SELECT * FROM accountNumber WHERE userID REGEXP "[a-zA-Z]"
 		DsRestrictions restrictions = getDsRestrictions();
 		Ebook entity = ds.getEntity();
 		String indexTerm = entity.getIndexTerm();

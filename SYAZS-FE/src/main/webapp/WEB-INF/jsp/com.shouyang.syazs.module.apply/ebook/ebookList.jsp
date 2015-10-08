@@ -6,7 +6,7 @@
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <script type="text/javascript">
 function view(serNo){
-	var data=$("form:eq(0)").serialize()+"&entity.backURL="+"${list}${focus}${owner}";
+	var data=$("form:eq(0)").serialize()+"&entity.backURL="+"${list}${focus}${owner}${prefix}";
 	var url="<%=request.getContextPath()%>"+"/crud/apply.ebook.view.action?entity.serNo="+serNo+"&pager.recordPoint="+"${ds.pager.recordPoint}";
 	$.ajax({
 		url: url,
