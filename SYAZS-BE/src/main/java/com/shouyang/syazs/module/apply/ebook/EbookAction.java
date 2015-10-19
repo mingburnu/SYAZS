@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -90,13 +87,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		if (getEntity().getIsbn() != null) {
-			if (!isIsbn(getEntity().getIsbn())) {
+			if (!ISBN_Validator.isIsbn(getEntity().getIsbn())) {
 				errorMessages.add("ISBN不正確");
 			}
 		} else {
 			if (StringUtils
 					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
-				if (!isIsbn(getRequest().getParameter("entity.isbn"))) {
+				if (!ISBN_Validator.isIsbn(getRequest().getParameter("entity.isbn"))) {
 					errorMessages.add("ISBN不正確");
 				}
 			}
@@ -211,13 +208,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 
 			if (getEntity().getIsbn() != null) {
-				if (!isIsbn(getEntity().getIsbn())) {
+				if (!ISBN_Validator.isIsbn(getEntity().getIsbn())) {
 					errorMessages.add("ISBN不正確");
 				}
 			} else {
 				if (StringUtils.isNotBlank(getRequest().getParameter(
 						"entity.isbn"))) {
-					if (!isIsbn(getRequest().getParameter("entity.isbn"))) {
+					if (!ISBN_Validator.isIsbn(getRequest().getParameter("entity.isbn"))) {
 						errorMessages.add("ISBN不正確");
 					}
 				}
@@ -391,7 +388,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			if (getEntity().getIsbn() == null) {
 				if (StringUtils.isNotEmpty(getRequest().getParameter(
 						"entity.isbn"))) {
-					if (isIsbn(getRequest().getParameter("entity.isbn").trim())) {
+					if (ISBN_Validator.isIsbn(getRequest().getParameter("entity.isbn").trim())) {
 						getEntity().setIsbn(
 								Long.parseLong(getRequest()
 										.getParameter("entity.isbn").trim()
@@ -531,7 +528,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		if (getEntity().getIsbn() != null) {
-			if (isIsbn(getEntity().getIsbn())) {
+			if (ISBN_Validator.isIsbn(getEntity().getIsbn())) {
 				if (hasRepeatIsbn(isbn, serNo)) {
 					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
@@ -542,7 +539,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		} else {
 			if (StringUtils.isNotBlank(isbn)) {
-				if (isIsbn(isbn)) {
+				if (ISBN_Validator.isIsbn(isbn)) {
 					if (hasRepeatIsbn(isbn, serNo)) {
 						getRequest().setAttribute("tip", "已有相同ISBN");
 					}
@@ -850,7 +847,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 
 				if (ebook.getIsbn() != null) {
-					if (isIsbn(ebook.getIsbn())) {
+					if (ISBN_Validator.isIsbn(ebook.getIsbn())) {
 						if (hasRepeatIsbn(isbn, null)) {
 							resStatus.append("已有相同ISBN<br>");
 						}
@@ -882,7 +879,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					}
 				} else {
 					if (StringUtils.isNotEmpty(isbn)) {
-						if (isIsbn(isbn)) {
+						if (ISBN_Validator.isIsbn(isbn)) {
 							if (hasRepeatIsbn(isbn, null)) {
 								resStatus.append("已有相同ISBN<br>");
 							}
@@ -1142,10 +1139,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 
 				ebookService.save(ebook, getLoginUser());
+				ebook.setDataStatus("已匯入");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
+			int normal = (int) getSession().get("normal");
+			getSession().put("normal", normal - successCount);
 			return VIEW;
 		} else {
 			paginate();
@@ -1249,53 +1249,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		return XLSX;
 	}
 
-	protected boolean isIsbn(long isbnNum) {
-		if (isbnNum >= 9780000000000l && isbnNum < 9800000000000l) {
-			String isbn = "" + isbnNum;
-
-			int sum = 0;
-			for (int i = 0; i < 12; i++) {
-				if (i % 2 == 0) {
-					sum = sum + Integer.parseInt(isbn.substring(i, i + 1)) * 1;
-				} else {
-					sum = sum + Integer.parseInt(isbn.substring(i, i + 1)) * 3;
-				}
-			}
-
-			int remainder = sum % 10;
-			int num = 10 - remainder;
-
-			if (num == 10) {
-				if (Integer.parseInt(isbn.substring(12)) != 0) {
-					return false;
-				}
-			} else {
-				if (Integer.parseInt(isbn.substring(12)) != num) {
-					return false;
-				}
-			}
-
-		} else {
-			return false;
-		}
-
-		return true;
-	}
-
-	protected boolean isIsbn(String isbnString) {
-		String regex = "(97)([8-9])(\\-)(\\d)(\\-)(\\d{2})(\\-)(\\d{6})(\\-)(\\d)";
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(isbnString);
-
-		long isbnNum = 0;
-		if (matcher.matches()) {
-			isbnNum = Long.parseLong(isbnString.replace("-", "").trim());
-		} else {
-			return false;
-		}
-
-		return isIsbn(isbnNum);
-	}
 
 	protected boolean isURL(String url) {
 		return ESAPI.validator().isValidInput("Ebook URL", url, "URL",

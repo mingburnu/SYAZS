@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="pg" uri="http://jsptags.com/tags/navigation/pager"%>
 <%@ taglib prefix="esapi"
@@ -49,7 +48,7 @@ function upperChangeSize(recordPerPage) {
 	var offset=parseInt(recordPerPage)*(page-1);
 	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}"+"&pager.offset="+offset;
 	var data = $("form:eq(0)").serialize();
-	alert(url+data);
+
 	$.ajax({
 		url: url, 
 		data:data,

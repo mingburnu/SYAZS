@@ -1,10 +1,9 @@
 package com.shouyang.syazs.module.apply.ebook;
 
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
@@ -42,45 +41,41 @@ public class EbookService extends GenericServiceFull<Ebook> {
 
 		DsRestrictions restrictions = getDsRestrictions();
 		Ebook entity = ds.getEntity();
-		String indexTerm = entity.getIndexTerm().trim();
-		indexTerm = indexTerm.replaceAll(
-				"[^0-9０-９\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}\\u002d]", " ");
-		String[] wordArray = indexTerm.split(" ");
-		Pattern pattern = Pattern
-				.compile("(97)([8-9])(\\-)(\\d)(\\-)(\\d{2})(\\-)(\\d{6})(\\-)(\\d)");
 
-		if (!ArrayUtils.isEmpty(wordArray)) {
-			Junction orGroup = Restrictions.disjunction();
-			for (int i = 0; i < wordArray.length; i++) {
+		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
+				.trim(), "－０１２３４５６７８９", "-0123456789");
 
-				if (NumberUtils.isDigits(wordArray[i])) {
-					orGroup.add(Restrictions.eq("isbn",
-							Long.parseLong(wordArray[i])));
-				} else if (pattern.matcher(wordArray[i]).matches()) {
-					orGroup.add(Restrictions.eq("isbn",
-							Long.parseLong(wordArray[i].replace("-", ""))));
-				} else {
-					String[] splitMinus = wordArray[i].split("-");
-
-					for (int j = 0; j < splitMinus.length; j++) {
-						orGroup.add(Restrictions.ilike("bookName",
-								splitMinus[j], MatchMode.ANYWHERE));
-						orGroup.add(Restrictions.ilike("publishName",
-								splitMinus[j], MatchMode.ANYWHERE));
-						orGroup.add(Restrictions.ilike("autherName",
-								splitMinus[j], MatchMode.ANYWHERE));
-					}
-				}
-			}
-
-			orGroup.add(Restrictions.eq("isbn", -1L));
-			restrictions.customCriterion(orGroup);
-
+		if (ISBN_Validator.isIsbn(indexTerm)) {
+			restrictions.eq("isbn", Long.parseLong(indexTerm.replace("-", "")));
 		} else {
-			Pager pager = ds.getPager();
-			pager.setTotalRecord(0L);
-			ds.setPager(pager);
-			return ds;
+			indexTerm = indexTerm.replaceAll(
+					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
+			String[] wordArray = indexTerm.split(" ");
+
+			if (!ArrayUtils.isEmpty(wordArray)) {
+				Junction orGroup = Restrictions.disjunction();
+				Junction bookNameAndGroup = Restrictions.conjunction();
+				Junction publishNameAndGroup = Restrictions.conjunction();
+				Junction autherNameAndGroup = Restrictions.conjunction();
+				for (int i = 0; i < wordArray.length; i++) {
+					bookNameAndGroup.add(Restrictions.ilike("bookName",
+							wordArray[i], MatchMode.ANYWHERE));
+					publishNameAndGroup.add(Restrictions.ilike("publishName",
+							wordArray[i], MatchMode.ANYWHERE));
+					autherNameAndGroup.add(Restrictions.ilike("autherName",
+							wordArray[i], MatchMode.ANYWHERE));
+				}
+
+				orGroup.add(bookNameAndGroup).add(publishNameAndGroup)
+						.add(autherNameAndGroup);
+				restrictions.customCriterion(orGroup);
+
+			} else {
+				Pager pager = ds.getPager();
+				pager.setTotalRecord(0L);
+				ds.setPager(pager);
+				return ds;
+			}
 		}
 
 		return dao.findByRestrictions(restrictions, ds);

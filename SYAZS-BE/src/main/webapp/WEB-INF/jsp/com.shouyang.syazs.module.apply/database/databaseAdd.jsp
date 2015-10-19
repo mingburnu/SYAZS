@@ -78,7 +78,7 @@
 		if (dbTitle == null || dbTitle.trim() == "") {
 			$("#span-tip").html("");
 		} else {
-			goTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.dbTitle='
+			goTitleNameTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.dbTitle='
 					+ dbTitle);
 		}
 	}
@@ -110,7 +110,7 @@ textarea#apply_database_save_entity_content {
 			<tr>
 				<th width="130">資料庫題名<span class="required">(&#8226;)</span></th>
 				<td><s:textfield name="entity.dbTitle" cssClass="input_text" /><span
-					id="span-tip"></span></td>
+					id="span-title-name-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>

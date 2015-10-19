@@ -133,7 +133,7 @@
 			$("#span-tip").html("ISBN未填寫");
 		} else {
 			if (isValidISBN(isbn)) {
-				goTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
+				goNumTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
 						+ isbn + '&entity.database.serNo=' + datSerNo);
 			} else {
 				$("#span-tip").html("");
@@ -192,7 +192,7 @@ input#referenceOwner_name {
 				<th width="130">ISBN/13碼</th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_update_entity_isbn"
-					value="<%=ESAPI.encoder().encodeForHTML(isbn)%>"><span
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>"><span
 					id="span-num-tip"></span></td>
 			</tr>
 			<tr>

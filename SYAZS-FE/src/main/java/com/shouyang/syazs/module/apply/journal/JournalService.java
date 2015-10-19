@@ -2,8 +2,7 @@ package com.shouyang.syazs.module.apply.journal;
 
 import java.util.HashMap;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
@@ -42,58 +41,42 @@ public class JournalService extends GenericServiceFull<Journal> {
 
 		DsRestrictions restrictions = getDsRestrictions();
 		Journal entity = ds.getEntity();
-		String indexTerm = entity.getIndexTerm();
 
-		char[] cArray = indexTerm.toCharArray();
-		StringBuilder indexTermBuilder = new StringBuilder();
-		for (int i = 0; i < cArray.length; i++) {
-			int charCode = (int) cArray[i];
-			if (charCode > 65280 && charCode < 65375) {
-				int halfChar = charCode - 65248;
-				cArray[i] = (char) halfChar;
-			}
-			indexTermBuilder.append(cArray[i]);
-		}
+		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
+				.trim(), "－０１２３４５６７８９", "-0123456789");
 
-		indexTerm = indexTermBuilder.toString();
-		indexTerm = indexTerm.replaceAll(
-				"[^-a-zA-Z0-9\u4e00-\u9fa5\u0391-\u03a9\u03b1-\u03c9]", " ");
-		String[] wordArray = indexTerm.split(" ");
-
-		if (!ArrayUtils.isEmpty(wordArray)) {
-			Junction orGroup = Restrictions.disjunction();
-			for (int i = 0; i < wordArray.length; i++) {
-				if (wordArray[i].replace("-", "").length() == 8
-						&& NumberUtils.isDigits(wordArray[i].replace("-", "")
-								.substring(0, 6))
-						&& (wordArray[i].replace("-", "").charAt(7) == 'x'
-								|| wordArray[i].replace("-", "").charAt(7) == 'X' || CharUtils
-									.isAsciiNumeric(wordArray[i].replace("-",
-											"").charAt(7)))) {
-					orGroup.add(Restrictions.ilike("issn",
-							wordArray[i].replace("-", ""), MatchMode.EXACT));
-				} else {
-					String[] splitMinus = wordArray[i].split("-");
-
-					for (int j = 0; j < splitMinus.length; j++) {
-						orGroup.add(Restrictions.ilike("title", splitMinus[j],
-								MatchMode.ANYWHERE));
-						orGroup.add(Restrictions.ilike("abbreviationTitle",
-								splitMinus[j], MatchMode.ANYWHERE));
-						orGroup.add(Restrictions.ilike("publishName",
-								splitMinus[j], MatchMode.ANYWHERE));
-					}
-				}
-			}
-
-			orGroup.add(Restrictions.eq("serNo", -1L));
-			restrictions.customCriterion(orGroup);
-
+		if (ISSN_Validator.isIssn(indexTerm)) {
+			restrictions.eq("issn", indexTerm.replace("-", "").toUpperCase());
 		} else {
-			Pager pager = ds.getPager();
-			pager.setTotalRecord(0L);
-			ds.setPager(pager);
-			return ds;
+			indexTerm = indexTerm.replaceAll(
+					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
+			String[] wordArray = indexTerm.split(" ");
+
+			if (!ArrayUtils.isEmpty(wordArray)) {
+				Junction orGroup = Restrictions.disjunction();
+				Junction titleAndGroup = Restrictions.conjunction();
+				Junction abbreviationTitleAndGroup = Restrictions.conjunction();
+				Junction publishNameAndGroup = Restrictions.conjunction();
+				for (int i = 0; i < wordArray.length; i++) {
+					titleAndGroup.add(Restrictions.ilike("title", wordArray[i],
+							MatchMode.ANYWHERE));
+					abbreviationTitleAndGroup.add(Restrictions.ilike(
+							"abbreviationTitle", wordArray[i],
+							MatchMode.ANYWHERE));
+					publishNameAndGroup.add(Restrictions.ilike("publishName",
+							wordArray[i], MatchMode.ANYWHERE));
+				}
+
+				orGroup.add(titleAndGroup).add(abbreviationTitleAndGroup)
+						.add(publishNameAndGroup);
+				restrictions.customCriterion(orGroup);
+
+			} else {
+				Pager pager = ds.getPager();
+				pager.setTotalRecord(0L);
+				ds.setPager(pager);
+				return ds;
+			}
 		}
 
 		return dao.findByRestrictions(restrictions, ds);

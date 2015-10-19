@@ -719,11 +719,13 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 				ipRange.setIpRangeStart(ipStartBuilder.toString());
 				ipRange.setIpRangeEnd(ipEndBuilder.toString());
 				ipRangeService.save(ipRange, getLoginUser());
-
+				ipRange.setDataStatus("已存在");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
+			int normal = (int) getSession().get("normal");
+			getSession().put("normal", normal - successCount);
 			return VIEW;
 		} else {
 			paginate();

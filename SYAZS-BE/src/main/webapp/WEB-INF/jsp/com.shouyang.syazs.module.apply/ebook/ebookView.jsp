@@ -52,6 +52,15 @@
 		</script>
 	</c:otherwise>
 </c:choose>
+<c:if test="${empty entity.serNo}">
+	<script type="text/javascript">
+		function reimport() {
+			goDetail(
+					"<c:url value = '/'/>crud/apply.ebook.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
+					"電子書-匯入");
+		}
+	</script>
+</c:if>
 </head>
 <body>
 	<c:choose>
@@ -136,8 +145,7 @@
 						<th width="130">購買單位名稱</th>
 						<td><c:forEach var="item" items="${entity.referenceOwners}">
 								<div>${item.name}</div>
-							</c:forEach>
-							<c:forEach var="item" items="${entity.database.referenceOwners}">
+							</c:forEach> <c:forEach var="item" items="${entity.database.referenceOwners}">
 								<div>${item.name}</div>
 							</c:forEach></td>
 					</tr>
@@ -149,7 +157,10 @@
 	</c:otherwise>
 	</c:choose>
 	<div class="detail-func-button">
-		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
+		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>&nbsp;
+		<c:if test="${empty entity.serNo}">
+			<a class="state-default" onclick="reimport();">繼續匯入</a>
+		</c:if>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>

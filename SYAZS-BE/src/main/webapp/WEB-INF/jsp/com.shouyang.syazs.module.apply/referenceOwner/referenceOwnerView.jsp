@@ -13,7 +13,6 @@
 	<c:when test="${empty viewSerNo}">
 		<script type="text/javascript">
 			//關閉並更新上一層資料
-
 			function closeDetail_ToQuery() {
 				$("#div_Detail").hide();
 				UI_Resize();
@@ -55,6 +54,15 @@
 		</script>
 	</c:otherwise>
 </c:choose>
+<c:if test="${empty entity.serNo}">
+	<script type="text/javascript">
+		function reimport() {
+			goDetail(
+					"<c:url value = '/'/>crud/apply.referenceOwner.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
+					"擁有者-匯入");
+		}
+	</script>
+</c:if>
 </head>
 <body>
 	<c:choose>
@@ -89,7 +97,10 @@
 	</c:otherwise>
 	</c:choose>
 	<div class="detail-func-button">
-		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
+		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>&nbsp;
+		<c:if test="${empty entity.serNo}">
+			<a class="state-default" onclick="reImport();">繼續匯入</a>
+		</c:if>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>

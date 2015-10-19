@@ -105,18 +105,10 @@
 		<url-pattern>*.jsp</url-pattern>
 		<url-pattern>*.action</url-pattern>
 	</filter-mapping>
-	<servlet>
-		<servlet-name>H2Console</servlet-name>
-		<servlet-class>org.h2.server.web.WebServlet</servlet-class>
-		<init-param>
-			<param-name>-webAllowOthers</param-name>
-			<param-value>true</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>H2Console</servlet-name>
-		<url-pattern>/admin/h2/*</url-pattern>
-	</servlet-mapping>
+	<!--servlet> <servlet-name>H2Console</servlet-name> <servlet-class>org.h2.server.web.WebServlet</servlet-class> 
+		<init-param> <param-name>-webAllowOthers</param-name> <param-value>true</param-value> 
+		</init-param> </servlet> <servlet-mapping> <servlet-name>H2Console</servlet-name> 
+		<url-pattern>/admin/h2/*</url-pattern> </servlet-mapping -->
 	<session-config>
 		<session-timeout>1440</session-timeout>
 	</session-config>

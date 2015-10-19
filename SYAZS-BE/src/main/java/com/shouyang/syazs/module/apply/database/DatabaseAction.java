@@ -781,10 +781,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				int index = (Integer) iterator.next();
 				database = (Database) importList.get(index);
 				database = databaseService.save(database, getLoginUser());
+				database.setDataStatus("已匯入");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
+			int normal = (int) getSession().get("normal");
+			getSession().put("normal", normal - successCount);
 			return VIEW;
 		} else {
 			paginate();

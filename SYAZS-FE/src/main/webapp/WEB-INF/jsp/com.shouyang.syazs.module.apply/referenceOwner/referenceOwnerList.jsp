@@ -181,7 +181,7 @@
 								test="${ds.pager.totalRecord > 0 }"><jsp:include
 									page="/WEB-INF/jsp/layout/pagination.jsp">
 									<jsp:param name="namespace" value="/crud" />
-									<jsp:param name="action" value="apply.referenceOwner." />
+									<jsp:param name="action" value="apply.referenceOwner.action" />
 									<jsp:param name="pager" value="${ds.pager}" />
 								</jsp:include></c:if></td>
 					</tr>

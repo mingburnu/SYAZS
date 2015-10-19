@@ -34,9 +34,11 @@ public class DatabaseService extends GenericServiceFull<Database> {
 
 		DsRestrictions restrictions = getDsRestrictions();
 		Database entity = ds.getEntity();
-		String indexTerm = entity.getIndexTerm().trim();
+
+		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
+				.trim(), "０１２３４５６７８９", "0123456789");
 		indexTerm = indexTerm.replaceAll(
-				"[^0-9０-９\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}\\u002d]", " ");
+				"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
 		String[] wordArray = indexTerm.split(" ");
 
 		if (!ArrayUtils.isEmpty(wordArray)) {

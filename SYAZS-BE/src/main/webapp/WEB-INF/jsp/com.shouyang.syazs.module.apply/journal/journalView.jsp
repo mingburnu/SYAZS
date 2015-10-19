@@ -54,6 +54,15 @@
 		</script>
 	</c:otherwise>
 </c:choose>
+<c:if test="${empty entity.serNo}">
+	<script type="text/javascript">
+		function reimport() {
+			goDetail(
+					"<c:url value = '/'/>crud/apply.journal.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
+					"期刊-匯入");
+		}
+	</script>
+</c:if>
 </head>
 <body>
 	<c:choose>
@@ -154,7 +163,10 @@
 	</c:otherwise>
 	</c:choose>
 	<div class="detail-func-button">
-		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
+		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>&nbsp;
+		<c:if test="${empty entity.serNo}">
+			<a class="state-default" onclick="reImport();">繼續匯入</a>
+		</c:if>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>

@@ -187,7 +187,7 @@ input[type="text"]:disabled {
 				<th width="130">ISBN/13碼</th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_save_entity_isbn"
-					value="<%=ESAPI.encoder().encodeForHTML(isbn)%>"><span
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>"><span
 					id="span-num-tip"></span></td>
 			</tr>
 			<tr>

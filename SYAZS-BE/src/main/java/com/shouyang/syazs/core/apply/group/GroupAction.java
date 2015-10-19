@@ -978,11 +978,13 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 									.getSecondLevelGroup().getGroupName(),
 									getEntity().getCustomer().getSerNo(),
 									parentGroup);
-							if (groupService.isRepeatSubGroup(group
-									.getThirdLevelGroup().getGroupName(),
-									getEntity().getCustomer().getSerNo(),
-									parentGroup)) {
-								group.setDataStatus("已存在");
+							if (parentGroup != null) {
+								if (groupService.isRepeatSubGroup(group
+										.getThirdLevelGroup().getGroupName(),
+										getEntity().getCustomer().getSerNo(),
+										parentGroup)) {
+									group.setDataStatus("已存在");
+								}
 							}
 						}
 					}
@@ -1248,10 +1250,11 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 						}
 					}
 				}
-
+				group.setDataStatus("已存在");
 				++successCount;
 			}
 
+			recheck();
 			getRequest().setAttribute("successCount", successCount);
 			return VIEW;
 		} else {
@@ -1311,5 +1314,40 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 		}
 
 		return null;
+	}
+
+	protected void recheck() throws Exception {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList != null) {
+			Iterator<?> iterator = importList.iterator();
+			int normal = 0;
+			while (iterator.hasNext()) {
+				group = (Group) iterator.next();
+				if (group.getDataStatus().equals("正常")) {
+					repeatFirstGroup = groupService.getRepeatMainGroup(group
+							.getFirstLevelGroup().getGroupName(), group
+							.getFirstLevelGroup().getCustomer().getSerNo());
+					if (repeatFirstGroup != null) {
+						if (group.getSecondLevelGroup() != null) {
+							repeatSecondGroup = groupService.getRepeatSubGroup(
+									group.getSecondLevelGroup().getGroupName(),
+									group.getSecondLevelGroup().getCustomer()
+											.getSerNo(), repeatFirstGroup);
+							if (repeatSecondGroup != null) {
+								group.setDataStatus("已存在");
+							} else {
+								normal++;
+							}
+						} else {
+							group.setDataStatus("已存在");
+						}
+					} else {
+						normal++;
+					}
+				}
+			}
+
+			getSession().put("normal", normal);
+		}
 	}
 }

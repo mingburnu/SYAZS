@@ -26,6 +26,12 @@
 				.val());
 		resetCloseDetail_2();
 	}
+
+	function reimport() {
+		goDetail_Sub(
+				"<c:url value = '/'/>crud/apply.ipRange.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
+				"IP-匯入");
+	}
 </script>
 </head>
 <body>
@@ -51,7 +57,8 @@
 	</c:otherwise>
 	</c:choose>
 	<div class="detail-func-button">
-		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
+		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>&nbsp;<a
+			class="state-default" onclick="reimport();">繼續匯入</a>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>

@@ -24,6 +24,12 @@
 				"form#apply_group_list input#listForm_currentPageHeader").val());
 		resetCloseDetail_2();
 	}
+
+	function reimport() {
+		goDetail_Sub(
+				"<c:url value = '/'/>crud/apply.group.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
+				"群組-匯入");
+	}
 </script>
 <c:if test="${empty successCount }">
 	<script type="text/javascript">
@@ -50,7 +56,8 @@
 	</c:otherwise>
 	</c:choose>
 	<div class="detail-func-button">
-		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>
+		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>&nbsp;<a
+			class="state-default" onclick="reimport();">繼續匯入</a>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>

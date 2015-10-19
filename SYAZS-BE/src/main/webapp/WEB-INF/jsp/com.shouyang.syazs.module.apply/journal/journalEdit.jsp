@@ -164,7 +164,7 @@ input#referenceOwner_name {
 			<tr>
 				<th width="130">刊名<span class="required">(&#8226;)</span></th>
 				<td><s:textfield name="entity.title" cssClass="input_text" />&nbsp;<span
-					id="span-title-tip"></span></td>
+					id="span-title-name-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">英文縮寫刊名</th>
@@ -179,7 +179,7 @@ input#referenceOwner_name {
 			<tr>
 				<th width="130">ISSN</th>
 				<td><s:textfield name="entity.issn" cssClass="input_text" />&nbsp;<span
-					id="span-title-name-tip"></span></td>
+					id="span-num-tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">語文</th>

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
@@ -90,7 +89,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (StringUtils.isNotEmpty(getEntity().getIssn())) {
-			if (!isIssn(getEntity().getIssn())) {
+			if (!ISSN_Validator.isIssn(getEntity().getIssn())) {
 				errorMessages.add("ISSN不正確");
 			}
 		}
@@ -196,7 +195,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 
 			if (StringUtils.isNotEmpty(getEntity().getIssn())) {
-				if (!isIssn(getEntity().getIssn())) {
+				if (!ISSN_Validator.isIssn(getEntity().getIssn())) {
 					errorMessages.add("ISSN不正確");
 				}
 			}
@@ -362,7 +361,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			getEntity().setTitle(null);
 
 			if (StringUtils.isNotBlank(getEntity().getIssn())) {
-				if (!isIssn(getEntity().getIssn())) {
+				if (!ISSN_Validator.isIssn(getEntity().getIssn())) {
 					return LIST;
 				}
 			}
@@ -493,7 +492,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (StringUtils.isNotBlank(getEntity().getIssn())) {
-			if (isIssn(getEntity().getIssn())) {
+			if (ISSN_Validator.isIssn(getEntity().getIssn())) {
 				if (hasRepeatIssn(getEntity().getIssn(), serNo)) {
 					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
@@ -767,7 +766,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				}
 
 				if (StringUtils.isNotEmpty(journal.getIssn())) {
-					if (isIssn(journal.getIssn())) {
+					if (ISSN_Validator.isIssn(journal.getIssn())) {
 						String issn = journal.getIssn().replace("-", "")
 								.toUpperCase();
 						if (hasRepeatIssn(issn, null)) {
@@ -1020,10 +1019,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						.toUpperCase());
 
 				journalService.save(journal, getLoginUser());
+				journal.setDataStatus("已匯入");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
+			int normal = (int) getSession().get("normal");
+			getSession().put("normal", normal - successCount);
 			return VIEW;
 		} else {
 			paginate();
@@ -1123,46 +1125,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
 
 		return XLSX;
-	}
-
-	protected boolean isIssn(String issn) {
-		String regex = "(\\d{4})(\\-?)(\\d{3})[\\dX]";
-		Pattern pattern = Pattern.compile(regex);
-		issn = issn.trim();
-
-		Matcher matcher = pattern.matcher(issn.toUpperCase());
-		if (matcher.matches()) {
-			issn = issn.replace("-", "");
-			int sum = 0;
-			for (int i = 0; i < 7; i++) {
-				sum = sum + Integer.parseInt(issn.substring(i, i + 1))
-						* (8 - i);
-			}
-
-			int remainder = sum % 11;
-
-			if (remainder == 0) {
-				if (!issn.substring(7).equals("0")) {
-					return false;
-				}
-			} else {
-				if (11 - remainder == 10) {
-					if (!issn.substring(7).toUpperCase().equals("X")) {
-						return false;
-					}
-				} else {
-					if (issn.substring(7).equals("X")
-							|| issn.substring(7).equals("x")
-							|| Integer.parseInt(issn.substring(7)) != 11 - remainder) {
-						return false;
-					}
-				}
-			}
-
-		} else {
-			return false;
-		}
-		return true;
 	}
 
 	protected boolean isLCC(String LCC) {

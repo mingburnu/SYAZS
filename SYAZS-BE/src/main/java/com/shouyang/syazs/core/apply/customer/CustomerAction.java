@@ -644,10 +644,13 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 						new Group(
 								new GroupMapping(null, customer.getName(), 0),
 								customer, customer.getName()), getLoginUser());
+				customer.setDataStatus("已存在");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
+			int normal = (int) getSession().get("normal");
+			getSession().put("normal", normal - successCount);
 			return VIEW;
 		} else {
 			paginate();

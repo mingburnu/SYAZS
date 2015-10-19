@@ -48,7 +48,6 @@ public class Test {
 		System.out.println(listHql.toLowerCase().indexOf("from "));
 		int index =listHql.toLowerCase().indexOf("from ");
 		System.out.println(listHql.substring(index,listHql.length()));
-
 	}
 
 	private static boolean check(String s) {

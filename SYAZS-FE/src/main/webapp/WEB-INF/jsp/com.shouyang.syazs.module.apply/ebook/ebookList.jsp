@@ -149,7 +149,6 @@ function view(serNo){
 				</div>
 			</c:when>
 		</c:choose>
-		
 
 		<div class="list">
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">

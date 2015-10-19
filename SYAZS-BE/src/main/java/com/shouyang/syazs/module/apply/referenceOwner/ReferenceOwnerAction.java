@@ -607,10 +607,13 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 				int index = (Integer) iterator.next();
 				referenceOwner = (ReferenceOwner) importList.get(index);
 				referenceOwnerService.save(referenceOwner, getLoginUser());
+				referenceOwner.setDataStatus("已存在");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
+			int normal = (int) getSession().get("normal");
+			getSession().put("normal", normal - successCount);
 			return VIEW;
 		} else {
 			paginate();
