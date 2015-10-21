@@ -230,17 +230,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			while (i < getEntity().getCheckItem().length) {
 				String name = customerService.getBySerNo(
 						getEntity().getCheckItem()[i]).getName();
-
-				if (customerService
-						.deleteOwnerObj(getEntity().getCheckItem()[i])) {
-
-					customerService
-							.deleteBySerNo(getEntity().getCheckItem()[i]);
-					addActionMessage(name + "刪除成功");
-				} else {
-					addActionMessage(name + "資源必須先刪除");
-				}
-
+				customerService.deleteBySerNo(getEntity().getCheckItem()[i]);
+				addActionMessage(name + "刪除成功");
 				i++;
 			}
 
@@ -305,8 +296,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		if (!hasActionErrors()) {
 			Workbook book = createWorkBook(new FileInputStream(getEntity()
 					.getFile()[0]));
-			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
-			Sheet sheet = book.getSheetAt(0);
+			Sheet sheet = book.createSheet();
+			if (book.getNumberOfSheets() != 0) {
+				sheet = book.getSheetAt(0);
+			}
 
 			Row firstRow = sheet.getRow(0);
 			if (firstRow == null) {

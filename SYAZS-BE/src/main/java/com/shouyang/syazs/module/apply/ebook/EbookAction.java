@@ -93,7 +93,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		} else {
 			if (StringUtils
 					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
-				if (!ISBN_Validator.isIsbn(getRequest().getParameter("entity.isbn"))) {
+				if (!ISBN_Validator.isIsbn(getRequest().getParameter(
+						"entity.isbn"))) {
 					errorMessages.add("ISBN不正確");
 				}
 			}
@@ -214,7 +215,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			} else {
 				if (StringUtils.isNotBlank(getRequest().getParameter(
 						"entity.isbn"))) {
-					if (!ISBN_Validator.isIsbn(getRequest().getParameter("entity.isbn"))) {
+					if (!ISBN_Validator.isIsbn(getRequest().getParameter(
+							"entity.isbn"))) {
 						errorMessages.add("ISBN不正確");
 					}
 				}
@@ -388,7 +390,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			if (getEntity().getIsbn() == null) {
 				if (StringUtils.isNotEmpty(getRequest().getParameter(
 						"entity.isbn"))) {
-					if (ISBN_Validator.isIsbn(getRequest().getParameter("entity.isbn").trim())) {
+					if (ISBN_Validator.isIsbn(getRequest().getParameter(
+							"entity.isbn").trim())) {
 						getEntity().setIsbn(
 								Long.parseLong(getRequest()
 										.getParameter("entity.isbn").trim()
@@ -598,8 +601,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 			Workbook book = createWorkBook(new FileInputStream(getEntity()
 					.getFile()[0]));
-			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
-			Sheet sheet = book.getSheetAt(0);
+			Sheet sheet = book.createSheet();
+			if (book.getNumberOfSheets() != 0) {
+				sheet = book.getSheetAt(0);
+			}
 
 			Row firstRow = sheet.getRow(0);
 			if (firstRow == null) {
@@ -1248,7 +1253,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 		return XLSX;
 	}
-
 
 	protected boolean isURL(String url) {
 		return ESAPI.validator().isValidInput("Ebook URL", url, "URL",

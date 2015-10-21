@@ -343,8 +343,10 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 		if (!hasActionErrors()) {
 			Workbook book = createWorkBook(new FileInputStream(getEntity()
 					.getFile()[0]));
-			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
-			Sheet sheet = book.getSheetAt(0);
+			Sheet sheet = book.createSheet();
+			if (book.getNumberOfSheets() != 0) {
+				sheet = book.getSheetAt(0);
+			}
 
 			Row firstRow = sheet.getRow(0);
 			if (firstRow == null) {

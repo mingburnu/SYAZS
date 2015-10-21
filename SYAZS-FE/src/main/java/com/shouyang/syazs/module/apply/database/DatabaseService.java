@@ -1,12 +1,13 @@
 package com.shouyang.syazs.module.apply.database;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -39,20 +40,15 @@ public class DatabaseService extends GenericServiceFull<Database> {
 				.trim(), "０１２３４５６７８９", "0123456789");
 		indexTerm = indexTerm.replaceAll(
 				"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
-		String[] wordArray = indexTerm.split(" ");
+		Set<String> keywordSet = new HashSet<String>(Arrays.asList(indexTerm
+				.split(" ")));
+		String[] wordArray = keywordSet.toArray(new String[keywordSet.size()]);
 
 		if (!ArrayUtils.isEmpty(wordArray)) {
-			Junction andGroup = Restrictions.conjunction();
 			for (int i = 0; i < wordArray.length; i++) {
-				if (StringUtils.isBlank(wordArray[i])) {
-					continue;
-				} else {
-					andGroup.add(Restrictions.ilike("dbTitle", wordArray[i],
-							MatchMode.ANYWHERE));
-				}
+				restrictions.likeIgnoreCase("dbTitle", wordArray[i],
+						MatchMode.ANYWHERE);
 			}
-
-			restrictions.customCriterion(andGroup);
 		} else {
 			Pager pager = ds.getPager();
 			pager.setTotalRecord(0L);

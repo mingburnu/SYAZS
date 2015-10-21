@@ -1,7 +1,10 @@
 package com.shouyang.syazs.module.apply.referenceOwner;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -9,6 +12,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.entity.GenericEntityFull;
+import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.ebook.Ebook;
+import com.shouyang.syazs.module.apply.journal.Journal;
 
 @Entity
 @Table(name = "referenceOwner")
@@ -44,7 +50,16 @@ public class ReferenceOwner extends GenericEntityFull {
 	@Column(name = "memo")
 	@Type(type = "text")
 	private String memo;
-	
+
+	@ManyToMany(mappedBy = "referenceOwners")
+	public Set<Database> databases;
+
+	@ManyToMany(mappedBy = "referenceOwners")
+	public Set<Ebook> ebooks;
+
+	@ManyToMany(mappedBy = "referenceOwners")
+	public Set<Journal> journals;
+
 	/**
 	 * @return the name
 	 */
@@ -135,13 +150,58 @@ public class ReferenceOwner extends GenericEntityFull {
 		this.memo = memo;
 	}
 
+	/**
+	 * @return the databases
+	 */
+	public Set<Database> getDatabases() {
+		return databases;
+	}
+
+	/**
+	 * @param databases
+	 *            the databases to set
+	 */
+	public void setDatabases(Set<Database> databases) {
+		this.databases = databases;
+	}
+
+	/**
+	 * @return the ebooks
+	 */
+	public Set<Ebook> getEbooks() {
+		return ebooks;
+	}
+
+	/**
+	 * @param ebooks
+	 *            the ebooks to set
+	 */
+	public void setEbooks(Set<Ebook> ebooks) {
+		this.ebooks = ebooks;
+	}
+
+	/**
+	 * @return the journals
+	 */
+	public Set<Journal> getJournals() {
+		return journals;
+	}
+
+	/**
+	 * @param journals
+	 *            the journals to set
+	 */
+	public void setJournals(Set<Journal> journals) {
+		this.journals = journals;
+	}
+
 	public ReferenceOwner() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public ReferenceOwner(String name, String engName, String address, String tel,
-			String contactUserName, String memo) {
+	public ReferenceOwner(String name, String engName, String address,
+			String tel, String contactUserName, String memo) {
 		super();
 		this.name = name;
 		this.engName = engName;

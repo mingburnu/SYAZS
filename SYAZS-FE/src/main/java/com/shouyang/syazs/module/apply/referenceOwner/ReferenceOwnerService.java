@@ -2,6 +2,7 @@ package com.shouyang.syazs.module.apply.referenceOwner;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,31 +38,23 @@ public class ReferenceOwnerService extends GenericServiceFull<ReferenceOwner> {
 				.trim(), "０１２３４５６７８９", "0123456789");
 		indexTerm = indexTerm.replaceAll(
 				"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
-		String[] wordArray = (String[]) new HashSet<String>(
-				Arrays.asList(indexTerm.split(" "))).toArray();
+		Set<String> keywordSet = new HashSet<String>(Arrays.asList(indexTerm
+				.split(" ")));
+		String[] wordArray = keywordSet.toArray(new String[keywordSet.size()]);
 
 		if (!ArrayUtils.isEmpty(wordArray)) {
-			Junction orGroup = Restrictions.disjunction();
-			Junction nameAndGroup = Restrictions.disjunction();
-			Junction engNameAndGroup = Restrictions.disjunction();
-			for (int i = 0; i < wordArray.length; i++) {
-				nameAndGroup.add(Restrictions.ilike("name", wordArray[i],
-						MatchMode.ANYWHERE));
-				engNameAndGroup.add(Restrictions.ilike("engName", wordArray[i],
-						MatchMode.ANYWHERE));
-			}
-
 			Junction or = Restrictions.disjunction();
+			Junction nameAnd = Restrictions.conjunction();
+			Junction engNameAnd = Restrictions.conjunction();
 			for (int i = 0; i < wordArray.length; i++) {
-				Restrictions.ilike("name", wordArray[i], MatchMode.ANYWHERE);
-				Restrictions.ilike("engName", wordArray[i], MatchMode.ANYWHERE);
-				for (int j = wordArray.length; j >= 0; j++) {
-
-				}
+				nameAnd.add(Restrictions.ilike("name", wordArray[i],
+						MatchMode.ANYWHERE));
+				engNameAnd.add(Restrictions.ilike("engName", wordArray[i],
+						MatchMode.ANYWHERE));
 			}
 
-			orGroup.add(nameAndGroup).add(engNameAndGroup);
-			restrictions.customCriterion(orGroup);
+			or.add(nameAnd).add(engNameAnd);
+			restrictions.customCriterion(or);
 		} else {
 			Pager pager = ds.getPager();
 			pager.setTotalRecord(0L);

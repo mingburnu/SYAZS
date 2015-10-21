@@ -24,6 +24,7 @@
 		var url = $("form").attr("action") + "?" + $("form").serialize();
 		$.ajax({
 			url : url,
+			type:"POST",
 			success : function(result) {
 				$("#container").html(result);
 			}

@@ -1,10 +1,12 @@
 package com.shouyang.syazs.module.apply.ebook;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -50,25 +52,27 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		} else {
 			indexTerm = indexTerm.replaceAll(
 					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
-			String[] wordArray = indexTerm.split(" ");
+			Set<String> keywordSet = new HashSet<String>(
+					Arrays.asList(indexTerm.split(" ")));
+			String[] wordArray = keywordSet.toArray(new String[keywordSet
+					.size()]);
 
 			if (!ArrayUtils.isEmpty(wordArray)) {
-				Junction orGroup = Restrictions.disjunction();
-				Junction bookNameAndGroup = Restrictions.conjunction();
-				Junction publishNameAndGroup = Restrictions.conjunction();
-				Junction autherNameAndGroup = Restrictions.conjunction();
+				Junction or = Restrictions.disjunction();
+				Junction bookNameAnd = Restrictions.conjunction();
+				Junction publishNameAnd = Restrictions.conjunction();
+				Junction autherNameAnd = Restrictions.conjunction();
 				for (int i = 0; i < wordArray.length; i++) {
-					bookNameAndGroup.add(Restrictions.ilike("bookName",
+					bookNameAnd.add(Restrictions.ilike("bookName",
 							wordArray[i], MatchMode.ANYWHERE));
-					publishNameAndGroup.add(Restrictions.ilike("publishName",
+					publishNameAnd.add(Restrictions.ilike("publishName",
 							wordArray[i], MatchMode.ANYWHERE));
-					autherNameAndGroup.add(Restrictions.ilike("autherName",
+					autherNameAnd.add(Restrictions.ilike("autherName",
 							wordArray[i], MatchMode.ANYWHERE));
 				}
 
-				orGroup.add(bookNameAndGroup).add(publishNameAndGroup)
-						.add(autherNameAndGroup);
-				restrictions.customCriterion(orGroup);
+				or.add(bookNameAnd).add(publishNameAnd).add(autherNameAnd);
+				restrictions.customCriterion(or);
 
 			} else {
 				Pager pager = ds.getPager();
@@ -90,23 +94,46 @@ public class EbookService extends GenericServiceFull<Ebook> {
 	public DataSet<Ebook> getByOption(DataSet<Ebook> ds) throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
-		// SELECT * FROM accountNumber WHERE userID REGEXP "[a-zA-Z]"
+
 		DsRestrictions restrictions = getDsRestrictions();
 		Ebook entity = ds.getEntity();
-		String indexTerm = entity.getIndexTerm();
 		String option = entity.getOption();
+		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
+				.trim(), "－０１２３４５６７８９", "-0123456789");
+
 		if (option.equals("標題開頭為")) {
 			restrictions.likeIgnoreCase("bookName", indexTerm, MatchMode.START);
 		} else if (option.equals("標題等於")) {
 			restrictions.likeIgnoreCase("bookName", indexTerm, MatchMode.EXACT);
 		} else if (option.equals("標題包含文字")) {
-			restrictions.likeIgnoreCase("bookName", indexTerm,
-					MatchMode.ANYWHERE);
+			indexTerm = indexTerm.replaceAll(
+					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
+			Set<String> keywordSet = new HashSet<String>(
+					Arrays.asList(indexTerm.split(" ")));
+			String[] wordArray = keywordSet.toArray(new String[keywordSet
+					.size()]);
+
+			if (!ArrayUtils.isEmpty(wordArray)) {
+				for (int i = 0; i < wordArray.length; i++) {
+					restrictions.likeIgnoreCase("bookName", indexTerm,
+							MatchMode.ANYWHERE);
+				}
+			} else {
+				Pager pager = ds.getPager();
+				pager.setTotalRecord(0L);
+				ds.setPager(pager);
+				return ds;
+			}
 		} else if (option.equals("ISBN 等於")) {
-			restrictions.eq("isbn",
-					Long.parseLong(indexTerm.trim().replace("-", "")));
-		} else {
-			restrictions.eq("serNo", Long.MIN_VALUE);
+			if (ISBN_Validator.isIsbn(indexTerm)) {
+				restrictions.eq("isbn",
+						Long.parseLong(indexTerm.replace("-", "")));
+			} else {
+				Pager pager = ds.getPager();
+				pager.setTotalRecord(0L);
+				ds.setPager(pager);
+				return ds;
+			}
 		}
 
 		return dao.findByRestrictions(restrictions, ds);
@@ -119,46 +146,35 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		DsRestrictions restrictions = getDsRestrictions();
 		Ebook entity = ds.getEntity();
 		String option = entity.getOption();
-		Disjunction orGroup = Restrictions.disjunction();
+
+		Junction or = Restrictions.disjunction();
 		int intCode = option.charAt(0);
 
 		if (option.equals("0-9")) {
 			int i = 0;
 			while (i < 10) {
-				orGroup.add(Restrictions.ilike("bookName",
+				or.add(Restrictions.ilike("bookName",
 						Character.toString((char) (i + 48)), MatchMode.START));
-				orGroup.add(Restrictions.ilike("bookName",
-						Character.toString((char) (i + 65296)), MatchMode.START));
 				i++;
 			}
 		} else if ((intCode > 64 && intCode < 91)
 				|| (intCode > 96 && intCode < 123)) {
-			orGroup.add(Restrictions.ilike("bookName",
+			or.add(Restrictions.ilike("bookName",
 					Character.toString((char) intCode), MatchMode.START));
-			orGroup.add(Restrictions.ilike("bookName",
-					Character.toString((char) (intCode + 65248)),
-					MatchMode.START));
-		} else if ((intCode > 65312 && intCode < 65339)
-				|| (intCode > 65345 && intCode < 65370)) {
-			orGroup.add(Restrictions.ilike("bookName",
-					Character.toString((char) intCode), MatchMode.START));
-			orGroup.add(Restrictions.ilike("bookName",
-					Character.toString((char) (intCode - 65248)),
-					MatchMode.START));
 		} else if (intCode > 12548 && intCode < 12577) {
 			String words = hanziMap.get(Character.toString((char) intCode));
 			int i = 0;
 			while (i < words.length()) {
-				orGroup.add(Restrictions.ilike("bookName",
+				or.add(Restrictions.ilike("bookName",
 						Character.toString(words.charAt(i)), MatchMode.START));
 				i++;
 			}
 		} else {
-			restrictions.eq("serNo", Long.MIN_VALUE);
-
+			or.add(Restrictions
+					.sqlRestriction("bookName REGEXP '^[^0-9a-zA-Z０-９ａ-ｚＡ-Ｚ\u4e00-\u9fa5]'"));
 		}
 
-		restrictions.customCriterion(orGroup);
+		restrictions.customCriterion(or);
 
 		return dao.findByRestrictions(restrictions, ds);
 	}

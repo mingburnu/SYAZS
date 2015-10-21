@@ -103,8 +103,4 @@ public class CustomerService extends GenericServiceFull<Customer> {
 	public Map<String, Object> getCusDatas() {
 		return dao.getMap(new HashMap<String, Object>());
 	}
-
-	public boolean deleteOwnerObj(long cusSerNo) {
-		return dao.delRelatedObj(cusSerNo);
-	}
 }

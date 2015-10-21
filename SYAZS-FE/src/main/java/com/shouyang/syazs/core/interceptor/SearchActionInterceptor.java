@@ -116,10 +116,14 @@ public class SearchActionInterceptor extends RootInterceptor {
 			if (item.equals("ebook") || item.equals("journal")) {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請選擇字首。");
-				} else if (!option.equals("0-9")
+				} else if (option.equals("0-9") || option.equals("其他")) {
+					log.info(option);
+				} else if (option.length() == 1
 						&& Character.toString(option.charAt(0))
-								.replaceAll("[0a-zA-Z\u3105-\u3126]", "")
+								.replaceAll("[a-zA-Z\u3105-\u3126]", "")
 								.length() != 0) {
+					log.info(option);
+				} else {
 					addActionError(invocation, "．請選擇正確字首。");
 				}
 			}

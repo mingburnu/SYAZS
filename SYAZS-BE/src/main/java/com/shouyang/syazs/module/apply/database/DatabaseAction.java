@@ -40,8 +40,12 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.module.apply.ebook.Ebook;
+import com.shouyang.syazs.module.apply.ebook.EbookService;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
+import com.shouyang.syazs.module.apply.journal.Journal;
+import com.shouyang.syazs.module.apply.journal.JournalService;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
@@ -54,7 +58,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	 * 
 	 */
 	private static final long serialVersionUID = 5792761795605940212L;
-
+	@Autowired
+	private EbookService ebookService;
+	
 	@Autowired
 	private Database database;
 
@@ -324,9 +330,26 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
+			// TODO
+			JournalService journalService = new JournalService();
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				databaseService.deleteBySerNo(getEntity().getCheckItem()[i]);
+				database = databaseService.getBySerNo(getEntity()
+						.getCheckItem()[i]);
+				Iterator<Ebook> ebooks = database.getEbooks().iterator();
+				log.info(database.getEbooks().size());
+				while (ebooks.hasNext()) {
+					Long l =ebooks.next().getSerNo();
+					log.info(l);
+					ebookService.deleteBySerNo(l);
+				}
+
+//				Iterator<Journal> journals = database.getJournals().iterator();
+//				while (journals.hasNext()) {
+//					journalService.deleteBySerNo(journals.next().getSerNo());
+//				}
+
+				databaseService.deleteBySerNo(database.getSerNo());
 				i++;
 			}
 
@@ -383,8 +406,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (!hasActionErrors()) {
 			Workbook book = createWorkBook(new FileInputStream(getEntity()
 					.getFile()[0]));
-			// book.getNumberOfSheets(); 判斷Excel文件有多少個sheet
-			Sheet sheet = book.getSheetAt(0);
+			Sheet sheet = book.createSheet();
+			if (book.getNumberOfSheets() != 0) {
+				sheet = book.getSheetAt(0);
+			}
 
 			Row firstRow = sheet.getRow(0);
 			if (firstRow == null) {

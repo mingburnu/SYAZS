@@ -98,8 +98,4 @@ public class ReferenceOwnerService extends GenericServiceFull<ReferenceOwner> {
 
 		return dao.findByRestrictions(restrictions);
 	}
-
-	public boolean deleteOwnerObj(long refSerNo) {
-		return dao.delRelatedObj(refSerNo);
-	}
 }
