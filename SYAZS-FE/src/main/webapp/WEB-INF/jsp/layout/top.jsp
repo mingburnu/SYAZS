@@ -52,8 +52,8 @@
 			<td align="right">
 				<div class="bar_box">
 					<div>
-						電子館藏：<span>182,626</span> 書籍：<span>1,215,742</span> 期刊：<span>56,869</span>
-						資料庫：<span>7</span>
+						電子館藏：<span></span> 書籍：<span></span> 期刊：<span></span>
+						資料庫：<span></span>
 					</div>
 				</div>
 			</td>

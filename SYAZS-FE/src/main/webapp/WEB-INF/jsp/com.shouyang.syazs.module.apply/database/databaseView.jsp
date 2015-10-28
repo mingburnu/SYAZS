@@ -23,6 +23,11 @@
 			}
 		});
 	}
+	
+	function link(serNo){
+		var url="<%=request.getContextPath()%>"+"/crud/apply.database.click.action?entity.serNo="+serNo;
+		window.open(url);
+	}
 </script>
 <div id="main_b_box">
 	<!-- 內容開始 -->
@@ -36,7 +41,7 @@
 			</tr>
 			<tr>
 				<td class="t_01">URL</td>
-				<td class="t_02">${entity.url }</td>
+				<td class="t_02"><a onclick="link(${entity.serNo });">${entity.url }</a></td>
 			</tr>
 			<c:if test="${not empty entity.includedSpecies}">
 				<tr>

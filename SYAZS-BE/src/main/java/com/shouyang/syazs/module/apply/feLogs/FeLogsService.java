@@ -16,7 +16,17 @@ public class FeLogsService extends GenericServiceLog<FeLogs> {
 	@Override
 	public DataSet<FeLogs> getByRestrictions(DataSet<FeLogs> ds)
 			throws Exception {
-		return dao.getRanks(ds);
+		return dao.keywordRanks(ds);
+	}
+	
+	public DataSet<FeLogs> getByLogin(DataSet<FeLogs> ds)
+			throws Exception {
+		return dao.loginRanks(ds);
+	}
+	
+	public DataSet<FeLogs> getByLink(DataSet<FeLogs> ds)
+			throws Exception {
+		return dao.urlRanks(ds);
 	}
 
 	@Override

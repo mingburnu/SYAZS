@@ -111,69 +111,56 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	public String owner() throws Exception {
-		if (getEntity().getRefSerNo() == null || getEntity().getRefSerNo() <= 0) {
-			addActionError("Owner Null");
-		} else {
-			referenceOwner = referenceOwnerService.getBySerNo(getEntity()
-					.getRefSerNo());
-			if (referenceOwner == null) {
-				addActionError("Owner Null");
-			}
+		referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+				.getRefSerNo());
+
+		getRequest().setAttribute(
+				"owner",
+				getRequest().getContextPath()
+						+ "/crud/apply.ebook.owner.action");
+
+		DataSet<Ebook> ds = initDataSet();
+		List<Ebook> ebooks = new ArrayList<Ebook>(referenceOwner.getEbooks());
+		List<Database> databases = new ArrayList<Database>(
+				referenceOwner.getDatabases());
+
+		Iterator<Database> iterator = databases.iterator();
+		while (iterator.hasNext()) {
+			database = iterator.next();
+			ebooks.addAll(database.getEbooks());
 		}
 
-		if (!hasActionErrors()) {
-			getRequest().setAttribute(
-					"owner",
-					getRequest().getContextPath()
-							+ "/crud/apply.ebook.owner.action");
+		ds.getPager().setTotalRecord((long) ebooks.size());
+		int first = ds.getPager().getOffset();
+		int last = first + ds.getPager().getRecordPerPage();
 
-			DataSet<Ebook> ds = initDataSet();
-			List<Ebook> ebooks = new ArrayList<Ebook>(
-					referenceOwner.getEbooks());
-			List<Database> databases = new ArrayList<Database>(
-					referenceOwner.getDatabases());
-
-			Iterator<Database> iterator = databases.iterator();
-			while (iterator.hasNext()) {
-				database = iterator.next();
-				ebooks.addAll(database.getEbooks());
+		int i = 0;
+		while (i < ebooks.size()) {
+			if (i >= first && i < last) {
+				ds.getResults().add(ebooks.get(i));
 			}
-
-			ds.getPager().setTotalRecord((long) ebooks.size());
-			int first = ds.getPager().getOffset();
-			int last = first + ds.getPager().getRecordPerPage();
-
-			int i = 0;
-			while (i < ebooks.size()) {
-				if (i >= first && i < last) {
-					ds.getResults().add(ebooks.get(i));
-				}
-				i++;
-			}
-
-			if (ds.getResults().size() == 0
-					&& ds.getPager().getCurrentPage() > 1) {
-				ds.getPager().setCurrentPage(
-						(int) Math.ceil(ds.getPager().getTotalRecord()
-								/ ds.getPager().getRecordPerPage()));
-				first = ds.getPager().getOffset();
-				last = first + ds.getPager().getRecordPerPage();
-
-				int j = 0;
-				while (j < databases.size()) {
-					if (j >= first && j < last) {
-						ds.getResults().add(ebooks.get(j));
-					}
-					j++;
-				}
-
-			}
-
-			setDs(ds);
+			i++;
 		}
 
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
+
+			int j = 0;
+			while (j < databases.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add(ebooks.get(j));
+				}
+				j++;
+			}
+
+		}
+
+		setDs(ds);
 		return LIST;
-
 	}
 
 	public String focus() throws Exception {
@@ -230,6 +217,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		return VIEW;
+	}
+
+	public void click() {
+
 	}
 
 	public String count() {

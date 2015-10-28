@@ -103,10 +103,10 @@ public class Database extends ModuleProperties {
 	@JoinTable(name = "ref_dat", joinColumns = @JoinColumn(name = "dat_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
 	private Set<ReferenceOwner> referenceOwners;
 
-	@OneToMany(mappedBy = "database")
+	@OneToMany(mappedBy = "database", orphanRemoval = true)
 	private Set<Ebook> ebooks;
 
-	@OneToMany(mappedBy = "database")
+	@OneToMany(mappedBy = "database", orphanRemoval = true)
 	private Set<Journal> journals;
 
 	/**
@@ -339,21 +339,6 @@ public class Database extends ModuleProperties {
 	 */
 	public Set<Ebook> getEbooks() {
 		return ebooks;
-	}
-
-	/**
-	 * @param ebooks
-	 *            the ebooks to set
-	 */
-	public void setEbooks(Set<Ebook> ebooks) {
-		this.ebooks = ebooks;
-	}
-
-	/**
-	 * @return the journals
-	 */
-	public Set<Journal> getJournals() {
-		return journals;
 	}
 
 	/**

@@ -61,11 +61,15 @@
 		<div id="menu_items_5" style="display: none;">
 			<div class="menu-items">
 				<a
-					onclick="goURL('<%=request.getContextPath()%>/page/beLogs.action');">登入次數統計</a>
+					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action?entity.option=logins');">登入次數統計</a>
 			</div>
 			<div class="menu-items">
 				<a
-					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action');">關鍵字檢索統計</a>
+					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action?entity.option=keywords');">關鍵字檢索統計</a>
+			</div>
+			<div class="menu-items">
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action?entity.option=clicks');">URL點擊次數統計</a>
 			</div>
 		</div>
 	</div>

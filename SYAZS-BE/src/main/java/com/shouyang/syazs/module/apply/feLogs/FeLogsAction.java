@@ -112,8 +112,10 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 			}
 
 			setDs(ds);
+			getRequest().setAttribute("keywords", "keywords");
 			return LIST;
 		} else {
+			getRequest().setAttribute("keywords", "keywords");
 			return LIST;
 		}
 	}
@@ -136,7 +138,99 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 		return null;
 	}
 
-	public String exports() throws Exception {
+	public String rank() throws Exception {
+		if (getLoginUser().getRole().equals(Role.管理員)) {
+			getEntity().getCustomer().setSerNo(
+					getLoginUser().getCustomer().getSerNo());
+		}
+
+		if (!getEntity().getCustomer().hasSerNo()) {
+			addActionError("請正確填寫機構名稱");
+		} else {
+			if (getEntity().getCustomer().getSerNo() < 0
+					|| (getEntity().getCustomer().getSerNo() != 0 && customerService
+							.getBySerNo(getEntity().getCustomer().getSerNo()) == null)) {
+				addActionError("請正確填寫機構名稱");
+			}
+		}
+
+		if (!hasActionErrors()) {
+			if (getEntity().getStart() == null) {
+				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
+			}
+
+			if (getEntity().getCustomer().getSerNo() > 0) {
+				getEntity().setCustomer(
+						customerService.getBySerNo(getEntity().getCustomer()
+								.getSerNo()));
+			}
+
+			DataSet<FeLogs> ds = feLogsService.getByLogin(initDataSet());
+
+			if (ds.getResults().size() == 0
+					&& ds.getPager().getCurrentPage() > 1) {
+				ds.getPager().setCurrentPage(
+						(int) Math.ceil(ds.getPager().getTotalRecord()
+								/ ds.getPager().getRecordPerPage()));
+				ds = feLogsService.getByLogin(ds);
+			}
+
+			getRequest().setAttribute("logins", "logins");
+			setDs(ds);
+			return LIST;
+		} else {
+			getRequest().setAttribute("logins", "logins");
+			return LIST;
+		}
+	}
+
+	public String link() throws Exception {
+		if (getLoginUser().getRole().equals(Role.管理員)) {
+			getEntity().getCustomer().setSerNo(
+					getLoginUser().getCustomer().getSerNo());
+		}
+
+		if (!getEntity().getCustomer().hasSerNo()) {
+			addActionError("請正確填寫機構名稱");
+		} else {
+			if (getEntity().getCustomer().getSerNo() < 0
+					|| (getEntity().getCustomer().getSerNo() != 0 && customerService
+							.getBySerNo(getEntity().getCustomer().getSerNo()) == null)) {
+				addActionError("請正確填寫機構名稱");
+			}
+		}
+
+		if (!hasActionErrors()) {
+			if (getEntity().getStart() == null) {
+				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
+			}
+
+			if (getEntity().getCustomer().getSerNo() > 0) {
+				getEntity().setCustomer(
+						customerService.getBySerNo(getEntity().getCustomer()
+								.getSerNo()));
+			}
+
+			DataSet<FeLogs> ds = feLogsService.getByLink(initDataSet());
+
+			if (ds.getResults().size() == 0
+					&& ds.getPager().getCurrentPage() > 1) {
+				ds.getPager().setCurrentPage(
+						(int) Math.ceil(ds.getPager().getTotalRecord()
+								/ ds.getPager().getRecordPerPage()));
+				ds = feLogsService.getByLink(ds);
+			}
+
+			getRequest().setAttribute("clicks", "clicks");
+			setDs(ds);
+			return LIST;
+		} else {
+			getRequest().setAttribute("clicks", "clicks");
+			return LIST;
+		}
+	}
+
+	public String exportKeyword() throws Exception {
 		if (getLoginUser().getRole().equals(Role.管理員)) {
 			getEntity().getCustomer().setSerNo(
 					getLoginUser().getCustomer().getSerNo());
@@ -161,7 +255,7 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 			ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
 			ds = feLogsService.getByRestrictions(ds);
 
-			getEntity().setReportFile("feLogs.xlsx");
+			getEntity().setReportFile("keyword_statics.xlsx");
 
 			// Create blank workbook
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -205,6 +299,173 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 			getEntity().setInputStream(
 					new ByteArrayInputStream(boas.toByteArray()));
 
+			return XLSX;
+		} else {
+			return null;
+		}
+	}
+
+	public String exportLogin() throws Exception {
+		if (getLoginUser().getRole().equals(Role.管理員)) {
+			getEntity().getCustomer().setSerNo(
+					getLoginUser().getCustomer().getSerNo());
+		}
+		if (!getEntity().getCustomer().hasSerNo()) {
+			addActionError("請正確填寫機構名稱");
+		} else {
+			if (getEntity().getCustomer().getSerNo() < 0
+					|| (getEntity().getCustomer().getSerNo() != 0 && customerService
+							.getBySerNo(getEntity().getCustomer().getSerNo()) == null)) {
+				addActionError("請正確填寫機構名稱");
+			}
+		}
+
+		if (!hasActionErrors()) {
+			if (getEntity().getStart() == null) {
+				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
+			}
+
+			DataSet<FeLogs> ds = initDataSet();
+			ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
+			ds = feLogsService.getByLogin(ds);
+
+			getEntity().setReportFile("login_statics.xlsx");
+
+			// Create blank workbook
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			// Create a blank sheet
+			XSSFSheet spreadsheet = workbook.createSheet("login statics");
+			// Create row object
+			XSSFRow row;
+			// This data needs to be written (Object[])
+			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+			empinfo.put("1", new Object[] { "年月", "名次", "帳號", "用戶姓名", "用戶身分",
+					"客戶名稱", "狀態", "次數" });
+
+			int i = 0;
+			while (i < ds.getResults().size()) {
+				feLogs = ds.getResults().get(i);
+				empinfo.put(
+						String.valueOf(i + 2),
+						new Object[] {
+								getDateString(getEntity().getStart()) + "~"
+										+ getDateString(getEntity().getEnd()),
+								String.valueOf(feLogs.getRank()),
+								feLogs.getAccountNumber().getUserId(),
+								feLogs.getAccountNumber().getUserName(),
+								feLogs.getAccountNumber().getRole().getRole(),
+								feLogs.getCustomer().getName(),
+								feLogs.getAccountNumber().getStatus()
+										.getStatus(),
+								String.valueOf(feLogs.getCount()) });
+
+				i++;
+			}
+
+			// Iterate over data and write to sheet
+			Set<String> keyid = empinfo.keySet();
+			int rowid = 0;
+			for (String key : keyid) {
+				row = spreadsheet.createRow(rowid++);
+				Object[] objectArr = empinfo.get(key);
+				int cellid = 0;
+				for (Object obj : objectArr) {
+					Cell cell = row.createCell(cellid++);
+					cell.setCellValue((String) obj);
+				}
+			}
+
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			workbook.write(boas);
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
+			return XLSX;
+		} else {
+			return null;
+		}
+	}
+
+	public String exportClick() throws Exception {
+		if (getLoginUser().getRole().equals(Role.管理員)) {
+			getEntity().getCustomer().setSerNo(
+					getLoginUser().getCustomer().getSerNo());
+		}
+		if (!getEntity().getCustomer().hasSerNo()) {
+			addActionError("請正確填寫機構名稱");
+		} else {
+			if (getEntity().getCustomer().getSerNo() < 0
+					|| (getEntity().getCustomer().getSerNo() != 0 && customerService
+							.getBySerNo(getEntity().getCustomer().getSerNo()) == null)) {
+				addActionError("請正確填寫機構名稱");
+			}
+		}
+
+		if (!hasActionErrors()) {
+			if (getEntity().getStart() == null) {
+				getEntity().setStart(LocalDateTime.parse("2015-01-01"));
+			}
+
+			DataSet<FeLogs> ds = initDataSet();
+			ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
+			ds = feLogsService.getByLink(ds);
+
+			getEntity().setReportFile("click_statics.xlsx");
+
+			// Create blank workbook
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			// Create a blank sheet
+			XSSFSheet spreadsheet = workbook.createSheet("click statics");
+			// Create row object
+			XSSFRow row;
+			// This data needs to be written (Object[])
+			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+			empinfo.put("1", new Object[] { "年月", "名次", "資源類型", "標題", "次數",
+					"客戶名稱" });
+
+			int i = 0;
+			while (i < ds.getResults().size()) {
+				feLogs = ds.getResults().get(i);
+				String type = null;
+				String title = null;
+				if (feLogs.getDatabase() != null) {
+					type = "資料庫";
+					title = feLogs.getDatabase().getDbTitle();
+				} else if (feLogs.getEbook() != null) {
+					type = "電子書";
+					title = feLogs.getEbook().getBookName();
+				} else if (feLogs.getJournal() != null) {
+					type = "期刊";
+					title = feLogs.getJournal().getTitle();
+				}
+
+				empinfo.put(String.valueOf(i + 2),
+						new Object[] {
+								getDateString(getEntity().getStart()) + "~"
+										+ getDateString(getEntity().getEnd()),
+								String.valueOf(feLogs.getRank()), type, title,
+								String.valueOf(feLogs.getCount()),
+								feLogs.getCustomer().getName() });
+
+				i++;
+			}
+
+			// Iterate over data and write to sheet
+			Set<String> keyid = empinfo.keySet();
+			int rowid = 0;
+			for (String key : keyid) {
+				row = spreadsheet.createRow(rowid++);
+				Object[] objectArr = empinfo.get(key);
+				int cellid = 0;
+				for (Object obj : objectArr) {
+					Cell cell = row.createCell(cellid++);
+					cell.setCellValue((String) obj);
+				}
+			}
+
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			workbook.write(boas);
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
 			return XLSX;
 		} else {
 			return null;

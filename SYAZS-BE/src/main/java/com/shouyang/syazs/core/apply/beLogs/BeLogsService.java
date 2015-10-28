@@ -2,7 +2,7 @@ package com.shouyang.syazs.core.apply.beLogs;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.shouyang.syazs.core.converter.JodaTimeConverter;
+
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceLog;
@@ -13,14 +13,11 @@ public class BeLogsService extends GenericServiceLog<BeLogs> {
 	@Autowired
 	private BeLogsDao dao;
 
-	@Autowired
-	private JodaTimeConverter converter;
-
 	@Override
 	public DataSet<BeLogs> getByRestrictions(DataSet<BeLogs> ds)
 			throws Exception {
-
-		return dao.getRanks(ds);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -28,4 +25,5 @@ public class BeLogsService extends GenericServiceLog<BeLogs> {
 		// TODO Auto-generated method stub
 		return dao;
 	}
+
 }

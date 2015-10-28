@@ -61,15 +61,19 @@ public class FeLogs extends GenericEntityLog {
 
 	// 資料庫流水號
 	@Column(name = "dat_SerNo")
-	private Long datSerNo;
+	private Long database;
 
 	// 電子書流水號
 	@Column(name = "ebk_SerNo")
-	private Long ebkSerNo;
+	private Long ebook;
 
 	// 期刊流水號
 	@Column(name = "jou_SerNo")
-	private Long jouSerNo;
+	private Long journal;
+
+	// 連結使用紀錄
+	@Column(name = "URLclick")
+	private Boolean click;
 
 	/**
 	 * @return the actionType
@@ -132,48 +136,59 @@ public class FeLogs extends GenericEntityLog {
 	}
 
 	/**
-	 * @return the datSerNo
+	 * @return the database
 	 */
-	public Long getDatSerNo() {
-		return datSerNo;
+	public Long getDatabase() {
+		return database;
 	}
 
 	/**
-	 * @param datSerNo
-	 *            the datSerNo to set
+	 * @param database the database to set
 	 */
-	public void setDatSerNo(Long datSerNo) {
-		this.datSerNo = datSerNo;
+	public void setDatabase(Long database) {
+		this.database = database;
 	}
 
 	/**
-	 * @return the ebkSerNo
+	 * @return the ebook
 	 */
-	public Long getEbkSerNo() {
-		return ebkSerNo;
+	public Long getEbook() {
+		return ebook;
 	}
 
 	/**
-	 * @param ebkSerNo
-	 *            the ebkSerNo to set
+	 * @param ebook the ebook to set
 	 */
-	public void setEbkSerNo(Long ebkSerNo) {
-		this.ebkSerNo = ebkSerNo;
+	public void setEbook(Long ebook) {
+		this.ebook = ebook;
 	}
 
 	/**
-	 * @return the jouSerNo
+	 * @return the journal
 	 */
-	public Long getJouSerNo() {
-		return jouSerNo;
+	public Long getJournal() {
+		return journal;
 	}
 
 	/**
-	 * @param jouSerNo
-	 *            the jouSerNo to set
+	 * @param journal the journal to set
 	 */
-	public void setJouSerNo(Long jouSerNo) {
-		this.jouSerNo = jouSerNo;
+	public void setJournal(Long journal) {
+		this.journal = journal;
+	}
+
+	/**
+	 * @return the click
+	 */
+	public Boolean getClick() {
+		return click;
+	}
+
+	/**
+	 * @param click the click to set
+	 */
+	public void setClick(Boolean click) {
+		this.click = click;
 	}
 
 	public FeLogs() {
@@ -182,29 +197,28 @@ public class FeLogs extends GenericEntityLog {
 	}
 
 	public FeLogs(Act actionType, String keyword, Customer customer,
-			AccountNumber accountNumber, Long datSerNo, Long ebkSerNo,
-			Long jouSerNo) {
+			AccountNumber accountNumber, Long database, Long ebook,
+			Long journal, Boolean click) {
 		super();
 		this.actionType = actionType;
 		this.keyword = keyword;
 		this.customer = customer;
 		this.accountNumber = accountNumber;
-		this.datSerNo = datSerNo;
-		this.ebkSerNo = ebkSerNo;
-		this.jouSerNo = jouSerNo;
+		this.database = database;
+		this.ebook = ebook;
+		this.journal = journal;
+		this.click = click;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "FeLogs [actionType=" + actionType + ", keyword=" + keyword
 				+ ", customer=" + customer + ", accountNumber=" + accountNumber
-				+ ", datSerNo=" + datSerNo + ", ebkSerNo=" + ebkSerNo
-				+ ", jouSerNo=" + jouSerNo + "]";
+				+ ", database=" + database + ", ebook=" + ebook + ", journal="
+				+ journal + ", click=" + click + "]";
 	}
 
 }

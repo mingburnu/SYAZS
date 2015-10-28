@@ -214,8 +214,14 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 		if (!hasActionErrors()) {
 			int i = 0;
 			while (i < getEntity().getCheckItem().length) {
-				String name = referenceOwnerService.getBySerNo(
-						getEntity().getCheckItem()[i]).getName();
+				referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+						.getCheckItem()[i]);
+				String name = referenceOwner.getName();
+
+				log.info(referenceOwner.getDatabases().iterator().next().getReferenceOwners().size());
+				// referenceOwner.setEbooks(null);
+				// referenceOwner.setJournals(null);
+
 				referenceOwnerService
 						.deleteBySerNo(getEntity().getCheckItem()[i]);
 				addActionMessage(name + "刪除成功");

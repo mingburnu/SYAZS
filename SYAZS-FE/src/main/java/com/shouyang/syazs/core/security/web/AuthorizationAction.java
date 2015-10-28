@@ -79,7 +79,7 @@ public class AuthorizationAction extends GenericAction<AccountNumber> {
 		}
 	}
 
-	public boolean validateIp(String ip, List<IpRange> allIpList) {
+	protected boolean validateIp(String ip, List<IpRange> allIpList) {
 		String[] ipNum = ip.split("\\.");
 		for (int i = 0; i < allIpList.size(); i++) {
 			String[] start = allIpList.get(i).getIpRangeStart().split("\\.");
@@ -101,7 +101,7 @@ public class AuthorizationAction extends GenericAction<AccountNumber> {
 		return false;
 	}
 
-	public Customer getMatchCustomer(String ip, List<IpRange> allIpList) {
+	protected Customer getMatchCustomer(String ip, List<IpRange> allIpList) {
 		String[] ipNum = ip.split("\\.");
 		for (int i = 0; i < allIpList.size(); i++) {
 			String[] start = allIpList.get(i).getIpRangeStart().split("\\.");

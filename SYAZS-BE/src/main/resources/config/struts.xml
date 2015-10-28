@@ -42,11 +42,11 @@
 	<package name="authorizationAction" namespace="/authorization"
 		extends="struts-default">
 		<interceptors>
-			<interceptor name="loginActionInterceptor"
-				class="com.shouyang.syazs.core.interceptor.LoginActionInterceptor" />
+			<interceptor name="loginLogInterceptor"
+				class="com.shouyang.syazs.core.interceptor.LoginLogInterceptor" />
 
 			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="loginActionInterceptor" />
+				<interceptor-ref name="loginLogInterceptor" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 		</interceptors>

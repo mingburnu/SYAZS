@@ -124,7 +124,7 @@ insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(24
 insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(25, '1980', '2020', '買斷');
 
 --database
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true);
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess, url) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true, 'http://www.w3schools.com/');
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate() , 'Medicine', '資料庫', 9, random_uuid(), true);
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate() , 'Physics', '資料庫', 10, random_uuid(), true);
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate() , 'Math', '資料庫', 11, random_uuid(), true);
@@ -171,8 +171,8 @@ insert into ref_jou(ref_serNo, jou_serNo) values(3, 6);
 insert into ref_jou(ref_serNo, jou_serNo) values(3, 7);
 
 --ebook
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 2, 'Melanie Goldfarb MD' , ' Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess, url) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true, 'http://www.w3schools.com/');
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 2, 'Melanie Goldfarb MD' , 'Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18, random_uuid(), true);
 insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Metal Cats', 9781576876770, 1, 'Alexandra Crockett' , '', 19, random_uuid(), true);
 insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Hitler: A Biography', 9780393337617, 3, 'Ian Kershaw' , '', 20, random_uuid(), true);
 insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Edison - A Biography', 9780965569934, 2, 'Matthew Josephson' , '', 21, random_uuid(), true);
@@ -267,20 +267,33 @@ insert into BE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(12, 
 insert into BE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(13, sysdate(), '登入', 1, 1);
 
 --FE_Logs
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(1, sysdate(), '綜合查詢', 'Hello', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(2, sysdate(), '綜合查詢', 'world', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(3, sysdate(), '綜合查詢', 'c++', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(4, sysdate(), '綜合查詢', 'python', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(5, sysdate(), '綜合查詢', 'php', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(6, sysdate(), '綜合查詢', 'ruby', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(7, sysdate(), '綜合查詢', 'java', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(8, sysdate(), '綜合查詢', 'javascript', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(9, sysdate(), '綜合查詢', 'jQuery', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(10, sysdate(), '綜合查詢', 'c#', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(11, sysdate(), '綜合查詢', 'json', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(12, sysdate(), '綜合查詢', 'xml', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(13, sysdate(), '綜合查詢', 'html', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(14, sysdate(), '綜合查詢', 'jsp', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(15, sysdate(), '綜合查詢', 'objective-c', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(16, sysdate(), '綜合查詢', 'java', 1, 1, null, null, null);
-insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(17, sysdate(), '綜合查詢', 'java', 2, 2, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(1, sysdate(), '快速查詢', 'Hello', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(2, sysdate(), '快速查詢', 'world', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(3, sysdate(), '快速查詢', 'c++', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(4, sysdate(), '快速查詢', 'python', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(5, sysdate(), '快速查詢', 'php', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(6, sysdate(), '快速查詢', 'ruby', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(7, sysdate(), '快速查詢', 'java', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(8, sysdate(), '快速查詢', 'javascript', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(9, sysdate(), '快速查詢', 'jQuery', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(10, sysdate(), '快速查詢', 'c#', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(11, sysdate(), '快速查詢', 'json', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(12, sysdate(), '快速查詢', 'xml', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(13, sysdate(), '快速查詢', 'html', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(14, sysdate(), '快速查詢', 'jsp', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(15, sysdate(), '快速查詢', 'objective-c', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(16, sysdate(), '快速查詢', 'java', 1, 1, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, keyword, cus_SerNo, acc_SerNo, dat_SerNo, ebk_SerNo, jou_SerNo) values(17, sysdate(), '快速查詢', 'java', 2, 2, null, null, null);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(18, sysdate(), '登入', 1, 1);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(19, sysdate(), '登入', 2, 2);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(20, sysdate(), '登入', 3, 5);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(21, sysdate(), '登入', 4, 1);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(22, sysdate(), '登入', 5, 2);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(23, sysdate(), '登入', 6, 5);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(24, sysdate(), '登入', 7, 1);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(25, sysdate(), '登入', 8, 2);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(26, sysdate(), '登入', 9, 9);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(27, sysdate(), '登入', 10, 1);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(28, sysdate(), '登入', 11, 2);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(29, sysdate(), '登入', 12, 5);
+insert into FE_Logs(serNo, cDTime, actionType, acc_serNo, cus_serNo) values(30, sysdate(), '登入', 1, 1);

@@ -1,6 +1,5 @@
 package com.shouyang.syazs.module.apply.feLogs;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,6 +16,9 @@ import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.enums.Act;
 import com.shouyang.syazs.core.entity.GenericEntityLog;
+import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.ebook.Ebook;
+import com.shouyang.syazs.module.apply.journal.Journal;
 
 /**
  * FE_Logs
@@ -32,7 +34,7 @@ public class FeLogs extends GenericEntityLog {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7484932839592255108L;
+	private static final long serialVersionUID = 1299854351303327443L;
 
 	// 類型
 	@Column(name = "actionType")
@@ -46,7 +48,7 @@ public class FeLogs extends GenericEntityLog {
 	/**
 	 * 用戶流水號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	@Autowired
 	private Customer customer;
@@ -54,22 +56,29 @@ public class FeLogs extends GenericEntityLog {
 	/**
 	 * 帳戶流水號
 	 */
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	@JoinColumn(name = "acc_SerNo", nullable = true)
 	@Autowired
 	private AccountNumber accountNumber;
 
 	// 資料庫流水號
-	@Column(name = "dat_SerNo")
-	private Long datSerNo;
+	@ManyToOne
+	@JoinColumn(name = "dat_SerNo")
+	private Database database;
 
 	// 電子書流水號
-	@Column(name = "ebk_SerNo")
-	private Long ebkSerNo;
+	@ManyToOne
+	@JoinColumn(name = "ebk_SerNo")
+	private Ebook ebook;
 
 	// 期刊流水號
-	@Column(name = "jou_SerNo")
-	private Long jouSerNo;
+	@ManyToOne
+	@JoinColumn(name = "jou_SerNo")
+	private Journal journal;
+
+	// 連結使用紀錄
+	@Column(name = "URLclick")
+	private Boolean click;
 
 	/**
 	 * @return the actionType
@@ -102,48 +111,18 @@ public class FeLogs extends GenericEntityLog {
 	}
 
 	/**
-	 * @return the datSerNo
+	 * @return the customer
 	 */
-	public Long getDatSerNo() {
-		return datSerNo;
+	public Customer getCustomer() {
+		return customer;
 	}
 
 	/**
-	 * @param datSerNo
-	 *            the datSerNo to set
+	 * @param customer
+	 *            the customer to set
 	 */
-	public void setDatSerNo(Long datSerNo) {
-		this.datSerNo = datSerNo;
-	}
-
-	/**
-	 * @return the ebkSerNo
-	 */
-	public Long getEbkSerNo() {
-		return ebkSerNo;
-	}
-
-	/**
-	 * @param ebkSerNo
-	 *            the ebkSerNo to set
-	 */
-	public void setEbkSerNo(Long ebkSerNo) {
-		this.ebkSerNo = ebkSerNo;
-	}
-
-	/**
-	 * @return the jouSerNo
-	 */
-	public Long getJouSerNo() {
-		return jouSerNo;
-	}
-
-	/**
-	 * @param jouSerNo
-	 *            the jouSerNo to set
-	 */
-	public void setJouSerNo(Long jouSerNo) {
-		this.jouSerNo = jouSerNo;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	/**
@@ -162,18 +141,63 @@ public class FeLogs extends GenericEntityLog {
 	}
 
 	/**
-	 * @return the customer
+	 * @return the database
 	 */
-	public Customer getCustomer() {
-		return customer;
+	public Database getDatabase() {
+		return database;
 	}
 
 	/**
-	 * @param customer
-	 *            the customer to set
+	 * @param database
+	 *            the database to set
 	 */
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
+	public void setDatabase(Database database) {
+		this.database = database;
+	}
+
+	/**
+	 * @return the ebook
+	 */
+	public Ebook getEbook() {
+		return ebook;
+	}
+
+	/**
+	 * @param ebook
+	 *            the ebook to set
+	 */
+	public void setEbook(Ebook ebook) {
+		this.ebook = ebook;
+	}
+
+	/**
+	 * @return the journal
+	 */
+	public Journal getJournal() {
+		return journal;
+	}
+
+	/**
+	 * @param journal
+	 *            the journal to set
+	 */
+	public void setJournal(Journal journal) {
+		this.journal = journal;
+	}
+
+	/**
+	 * @return the click
+	 */
+	public Boolean getClick() {
+		return click;
+	}
+
+	/**
+	 * @param click
+	 *            the click to set
+	 */
+	public void setClick(Boolean click) {
+		this.click = click;
 	}
 
 	public FeLogs() {
@@ -182,16 +206,30 @@ public class FeLogs extends GenericEntityLog {
 	}
 
 	public FeLogs(Act actionType, String keyword, Customer customer,
-			AccountNumber accountNumber, Long datSerNo, Long ebkSerNo,
-			Long jouSerNo) {
+			AccountNumber accountNumber, Database database, Ebook ebook,
+			Journal journal, Boolean click) {
 		super();
 		this.actionType = actionType;
 		this.keyword = keyword;
 		this.customer = customer;
 		this.accountNumber = accountNumber;
-		this.datSerNo = datSerNo;
-		this.ebkSerNo = ebkSerNo;
-		this.jouSerNo = jouSerNo;
+		this.database = database;
+		this.ebook = ebook;
+		this.journal = journal;
+		this.click = click;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "FeLogs [actionType=" + actionType + ", keyword=" + keyword
+				+ ", customer=" + customer + ", accountNumber=" + accountNumber
+				+ ", database=" + database + ", ebook=" + ebook + ", journal="
+				+ journal + ", click=" + click + "]";
 	}
 
 }

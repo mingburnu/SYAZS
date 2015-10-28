@@ -105,61 +105,49 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String owner() throws Exception {
-		if (getEntity().getRefSerNo() == null || getEntity().getRefSerNo() <= 0) {
-			addActionError("Owner Null");
-		} else {
-			referenceOwner = referenceOwnerService.getBySerNo(getEntity()
-					.getRefSerNo());
-			if (referenceOwner == null) {
-				addActionError("Owner Null");
+		referenceOwner = referenceOwnerService.getBySerNo(getEntity()
+				.getRefSerNo());
+
+		getRequest().setAttribute(
+				"owner",
+				getRequest().getContextPath()
+						+ "/crud/apply.database.owner.action");
+
+		DataSet<Database> ds = initDataSet();
+		List<Database> databases = new ArrayList<Database>(
+				referenceOwner.getDatabases());
+
+		ds.getPager().setTotalRecord((long) databases.size());
+		int first = ds.getPager().getOffset();
+		int last = first + ds.getPager().getRecordPerPage();
+
+		int i = 0;
+		while (i < databases.size()) {
+			if (i >= first && i < last) {
+				ds.getResults().add(databases.get(i));
 			}
+			i++;
 		}
 
-		if (!hasActionErrors()) {
-			getRequest().setAttribute(
-					"owner",
-					getRequest().getContextPath()
-							+ "/crud/apply.database.owner.action");
+		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
+			ds.getPager().setCurrentPage(
+					(int) Math.ceil(ds.getPager().getTotalRecord()
+							/ ds.getPager().getRecordPerPage()));
+			first = ds.getPager().getOffset();
+			last = first + ds.getPager().getRecordPerPage();
 
-			DataSet<Database> ds = initDataSet();
-			List<Database> databases = new ArrayList<Database>(
-					referenceOwner.getDatabases());
-
-			ds.getPager().setTotalRecord((long) databases.size());
-			int first = ds.getPager().getOffset();
-			int last = first + ds.getPager().getRecordPerPage();
-
-			int i = 0;
-			while (i < databases.size()) {
-				if (i >= first && i < last) {
-					ds.getResults().add(databases.get(i));
+			int j = 0;
+			while (j < databases.size()) {
+				if (j >= first && j < last) {
+					ds.getResults().add((Database) databases.get(j));
 				}
-				i++;
+				j++;
 			}
 
-			if (ds.getResults().size() == 0
-					&& ds.getPager().getCurrentPage() > 1) {
-				ds.getPager().setCurrentPage(
-						(int) Math.ceil(ds.getPager().getTotalRecord()
-								/ ds.getPager().getRecordPerPage()));
-				first = ds.getPager().getOffset();
-				last = first + ds.getPager().getRecordPerPage();
-
-				int j = 0;
-				while (j < databases.size()) {
-					if (j >= first && j < last) {
-						ds.getResults().add((Database) databases.get(j));
-					}
-					j++;
-				}
-
-			}
-
-			setDs(ds);
 		}
 
+		setDs(ds);
 		return LIST;
-
 	}
 
 	public String all() throws Exception {
@@ -181,6 +169,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		return VIEW;
+	}
+
+	public void click() {
+
 	}
 
 	public String count() {

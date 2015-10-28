@@ -16,6 +16,11 @@ function view(serNo){
 		}
 	});
 }
+
+function link(serNo){
+	var url="<%=request.getContextPath()%>"+"/crud/apply.database.click.action?entity.serNo="+serNo;
+	window.open(url);
+}
 </script>
 <style>
 .list td a:hover {
@@ -145,13 +150,13 @@ function view(serNo){
 							<c:when test="${num > 0}">
 								<div>
 									<esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML>
-									<br> <a href="${item.url }">${item.url }</a>
+									<br> <a onclick="link(${item.serNo });">${item.url }</a>
 								</div>
 							</c:when>
 							<c:otherwise>
 								<div class="odd">
 									<esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML>
-									<br> <a href="${item.url }">${item.url }</a>
+									<br> <a onclick="link(${item.serNo });">${item.url }</a>
 								</div>
 							</c:otherwise>
 						</c:choose>

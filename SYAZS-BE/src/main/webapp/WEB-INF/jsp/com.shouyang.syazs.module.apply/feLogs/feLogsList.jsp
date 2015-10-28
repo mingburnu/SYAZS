@@ -1,3 +1,4 @@
+<%@ page import="org.owasp.esapi.ESAPI"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -18,12 +19,15 @@
 </c:set>
 <c:if test="${login.role.role != '管理員'}">
 	<script type="text/javascript">
-	$(document).ready(function() {
-		formSetCSS();
-		state_hover();
-		initAutoComplete("<%=request.getContextPath()%>/crud/apply.customer.json.action",
-				'#customerSerNo', '#customerName');
-		});
+		$(document)
+				.ready(
+						function() {
+							formSetCSS();
+							state_hover();
+							initAutoComplete(
+									"<c:url value = '/'/>crud/apply.customer.json.action",
+									'#customerSerNo', '#customerName');
+						});
 	</script>
 </c:if>
 <script type="text/javascript">
@@ -37,26 +41,61 @@
 									.attr("checked", true);
 						});
 			});
-	
-	function goSearch(){
-		if($("input#customerSerNo").attr("checked")){
-		var customerSerNo=$("input#customerSerNo").val();
-		if(customerSerNo!=null&&customerSerNo>0){
-			goMain("<%=request.getContextPath()%>/crud/apply.feLogs.list.action",
-					"#apply_feLogs_list", "");
-		}else{
-			goAlert("訊息", "請正確填寫機構名稱");
-		}
-		}else{
-			goMain("<%=request.getContextPath()%>/crud/apply.feLogs.list.action",
+
+	<c:choose>
+	<c:when test="${not empty keywords }">
+	function goSearch() {
+		if ($("input#customerSerNo").attr("checked")) {
+			var customerSerNo = $("input#customerSerNo").val();
+			if (customerSerNo != null && customerSerNo > 0) {
+				goMain("<c:url value = '/'/>crud/apply.feLogs.list.action",
 						"#apply_feLogs_list", "");
+			} else {
+				goAlert("訊息", "請正確填寫機構名稱");
 			}
+		} else {
+			goMain("<c:url value = '/'/>crud/apply.feLogs.list.action",
+					"#apply_feLogs_list", "");
 		}
-		
+	}
+
 	//匯出
-	function goExport(){
-		var data=$("#apply_feLogs_list").serialize();
-		var url='<%=request.getContextPath()%>/crud/apply.feLogs.exports.action?'
+	function goExport() {
+		var data = $("#apply_feLogs_list").serialize();
+		var url = '<c:url value = '/'/>crud/apply.feLogs.exportKeyword.action?'
+				+ data;
+		if ($("input#customerSerNo").attr("checked")) {
+			var customerSerNo = $("input#customerSerNo").val();
+			if (customerSerNo != null && customerSerNo > 0) {
+				window.open(url, "exports");
+			} else {
+				goAlert("訊息", "請正確填寫機構名稱");
+			}
+		} else {
+			window.open(url, "exports");
+		}
+	}
+	</c:when>
+	<c:when test="${not empty logins }">
+	function goSearch() {
+		if ($("input#customerSerNo").attr("checked")) {
+			var customerSerNo = $("input#customerSerNo").val();
+			if (customerSerNo != null && customerSerNo > 0) {
+				goMain("<c:url value = '/'/>crud/apply.feLogs.rank.action",
+						"#apply_feLogs_rank", "");
+			} else {
+				goAlert("訊息", "請正確填寫機構名稱");
+			}
+		} else {
+			goMain("<c:url value = '/'/>crud/apply.feLogs.rank.action",
+					"#apply_feLogs_rank", "");
+		}
+	}
+
+	//匯出
+	function goExport() {
+		var data = $("#apply_feLogs_rank").serialize();
+		var url = "<c:url value = '/'/>crud/apply.feLogs.exportLogin.action?"
 				+ data;
 
 		if ($("input#customerSerNo").attr("checked")) {
@@ -70,159 +109,532 @@
 			window.open(url, "exports");
 		}
 	}
+	</c:when>
+	<c:when test="${not empty clicks }">
+	function goSearch() {
+		if ($("input#customerSerNo").attr("checked")) {
+			var customerSerNo = $("input#customerSerNo").val();
+			if (customerSerNo != null && customerSerNo > 0) {
+				goMain("<c:url value = '/'/>crud/apply.feLogs.link.action",
+						"#apply_feLogs_link", "");
+			} else {
+				goAlert("訊息", "請正確填寫機構名稱");
+			}
+		} else {
+			goMain("<c:url value = '/'/>crud/apply.feLogs.link.action",
+					"#apply_feLogs_link", "");
+		}
+	}
+
+	//匯出
+	function goExport() {
+		var data = $("#apply_feLogs_link").serialize();
+		var url = "<c:url value = '/'/>crud/apply.feLogs.exportClick.action?"
+				+ data;
+
+		if ($("input#customerSerNo").attr("checked")) {
+			var customerSerNo = $("input#customerSerNo").val();
+			if (customerSerNo != null && customerSerNo > 0) {
+				window.open(url, "exports");
+			} else {
+				goAlert("訊息", "請正確填寫機構名稱");
+			}
+		} else {
+			window.open(url, "exports");
+		}
+	}
+	</c:when>
+	</c:choose>
 </script>
 </head>
 <body>
-	<s:form action="apply.feLogs.list" namespace="/crud" method="post"
-		onsubmit="return false;">
-		<div class="tabs-box">
-			<div>
-				<a id="tabs-items_A" class="tabs-items-hover"><span
-					class="tabs-items-hover-span">查詢</span></a>
-			</div>
-			<div id="TabsContain_A" class="tabs-contain">
-				<table cellspacing="4" cellpadding="0" border="0">
-					<tbody>
-						<tr>
-							<th align="right">查詢統計範圍：</th>
-							<td align="left"><s:textfield name="entity.start"
-									class="input_text" id="cal-field1" /> <script
-									type="text/javascript">
-										Calendar.setup({
-											inputField : "cal-field1"
-										});
-									</script> 至&nbsp;&nbsp;<s:textfield name="entity.end" class="input_text"
-									id="cal-field2" /> <script type="text/javascript">
-										Calendar.setup({
-											inputField : "cal-field2"
-										});
-									</script></td>
-						</tr>
-						<c:if test="${login.role.role != '管理員'}">
-							<tr>
-								<th align="right">全部：</th>
-								<td><c:choose>
-										<c:when test="${0 eq entity.customer.serNo}">
-											<input type="radio" name="entity.customer.serNo" value="0"
-												checked>
-										</c:when>
-										<c:otherwise>
-											<input type="radio" name="entity.customer.serNo" value="0">
-										</c:otherwise>
-									</c:choose></td>
-							</tr>
-						</c:if>
-						<c:choose>
-							<c:when test="${login.role.role != '管理員'}">
+	<c:choose>
+		<c:when test="${not empty keywords }">
+			<s:form action="apply.feLogs.list" namespace="/crud" method="post"
+				onsubmit="return false;">
+				<div class="tabs-box">
+					<div>
+						<a id="tabs-items_A" class="tabs-items-hover"><span
+							class="tabs-items-hover-span">查詢</span></a>
+					</div>
+					<div id="TabsContain_A" class="tabs-contain">
+						<table cellspacing="4" cellpadding="0" border="0">
+							<tbody>
 								<tr>
-									<th align="right">用戶名稱：</th>
-									<td><c:choose>
-											<c:when test="${0 eq entity.customer.serNo}">
-												<input type="radio" name="entity.customer.serNo"
-													id="customerSerNo" value="0" />
-											</c:when>
-											<c:otherwise>
-												<input type="radio" name="entity.customer.serNo"
-													id="customerSerNo" value="${entity.customer.serNo }"
-													checked />
-											</c:otherwise>
-										</c:choose><input type="text" id="customerName" class="input_text"
-										name="entity.customer.name" value="${entity.customer.name }">
-										<a class="state-default" onclick="goSearch()">查詢</a></td>
+									<th align="right">查詢統計範圍：</th>
+									<td align="left"><s:textfield name="entity.start"
+											class="input_text" id="cal-field1" /> <script
+											type="text/javascript">
+												Calendar.setup({
+													inputField : "cal-field1"
+												});
+											</script> 至&nbsp;&nbsp;<s:textfield name="entity.end"
+											class="input_text" id="cal-field2" /> <script
+											type="text/javascript">
+												Calendar.setup({
+													inputField : "cal-field2"
+												});
+											</script></td>
 								</tr>
-							</c:when>
-							<c:otherwise>
-								<tr>
-									<th align="right">用戶名稱：</th>
-									<td><input type="radio" name="entity.customer.serNo"
-										id="customerSerNo" value="${login.customer.serNo}"
-										disabled="disabled" checked="checked"> <input
-										type="text" id="customerName" class="input_text"
-										value="${login.customer.name}" disabled="disabled"> <a
-										class="state-default" onclick="goSearch()">查詢</a></td>
-								</tr>
-							</c:otherwise>
-						</c:choose>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div id="div_nav">
-			目前位置：<span>統計資訊</span> &gt; <span>關鍵字檢索統計</span>
-		</div>
-		<div class="list-box">
-			<div class="list-buttons">
-				<c:choose>
-					<c:when
-						test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
-						<a class="state-default" onclick="goExport()">匯出</a>
-					</c:when>
-
-				</c:choose>
-			</div>
-			<table cellspacing="1" class="list-table">
-				<tbody>
-					<tr>
-						<td colspan="8" class="topic">基本設定</td>
-					</tr>
-					<tr>
-						<th>年月</th>
-						<th>名次</th>
-						<th>關鍵字</th>
-						<th>次數</th>
-						<th>客戶名稱</th>
-					</tr>
-					<c:forEach var="item" items="${ds.results}" varStatus="status">
-						<tr>
-							<td><s:property value="entity.start" />~<s:property
-									value="entity.end" /></td>
-							<td align="center">${item.rank }</td>
-							<td><esapi:encodeForHTML>${item.keyword }</esapi:encodeForHTML></td>
-							<td>${item.count }</td>
-							<td><c:out value="${item.customer.name }" /></td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-			<div class="page-box" align="right">
-				<table border="0" cellspacing="0" cellpadding="0">
-					<tbody>
-
-						<c:if test="${ds.pager.totalRecord > 0 }">
-							<tr>
-								<td><jsp:include page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.feLogs.paginate" />
-										<jsp:param name="pager" value="${ds.pager}" />
-										<jsp:param name="detail" value="0" />
-									</jsp:include></td>
-								<td>每頁顯示 <select id="listForm_pageSize"
-									name="pager.recordPerPage" onchange="changePageSize()">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-								</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
-									value="${ds.pager.currentPage }" type="number" min="1"
-									max="${totalPage }" onchange="gotoPage(this.value)"> 頁,
-									共<span class="totalNum">${totalPage }</span>頁
-								</td>
-							</tr>
-						</c:if>
-					</tbody>
-				</table>
-			</div>
-			<div class="detail_note">
-				<div class="detail_note_title">Note</div>
-				<div class="detail_note_content">
-					<c:if test="${0 eq ds.pager.totalRecord}">
-						<span>查無資料</span>
-					</c:if>
+								<c:if test="${login.role.role != '管理員'}">
+									<tr>
+										<th align="right">全部：</th>
+										<td><c:choose>
+												<c:when test="${0 eq entity.customer.serNo}">
+													<input type="radio" name="entity.customer.serNo" value="0"
+														checked>
+												</c:when>
+												<c:otherwise>
+													<input type="radio" name="entity.customer.serNo" value="0">
+												</c:otherwise>
+											</c:choose></td>
+									</tr>
+								</c:if>
+								<c:choose>
+									<c:when test="${login.role.role != '管理員'}">
+										<tr>
+											<th align="right">用戶名稱：</th>
+											<td><c:choose>
+													<c:when test="${0 eq entity.customer.serNo}">
+														<input type="radio" name="entity.customer.serNo"
+															id="customerSerNo" value="0" />
+													</c:when>
+													<c:otherwise>
+														<input type="radio" name="entity.customer.serNo"
+															id="customerSerNo" value="${entity.customer.serNo }"
+															checked />
+													</c:otherwise>
+												</c:choose><input type="text" id="customerName" class="input_text"
+												name="entity.customer.name" value="${entity.customer.name }">
+												<a class="state-default" onclick="goSearch()">查詢</a></td>
+										</tr>
+									</c:when>
+									<c:otherwise>
+										<tr>
+											<th align="right">用戶名稱：</th>
+											<td><input type="radio" name="entity.customer.serNo"
+												id="customerSerNo" value="${login.customer.serNo}"
+												disabled="disabled" checked="checked"> <input
+												type="text" id="customerName" class="input_text"
+												value="${login.customer.name}" disabled="disabled">
+												<a class="state-default" onclick="goSearch()">查詢</a></td>
+										</tr>
+									</c:otherwise>
+								</c:choose>
+							</tbody>
+						</table>
+					</div>
 				</div>
-			</div>
-		</div>
-	</s:form>
+				<div id="div_nav">
+					目前位置：<span>統計資訊</span> &gt; <span>關鍵字檢索統計</span>
+				</div>
+				<div class="list-box">
+					<div class="list-buttons">
+						<c:choose>
+							<c:when
+								test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
+								<a class="state-default" onclick="goExport()">匯出</a>
+							</c:when>
+
+						</c:choose>
+					</div>
+					<table cellspacing="1" class="list-table">
+						<tbody>
+							<tr>
+								<td colspan="8" class="topic">基本設定</td>
+							</tr>
+							<tr>
+								<th>年月</th>
+								<th>名次</th>
+								<th>關鍵字</th>
+								<th>次數</th>
+								<th>客戶名稱</th>
+							</tr>
+							<c:forEach var="item" items="${ds.results}" varStatus="status">
+								<tr>
+									<td><s:property value="entity.start" />~<s:property
+											value="entity.end" /></td>
+									<td align="center">${item.rank }</td>
+									<td><esapi:encodeForHTML>${item.keyword }</esapi:encodeForHTML></td>
+									<td>${item.count }</td>
+									<td><c:out value="${item.customer.name }" /></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+					<div class="page-box" align="right">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tbody>
+
+								<c:if test="${ds.pager.totalRecord > 0 }">
+									<tr>
+										<td><jsp:include
+												page="/WEB-INF/jsp/layout/pagination.jsp">
+												<jsp:param name="namespace" value="/crud" />
+												<jsp:param name="action" value="apply.feLogs.paginate" />
+												<jsp:param name="pager" value="${ds.pager}" />
+												<jsp:param name="detail" value="0" />
+											</jsp:include></td>
+										<td>每頁顯示 <select id="listForm_pageSize"
+											name="pager.recordPerPage" onchange="changePageSize()">
+												<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
+												<option value="5">5</option>
+												<option value="10">10</option>
+												<option value="20">20</option>
+												<option value="50">50</option>
+										</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
+											value="${ds.pager.currentPage }" type="number" min="1"
+											max="${totalPage }" onchange="gotoPage(this.value)">
+											頁, 共<span class="totalNum">${totalPage }</span>頁
+										</td>
+									</tr>
+								</c:if>
+							</tbody>
+						</table>
+					</div>
+					<div class="detail_note">
+						<div class="detail_note_title">Note</div>
+						<div class="detail_note_content">
+							<c:if test="${0 eq ds.pager.totalRecord}">
+								<span>查無資料</span>
+							</c:if>
+						</div>
+					</div>
+				</div>
+			</s:form>
+		</c:when>
+		<c:when test="${not empty logins }">
+			<s:form action="apply.feLogs.rank" namespace="/crud" method="post"
+				onsubmit="return false;">
+				<div class="tabs-box">
+					<div>
+						<a id="tabs-items_A" class="tabs-items-hover"><span
+							class="tabs-items-hover-span">查詢</span></a>
+					</div>
+					<div id="TabsContain_A" class="tabs-contain">
+						<table cellspacing="4" cellpadding="0" border="0">
+							<tbody>
+								<tr>
+									<th align="right">查詢統計範圍：</th>
+									<td align="left"><s:textfield name="entity.start"
+											class="input_text" id="cal-field1" /> <script
+											type="text/javascript">
+												Calendar.setup({
+													inputField : "cal-field1"
+												});
+											</script> 至&nbsp;&nbsp;<s:textfield name="entity.end"
+											class="input_text" id="cal-field2" /> <script
+											type="text/javascript">
+												Calendar.setup({
+													inputField : "cal-field2"
+												});
+											</script></td>
+								</tr>
+								<c:if test="${login.role.role != '管理員'}">
+									<tr>
+										<th align="right">全部：</th>
+										<td><c:choose>
+												<c:when test="${0 eq entity.customer.serNo}">
+													<input type="radio" name="entity.customer.serNo" value="0"
+														checked>
+												</c:when>
+												<c:otherwise>
+													<input type="radio" name="entity.customer.serNo" value="0">
+												</c:otherwise>
+											</c:choose></td>
+									</tr>
+								</c:if>
+								<c:choose>
+									<c:when test="${login.role.role != '管理員'}">
+										<tr>
+											<th align="right">用戶名稱：</th>
+											<td><c:choose>
+													<c:when test="${0 eq entity.customer.serNo}">
+														<input type="radio" name="entity.customer.serNo"
+															id="customerSerNo" value="0" />
+													</c:when>
+													<c:otherwise>
+														<input type="radio" name="entity.customer.serNo"
+															id="customerSerNo" value="${entity.customer.serNo }"
+															checked />
+													</c:otherwise>
+												</c:choose> <input type="text" id="customerName" class="input_text"
+												name="entity.customer.name" value="${entity.customer.name }">
+												<a class="state-default" onclick="goSearch()">查詢</a></td>
+										</tr>
+									</c:when>
+									<c:otherwise>
+										<tr>
+											<th align="right">用戶名稱：</th>
+											<td><input type="radio" name="entity.customer.serNo"
+												id="customerSerNo" value="${login.customer.serNo}"
+												disabled="disabled" checked="checked"> <input
+												type="text" id="customerName" class="input_text"
+												value="${login.customer.name}" disabled="disabled">
+												<a class="state-default" onclick="goSearch()">查詢</a></td>
+										</tr>
+									</c:otherwise>
+								</c:choose>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div id="div_nav">
+					目前位置：<span>統計資訊</span> &gt; <span>登入次數統計</span>
+				</div>
+				<div class="list-box">
+					<div class="list-buttons">
+						<c:choose>
+							<c:when
+								test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
+								<a class="state-default" onclick="goExport()">匯出</a>
+							</c:when>
+
+						</c:choose>
+					</div>
+					<table cellspacing="1" class="list-table">
+						<tbody>
+							<tr>
+								<td colspan="8" class="topic">基本設定</td>
+							</tr>
+							<tr>
+								<th>年月</th>
+								<th>名次</th>
+								<th>帳號</th>
+								<th>用戶姓名</th>
+								<th>用戶身分</th>
+								<th>客戶名稱</th>
+								<th>狀態</th>
+								<th>次數</th>
+							</tr>
+							<c:forEach var="item" items="${ds.results}" varStatus="status">
+								<tr>
+									<td><s:property value="entity.start" />~<s:property
+											value="entity.end" /></td>
+									<td align="center">${item.rank }</td>
+									<td>${item.accountNumber.userId }</td>
+									<td align="center"><esapi:encodeForHTMLAttribute>${item.accountNumber.userName }</esapi:encodeForHTMLAttribute></td>
+									<td align="center">${item.accountNumber.role.role }</td>
+									<td align="center">${item.customer.name }</td>
+									<td>${item.accountNumber.status.status }</td>
+									<td>${item.count }</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+					<div class="page-box" align="right">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tbody>
+
+								<c:if test="${ds.pager.totalRecord > 0 }">
+									<tr>
+										<td><jsp:include
+												page="/WEB-INF/jsp/layout/pagination.jsp">
+												<jsp:param name="namespace" value="/crud" />
+												<jsp:param name="action" value="apply.feLogs.rank" />
+												<jsp:param name="pager" value="${ds.pager}" />
+												<jsp:param name="detail" value="0" />
+											</jsp:include></td>
+										<td>每頁顯示 <select id="listForm_pageSize"
+											name="pager.recordPerPage" onchange="changePageSize()">
+												<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
+												<option value="5">5</option>
+												<option value="10">10</option>
+												<option value="20">20</option>
+												<option value="50">50</option>
+										</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
+											value="${ds.pager.currentPage }" type="number" min="1"
+											max="${totalPage }" onchange="gotoPage(this.value)">
+											頁, 共<span class="totalNum">${totalPage }</span>頁
+										</td>
+									</tr>
+								</c:if>
+							</tbody>
+						</table>
+					</div>
+					<div class="detail_note">
+						<div class="detail_note_title">Note</div>
+						<div class="detail_note_content">
+							<c:if test="${0 eq ds.pager.totalRecord}">
+								<span>查無資料</span>
+							</c:if>
+						</div>
+					</div>
+				</div>
+			</s:form>
+		</c:when>
+
+		<c:when test="${not empty clicks }">
+			<s:form action="apply.feLogs.link" namespace="/crud" method="post"
+				onsubmit="return false;">
+				<div class="tabs-box">
+					<div>
+						<a id="tabs-items_A" class="tabs-items-hover"><span
+							class="tabs-items-hover-span">查詢</span></a>
+					</div>
+					<div id="TabsContain_A" class="tabs-contain">
+						<table cellspacing="4" cellpadding="0" border="0">
+							<tbody>
+								<tr>
+									<th align="right">查詢統計範圍：</th>
+									<td align="left"><s:textfield name="entity.start"
+											class="input_text" id="cal-field1" /> <script
+											type="text/javascript">
+												Calendar.setup({
+													inputField : "cal-field1"
+												});
+											</script> 至&nbsp;&nbsp;<s:textfield name="entity.end"
+											class="input_text" id="cal-field2" /> <script
+											type="text/javascript">
+												Calendar.setup({
+													inputField : "cal-field2"
+												});
+											</script></td>
+								</tr>
+								<c:if test="${login.role.role != '管理員'}">
+									<tr>
+										<th align="right">全部：</th>
+										<td><c:choose>
+												<c:when test="${0 eq entity.customer.serNo}">
+													<input type="radio" name="entity.customer.serNo" value="0"
+														checked>
+												</c:when>
+												<c:otherwise>
+													<input type="radio" name="entity.customer.serNo" value="0">
+												</c:otherwise>
+											</c:choose></td>
+									</tr>
+								</c:if>
+								<c:choose>
+									<c:when test="${login.role.role != '管理員'}">
+										<tr>
+											<th align="right">用戶名稱：</th>
+											<td><c:choose>
+													<c:when test="${0 eq entity.customer.serNo}">
+														<input type="radio" name="entity.customer.serNo"
+															id="customerSerNo" value="0" />
+													</c:when>
+													<c:otherwise>
+														<input type="radio" name="entity.customer.serNo"
+															id="customerSerNo" value="${entity.customer.serNo }"
+															checked />
+													</c:otherwise>
+												</c:choose><input type="text" id="customerName" class="input_text"
+												name="entity.customer.name" value="${entity.customer.name }">
+												<a class="state-default" onclick="goSearch()">查詢</a></td>
+										</tr>
+									</c:when>
+									<c:otherwise>
+										<tr>
+											<th align="right">用戶名稱：</th>
+											<td><input type="radio" name="entity.customer.serNo"
+												id="customerSerNo" value="${login.customer.serNo}"
+												disabled="disabled" checked="checked"> <input
+												type="text" id="customerName" class="input_text"
+												value="${login.customer.name}" disabled="disabled">
+												<a class="state-default" onclick="goSearch()">查詢</a></td>
+										</tr>
+									</c:otherwise>
+								</c:choose>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div id="div_nav">
+					目前位置：<span>統計資訊</span> &gt; <span>URL點擊次數統計</span>
+				</div>
+				<div class="list-box">
+					<div class="list-buttons">
+						<c:choose>
+							<c:when
+								test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
+								<a class="state-default" onclick="goExport()">匯出</a>
+							</c:when>
+
+						</c:choose>
+					</div>
+					<table cellspacing="1" class="list-table">
+						<tbody>
+							<tr>
+								<td colspan="8" class="topic">基本設定</td>
+							</tr>
+							<tr>
+								<th>年月</th>
+								<th>名次</th>
+								<th>資源類型</th>
+								<th>標題</th>
+								<th>次數</th>
+								<th>客戶名稱</th>
+							</tr>
+							<c:forEach var="item" items="${ds.results}" varStatus="status">
+								<tr>
+									<td><s:property value="entity.start" />~<s:property
+											value="entity.end" /></td>
+									<td align="center">${item.rank }</td>
+									<td><c:choose>
+											<c:when test="${not empty item.database }">資料庫</c:when>
+											<c:when test="${not empty item.ebook }">電子書</c:when>
+											<c:when test="${not empty item.journal }">期刊</c:when>
+										</c:choose></td>
+									<td><c:choose>
+											<c:when test="${not empty item.database }">
+												<esapi:encodeForHTML>${item.database.dbTitle }</esapi:encodeForHTML>
+											</c:when>
+											<c:when test="${not empty item.ebook }">
+												<esapi:encodeForHTML>${item.ebook.bookName }</esapi:encodeForHTML>
+											</c:when>
+											<c:when test="${not empty item.journal }">
+												<esapi:encodeForHTML>${item.journal.title }</esapi:encodeForHTML>
+											</c:when>
+										</c:choose></td>
+									<td>${item.count }</td>
+									<td><c:out value="${item.customer.name }" /></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+					<div class="page-box" align="right">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tbody>
+
+								<c:if test="${ds.pager.totalRecord > 0 }">
+									<tr>
+										<td><jsp:include
+												page="/WEB-INF/jsp/layout/pagination.jsp">
+												<jsp:param name="namespace" value="/crud" />
+												<jsp:param name="action" value="apply.feLogs.paginate" />
+												<jsp:param name="pager" value="${ds.pager}" />
+												<jsp:param name="detail" value="0" />
+											</jsp:include></td>
+										<td>每頁顯示 <select id="listForm_pageSize"
+											name="pager.recordPerPage" onchange="changePageSize()">
+												<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
+												<option value="5">5</option>
+												<option value="10">10</option>
+												<option value="20">20</option>
+												<option value="50">50</option>
+										</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
+											value="${ds.pager.currentPage }" type="number" min="1"
+											max="${totalPage }" onchange="gotoPage(this.value)">
+											頁, 共<span class="totalNum">${totalPage }</span>頁
+										</td>
+									</tr>
+								</c:if>
+							</tbody>
+						</table>
+					</div>
+					<div class="detail_note">
+						<div class="detail_note_title">Note</div>
+						<div class="detail_note_content">
+							<c:if test="${0 eq ds.pager.totalRecord}">
+								<span>查無資料</span>
+							</c:if>
+						</div>
+					</div>
+				</div>
+			</s:form>
+		</c:when>
+	</c:choose>
 	<iframe name="exports" style="display: none;"></iframe>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
