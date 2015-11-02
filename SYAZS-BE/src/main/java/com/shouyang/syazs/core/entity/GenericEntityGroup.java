@@ -1,5 +1,7 @@
 package com.shouyang.syazs.core.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -223,6 +225,15 @@ public abstract class GenericEntityGroup extends FileIoProperties {
 	@Transient
 	private Group thirdLevelGroup;
 
+	@Transient
+	private List<Group> firstLevelGroups;
+
+	@Transient
+	private List<Group> secondLevelGroups;
+
+	@Transient
+	private List<Group> thirdLevelGroups;
+
 	/**
 	 * @return the firstLevelName
 	 */
@@ -388,4 +399,48 @@ public abstract class GenericEntityGroup extends FileIoProperties {
 		this.thirdLevelGroup = thirdLevelGroup;
 	}
 
+	/**
+	 * @return the firstLevelGroups
+	 */
+	public List<Group> getFirstLevelGroups() {
+		return firstLevelGroups;
+	}
+
+	/**
+	 * @param firstLevelGroups
+	 *            the firstLevelGroups to set
+	 */
+	public void setFirstLevelGroups(List<Group> firstLevelGroups) {
+		this.firstLevelGroups = firstLevelGroups;
+	}
+
+	/**
+	 * @return the secondLevelGroups
+	 */
+	public List<Group> getSecondLevelGroups() {
+		return secondLevelGroups;
+	}
+
+	/**
+	 * @param secondLevelGroups
+	 *            the secondLevelGroups to set
+	 */
+	public void setSecondLevelGroups(List<Group> secondLevelGroups) {
+		this.secondLevelGroups = secondLevelGroups;
+	}
+
+	/**
+	 * @return the thirdLevelGroups
+	 */
+	public List<Group> getThirdLevelGroups() {
+		return thirdLevelGroups;
+	}
+
+	/**
+	 * @param thirdLevelGroups
+	 *            the thirdLevelGroups to set
+	 */
+	public void setThirdLevelGroups(List<Group> thirdLevelGroups) {
+		this.thirdLevelGroups = thirdLevelGroups;
+	}
 }

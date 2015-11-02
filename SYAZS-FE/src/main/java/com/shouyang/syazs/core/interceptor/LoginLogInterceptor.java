@@ -45,14 +45,13 @@ public class LoginLogInterceptor extends RootInterceptor {
 		if (method.equals("logout")) {
 			accountNumber = (AccountNumber) session.get("login");
 			if (accountNumber != null
+					&& accountNumber.hasSerNo()
 					&& accountNumberService
 							.getBySerNo(accountNumber.getSerNo()) != null) {
 				feLogsService.save(
 						new FeLogs(Act.登出, null, accountNumber.getCustomer(),
 								accountNumber, null, null, null, false),
 						accountNumber);
-
-				session.remove("record");
 			} else {
 				session.clear();
 			}
@@ -63,12 +62,14 @@ public class LoginLogInterceptor extends RootInterceptor {
 		if (method.equals("login")) {
 			accountNumber = (AccountNumber) session.get("login");
 			if (accountNumber != null
+					&& accountNumber.hasSerNo()
+					&& accountNumberService
+							.getBySerNo(accountNumber.getSerNo()) != null
 					&& StringUtils.isEmpty((String) session.get("record"))) {
 				feLogsService.save(
 						new FeLogs(Act.登入, null, accountNumber.getCustomer(),
 								accountNumber, null, null, null, false),
 						accountNumber);
-				session.put("record", "saved");
 			}
 		}
 

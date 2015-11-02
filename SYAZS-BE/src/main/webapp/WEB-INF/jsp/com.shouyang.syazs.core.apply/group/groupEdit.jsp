@@ -77,6 +77,10 @@
 	}
 </script>
 <style type="text/css">
+select.input_text {
+    width: 103px;
+}
+
 input[name="entity.secondLevelOption"] {
 	display: none;
 }
@@ -99,9 +103,18 @@ input[name="entity.thirdLevelOption"] {
 						<c:when test="${1 eq entity.groupMapping.level }">
 							<s:radio list="#{'extend':''}" name="entity.firstLevelOption"
 								disabled="true" />
-							<s:select cssClass="input_text" headerValue="--觀看群組--"
-								headerKey="0" list="firstLevelGroups" listKey="serNo"
-								listValue="groupName" />
+							<c:choose>
+								<c:when test="${not empty entity.firstLevelGroups }">
+									<s:select cssClass="input_text" headerValue="--觀看群組--"
+										headerKey="0" list="entity.firstLevelGroups" listKey="serNo"
+										listValue="groupName" />
+								</c:when>
+								<c:otherwise>
+									<select class="input_text">
+										<option value="0">--選擇群組--</option>
+									</select>
+								</c:otherwise>
+							</c:choose>
 							<s:radio list="#{'modify':'修改Level 1群組'}"
 								name="entity.firstLevelOption" disabled="true" value="'modify'" />
 							<s:textfield cssClass="input_text" name="entity.firstLevelName" />
@@ -118,9 +131,18 @@ input[name="entity.thirdLevelOption"] {
 						<c:otherwise>
 							<s:radio list="#{'extend':''}" name="entity.firstLevelOption"
 								disabled="true" value="'extend'" />
-							<s:select cssClass="input_text" name="entity.firstLevelSelect"
-								list="firstLevelGroups" listKey="serNo" listValue="groupName"
-								onchange="showSubGroups()" />
+							<c:choose>
+								<c:when test="${not empty entity.firstLevelGroups }">
+									<s:select cssClass="input_text" name="entity.firstLevelSelect"
+										list="entity.firstLevelGroups" listKey="serNo"
+										listValue="groupName" onchange="showSubGroups()" />
+								</c:when>
+								<c:otherwise>
+									<select class="input_text">
+										<option value="0">--選擇群組--</option>
+									</select>
+								</c:otherwise>
+							</c:choose>
 							<s:radio list="#{'modify':'修改Level 1群組'}"
 								name="entity.firstLevelOption" disabled="true" />
 							<s:textfield cssClass="input_text" disabled="true" />
@@ -133,9 +155,19 @@ input[name="entity.thirdLevelOption"] {
 						<c:when test="${2 eq entity.groupMapping.level }">
 							<input type="checkbox" id="checkLevel2" disabled="disabled">
 							<s:radio list="#{'extend':''}" name="entity.secondLevelOption" />
-							<s:select cssClass="input_text" headerValue="--觀看群組--"
-								headerKey="0" list="secondLevelGroups" listKey="serNo"
-								listValue="groupName" />
+							<c:choose>
+								<c:when test="${not empty entity.secondLevelGroups }">
+									<s:select cssClass="input_text" headerValue="--觀看群組--"
+										headerKey="0" list="entity.secondLevelGroups" listKey="serNo"
+										listValue="groupName" />
+								</c:when>
+								<c:otherwise>
+									<select class="input_text">
+										<option value="0">--觀看群組--</option>
+									</select>
+								</c:otherwise>
+							</c:choose>
+
 							<input type="checkbox" id="checkLevel2" disabled="disabled">
 							<s:radio list="#{'modify':'修改Level 2群組'}"
 								name="entity.secondLevelOption" disabled="true" value="'modify'" />
@@ -144,9 +176,18 @@ input[name="entity.thirdLevelOption"] {
 						<c:when test="${3 eq entity.groupMapping.level }">
 							<input type="checkbox" id="checkLevel2" disabled="disabled">
 							<s:radio list="#{'extend':''}" name="entity.secondLevelOption" />
-							<s:select cssClass="input_text" name="entity.secondLevelSelect"
-								list="secondLevelGroups" listKey="serNo" listValue="groupName"
-								onchange="showSubGroups()" />
+							<c:choose>
+								<c:when test="${not empty entity.secondLevelGroups }">
+									<s:select cssClass="input_text" name="entity.secondLevelSelect"
+										list="entity.secondLevelGroups" listKey="serNo"
+										listValue="groupName" onchange="showSubGroups()" />
+								</c:when>
+								<c:otherwise>
+									<select class="input_text">
+										<option value="0">--選擇群組--</option>
+									</select>
+								</c:otherwise>
+							</c:choose>
 							<input type="checkbox" id="checkLevel2" disabled="disabled">
 							<s:radio list="#{'modify':'修改Level 2群組'}"
 								name="entity.secondLevelOption" disabled="true" />
@@ -170,9 +211,20 @@ input[name="entity.thirdLevelOption"] {
 				<td><c:choose>
 						<c:when test="${3 eq entity.groupMapping.level }">
 							<input type="checkbox" disabled>
-							<s:select id="viewGroups" cssClass="input_text"
-								headerValue="--觀看群組--" headerKey="0" list="thirdLevelGroups"
-								listKey="serNo" listValue="groupName" />
+							<c:choose>
+								<c:when test="${not empty entity.thirdLevelGroups }">
+									<s:select id="viewGroups" cssClass="input_text"
+										headerValue="--觀看群組--" headerKey="0"
+										list="entity.thirdLevelGroups" listKey="serNo"
+										listValue="groupName" />
+								</c:when>
+								<c:otherwise>
+									<select class="input_text">
+										<option value="0">--觀看群組--</option>
+									</select>
+								</c:otherwise>
+							</c:choose>
+
 							<input type="checkbox" id="checkLevel3" disabled="disabled">
 							<s:radio list="#{'modify':'修改Level 3群組'}"
 								name="entity.thirdLevelOption" />

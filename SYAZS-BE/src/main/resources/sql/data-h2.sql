@@ -124,7 +124,7 @@ insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(24
 insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(25, '1980', '2020', '買斷');
 
 --database
-insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess, url) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true, 'http://www.w3schools.com/');
+insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true);
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate() , 'Medicine', '資料庫', 9, random_uuid(), true);
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate() , 'Physics', '資料庫', 10, random_uuid(), true);
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate() , 'Math', '資料庫', 11, random_uuid(), true);
@@ -171,7 +171,7 @@ insert into ref_jou(ref_serNo, jou_serNo) values(3, 6);
 insert into ref_jou(ref_serNo, jou_serNo) values(3, 7);
 
 --ebook
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess, url) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true, 'http://www.w3schools.com/');
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true);
 insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 2, 'Melanie Goldfarb MD' , 'Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18, random_uuid(), true);
 insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Metal Cats', 9781576876770, 1, 'Alexandra Crockett' , '', 19, random_uuid(), true);
 insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Hitler: A Biography', 9780393337617, 3, 'Ian Kershaw' , '', 20, random_uuid(), true);
@@ -249,6 +249,7 @@ insert into ip_range (serNo, cDTime, cUid, uDTime, uUid, cus_serNo, ipRangeEnd, 
 insert into ip_range (serNo, cDTime, cUid, uDTime, uUid, cus_serNo, ipRangeEnd, ipRangeStart) values('54',sysdate(),'admin',sysdate(),'admin','8','203.65.109.254','203.65.109.1');
 insert into ip_range (serNo, cDTime, cUid, uDTime, uUid, cus_serNo, ipRangeEnd, ipRangeStart) values('55',sysdate(),'admin',sysdate(),'admin','8','203.65.100.13','203.65.100.13');
 insert into ip_range (serNo, cDTime, cUid, uDTime, uUid, cus_serNo, ipRangeEnd, ipRangeStart) values('56',sysdate(),'admin',sysdate(),'admin','8','210.241.104.254','210.241.104.128');
+--insert into ip_range (serNo, cDTime, cUid, uDTime, uUid, cus_serNo, ipRangeEnd, ipRangeStart) values('57',sysdate(),'admin',sysdate(),'admin','3','127.0.0.1','127.0.0.1');
 
 
 --BE_Logs

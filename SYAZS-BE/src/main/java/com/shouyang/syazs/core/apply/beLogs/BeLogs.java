@@ -41,6 +41,7 @@ public class BeLogs extends GenericEntityLog {
 	// 帳戶流水號
 	@ManyToOne
 	@JoinColumn(name = "acc_serNo", nullable = true)
+	@Autowired
 	private AccountNumber accountNumber;
 
 	// 用戶流水號

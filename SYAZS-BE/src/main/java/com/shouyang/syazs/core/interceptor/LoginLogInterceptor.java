@@ -2,7 +2,6 @@ package com.shouyang.syazs.core.interceptor;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -45,12 +44,11 @@ public class LoginLogInterceptor extends RootInterceptor {
 		if (method.equals("logout")) {
 			accountNumber = (AccountNumber) session.get("login");
 			if (accountNumber != null
+					&& accountNumber.hasSerNo()
 					&& accountNumberService
 							.getBySerNo(accountNumber.getSerNo()) != null) {
 				beLogsService.save(new BeLogs(Act.登出, accountNumber,
 						accountNumber.getCustomer()), accountNumber);
-
-				session.remove("record");
 			} else {
 				session.clear();
 			}
@@ -61,10 +59,11 @@ public class LoginLogInterceptor extends RootInterceptor {
 		if (method.equals("login")) {
 			accountNumber = (AccountNumber) session.get("login");
 			if (accountNumber != null
-					&& StringUtils.isEmpty((String) session.get("record"))) {
+					&& accountNumber.hasSerNo()
+					&& accountNumberService
+							.getBySerNo(accountNumber.getSerNo()) != null) {
 				beLogsService.save(new BeLogs(Act.登入, accountNumber,
 						accountNumber.getCustomer()), accountNumber);
-				session.put("record", "saved");
 			}
 		}
 

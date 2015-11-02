@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.module.apply.ebook.Ebook;
 import com.shouyang.syazs.module.apply.enums.Type;
+import com.shouyang.syazs.module.apply.feLogs.FeLogs;
 import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
@@ -108,6 +109,9 @@ public class Database extends ModuleProperties {
 
 	@OneToMany(mappedBy = "database", orphanRemoval = true)
 	private Set<Journal> journals;
+
+	@OneToMany(mappedBy = "database", orphanRemoval = true)
+	private Set<FeLogs> feLogses;
 
 	/**
 	 * @return the dbTitle
@@ -342,11 +346,17 @@ public class Database extends ModuleProperties {
 	}
 
 	/**
-	 * @param journals
-	 *            the journals to set
+	 * @return the journals
 	 */
-	public void setJournals(Set<Journal> journals) {
-		this.journals = journals;
+	public Set<Journal> getJournals() {
+		return journals;
+	}
+
+	/**
+	 * @return the feLogses
+	 */
+	public Set<FeLogs> getFeLogses() {
+		return feLogses;
 	}
 
 	public Database() {

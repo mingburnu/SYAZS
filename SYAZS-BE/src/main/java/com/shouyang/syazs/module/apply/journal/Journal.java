@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.feLogs.FeLogs;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
@@ -111,6 +113,9 @@ public class Journal extends ModuleProperties {
 	@ManyToMany
 	@JoinTable(name = "ref_jou", joinColumns = @JoinColumn(name = "jou_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
 	private Set<ReferenceOwner> referenceOwners;
+
+	@OneToMany(mappedBy = "journal", orphanRemoval = true)
+	private Set<FeLogs> feLogses;
 
 	/**
 	 * @return the title

@@ -92,13 +92,14 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 			entity.setUserPw(encryptedPassword);
 		}
 
-		AccountNumber dbEntity = getDao().findBySerNo(entity.getSerNo());
+		AccountNumber dbEntity = dao.findBySerNo(entity.getSerNo());
 
 		BeanUtils.copyProperties(entity, dbEntity, ignoreProperties);
 
-		getDao().update(dbEntity);
+		dao.update(dbEntity);
 		makeUserInfo(dbEntity);
-
+		
+		dao.updateCustomer(entity);
 		return dbEntity;
 	}
 
@@ -159,9 +160,5 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 		Assert.notNull(ds.getEntity());
 
 		return dao.findByRestrictions(loginUser, ds);
-	}
-
-	public void updateLog(AccountNumber accountNumber) {
-		dao.updateCustomer(accountNumber);
 	}
 }

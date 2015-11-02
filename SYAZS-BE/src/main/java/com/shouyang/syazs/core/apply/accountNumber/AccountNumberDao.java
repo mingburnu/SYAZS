@@ -3,15 +3,12 @@ package com.shouyang.syazs.core.apply.accountNumber;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.metadata.ClassMetadata;
 import org.springframework.stereotype.Repository;
 
 import com.shouyang.syazs.core.apply.enums.Role;
@@ -101,24 +98,19 @@ public class AccountNumberDao extends ModuleDaoFull<AccountNumber> {
 	}
 
 	public void updateCustomer(AccountNumber accountNumber) {
-		Map<String, ClassMetadata> map = (Map<String, ClassMetadata>) getSession()
-				.getSessionFactory().getAllClassMetadata();
+		Query beQuery = getSession()
+				.createQuery(
+						"UPDATE BeLogs B SET B.customer.serNo =? WHERE B.accountNumber.serNo =?");
+		Query feQuery = getSession()
+				.createQuery(
+						"UPDATE FeLogs F SET F.customer.serNo =? WHERE F.accountNumber.serNo =?");
 
-		for (String entityName : map.keySet()) {
-			Query query = getSession().createQuery("FROM " + entityName);
-			query.setFirstResult(0);
-			query.setMaxResults(1);
+		beQuery.setLong(0, accountNumber.getCustomer().getSerNo());
+		beQuery.setLong(1, accountNumber.getSerNo());
+		feQuery.setLong(0, accountNumber.getCustomer().getSerNo());
+		feQuery.setLong(1, accountNumber.getSerNo());
 
-			if (query.list().toString().contains("customer=")
-					&& query.list().toString().contains("accountNumber=")) {
-				Query update = getSession().createQuery(
-						"UPDATE " + entityName + " SET customer.serNo ="
-								+ accountNumber.getCustomer().getSerNo()
-								+ " WHERE accountNumber.serNo ="
-								+ accountNumber.getSerNo());
-				update.executeUpdate();
-			}
-
-		}
+		beQuery.executeUpdate();
+		feQuery.executeUpdate();
 	}
 }

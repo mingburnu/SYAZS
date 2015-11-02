@@ -244,6 +244,10 @@
 	}
 </script>
 <style type="text/css">
+select.input_text {
+    width: 103px;
+}
+
 input[name="entity.secondLevelOption"] {
 	display: none;
 }
@@ -263,11 +267,19 @@ input[name="entity.thirdLevelOption"] {
 			<tr>
 				<th width="130">LEVEL 1<span class="required">(&#8226;)</span></th>
 				<td><s:radio list="#{'extend':''}"
-						name="entity.firstLevelOption" /> <s:select cssClass="input_text"
-						headerValue="--選擇群組--" headerKey="0"
-						name="entity.firstLevelSelect" list="firstLevelGroups"
-						listKey="serNo" listValue="groupName" onchange="showSubGroups()" />
-					<s:radio list="#{'new':'新增Level 1群組'}"
+						name="entity.firstLevelOption" /> <c:choose>
+						<c:when test="${not empty entity.firstLevelGroups }">
+							<s:select cssClass="input_text" headerValue="--選擇群組--"
+								headerKey="0" name="entity.firstLevelSelect"
+								list="entity.firstLevelGroups" listKey="serNo"
+								listValue="groupName" onchange="showSubGroups()" />
+						</c:when>
+						<c:otherwise>
+							<select class="input_text">
+								<option value="0">--選擇群組--</option>
+							</select>
+						</c:otherwise>
+					</c:choose> <s:radio list="#{'new':'新增Level 1群組'}"
 						name="entity.firstLevelOption" /> <s:textfield
 						cssClass="input_text" name="entity.firstLevelName" /></td>
 			</tr>
@@ -275,11 +287,11 @@ input[name="entity.thirdLevelOption"] {
 				<th width="130">LEVEL 2</th>
 				<td><input type="checkbox" id="checkLevel2"> <s:radio
 						list="#{'extend':''}" name="entity.secondLevelOption" /> <c:choose>
-						<c:when test="${not empty secondLevelGroups }">
+						<c:when test="${not empty entity.secondLevelGroups }">
 							<s:select cssClass="input_text" headerValue="--選擇群組--"
 								headerKey="0" name="entity.secondLevelSelect"
-								list="secondLevelGroups" listKey="serNo" listValue="groupName"
-								onchange="showSubGroups()" />
+								list="entity.secondLevelGroups" listKey="serNo"
+								listValue="groupName" onchange="showSubGroups()" />
 						</c:when>
 						<c:otherwise>
 							<select class="input_text">
@@ -293,10 +305,11 @@ input[name="entity.thirdLevelOption"] {
 			<tr>
 				<th width="130">LEVEL 3</th>
 				<td><input type="checkbox" disabled> <c:choose>
-						<c:when test="${not empty thirdLevelGroups}">
+						<c:when test="${not empty entity.thirdLevelGroups}">
 							<s:select id="viewGroups" cssClass="input_text"
-								headerValue="--觀看群組--" headerKey="0" list="thirdLevelGroups"
-								listKey="serNo" listValue="groupName" />
+								headerValue="--觀看群組--" headerKey="0"
+								list="entity.thirdLevelGroups" listKey="serNo"
+								listValue="groupName" />
 						</c:when>
 						<c:otherwise>
 							<select class="input_text">

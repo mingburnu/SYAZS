@@ -65,19 +65,19 @@ public class SearchActionInterceptor extends RootInterceptor {
 			if (!hasActionErrors(invocation)) {
 				if (request.getParameter("pager.recordPerPage") == null
 						&& request.getParameter("pager.recordPoint") == null) {
-					if (accountNumber.getSerNo() != null) {
-						feLogsService
-								.save(new FeLogs(Act.快速查詢, request
+					if (accountNumber.hasSerNo()) {
+						feLogsService.save(
+								new FeLogs(Act.快速查詢, request
 										.getParameter("entity.indexTerm"),
 										accountNumber.getCustomer(),
-										accountNumber, null, null, null, false),
-										accountNumber);
+										accountNumber, null, null, null, null),
+								accountNumber);
 					} else {
-						feLogsService
-								.save(new FeLogs(Act.快速查詢, request
+						feLogsService.save(
+								new FeLogs(Act.快速查詢, request
 										.getParameter("entity.indexTerm"),
 										accountNumber.getCustomer(), null,
-										null, null, null, false), accountNumber);
+										null, null, null, null), accountNumber);
 					}
 				}
 			} else {
@@ -122,19 +122,19 @@ public class SearchActionInterceptor extends RootInterceptor {
 
 			if (!hasActionErrors(invocation)) {
 				if (request.getParameter("pager.recordPerPage") == null) {
-					if (accountNumber.getSerNo() != null) {
-						feLogsService
-								.save(new FeLogs(Act.項目查詢, request
+					if (accountNumber.hasSerNo()) {
+						feLogsService.save(
+								new FeLogs(Act.項目查詢, request
 										.getParameter("entity.indexTerm"),
 										accountNumber.getCustomer(),
-										accountNumber, null, null, null, false),
-										accountNumber);
+										accountNumber, null, null, null, null),
+								accountNumber);
 					} else {
-						feLogsService
-								.save(new FeLogs(Act.項目查詢, request
+						feLogsService.save(
+								new FeLogs(Act.項目查詢, request
 										.getParameter("entity.indexTerm"),
 										accountNumber.getCustomer(), null,
-										null, null, null, false), accountNumber);
+										null, null, null, null), accountNumber);
 					}
 				}
 			} else {
@@ -165,18 +165,14 @@ public class SearchActionInterceptor extends RootInterceptor {
 
 					if (CollectionUtils.isNotEmpty(url)
 							&& StringUtils.isNotBlank((String) url.get(0))) {
-						if (accountNumber.getSerNo() != null) {
-							feLogsService.save(
-									new FeLogs(Act.借閱, request
-											.getParameter("entity.indexTerm"),
-											accountNumber.getCustomer(),
-											accountNumber, Long
-													.parseLong(serNo), null,
-											null, true), accountNumber);
+						if (accountNumber.hasSerNo()) {
+							feLogsService.save(new FeLogs(Act.借閱, null,
+									accountNumber.getCustomer(), accountNumber,
+									Long.parseLong(serNo), null, null, true),
+									accountNumber);
 						} else {
-							feLogsService.save(
-									new FeLogs(Act.借閱, request
-											.getParameter("entity.indexTerm"),
+							feLogsService
+									.save(new FeLogs(Act.借閱, null,
 											accountNumber.getCustomer(), null,
 											Long.parseLong(serNo), null, null,
 											true), accountNumber);
@@ -194,21 +190,16 @@ public class SearchActionInterceptor extends RootInterceptor {
 
 					if (CollectionUtils.isNotEmpty(url)
 							&& StringUtils.isNotBlank((String) url.get(0))) {
-						if (accountNumber.getSerNo() != null) {
-							feLogsService.save(
-									new FeLogs(Act.借閱, request
-											.getParameter("entity.indexTerm"),
-											accountNumber.getCustomer(),
-											accountNumber, null, Long
-													.parseLong(serNo), null,
-											true), accountNumber);
+						if (accountNumber.hasSerNo()) {
+							feLogsService.save(new FeLogs(Act.借閱, null,
+									accountNumber.getCustomer(), accountNumber,
+									null, Long.parseLong(serNo), null, true),
+									accountNumber);
 						} else {
-							feLogsService.save(
-									new FeLogs(Act.借閱, request
-											.getParameter("entity.indexTerm"),
-											accountNumber.getCustomer(), null,
-											null, Long.parseLong(serNo), null,
-											true), accountNumber);
+							feLogsService.save(new FeLogs(Act.借閱, null,
+									accountNumber.getCustomer(), null, null,
+									Long.parseLong(serNo), null, true),
+									accountNumber);
 						}
 
 						response.sendRedirect((String) url.get(0));
@@ -223,18 +214,14 @@ public class SearchActionInterceptor extends RootInterceptor {
 
 					if (CollectionUtils.isNotEmpty(url)
 							&& StringUtils.isNotBlank((String) url.get(0))) {
-						if (accountNumber.getSerNo() != null) {
-							feLogsService.save(
-									new FeLogs(Act.借閱, request
-											.getParameter("entity.indexTerm"),
-											accountNumber.getCustomer(),
-											accountNumber, 0L, 0L, Long
-													.parseLong(serNo), true),
+						if (accountNumber.hasSerNo()) {
+							feLogsService.save(new FeLogs(Act.借閱, null,
+									accountNumber.getCustomer(), accountNumber,
+									0L, 0L, Long.parseLong(serNo), true),
 									accountNumber);
 						} else {
 							feLogsService
-									.save(new FeLogs(Act.借閱, request
-											.getParameter("entity.indexTerm"),
+									.save(new FeLogs(Act.借閱, null,
 											accountNumber.getCustomer(), null,
 											0L, 0L, Long.parseLong(serNo), true),
 											accountNumber);
@@ -271,18 +258,16 @@ public class SearchActionInterceptor extends RootInterceptor {
 			}
 
 			if (!hasActionErrors(invocation)) {
-				if (accountNumber.getSerNo() != null) {
+				if (accountNumber.hasSerNo()) {
 					feLogsService.save(
-							new FeLogs(Act.標題查詢, request
-									.getParameter("entity.indexTerm"),
-									accountNumber.getCustomer(), accountNumber,
-									null, null, null, false), accountNumber);
+							new FeLogs(Act.標題查詢, null, accountNumber
+									.getCustomer(), accountNumber, null, null,
+									null, null), accountNumber);
 				} else {
 					feLogsService.save(
-							new FeLogs(Act.標題查詢, request
-									.getParameter("entity.indexTerm"),
-									accountNumber.getCustomer(), null, null,
-									null, null, false), accountNumber);
+							new FeLogs(Act.標題查詢, null, accountNumber
+									.getCustomer(), null, null, null, null,
+									null), accountNumber);
 				}
 			} else {
 				return "prefix";
@@ -305,20 +290,14 @@ public class SearchActionInterceptor extends RootInterceptor {
 					List<?> owner = query.list();
 
 					if (CollectionUtils.isNotEmpty(owner)) {
-						if (accountNumber.getSerNo() != null) {
-							feLogsService.save(
-									new FeLogs(Act.單位查詢, request
-											.getParameter("entity.indexTerm"),
-											accountNumber.getCustomer(),
-											accountNumber, null, null, null,
-											false), accountNumber);
+						if (accountNumber.hasSerNo()) {
+							feLogsService.save(new FeLogs(Act.單位查詢, null,
+									accountNumber.getCustomer(), accountNumber,
+									null, null, null, null), accountNumber);
 						} else {
-							feLogsService.save(
-									new FeLogs(Act.單位查詢, request
-											.getParameter("entity.indexTerm"),
-											accountNumber.getCustomer(), null,
-											null, null, null, false),
-									accountNumber);
+							feLogsService.save(new FeLogs(Act.單位查詢, null,
+									accountNumber.getCustomer(), null, null,
+									null, null, null), accountNumber);
 						}
 					} else {
 						response.sendError(HttpServletResponse.SC_NOT_FOUND);

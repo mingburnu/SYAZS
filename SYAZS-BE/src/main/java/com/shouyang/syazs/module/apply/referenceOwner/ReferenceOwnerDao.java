@@ -86,6 +86,6 @@ public class ReferenceOwnerDao extends ModuleDaoFull<ReferenceOwner> {
 			}
 		}
 
-		getSession().delete(t);
+		delete(t);
 	}
 }

@@ -116,11 +116,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (getLoginUser().getRole().equals(Role.管理員)) {
 			getEntity().setCustomer(getLoginUser().getCustomer());
 		} else {
-			if (!getEntity().getCustomer().hasSerNo()
-					|| getEntity().getCustomer().getSerNo() <= 0
-					|| customerService.getBySerNo(getEntity().getCustomer()
-							.getSerNo()) == null) {
+			if (!hasCustomer()) {
 				errorMessages.add("用戶名稱必選");
+			} else {
+				getEntity().setCustomer(customer);
 			}
 		}
 
@@ -160,11 +159,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (getLoginUser().getRole().equals(Role.管理員)) {
 					getEntity().setCustomer(getLoginUser().getCustomer());
 				} else {
-					if (!getEntity().getCustomer().hasSerNo()
-							|| getEntity().getCustomer().getSerNo() <= 0
-							|| customerService.getBySerNo(getEntity()
-									.getCustomer().getSerNo()) == null) {
+					if (!hasCustomer()) {
 						errorMessages.add("用戶名稱必選");
+					} else {
+						getEntity().setCustomer(customer);
 					}
 				}
 			}
@@ -292,17 +290,20 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasActionErrors()) {
 			getEntity().setUserName(getEntity().getUserName());
 			if (StringUtils.isBlank(getEntity().getUserPw())) {
-				accountNumberService.updateLog(getEntity());
 				accountNumber = accountNumberService.update(getEntity(),
 						getLoginUser(), "userId", "userPw");
 			} else {
-				accountNumberService.updateLog(getEntity());
 				accountNumber = accountNumberService.update(getEntity(),
 						getLoginUser(), "userId");
 			}
 
 			accountNumber = accountNumberService.getBySerNo(accountNumber
 					.getSerNo());
+			
+			if (getLoginUser().getSerNo().equals( accountNumber.getSerNo())) {
+				getLoginUser().setCustomer(customer);
+			}
+
 			setEntity(accountNumber);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -366,7 +367,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (!isLegalRole) {
 					addActionError(getEntity().getCheckItem()[j] + "權限不可變更");
 				}
-
 			}
 		}
 
@@ -427,7 +427,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (!isLegalRole) {
 					addActionError(getEntity().getCheckItem()[j] + "權限不可變更");
 				}
-
 			}
 		}
 
@@ -985,6 +984,22 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@SuppressWarnings("rawtypes")
 	protected Object getEnum(String[] values, Class toClass) {
 		return enumConverter.convertFromString(null, values, toClass);
+	}
+
+	protected boolean hasCustomer() throws Exception {
+		if (getEntity().getCustomer() == null
+				|| !getEntity().getCustomer().hasSerNo()
+				|| getEntity().getCustomer().getSerNo() <= 0) {
+			return false;
+		} else {
+			customer = customerService.getBySerNo(getEntity().getCustomer()
+					.getSerNo());
+			if (customer == null) {
+				return false;
+			} else {
+				return true;
+			}
+		}
 	}
 
 	protected List<Role> getLegalRoles() {

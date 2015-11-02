@@ -1,48 +1,33 @@
 package com.shouyang.syazs.core.apply.customer;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Query;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.dao.ModuleDaoFull;
 
 @Repository
 public class CustomerDao extends ModuleDaoFull<Customer> {
-
-	@Autowired
-	private Customer customer;
-
-	@Autowired
-	private AccountNumber accountNumber;
 
 	@Override
 	public void deleteBySerNo(Long serNo) throws Exception {
 		Assert.notNull(serNo);
 		Customer t = findBySerNo(serNo);
 
-		Iterator<AccountNumber> accountNumbers = t.getAccountNumbers()
-				.iterator();
-		while (accountNumbers.hasNext()) {
-			accountNumber = accountNumbers.next();
-			Query beQuery = getSession().createQuery(
-					"DELETE FROM BeLogs B WHERE B.accountNumber.serNo=?");
-			Query feQuery = getSession().createQuery(
-					"DELETE FROM FeLogs F WHERE F.accountNumber.serNo=?");
-			beQuery.setLong(0, accountNumber.getSerNo());
-			feQuery.setLong(0, accountNumber.getSerNo());
-			beQuery.executeUpdate();
-			feQuery.executeUpdate();
+		Query beQuery = getSession().createQuery(
+				"DELETE BeLogs B WHERE B.customer.serNo=?");
+		Query feQuery = getSession().createQuery(
+				"DELETE FeLogs F WHERE F.customer.serNo=?");
+		beQuery.setLong(0, t.getSerNo());
+		feQuery.setLong(0, t.getSerNo());
 
-			getSession().delete(accountNumber);
-		}
+		beQuery.executeUpdate();
+		feQuery.executeUpdate();
 
-		getSession().delete(t);
+		delete(t);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.apply.beLogs.BeLogs;
 import com.shouyang.syazs.core.apply.group.Group;
 import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
@@ -60,12 +59,6 @@ public class Customer extends GenericEntityFull {
 
 	@OneToMany(mappedBy = "customer", orphanRemoval = true)
 	private Set<IpRange> ipRanges;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<BeLogs> beLogses;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<BeLogs> feLogses;
 
 	/**
 	 * @return the name
@@ -176,20 +169,6 @@ public class Customer extends GenericEntityFull {
 	 */
 	public Set<IpRange> getIpRanges() {
 		return ipRanges;
-	}
-
-	/**
-	 * @return the beLogses
-	 */
-	public Set<BeLogs> getBeLogses() {
-		return beLogses;
-	}
-
-	/**
-	 * @return the feLogses
-	 */
-	public Set<BeLogs> getFeLogses() {
-		return feLogses;
 	}
 
 	public Customer() {

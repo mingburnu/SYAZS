@@ -43,9 +43,16 @@
 <!-- func_box 開始 -->
 <div id="func_box">
 	<div class="box_in">
-		<span class="txt">${login.customer.name}，${login.customer.contactUserName}</span><a
-			class="btn_02"
-			href='<s:url namespace="/authorization" action="logout" />'><span>登出</span></a>
+		<span class="txt">${login.customer.name}，${login.customer.contactUserName}</span>
+		<c:choose>
+			<c:when test="${not empty login.serNo }">
+				<a class="btn_02"
+					href='<s:url namespace="/authorization" action="logout" />'><span>登出</span></a>
+			</c:when>
+			<c:otherwise>
+				<a class="btn_02" href="<c:url value = '/'/>login.jsp"><span>登入</span></a>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </div>
 <!-- func_box 結束 -->
