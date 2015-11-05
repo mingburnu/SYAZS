@@ -3,6 +3,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="pg" uri="http://jsptags.com/tags/navigation/pager"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 
@@ -10,6 +11,11 @@
 <c:set var="totalRecord" value="${pager.totalRecord}" />
 <c:set var="currentPage" value="${pager.currentPage}" />
 <c:set var="recordPoint" value="${pager.recordPoint}" />
+<c:set var="pageFactor" value="${totalRecord/recordPerPage}" />
+<c:set var="totalPage">
+	<fmt:formatNumber type="number" pattern="#"
+		value="${pageFactor+(1-(pageFactor%1))%1}" />
+</c:set>
 
 <c:set var="goToPage">
 	<c:url
@@ -21,6 +27,15 @@
 </c:set>
 
 <script type="text/javascript">
+//IE press Enter GoPage
+$(document).ready(function() {
+	$("input.pp").keyup(function(e) {
+		if (e.keyCode == 13) {
+			gotoPage($(this).val());
+		}
+	});
+});
+
 function gotoPage(page){
 	var isNum = /^\d+$/.test(page);
 	var lastPage = "${lastPage}";
@@ -35,8 +50,7 @@ function gotoPage(page){
 		}
 	}
 
-	var offset=parseInt('${recordPerPage}')*(parseInt(page)-1);
-    var url = $("form").attr("action")+"?pager.currentPage="+ page + "&pager.offset="+ offset;
+    var url = $("form").attr("action")+"?pager.currentPage="+ page;
 	var data = $("form:eq(0)").serialize(); 
 
 	$.ajax({
@@ -49,9 +63,7 @@ function gotoPage(page){
 }
 
 function upperChangeSize(recordPerPage) {
-	var page = Math.floor(parseInt('${recordPoint}')/parseInt(recordPerPage))+1;
-	var offset=parseInt(recordPerPage)*(page-1);
-	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}"+"&pager.offset="+offset;
+	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}";
 	var data = $("form:eq(0)").serialize();
 
 	$.ajax({
@@ -64,10 +76,8 @@ function upperChangeSize(recordPerPage) {
 	$("body").scrollTop(0);
 }
 
-function bottomChangeSize() {
-	var page = Math.floor(parseInt('${recordPoint}')/parseInt(recordPerPage))+1;
-	var offset=parseInt(recordPerPage)*(parseInt(page)-1);
-	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}"+"&pager.offset="+offset;
+function bottomChangeSize(recordPerPage) {
+	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}";
 	var data = $("form:eq(1)").serialize();
 	
 	$.ajax({
@@ -107,18 +117,8 @@ function bottomChangeSize() {
 				</c:otherwise>
 			</c:choose>
 		</pg:prev>
-		<pg:pages>
-			<c:choose>
-				<c:when test="${pageNumber eq currentPage}">
-					<a class="p" href="#" onclick="return false;">${pageNumber}</a>
-
-				</c:when>
-				<c:otherwise>
-					<a class="p" onclick="gotoPage(${pageNumber})">${pageNumber}</a>
-
-				</c:otherwise>
-			</c:choose>
-		</pg:pages>
+		第 <input class="pp" value="${currentPage }" type="number" min="1"
+			max="${totalPage }" onchange="gotoPage(this.value)" size="3"> 頁，共${totalPage }頁 
 		<pg:next ifnull="true">
 			<c:choose>
 				<c:when test="${empty pageNumber}">

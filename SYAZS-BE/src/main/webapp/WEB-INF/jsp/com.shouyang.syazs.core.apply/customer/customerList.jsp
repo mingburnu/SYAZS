@@ -222,28 +222,26 @@ function goImport(){
 							<td>${item.name}</td>
 							<td align="center">${item.tel }</td>
 							<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
-							<td align="center"><c:choose>
-									<c:when test="${9 eq  item.serNo }">
-										<a class="state-default2" onclick="goView(${item.serNo });"><span
-											class="icon-default icon-view"></span>檢視</a>
-										<a class="state-default2" onclick="goUpdate(${item.serNo});"><span
-											class="icon-default icon-edit"></span>修改</a>
+							<td align="center"><a class="state-default2"
+								onclick="goView(${item.serNo });"><span
+									class="icon-default icon-view"></span>檢視</a> <c:choose>
+									<c:when test="${9 eq item.serNo }">
+										<c:if test="${login.role =='系統管理員' }">
+											<a class="state-default2" onclick="goUpdate(${item.serNo});"><span
+												class="icon-default icon-edit"></span>修改</a>
+										</c:if>
 									</c:when>
 									<c:otherwise>
-										<a class="state-default2" onclick="goView(${item.serNo });"><span
-											class="icon-default icon-view"></span>檢視</a>
 										<a class="state-default2" onclick="goUpdate(${item.serNo});"><span
 											class="icon-default icon-edit"></span>修改</a>
-										<c:if test="${login.role =='系統管理員'}">
-											<a class="state-default2" onclick="goDel(${item.serNo});"><span
-												class="icon-default icon-delete"></span>刪除</a>
-										</c:if>
-										<a class="state-default2"
-											onclick="goIpRangeManager(${item.serNo});">IP Range管理</a>
-										<a class="state-default2"
-											onclick="goGroupManager(${item.serNo});">群組管理</a>
 									</c:otherwise>
-								</c:choose></td>
+								</c:choose> <c:if test="${(login.role =='系統管理員')&&(9 ne item.serNo) }">
+									<a class="state-default2" onclick="goDel(${item.serNo});"><span
+										class="icon-default icon-delete"></span>刪除</a>
+								</c:if> <a class="state-default2"
+								onclick="goIpRangeManager(${item.serNo});">IP Range管理</a> <a
+								class="state-default2" onclick="goGroupManager(${item.serNo});">群組管理</a>
+							</td>
 					</c:forEach>
 				</tbody>
 			</table>

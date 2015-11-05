@@ -37,6 +37,7 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
+import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
 import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
 import com.shouyang.syazs.core.model.DataSet;
@@ -81,6 +82,12 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 	@Override
 	protected void validateSave() throws Exception {
 		if (hasCustomer()) {
+			// if (getEntity().getCustomer().getSerNo() == 9) {TODO
+			// if (!getLoginUser().getRole().equals(Role.系統管理員)) {
+			// errorMessages.add("權限不符");
+			// }
+			// }
+
 			if (StringUtils.isBlank(getEntity().getFirstLevelOption())
 					|| (!getEntity().getFirstLevelOption().equals("new") && !getEntity()
 							.getFirstLevelOption().equals("extend"))) {
@@ -253,6 +260,12 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			if (group == null) {
 				getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 			} else {
+				if (getEntity().getCustomer().getSerNo() == 9) {
+					if (!getLoginUser().getRole().equals(Role.系統管理員)) {
+						errorMessages.add("權限不符");
+					}
+				}
+
 				if (group.getGroupMapping().getLevel() == 0) {
 					getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
 				} else {
@@ -417,14 +430,24 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 
 	@Override
 	protected void validateDelete() throws Exception {
-		group = groupService.getTargetEntity(initDataSet());
+		if (hasCustomer()) {
+			group = groupService.getTargetEntity(initDataSet());
 
-		if (group == null) {
-			errorMessages.add("沒有這個物件");
-		} else {
-			if (group.getGroupMapping().getLevel() == 0) {
-				errorMessages.add("Can't delete Root Group");
+			if (group == null) {
+				errorMessages.add("沒有這個物件");
+			} else {
+				if (getEntity().getCustomer().getSerNo() == 9) {
+					if (!getLoginUser().getRole().equals(Role.系統管理員)) {
+						errorMessages.add("權限不符");
+					}
+				}
+
+				if (group.getGroupMapping().getLevel() == 0) {
+					errorMessages.add("Can't delete Root Group");
+				}
 			}
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 
@@ -883,6 +906,12 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			} else {
 				if (!hasCustomer()) {
 					addActionError("客戶錯誤");
+				} else {
+					if (getEntity().getCustomer().getSerNo() == 9) {
+						if (!getLoginUser().getRole().equals(Role.系統管理員)) {
+							addActionError("權限不符");
+						}
+					}
 				}
 			}
 		}

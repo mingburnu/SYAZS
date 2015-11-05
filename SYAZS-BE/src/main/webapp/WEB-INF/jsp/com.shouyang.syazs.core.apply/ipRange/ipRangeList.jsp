@@ -75,8 +75,18 @@ function goImport_detail(){
 			value="%{entity.customer.serNo}" />
 		<div class="list-box">
 			<div class="list-buttons">
-				<a class="state-default" onclick="goAdd_detail();">新增</a> <a
-					class="state-default" onclick="goImport_detail();">匯入</a>
+				<c:choose>
+					<c:when test="${9 eq entity.customer.serNo }">
+						<c:if test="${login.role == '系統管理員' }">
+							<a class="state-default" onclick="goAdd_detail();">新增</a>
+							<a class="state-default" onclick="goImport_detail();">匯入</a>
+						</c:if>
+					</c:when>
+					<c:otherwise>
+						<a class="state-default" onclick="goAdd_detail();">新增</a>
+						<a class="state-default" onclick="goImport_detail();">匯入</a>
+					</c:otherwise>
+				</c:choose>
 			</div>
 			<table cellspacing="1" class="list-table">
 				<tbody>
@@ -94,11 +104,26 @@ function goImport_detail(){
 						<tr>
 							<td align="center">${orderInt}</td>
 							<td align="center">${item.ipRangeStart}~${item.ipRangeEnd}</td>
-							<td align="center"><a class="state-default2"
-								onclick="goUpdate_detail(${orderInt},${item.serNo});"><span
-									class="icon-default icon-edit"></span>修改</a> <a
-								class="state-default2" onclick="goDel_detail(${item.serNo});"><span
-									class="icon-default icon-delete"></span>刪除</a></td>
+							<td align="center"><c:choose>
+									<c:when test="${9 eq entity.customer.serNo }">
+										<c:if test="${login.role == '系統管理員' }">
+											<a class="state-default2"
+												onclick="goUpdate_detail(${orderInt},${item.serNo});"><span
+												class="icon-default icon-edit"></span>修改</a>
+											<a class="state-default2"
+												onclick="goDel_detail(${item.serNo});"><span
+												class="icon-default icon-delete"></span>刪除</a>
+										</c:if>
+									</c:when>
+									<c:otherwise>
+										<a class="state-default2"
+											onclick="goUpdate_detail(${orderInt},${item.serNo});"><span
+											class="icon-default icon-edit"></span>修改</a>
+										<a class="state-default2"
+											onclick="goDel_detail(${item.serNo});"><span
+											class="icon-default icon-delete"></span>刪除</a>
+									</c:otherwise>
+								</c:choose></td>
 						</tr>
 					</c:forEach>
 				</tbody>

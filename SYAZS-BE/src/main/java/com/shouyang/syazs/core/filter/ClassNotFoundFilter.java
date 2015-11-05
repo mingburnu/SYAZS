@@ -98,7 +98,6 @@ public class ClassNotFoundFilter implements Filter {
 
 			} catch (ClassNotFoundException e) {
 				try {
-					System.out.println(entityName);
 					String className = coreEntityPackage + "." + entityName
 							+ "." + entityName.substring(0, 1).toUpperCase()
 							+ entityName.substring(1, entityName.length())

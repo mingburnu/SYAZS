@@ -1,5 +1,6 @@
 package com.shouyang.syazs.test;
 
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +49,7 @@ public class Test {
 		System.out.println(listHql.toLowerCase().indexOf("from "));
 		int index =listHql.toLowerCase().indexOf("from ");
 		System.out.println(listHql.substring(index,listHql.length()));
+		System.out.println(Modifier.toString(9).contains("public"));
 	}
 
 	private static boolean check(String s) {

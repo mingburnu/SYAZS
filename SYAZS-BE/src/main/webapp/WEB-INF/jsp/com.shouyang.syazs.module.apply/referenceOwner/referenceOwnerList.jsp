@@ -117,8 +117,8 @@ function goImport(){
 </script>
 </head>
 <body>
-	<s:form action="apply.referenceOwner.list" namespace="/crud" method="post"
-		onsubmit="return false;">
+	<s:form action="apply.referenceOwner.list" namespace="/crud"
+		method="post" onsubmit="return false;">
 		<div class="tabs-box">
 			<div>
 				<a id="tabs-items_A" class="tabs-items-hover"><span
@@ -191,31 +191,22 @@ function goImport(){
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
 							<c:if test="${login.role =='系統管理員'}">
-								<td align="center" class="td_first" nowrap><c:choose>
-										<c:when test="${9 eq  item.serNo }"></c:when>
-										<c:otherwise>
-											<input type="checkbox" class="checkbox"
-												name="entity.checkItem" value="${item.serNo}">
-										</c:otherwise>
-									</c:choose></td>
+								<td align="center" class="td_first" nowrap><input
+									type="checkbox" class="checkbox" name="entity.checkItem"
+									value="${item.serNo}"></td>
 							</c:if>
 							<td>${item.name}</td>
 							<td align="center">${item.tel }</td>
 							<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
-							<td align="center">
-										<a class="state-default2" onclick="goView(${item.serNo });"><span
-											class="icon-default icon-view"></span>檢視</a>
-										<a class="state-default2" onclick="goUpdate(${item.serNo});"><span
-											class="icon-default icon-edit"></span>修改</a>
-										<a class="state-default2" onclick="goView(${item.serNo });"><span
-											class="icon-default icon-view"></span>檢視</a>
-										<a class="state-default2" onclick="goUpdate(${item.serNo});"><span
-											class="icon-default icon-edit"></span>修改</a>
-										<c:if test="${login.role =='系統管理員'}">
-											<a class="state-default2" onclick="goDel(${item.serNo});"><span
-												class="icon-default icon-delete"></span>刪除</a>
-										</c:if>
-								</td>
+							<td align="center"><a class="state-default2"
+								onclick="goView(${item.serNo });"><span
+									class="icon-default icon-view"></span>檢視</a> <a
+								class="state-default2" onclick="goUpdate(${item.serNo});"><span
+									class="icon-default icon-edit"></span>修改</a> <c:if
+									test="${login.role =='系統管理員'}">
+									<a class="state-default2" onclick="goDel(${item.serNo});"><span
+										class="icon-default icon-delete"></span>刪除</a>
+								</c:if></td>
 					</c:forEach>
 				</tbody>
 			</table>

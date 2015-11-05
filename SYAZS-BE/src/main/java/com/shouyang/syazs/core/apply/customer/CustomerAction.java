@@ -98,6 +98,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	protected void validateUpdate() throws Exception {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		} else if (getEntity().getSerNo() == 9) {
+			if (!getLoginUser().getRole().equals(Role.系統管理員)) {
+				errorMessages.add("權限不足");
+			}
 		} else {
 			if (StringUtils.isNotEmpty(getEntity().getTel())) {
 				String tel = getEntity().getTel().replaceAll("[/()+-]", "")
@@ -125,9 +129,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				while (i < getEntity().getCheckItem().length) {
 					if (getEntity().getCheckItem()[i] == null
 							|| getEntity().getCheckItem()[i] < 1
+							|| getEntity().getCheckItem()[i] == 9
 							|| customerService.getBySerNo(getEntity()
 									.getCheckItem()[i]) == null) {
-						addActionError("有錯誤流水號");
+						errorMessages.add("有錯誤流水號");
 						break;
 					}
 					i++;

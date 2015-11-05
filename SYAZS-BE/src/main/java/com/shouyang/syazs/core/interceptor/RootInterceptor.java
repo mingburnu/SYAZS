@@ -1,5 +1,8 @@
 package com.shouyang.syazs.core.interceptor;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 import org.apache.log4j.Logger;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -27,4 +30,24 @@ public abstract class RootInterceptor extends AbstractInterceptor {
 				.remove("entity.inputStream");
 	}
 
+	public boolean isUsableMethod(ActionInvocation invocation)
+			throws SecurityException {
+		Class<?> noparams[] = {};
+		try {
+			Method method = invocation
+					.getAction()
+					.getClass()
+					.getDeclaredMethod(invocation.getProxy().getMethod(),
+							noparams);
+
+			if (Modifier.toString(method.getModifiers()).contains("public")) {
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
 }
