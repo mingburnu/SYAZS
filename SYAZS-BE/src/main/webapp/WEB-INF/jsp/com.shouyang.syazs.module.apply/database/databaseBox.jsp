@@ -53,7 +53,7 @@
 			var value = datBox.val();
 			$("input[name='entity.database.serNo']").val(value).trigger(
 					'change');
-			$("input#datName").val(datBox.next().html());
+			$("input#datName").val(datBox.prev().val());
 			$("input[name='entity.resourcesBuyers.startDate']")
 					.val(
 							datBox.next().next().find("#startDate").html()
@@ -109,7 +109,9 @@ div
 <body>
 	<c:forEach var="item" items="${resDbs}">
 		<div id=resDbRow>
-			<input id="dat" type="checkbox" value="${item.serNo }"> <label
+			<input type="hidden"
+				value='<esapi:encodeForHTMLAttribute>${item.dbTitle }</esapi:encodeForHTMLAttribute>'><input
+				id="dat" type="checkbox" value="${item.serNo }"> <label
 				id="resDbTitle"><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></label>
 			<div id="detail" style="display: none;">
 				<div id="dbTitle">

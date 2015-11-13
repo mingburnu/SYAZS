@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <script type="text/javascript">
@@ -37,11 +38,7 @@
 			class="table_03">
 			<tr>
 				<td class="t_01">題名</td>
-				<td class="t_02"><esapi:encodeForHTML>${entity.bookName}</esapi:encodeForHTML></td>
-			</tr>
-			<tr>
-				<td class="t_01">URL</td>
-				<td class="t_02"><a onclick="link(${entity.serNo });">${entity.url }</a></td>
+				<td class="t_02"><a onclick="link(${entity.serNo });"><esapi:encodeForHTML>${entity.bookName}</esapi:encodeForHTML></a></td>
 			</tr>
 			<c:if
 				test="${(not empty entity.autherName) || (not empty entity.authers) }">
@@ -65,7 +62,7 @@
 			<c:if test="${not empty entity.isbn}">
 				<tr>
 					<td class="t_01">ISBN</td>
-					<td class="t_02">${entity.isbn}</td>
+					<td class="t_02">${fn:substring(entity.isbn, 0, 13)}</td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.style}">

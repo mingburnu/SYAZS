@@ -151,7 +151,7 @@ function goImport(){
 			</div>
 		</div>
 		<div id="div_nav">
-			目前位置：<span>客戶管理</span> &gt; <span>基本設定</span>
+			目前位置：<span>書目資料管理</span> &gt; <span>擁有人</span>
 		</div>
 		<div class="list-box">
 			<div class="list-buttons">

@@ -16,6 +16,11 @@ function view(serNo){
 		}
 	});
 }
+
+function link(serNo){
+	var url="<%=request.getContextPath()%>"+"/crud/apply.journal.click.action?entity.serNo="+serNo;
+	window.open(url);
+}
 </script>
 <style>
 .list td a:hover {
@@ -153,10 +158,12 @@ function view(serNo){
 		<div class="list">
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">
 				<tr valign="top">
-					<th width="40">序號</th>
-					<th width="563">刊名</th>
-					<th width="212">出版項</th>
-					<th width="65">出版年</th>
+					<th width="38">序號</th>
+					<th>刊名</th>
+					<th>OA</th>
+					<th width="38">詳細</th>
+					<th>出版項</th>
+					<th>出版年</th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
 					<c:set var="num" scope="session" value="${(status.index+1)%2}" />
@@ -166,7 +173,9 @@ function view(serNo){
 						<c:when test="${num > 0}">
 							<tr valign="top">
 								<td>${orderInt}</td>
-								<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
+								<td><a onclick="link(${item.serNo });"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
+								<td><c:if test="${item.openAccess }">V</c:if></td>
+								<td><a onclick="view(${item.serNo})">檢視</a></td>
 								<td><c:choose>
 										<c:when test="${not empty item.publishName}">
 											<esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML>
@@ -184,7 +193,9 @@ function view(serNo){
 						<c:otherwise>
 							<tr valign="top" class="odd">
 								<td>${orderInt}</td>
-								<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
+								<td><a onclick="link(${item.serNo });"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
+								<td><c:if test="${item.openAccess }">V</c:if></td>
+								<td><a onclick="view(${item.serNo})">檢視</a></td>
 								<td><c:choose>
 										<c:when test="${not empty item.publishName}">
 											<esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML>

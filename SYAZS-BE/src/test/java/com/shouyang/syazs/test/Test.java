@@ -50,6 +50,16 @@ public class Test {
 		int index =listHql.toLowerCase().indexOf("from ");
 		System.out.println(listHql.substring(index,listHql.length()));
 		System.out.println(Modifier.toString(9).contains("public"));
+		
+//		Pattern pattern4 = Pattern
+//				.compile("(97)([8-9])(\\-)(\\d{1,5})(\\-)(\\d{2,5})(\\-)(\\d{1,6})(\\-)(\\d)");
+//		System.out.println(pattern4.matcher("978-0-08-044978-4").matches());
+		
+		Pattern pattern = Pattern.compile("(97)([8-9])(\\-)(\\d{1,5})(\\-)(\\d{2,5})(\\-)(\\d{1,6})(\\-)(\\d)");
+		Matcher isbnMatcher = pattern.matcher("978-0-12-345678-9");
+		while (isbnMatcher.find()){
+		System.out.println("ISBN Number is valid and number is : "+isbnMatcher.group());
+		}
 	}
 
 	private static boolean check(String s) {

@@ -147,6 +147,7 @@ select{
 	color:#fff;
 	text-align:center;
 	background:url(../images/btn_01.png) 0 0 no-repeat;
+	cursor:pointer;
 }
 .btn_01:hover{
 	background:url(../images/btn_01.png) 0 -30px no-repeat;
@@ -162,11 +163,11 @@ select{
 	padding:0 0 0 10px;
 	text-align:center;
 	background:url(../images/btn_03.png) 0 0 no-repeat;
+	cursor:pointer;
 }
 .btn_02 span{
 	display:-moz-inline-stack;
 	display:inline-block;
-	display:block;
 	padding:0 10px 0 0;
 	color:#fff;
 	font-size:13px;
@@ -188,6 +189,7 @@ select{
 	margin:0;
 	padding:0;
 	background:url(../images/btn_04.png) 0 0 no-repeat;
+	cursor:pointer;
 }
 .btn_03:hover{
 	background:url(../images/btn_04.png) 0 -40px no-repeat;
@@ -206,6 +208,7 @@ select{
 	font-size:12px;
 	line-height:25px;
 	background:url(../images/btn_05.png) 0 0 no-repeat;
+	cursor:pointer;
 }
 .btn_04:hover{
 	background:url(../images/btn_05.png) 0 -30px no-repeat;
@@ -280,6 +283,7 @@ select{
 	text-decoration:none;
 	color:#555;
 	border-bottom:3px solid #fff;
+	font-size:15px;
 }
 #menu_box table td a:hover, #menu_box table td .a_hover{
 	color:#32baeb;

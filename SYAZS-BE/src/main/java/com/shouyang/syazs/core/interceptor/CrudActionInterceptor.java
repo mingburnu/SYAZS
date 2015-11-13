@@ -36,9 +36,11 @@ public class CrudActionInterceptor extends RootInterceptor {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
 
-		if (!isUsableMethod(invocation)) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return "list";
+		if (invocation.getProxy().getNamespace().equals("crud")) {
+			if (!isUsableMethod(invocation)) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return "list";
+			}
 		}
 
 		if (!invocation.getAction().toString().contains("beLogs")

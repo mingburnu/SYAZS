@@ -28,6 +28,7 @@
 	color: #fff;
 	background: url("<c:url value = '/'/>resources/images/btn_01.png") 0 0
 		no-repeat;
+	cursor: pointer;
 }
 
 .btn_01:hover {

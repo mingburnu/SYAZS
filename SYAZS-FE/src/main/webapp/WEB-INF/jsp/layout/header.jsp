@@ -19,7 +19,7 @@
 	}
 </script>
 <div id="header">
-	<img src="<c:url value = '/'/>/resources/images/header.png" width="900"
+	<img src="<c:url value = '/'/>resources/images/header.png" width="900"
 		height="190">
 </div>
 <div id="menu_box">

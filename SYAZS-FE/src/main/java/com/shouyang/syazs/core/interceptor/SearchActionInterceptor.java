@@ -51,10 +51,12 @@ public class SearchActionInterceptor extends RootInterceptor {
 		HttpServletResponse response = ServletActionContext.getResponse();
 		Map<String, Object> session = invocation.getInvocationContext()
 				.getSession();
-		
-		if (!isUsableMethod(invocation)) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return "list";
+
+		if (invocation.getProxy().getNamespace().equals("crud")) {
+			if (!isUsableMethod(invocation)) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return "list";
+			}
 		}
 
 		String method = invocation.getProxy().getMethod();
@@ -222,13 +224,13 @@ public class SearchActionInterceptor extends RootInterceptor {
 						if (accountNumber.hasSerNo()) {
 							feLogsService.save(new FeLogs(Act.借閱, null,
 									accountNumber.getCustomer(), accountNumber,
-									0L, 0L, Long.parseLong(serNo), true),
+									null, null, Long.parseLong(serNo), true),
 									accountNumber);
 						} else {
 							feLogsService
 									.save(new FeLogs(Act.借閱, null,
 											accountNumber.getCustomer(), null,
-											0L, 0L, Long.parseLong(serNo), true),
+											null, null, Long.parseLong(serNo), true),
 											accountNumber);
 						}
 
