@@ -86,15 +86,13 @@
 
 	//全選之函式
 	function allSelect(action) {
-		$(document).ready(function() {
-			for (var i = 0; i < $("[name='checkItem']").length; i++) {
-				if (action == 1) {
-					$("[name='checkItem']").get(i).checked = true;
-				} else {
-					$("[name='checkItem']").get(i).checked = false;
-				}
+		for (var i = 0; i < $("[name='entity.checkItem']").length; i++) {
+			if (action == 1) {
+				$("[name='entity.checkItem']").get(i).checked = true;
+			} else {
+				$("[name='entity.checkItem']").get(i).checked = false;
 			}
-		});
+		}
 	}
 </script>
 <jsp:include page="/WEB-INF/jsp/layout/css.jsp" />

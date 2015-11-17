@@ -148,7 +148,7 @@
 	<div class="detail-func-button">
 		<a class="state-default" onclick="closeDetail_ToQuery();">關閉</a>&nbsp;
 		<c:if test="${empty entity.serNo}">
-			<a class="state-default" onclick="reImport();">繼續匯入</a>
+			<a class="state-default" onclick="reimport();">繼續匯入</a>
 		</c:if>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
