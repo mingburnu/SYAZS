@@ -24,7 +24,7 @@
 		$("input#dat").each(function() {
 			if (value == $(this).val()) {
 				$(this).attr("checked", true);
-				$("input#datName").val($(this).next().html());
+				$("input#datName").val($(this).prev().val());
 			}
 		});
 	});
@@ -103,19 +103,19 @@
 div#resDbRow {
 	display: inline-block;
 }
-div
 </style>
 </head>
 <body>
 	<c:forEach var="item" items="${resDbs}">
 		<div id=resDbRow>
 			<input type="hidden"
-				value='<esapi:encodeForHTMLAttribute>${item.dbTitle }</esapi:encodeForHTMLAttribute>'><input
-				id="dat" type="checkbox" value="${item.serNo }"> <label
+				value="<esapi:encodeForHTMLAttribute>${item.dbTitle }</esapi:encodeForHTMLAttribute>">
+			<input id="dat" type="checkbox" value="${item.serNo }"> <label
 				id="resDbTitle"><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></label>
 			<div id="detail" style="display: none;">
 				<div id="dbTitle">
-					<label>資料庫題名</label>：${item.dbTitle }
+					<label>資料庫題名</label>：
+					<esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML>
 				</div>
 				<div id="uuid">
 					<label>UUID</label>：${item.uuIdentifier }

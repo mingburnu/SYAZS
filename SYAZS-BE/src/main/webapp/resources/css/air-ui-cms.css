@@ -37,7 +37,7 @@ iframe {
 }
 
 #login_box #div_login_header {
-	background: url(../images/login_header.jpg) no-repeat;
+	background: url(../images/login_header.png) no-repeat;
 	display: block;
 	width: 431px;
 	height: 70px;
@@ -68,7 +68,7 @@ iframe {
 }
 
 #div-header {
-	background: #FFFFFF url(../images/header.jpg) 0px 0px no-repeat;
+	background: #FFFFFF url(../images/header.png) 0px 0px no-repeat;
 	width: 990px;
 	height: 101px;
 }

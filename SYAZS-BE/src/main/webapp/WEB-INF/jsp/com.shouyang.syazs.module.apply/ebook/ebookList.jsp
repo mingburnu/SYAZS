@@ -114,7 +114,7 @@ function goImport(){
 										value="<esapi:encodeForHTMLAttribute><%=request.getParameter("entity.isbn")%></esapi:encodeForHTMLAttribute>"></td>
 								</c:when>
 								<c:otherwise>
-									<td align="left"><s:textfield name="entity.name"
+									<td align="left"><s:textfield name="entity.bookName"
 											id="search" cssClass="input_text" /></td>
 								</c:otherwise>
 							</c:choose>

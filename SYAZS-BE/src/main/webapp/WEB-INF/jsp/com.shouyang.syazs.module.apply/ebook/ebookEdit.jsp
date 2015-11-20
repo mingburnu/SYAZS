@@ -264,10 +264,12 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th>資料庫題名</th>
-				<td><s:hidden name="entity.database.serNo" /><input
-					id="datName" class="input_text" disabled="disabled">&nbsp;<a
-					class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
-					class="state-default" onclick="clearRes()">清除</a></td>
+				<td><s:hidden name="entity.database.serNo" /> <input
+					id="datName" disabled="disabled">&nbsp;
+					<div id="selectDb">
+						<a class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
+							class="state-default" onclick="clearRes()">清除</a>
+					</div></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>

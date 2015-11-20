@@ -82,7 +82,7 @@
 		</tr>
 	</table>
 
-	<div class="title">依標題瀏覽電子書</div>
+	<div class="title">依標題瀏覽電子期刊</div>
 	<div class="query_list">
 		<a class="btn_04" onclick="queryByPrefix('0-9')">0-9</a>
 		<c:forEach begin="65" end="90" varStatus="loop">

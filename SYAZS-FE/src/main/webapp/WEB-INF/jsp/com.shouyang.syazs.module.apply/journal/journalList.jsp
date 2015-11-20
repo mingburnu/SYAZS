@@ -21,6 +21,17 @@ function link(serNo){
 	var url="<%=request.getContextPath()%>"+"/crud/apply.journal.click.action?entity.serNo="+serNo;
 	window.open(url);
 }
+
+function goBack() {
+	<c:choose>
+	<c:when test="${not empty list }">
+	goURL("<c:url value = '/'/>page/query.action");
+	</c:when>
+	<c:otherwise>
+	goURL("<c:url value = '/'/>page/journal.action");
+	</c:otherwise>
+	</c:choose>
+	}
 </script>
 <style>
 .list td a:hover {
@@ -338,7 +349,10 @@ function link(serNo){
 				</div>
 			</c:when>
 		</c:choose>
-
+		<div class="bottom">
+			<a class="btn_02" href="javascript:goBack();"><span>回 上 一
+					頁</span></a>
+		</div>
 	</div>
 	<!-- 內容結束 -->
 </div>

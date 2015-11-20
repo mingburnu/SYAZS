@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>跨司署電子資料庫索引查詢平台</title>
+<title>碩陽電子資源檢索</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Cache-Control" content="no-cache" />

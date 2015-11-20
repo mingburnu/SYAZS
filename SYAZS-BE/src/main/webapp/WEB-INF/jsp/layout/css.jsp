@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page import="nl.bitwalker.useragentutils.*"%>
-<style>
+<style type="text/css">
 input:-webkit-autofill {
 	-webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
 }
@@ -24,6 +24,20 @@ textarea#content {
 	resize: none;
 }
 
+input#datName {
+	border: 1px solid #888888;
+    background-color: #ffffff;
+    color: #565656;
+    margin: 0px;
+    padding: 2px 4px;
+    float: left;
+}
+
+div#selectDb {
+	border: 1px solid rgba(0, 0, 0, 0);
+	padding: 2.5px 4px;
+	float: left;
+}
 <%
 UserAgent userAgent = UserAgent.parseUserAgentString (request.getHeader
 	("User-Agent"));
