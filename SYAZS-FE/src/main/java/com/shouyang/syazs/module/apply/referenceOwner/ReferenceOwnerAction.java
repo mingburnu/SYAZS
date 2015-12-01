@@ -82,6 +82,12 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 		setDs(ds);
 		return LIST;
 	}
+	
+	public String notePoint() {
+		getSession().put("entityRecord", getEntity());
+		getSession().put("pagerRecord", getPager());
+		return LIST;
+	}
 
 	@Override
 	public String save() throws Exception {

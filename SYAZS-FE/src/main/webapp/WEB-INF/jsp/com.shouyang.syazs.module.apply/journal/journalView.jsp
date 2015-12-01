@@ -11,11 +11,10 @@
 		var data = "entity.option="
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
-				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
+				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>".replace(/\&/g, "%26")
 				+ "&entity.refSerNo=" + "${ds.entity.refSerNo}"
 				+ "&pager.recordPoint=" + "${ds.pager.recordPoint}"
-				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}"
-				+ "&pager.offset=" + "${ds.pager.offset}";
+				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}";
 		$.ajax({
 			url : url,
 			data : data,

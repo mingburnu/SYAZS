@@ -24,7 +24,6 @@
 		$("input#dat").each(function() {
 			if (value == $(this).val()) {
 				$(this).attr("checked", true);
-				$("input#datName").val($(this).prev().val());
 			}
 		});
 	});
@@ -93,7 +92,7 @@
 		$("input[name='entity.database.serNo']").val("").trigger('change');
 		setResField();
 	}
-
+	
 	function clearResDbs() {
 		$("#div_ResDbs .content .header .title").html("");
 		$("#div_ResDbs .content .contain").html("");

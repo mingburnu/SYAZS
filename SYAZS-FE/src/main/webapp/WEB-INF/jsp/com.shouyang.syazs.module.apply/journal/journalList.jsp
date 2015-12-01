@@ -24,14 +24,11 @@ function link(serNo){
 
 function goBack() {
 	<c:choose>
-	<c:when test="${not empty list }">
-	goURL("<c:url value = '/'/>page/query.action");
-	</c:when>
-	<c:otherwise>
-	goURL("<c:url value = '/'/>page/journal.action");
-	</c:otherwise>
+	<c:when test="${not empty list}">goURL("<c:url value='/' />page/query.action");</c:when>
+	<c:when test="${not empty focus || not empty prefix}">goURL("<c:url value='/' />page/journal.action");</c:when>
+	<c:otherwise>goURL("<c:url value='/' />crud/apply.referenceOwner.list.action?entity.indexTerm=<esapi:encodeForJavaScript>${entityRecord.indexTerm}</esapi:encodeForJavaScript>".replace(/\&/g, "%26")+"&pager.recordPoint=${pagerRecord.recordPoint}&pager.recordPerPage=${pagerRecord.recordPerPage}");</c:otherwise>
 	</c:choose>
-	}
+}
 </script>
 <style>
 .list td a:hover {

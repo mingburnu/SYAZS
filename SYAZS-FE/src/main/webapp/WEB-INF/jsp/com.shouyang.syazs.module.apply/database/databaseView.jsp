@@ -10,11 +10,10 @@
 		var data = "entity.option="
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
-				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
+				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>".replace(/\&/g, "%26")
 				+ "&entity.refSerNo=" + "${ds.entity.refSerNo}"
 				+ "&pager.recordPoint=" + "${ds.pager.recordPoint}"
-				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}"
-				+ "&pager.offset=" + "${ds.pager.offset}";
+				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}";
 		$.ajax({
 			url : url,
 			data : data,
@@ -58,7 +57,7 @@
 			<c:if test="${not empty entity.publishName}">
 				<tr>
 					<td class="t_01">出版社</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.publishname }</esapi:encodeForHTML></td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.indexedYears }">

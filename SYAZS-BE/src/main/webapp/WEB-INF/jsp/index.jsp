@@ -129,14 +129,14 @@
 															<tr>
 																<td align="center" valign="top" width="40">
 																	<div class="cal_cal">
-																		<div class="cal_month">03月</div>
-																		<div class="cal_day">24</div>
+																		<div class="cal_month">11月</div>
+																		<div class="cal_day">01</div>
 																	</div>
 																</td>
 																<td align="left" valign="top">
 																	<div class="cal_title">系統上線</div>
 																	<div class="cal_content">歡迎蒞臨!</div>
-																	<div class="cal_time">發佈時間:2010年03月24日 PM 12:00</div>
+																	<div class="cal_time">發佈時間:2015年11月01日 PM 12:00</div>
 																</td>
 															</tr>
 														</tbody>

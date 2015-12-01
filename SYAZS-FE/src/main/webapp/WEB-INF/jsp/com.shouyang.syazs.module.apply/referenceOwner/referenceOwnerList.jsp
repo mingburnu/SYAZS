@@ -7,12 +7,26 @@
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <script type="text/javascript">
 	function owner(url) {
-		$.ajax({
-			url : url,
-			success : function(result) {
-				$("#container").html(result);
-			}
-		});
+		$
+				.ajax({
+					type : "POST",
+					url : "<c:url value = '/'/>crud/apply.referenceOwner.notePoint.action",
+					dataType : "html",
+					data : $("form:eq(0)").serialize()
+							+ "&pager.recordPoint=${pager.recordPoint}",
+					success : function(message) {
+						$.ajax({
+							url : url,
+							success : function(result) {
+								$("#container").html(result);
+							}
+						});
+					}
+				});
+	}
+
+	function goBack() {
+		goURL("<c:url value = '/'/>page/query.action");
 	}
 </script>
 <style>
@@ -188,7 +202,10 @@
 				</table>
 			</div>
 		</c:if>
-
+		<div class="bottom">
+			<a class="btn_02" href="javascript:goBack();"><span>回 上 一
+					頁</span></a>
+		</div>
 	</div>
 	<!-- 內容結束 -->
 </div>

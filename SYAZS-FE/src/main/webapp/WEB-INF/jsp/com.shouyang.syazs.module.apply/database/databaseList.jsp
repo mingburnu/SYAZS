@@ -21,6 +21,13 @@ function link(serNo){
 	var url="<%=request.getContextPath()%>"+"/crud/apply.database.click.action?entity.serNo="+serNo;
 	window.open(url);
 }
+
+function goBack() {
+	<c:choose>
+	<c:when test="${not empty list}">goURL("<c:url value='/' />page/query.action");</c:when>
+	<c:otherwise>goURL("<c:url value='/' />crud/apply.referenceOwner.list.action?entity.indexTerm=<esapi:encodeForJavaScript>${entityRecord.indexTerm}</esapi:encodeForJavaScript>".replace(/\&/g, "%26")+"&pager.recordPoint=${pagerRecord.recordPoint}&pager.recordPerPage=${pagerRecord.recordPerPage}");</c:otherwise>
+	</c:choose>
+}
 </script>
 <style>
 .list td a:hover {
@@ -99,10 +106,12 @@ function link(serNo){
 				<div class="list">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr valign="top">
-							<th width="40">序號</th>
-							<th width="545">題名</th>
-							<th width="203">出版社</th>
-							<th width="92">收錄年代</th>
+							<th width="38">序號</th>
+							<th>題名</th>
+							<th>OA</th>
+							<th width="38">詳細</th>
+							<th>出版社</th>
+							<th>收錄年代</th>
 						</tr>
 						<c:forEach var="item" items="${ds.results}" varStatus="status">
 							<c:set var="num" scope="session" value="${(status.index+1)%2}" />
@@ -112,7 +121,9 @@ function link(serNo){
 								<c:when test="${num > 0}">
 									<tr valign="top">
 										<td>${orderInt}</td>
-										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
+										<td><a onclick="link(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
+										<td><c:if test="${item.openAccess }">V</c:if></td>
+										<td><a onclick="view(${item.serNo})">檢視</a></td>
 										<td><esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML></td>
 										<td><c:choose>
 												<c:when test="${not empty item.indexedYears }">
@@ -125,7 +136,9 @@ function link(serNo){
 								<c:otherwise>
 									<tr valign="top" class="odd">
 										<td>${orderInt}</td>
-										<td><a onclick="view(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
+										<td><a onclick="link(${item.serNo})"><esapi:encodeForHTML>${item.dbTitle}</esapi:encodeForHTML></a></td>
+										<td><c:if test="${item.openAccess }">V</c:if></td>
+										<td><a onclick="view(${item.serNo})">檢視</a></td>
 										<td><esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML></td>
 										<td><c:choose>
 												<c:when test="${not empty item.indexedYears }">
@@ -227,7 +240,10 @@ function link(serNo){
 				</div>
 			</c:when>
 		</c:choose>
-
+		<div class="bottom">
+			<a class="btn_02" href="javascript:goBack();"><span>回 上 一
+					頁</span></a>
+		</div>
 	</div>
 	<!-- 內容結束 -->
 </div>

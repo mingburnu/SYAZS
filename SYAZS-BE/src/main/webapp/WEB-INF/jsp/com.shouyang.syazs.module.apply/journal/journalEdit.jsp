@@ -3,12 +3,22 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="esapi"
+	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+						$("#div_Detail .content .header .close")
+								.html(
+										'<a href="#" onclick="closeDetail();clearReferenceOwners();clearResDbs();">關閉</a>');
+					});
+
 	$(document)
 			.ready(
 					function() {
@@ -31,14 +41,6 @@
 									"<c:url value = '/'/>crud/apply.database.box.action",
 									'資料庫-選擇');
 						}
-					});
-
-	$(document)
-			.ready(
-					function() {
-						$("#div_Detail .content .header .close")
-								.html(
-										'<a href="#" onclick="clearReferenceOwners();clearResDbs();closeDetail();">關閉</a>');
 					});
 
 	$(document).ready(function() {
@@ -242,7 +244,8 @@ input#referenceOwner_name {
 			<tr>
 				<th>資料庫題名</th>
 				<td><s:hidden name="entity.database.serNo" /> <input
-					id="datName" disabled="disabled">&nbsp;
+					id="datName" disabled="disabled"
+					value="<esapi:encodeForHTMLAttribute>${entity.database.dbTitle }</esapi:encodeForHTMLAttribute>">&nbsp;
 					<div id="selectDb">
 						<a class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
 							class="state-default" onclick="clearRes()">清除</a>

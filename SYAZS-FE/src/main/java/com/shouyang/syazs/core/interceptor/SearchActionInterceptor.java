@@ -52,7 +52,14 @@ public class SearchActionInterceptor extends RootInterceptor {
 		Map<String, Object> session = invocation.getInvocationContext()
 				.getSession();
 
-		if (invocation.getProxy().getNamespace().equals("crud")) {
+		if (invocation.getProxy().getNamespace().equals("/page")) {
+			if (session.get("entityRecord") != null) {
+				session.remove("entityRecord");
+				session.remove("pagerRecord");
+			}
+		}
+
+		if (invocation.getProxy().getNamespace().equals("/crud")) {
 			if (!isUsableMethod(invocation)) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return "list";
@@ -67,6 +74,11 @@ public class SearchActionInterceptor extends RootInterceptor {
 					.replace(".list.action", "");
 			if (StringUtils.isBlank(request.getParameter("entity.indexTerm"))) {
 				addActionError(invocation, "．請輸入關鍵字。");
+			}
+
+			if (session.get("entityRecord") != null) {
+				session.remove("entityRecord");
+				session.remove("pagerRecord");
 			}
 
 			if (!hasActionErrors(invocation)) {
@@ -101,6 +113,11 @@ public class SearchActionInterceptor extends RootInterceptor {
 			String option = request.getParameter("entity.option");
 			if (StringUtils.isBlank(indexTerm)) {
 				addActionError(invocation, "．請輸入關鍵字。");
+			}
+			
+			if (session.get("entityRecord") != null) {
+				session.remove("entityRecord");
+				session.remove("pagerRecord");
 			}
 
 			if (item.equals("ebook")) {
@@ -227,11 +244,10 @@ public class SearchActionInterceptor extends RootInterceptor {
 									null, null, Long.parseLong(serNo), true),
 									accountNumber);
 						} else {
-							feLogsService
-									.save(new FeLogs(Act.借閱, null,
-											accountNumber.getCustomer(), null,
-											null, null, Long.parseLong(serNo), true),
-											accountNumber);
+							feLogsService.save(new FeLogs(Act.借閱, null,
+									accountNumber.getCustomer(), null, null,
+									null, Long.parseLong(serNo), true),
+									accountNumber);
 						}
 
 						response.sendRedirect((String) url.get(0));
@@ -249,6 +265,11 @@ public class SearchActionInterceptor extends RootInterceptor {
 			String item = request.getServletPath().replace("/crud/apply.", "")
 					.replace(".prefix.action", "");
 			String option = request.getParameter("entity.option");
+			
+			if (session.get("entityRecord") != null) {
+				session.remove("entityRecord");
+				session.remove("pagerRecord");
+			}
 
 			if (item.equals("ebook") || item.equals("journal")) {
 				if (StringUtils.isBlank(option)) {

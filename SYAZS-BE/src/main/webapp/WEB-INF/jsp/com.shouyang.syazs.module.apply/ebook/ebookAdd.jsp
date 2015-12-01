@@ -14,6 +14,14 @@
 	$(document)
 			.ready(
 					function() {
+						$("#div_Detail .content .header .close")
+								.html(
+										'<a href="#" onclick="closeDetail();clearReferenceOwners();clearResDbs();">關閉</a>');
+					});
+
+	$(document)
+			.ready(
+					function() {
 						var contain = $("#div_Detail_2 .content .header .title")
 								.html();
 						if (contain != '擁有人-新增') {
@@ -33,14 +41,6 @@
 									"<c:url value = '/'/>crud/apply.database.box.action",
 									'資料庫-選擇');
 						}
-					});
-
-	$(document)
-			.ready(
-					function() {
-						$("#div_Detail .content .header .close")
-								.html(
-										'<a href="#" onclick="clearReferenceOwners();clearResDbs();closeDetail();">關閉</a>');
 					});
 
 	$(document).ready(function() {
@@ -260,7 +260,8 @@ input[type="text"]:disabled {
 			<tr>
 				<th>資料庫題名</th>
 				<td><s:hidden name="entity.database.serNo" /> <input
-					id="datName" disabled="disabled">&nbsp;
+					id="datName" disabled="disabled"
+					value="<esapi:encodeForHTMLAttribute>${entity.database.dbTitle }</esapi:encodeForHTMLAttribute>">&nbsp;
 					<div id="selectDb">
 						<a class="state-default" onclick="addResDb()">選擇</a>&nbsp;<a
 							class="state-default" onclick="clearRes()">清除</a>

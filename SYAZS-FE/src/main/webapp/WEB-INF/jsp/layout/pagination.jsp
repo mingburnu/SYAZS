@@ -107,12 +107,12 @@ function bottomChangeSize(recordPerPage) {
 		</pg:first>
 		<pg:prev ifnull="true">
 			<c:choose>
-				<c:when test="${empty pageNumber}">
+				<c:when test="${1 eq currentPage}">
 					<a class="b" href="#" onclick="return false;">&nbsp;</a>
 
 				</c:when>
 				<c:otherwise>
-					<a class="b" onclick="gotoPage(${pageNumber})">&nbsp;</a>
+					<a class="b" onclick="gotoPage(${currentPage-1})">&nbsp;</a>
 
 				</c:otherwise>
 			</c:choose>
@@ -121,12 +121,12 @@ function bottomChangeSize(recordPerPage) {
 			max="${totalPage }" onchange="gotoPage(this.value)" size="3"> 頁，共${totalPage }頁 
 		<pg:next ifnull="true">
 			<c:choose>
-				<c:when test="${empty pageNumber}">
+				<c:when test="${totalPage eq currentPage}">
 					<a class="n" href="#" onclick="return false;">&nbsp;</a>
 
 				</c:when>
 				<c:otherwise>
-					<a class="n" onclick="gotoPage(${pageNumber})">&nbsp;</a>
+					<a class="n" onclick="gotoPage(${currentPage+1})">&nbsp;</a>
 
 				</c:otherwise>
 			</c:choose>
