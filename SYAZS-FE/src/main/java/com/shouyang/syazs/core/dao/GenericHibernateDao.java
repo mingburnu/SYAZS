@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -166,6 +167,11 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 			data.setParameter(keyValue.getKey(), keyValue.getValue());
 		}
 
+		for (Entry<String, Collection<?>> keyValue : dsQL.getParameterLists()
+				.entrySet()) {
+			data.setParameterList(keyValue.getKey(), keyValue.getValue());
+		}
+
 		return data.list();
 	}
 
@@ -181,6 +187,12 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 		for (Entry<String, Object> keyValue : dsQL.getParameters().entrySet()) {
 			data.setParameter(keyValue.getKey(), keyValue.getValue());
 			total.setParameter(keyValue.getKey(), keyValue.getValue());
+		}
+
+		for (Entry<String, Collection<?>> keyValue : dsQL.getParameterLists()
+				.entrySet()) {
+			data.setParameterList(keyValue.getKey(), keyValue.getValue());
+			total.setParameterList(keyValue.getKey(), keyValue.getValue());
 		}
 
 		if (ds != null && ds.getPager() != null) { // 分頁

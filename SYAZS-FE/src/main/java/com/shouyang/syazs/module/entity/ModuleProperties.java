@@ -17,6 +17,9 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	private Long refSerNo;
 
 	@Transient
+	private Long[] counts;
+
+	@Transient
 	private String backURL;
 
 	/**
@@ -32,6 +35,21 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	 */
 	public void setRefSerNo(Long refSerNo) {
 		this.refSerNo = refSerNo;
+	}
+
+	/**
+	 * @return the counts
+	 */
+	public Long[] getCounts() {
+		return counts;
+	}
+
+	/**
+	 * @param counts
+	 *            the counts to set
+	 */
+	public void setCounts(Long[] counts) {
+		this.counts = counts;
 	}
 
 	/**

@@ -1,14 +1,17 @@
 package com.shouyang.syazs.module.apply.referenceOwner;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.MatchMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -16,6 +19,9 @@ import com.shouyang.syazs.core.service.GenericServiceFull;
 
 @Service
 public class ReferenceOwnerService extends GenericServiceFull<ReferenceOwner> {
+
+	@Autowired
+	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private ReferenceOwnerDao dao;
@@ -80,22 +86,56 @@ public class ReferenceOwnerService extends GenericServiceFull<ReferenceOwner> {
 		}
 	}
 
-	public List<ReferenceOwner> getAllOwners() throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
+	public Object[] getOwnerBySerNo(long serNo) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT serNo, name FROM ReferenceOwner WHERE serNo=:serNo");
+		queryLanguage.addParameter("serNo", serNo);
 
-		return dao.findByRestrictions(restrictions);
+		List<?> result = dao.findByHQL(queryLanguage);
+
+		if (CollectionUtils.isEmpty(result)) {
+			return null;
+		} else {
+			return (Object[]) result.get(0);
+		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getAllOwners() throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage.setHql("SELECT serNo, name FROM ReferenceOwner");
+		return (List<Object[]>) dao.findByHQL(queryLanguage);
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<ReferenceOwner> getUncheckOwners(
 			List<ReferenceOwner> checkedOwners) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		if (checkedOwners != null) {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT serNo, name FROM ReferenceOwner WHERE serNo NOT IN (:ckecks)");
+		List<Long> ckecks = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(checkedOwners)) {
 			Iterator<ReferenceOwner> iterator = checkedOwners.iterator();
 			while (iterator.hasNext()) {
-				restrictions.ne("serNo", iterator.next().getSerNo());
+				Long serNo = (Long) iterator.next().getSerNo();
+				ckecks.add(serNo);
 			}
+		} else {
+			ckecks.add(Long.MIN_VALUE);
 		}
 
-		return dao.findByRestrictions(restrictions);
+		queryLanguage.addParameterList("ckecks", ckecks);
+
+		List<Object[]> unchecks = (List<Object[]>) dao.findByHQL(queryLanguage);
+		List<ReferenceOwner> uncheckOwners = new ArrayList<ReferenceOwner>();
+		for (int i = 0; i < unchecks.size(); i++) {
+			referenceOwner = new ReferenceOwner();
+			referenceOwner.setSerNo((Long) unchecks.get(i)[0]);
+			referenceOwner.setName(unchecks.get(i)[1].toString());
+			uncheckOwners.add(referenceOwner);
+		}
+
+		return uncheckOwners;
 	}
 }

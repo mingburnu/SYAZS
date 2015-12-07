@@ -1,5 +1,6 @@
 package com.shouyang.syazs.core.dao;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ public class HibernateQueryLanguage implements DsQueryLanguage {
 	
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 	
+	private Map<String, Collection<?>> collections = new HashMap<String, Collection<?>>();
+	
 	@Override
 	public String getHql() {
 		return hql;
@@ -35,10 +38,21 @@ public class HibernateQueryLanguage implements DsQueryLanguage {
 	public Map<String, Object> getParameters() {
 		return parameters;
 	}
+	
+	@Override
+	public Map<String, Collection<?>> getParameterLists() {
+		return collections;
+	}
 
 	@Override
 	public DsQueryLanguage addParameter(String name, Object value) {
 		parameters.put(name, value);
+		return this;
+	}
+
+	@Override
+	public DsQueryLanguage addParameterList(String name, Collection<?> collection) {
+		collections.put(name, collection);
 		return this;
 	}
 

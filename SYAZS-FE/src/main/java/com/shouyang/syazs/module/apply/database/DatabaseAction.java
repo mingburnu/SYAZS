@@ -1,8 +1,5 @@
 package com.shouyang.syazs.module.apply.database;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,45 +102,18 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String owner() throws Exception {
-		referenceOwner = referenceOwnerService.getBySerNo(getEntity()
-				.getRefSerNo());
-
 		getRequest().setAttribute(
 				"owner",
 				getRequest().getContextPath()
 						+ "/crud/apply.database.owner.action");
 
-		DataSet<Database> ds = initDataSet();
-		List<Database> databases = new ArrayList<Database>(
-				referenceOwner.getDatabases());
-
-		ds.getPager().setTotalRecord((long) databases.size());
-		int first = ds.getPager().getOffset();
-		int last = first + ds.getPager().getRecordPerPage();
-
-		int i = 0;
-		while (i < databases.size()) {
-			if (i >= first && i < last) {
-				ds.getResults().add(databases.get(i));
-			}
-			i++;
-		}
+		DataSet<Database> ds = databaseService.getByOwner(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
 					(int) Math.ceil(ds.getPager().getTotalRecord()
 							/ ds.getPager().getRecordPerPage()));
-			first = ds.getPager().getOffset();
-			last = first + ds.getPager().getRecordPerPage();
-
-			int j = 0;
-			while (j < databases.size()) {
-				if (j >= first && j < last) {
-					ds.getResults().add((Database) databases.get(j));
-				}
-				j++;
-			}
-
+			ds = databaseService.getByOwner(ds);
 		}
 
 		setDs(ds);
@@ -163,6 +133,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			database.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
+			setOwners();
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -178,6 +149,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String count() {
 		getRequest().setAttribute("count", databaseService.countToatal());
 		return COUNT;
+	}
+
+	protected void setOwners() {
+		getRequest().setAttribute("referenceOwners",
+				databaseService.getResOwners(database.getSerNo()));
 	}
 
 	protected boolean hasEntity() throws Exception {

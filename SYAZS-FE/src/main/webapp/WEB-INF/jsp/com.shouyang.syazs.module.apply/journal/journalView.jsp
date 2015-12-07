@@ -56,12 +56,6 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty entity.database}">
-				<tr>
-					<td class="t_01">資料庫</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
-				</tr>
-			</c:if>
 			<c:if test="${entity.version > 0 }">
 				<tr>
 					<td class="t_01">版本</td>
@@ -104,12 +98,22 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.numB }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty ownerNames}">
+			<c:if test="${not empty entity.database}">
 				<tr>
-					<td class="t_01">館藏</td>
-					<td class="t_02">${ownerNames }</td>
+					<td class="t_01">資料庫</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
+			<tr>
+				<td class="t_01">館藏</td>
+				<td class="t_02"><c:forEach items="${referenceOwners }"
+						var="owner" varStatus="status">
+						<c:choose>
+							<c:when test="${!status.last }">${owner[1]}、</c:when>
+							<c:otherwise>${owner[1]}</c:otherwise>
+						</c:choose>
+					</c:forEach></td>
+			</tr>
 		</table>
 
 		<div align="center">

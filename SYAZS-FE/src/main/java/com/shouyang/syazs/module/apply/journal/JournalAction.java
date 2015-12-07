@@ -1,9 +1,5 @@
 package com.shouyang.syazs.module.apply.journal;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.database.DatabaseService;
 import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
@@ -32,6 +29,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Autowired
 	private JournalService journalService;
+
+	@Autowired
+	private DatabaseService databaseService;
 
 	@Autowired
 	private Database database;
@@ -111,53 +111,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	public String owner() throws Exception {
-		referenceOwner = referenceOwnerService.getBySerNo(getEntity()
-				.getRefSerNo());
-
 		getRequest().setAttribute(
 				"owner",
 				getRequest().getContextPath()
 						+ "/crud/apply.journal.owner.action");
 
-		DataSet<Journal> ds = initDataSet();
-		List<Journal> journals = new ArrayList<Journal>(
-				referenceOwner.getJournals());
-		List<Database> databases = new ArrayList<Database>(
-				referenceOwner.getDatabases());
-
-		Iterator<Database> iterator = databases.iterator();
-		while (iterator.hasNext()) {
-			database = iterator.next();
-			journals.addAll(database.getJournals());
-		}
-
-		ds.getPager().setTotalRecord((long) journals.size());
-		int first = ds.getPager().getOffset();
-		int last = first + ds.getPager().getRecordPerPage();
-
-		int i = 0;
-		while (i < journals.size()) {
-			if (i >= first && i < last) {
-				ds.getResults().add(journals.get(i));
-			}
-			i++;
-		}
+		DataSet<Journal> ds = journalService.getByOwner(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
 					(int) Math.ceil(ds.getPager().getTotalRecord()
 							/ ds.getPager().getRecordPerPage()));
-			first = ds.getPager().getOffset();
-			last = first + ds.getPager().getRecordPerPage();
-
-			int j = 0;
-			while (j < databases.size()) {
-				if (j >= first && j < last) {
-					ds.getResults().add(journals.get(j));
-				}
-				j++;
-			}
-
+			ds = journalService.getByOwner(ds);
 		}
 
 		setDs(ds);
@@ -204,15 +169,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	public String view() throws Exception {
 		if (hasEntity()) {
-			List<String> ownerNameList = new ArrayList<String>();
-
-			String ownerNames = ownerNameList.toString().replace("[", "")
-					.replace("]", "");
-
-			getRequest().setAttribute("ownerNames", ownerNames);
 			journal.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
+			setOwners();
 			setEntity(journal);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -223,6 +183,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	public void click() {
 
+	}
+
+	protected void setOwners() {
+		if (journal.getDatabase() != null && journal.getDatabase().hasSerNo()) {
+			getRequest().setAttribute(
+					"referenceOwners",
+					databaseService.getResOwners(journal.getDatabase()
+							.getSerNo()));
+		} else {
+			getRequest().setAttribute("referenceOwners",
+					journalService.getResOwners(journal.getSerNo()));
+		}
 	}
 
 	public String count() {

@@ -100,7 +100,7 @@
 	<c:forEach var="item" items="${allReferenceOwners}" varStatus="status">
 		<div id="unit_div">
 			<input type="checkbox" id="referenceOwner_unit" class="checkbox"
-				value="${item.serNo }"><label>${item.name}</label>
+				value="${item[0] }"><label>${item[1]}</label>
 		</div>
 	</c:forEach>
 	<div class="button_box">

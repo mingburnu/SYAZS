@@ -98,14 +98,6 @@
 							<s:param name="entity.refSerNo">${item.serNo}</s:param>
 						</s:url>
 					</c:set>
-					<c:set var="ebookAmount" value="${fn:length(item.ebooks)}" />
-					<c:set var="journalAmount" value="${fn:length(item.journals)}" />
-					<c:forEach items="${item.databases }" var="database">
-						<c:set var="ebookAmount"
-							value="${ebookAmount +  fn:length(database.ebooks)}" />
-						<c:set var="journalAmount"
-							value="${journalAmount +  fn:length(database.journals)}" />
-					</c:forEach>
 					<c:choose>
 						<c:when test="${num > 0}">
 							<tr valign="top">
@@ -118,22 +110,22 @@
 									</div></td>
 								<td><div>${item.tel}</div></td>
 								<td><c:choose>
-										<c:when test="${fn:length(item.databases) > 0 }">
-											<a onclick="owner('${ownDb}')">${fn:length(item.databases)}</a>
+										<c:when test="${item.counts[0] > 0 }">
+											<a onclick="owner('${ownDb}')">${item.counts[0]}</a>
 										</c:when>
-										<c:otherwise>${fn:length(item.databases)}</c:otherwise>
+										<c:otherwise>${item.counts[0]}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${ebookAmount > 0 }">
-											<a onclick="owner('${ownEbook}')">${ebookAmount }</a>
+										<c:when test="${item.counts[1] > 0 }">
+											<a onclick="owner('${ownEbook}')">${item.counts[1]}</a>
 										</c:when>
-										<c:otherwise>${ebookAmount}</c:otherwise>
+										<c:otherwise>${item.counts[1]}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${journalAmount > 0 }">
-											<a onclick="owner('${ownJorunal}')">${journalAmount}</a>
+										<c:when test="${item.counts[2] > 0 }">
+											<a onclick="owner('${ownJorunal}')">${item.counts[2]}</a>
 										</c:when>
-										<c:otherwise>${journalAmount}</c:otherwise>
+										<c:otherwise>${item.counts[2]}</c:otherwise>
 									</c:choose></td>
 							</tr>
 						</c:when>
@@ -148,22 +140,22 @@
 									</div></td>
 								<td><div>${item.tel}</div></td>
 								<td><c:choose>
-										<c:when test="${fn:length(item.databases) > 0 }">
-											<a onclick="owner('${ownDb}')">${fn:length(item.databases)}</a>
+										<c:when test="${item.counts[0] > 0 }">
+											<a onclick="owner('${ownDb}')">${item.counts[0]}</a>
 										</c:when>
-										<c:otherwise>${fn:length(item.databases)}</c:otherwise>
+										<c:otherwise>${item.counts[0]}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${ebookAmount > 0 }">
-											<a onclick="owner('${ownEbook}')">${ebookAmount }</a>
+										<c:when test="${item.counts[1] > 0 }">
+											<a onclick="owner('${ownEbook}')">${item.counts[1]}</a>
 										</c:when>
-										<c:otherwise>${ebookAmount}</c:otherwise>
+										<c:otherwise>${item.counts[1]}</c:otherwise>
 									</c:choose></td>
 								<td><c:choose>
-										<c:when test="${journalAmount > 0 }">
-											<a onclick="owner('${ownJorunal}')">${journalAmount}</a>
+										<c:when test="${item.counts[2] > 0 }">
+											<a onclick="owner('${ownJorunal}')">${item.counts[2]}</a>
 										</c:when>
-										<c:otherwise>${journalAmount}</c:otherwise>
+										<c:otherwise>${item.counts[2]}</c:otherwise>
 									</c:choose></td>
 							</tr>
 						</c:otherwise>

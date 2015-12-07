@@ -123,12 +123,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 							errorMessages.add(getEntity().getRefSerNo()[i]
 									+ "為不可利用的流水號");
 						} else {
-							referenceOwner = referenceOwnerService
-									.getBySerNo(getEntity().getRefSerNo()[i]);
-							if (referenceOwner == null) {
+							Object[] ownerValue = referenceOwnerService
+									.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
+							if (ownerValue == null) {
 								errorMessages.add(getEntity().getRefSerNo()[i]
 										+ "為不可利用的流水號");
 							} else {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setSerNo(getEntity()
+										.getRefSerNo()[i]);
+								referenceOwner
+										.setName(ownerValue[1].toString());
+
 								getEntity().getOwners().add(referenceOwner);
 							}
 						}
@@ -161,11 +167,16 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						if (getEntity().getRefSerNo()[i] < 1) {
 							continue;
 						} else {
-							referenceOwner = referenceOwnerService
-									.getBySerNo(getEntity().getRefSerNo()[i]);
-							if (referenceOwner == null) {
+							Object[] ownerValue = referenceOwnerService
+									.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
+							if (ownerValue == null) {
 								continue;
 							} else {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setSerNo(getEntity()
+										.getRefSerNo()[i]);
+								referenceOwner
+										.setName(ownerValue[1].toString());
 								getEntity().getOwners().add(referenceOwner);
 							}
 						}
@@ -229,13 +240,20 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 								errorMessages.add(getEntity().getRefSerNo()[i]
 										+ "為不可利用的流水號");
 							} else {
-								referenceOwner = referenceOwnerService
-										.getBySerNo(getEntity().getRefSerNo()[i]);
-								if (referenceOwner == null) {
+								Object[] ownerValue = referenceOwnerService
+										.getOwnerBySerNo(getEntity()
+												.getRefSerNo()[i]);
+								if (ownerValue == null) {
 									errorMessages
 											.add(getEntity().getRefSerNo()[i]
 													+ "為不可利用的流水號");
 								} else {
+									referenceOwner = new ReferenceOwner();
+									referenceOwner.setSerNo(getEntity()
+											.getRefSerNo()[i]);
+									referenceOwner.setName(ownerValue[1]
+											.toString());
+
 									getEntity().getOwners().add(referenceOwner);
 								}
 							}
@@ -268,11 +286,17 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 							if (getEntity().getRefSerNo()[i] < 1) {
 								continue;
 							} else {
-								referenceOwner = referenceOwnerService
-										.getBySerNo(getEntity().getRefSerNo()[i]);
-								if (referenceOwner == null) {
+								Object[] ownerValue = referenceOwnerService
+										.getOwnerBySerNo(getEntity()
+												.getRefSerNo()[i]);
+								if (ownerValue == null) {
 									continue;
 								} else {
+									referenceOwner = new ReferenceOwner();
+									referenceOwner.setSerNo(getEntity()
+											.getRefSerNo()[i]);
+									referenceOwner.setName(ownerValue[1]
+											.toString());
 									getEntity().getOwners().add(referenceOwner);
 								}
 							}
@@ -331,8 +355,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
-					journal.getReferenceOwners());
+			List<ReferenceOwner> owners = journalService.getcheckOwners(journal
+					.getSerNo());
 			journal.setOwners(owners);
 			getRequest().setAttribute("uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(owners));
@@ -402,6 +426,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 
 			journal = journalService.save(getEntity(), getLoginUser());
+			setOwners();
 			setEntity(journal);
 			addActionMessage("新增成功");
 			return VIEW;
@@ -438,6 +463,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 
 			journal = journalService.update(getEntity(), getLoginUser());
+			setOwners();
 			setEntity(journal);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -476,6 +502,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
+			setOwners();
 			setEntity(journal);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -1249,6 +1276,18 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		return true;
+	}
+
+	protected void setOwners() {
+		if (journal.getDatabase() != null && journal.getDatabase().hasSerNo()) {
+			getRequest().setAttribute(
+					"referenceOwners",
+					databaseService.getResOwners(journal.getDatabase()
+							.getSerNo()));
+		} else {
+			getRequest().setAttribute("referenceOwners",
+					journalService.getResOwners(journal.getSerNo()));
+		}
 	}
 
 	@SuppressWarnings("rawtypes")

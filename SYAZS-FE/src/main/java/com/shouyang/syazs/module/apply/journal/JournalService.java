@@ -3,6 +3,7 @@ package com.shouyang.syazs.module.apply.journal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -181,7 +183,28 @@ public class JournalService extends GenericServiceFull<Journal> {
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getResOwners(long serNo) {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT jr.serNo, jr.name FROM Journal j JOIN j.referenceOwners jr WHERE j.serNo = :serNo");
+		queryLanguage.addParameter("serNo", serNo);
+		return (List<Object[]>) dao.findByHQL(queryLanguage);
+	}
+
 	public long countToatal() {
 		return dao.countAll();
+	}
+
+	public long countByOwner(long ownerSerNo) {
+		return dao.countByOwner(ownerSerNo);
+	}
+
+	public DataSet<Journal> getByOwner(DataSet<Journal> ds) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		String hql = "SELECT j FROM Journal j JOIN j.referenceOwners jr WHERE jr.serNo=:ownerSerNo OR j.serNo IN (SELECT j.serNo FROM Journal j JOIN j.database jd JOIN jd.referenceOwners jdr WHERE jdr.serNo=:ownerSerNo)";
+		queryLanguage.setHql(hql);
+		queryLanguage.addParameter("ownerSerNo", ds.getEntity().getRefSerNo());
+		return dao.findByHQL(queryLanguage, ds);
 	}
 }

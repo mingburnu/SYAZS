@@ -1,6 +1,7 @@
 package com.shouyang.syazs.core.dao;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 import com.shouyang.syazs.core.dao.DsQueryLanguage;
@@ -18,6 +19,10 @@ public interface DsQueryLanguage extends Serializable {
 	
 	public Map<String, Object> getParameters();
 	
+	public Map<String, Collection<?>> getParameterLists();
+	
 	public DsQueryLanguage addParameter(String name, Object value);
+	
+	public DsQueryLanguage addParameterList(String name, Collection<?> collection);
 	
 }

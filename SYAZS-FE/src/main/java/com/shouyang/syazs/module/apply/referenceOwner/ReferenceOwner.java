@@ -6,19 +6,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
-import com.shouyang.syazs.core.entity.GenericEntityFull;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.ebook.Ebook;
 import com.shouyang.syazs.module.apply.journal.Journal;
+import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Entity
 @Table(name = "referenceOwner")
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ReferenceOwner extends GenericEntityFull {
+public class ReferenceOwner extends ModuleProperties {
 
 	/**
 	 * 

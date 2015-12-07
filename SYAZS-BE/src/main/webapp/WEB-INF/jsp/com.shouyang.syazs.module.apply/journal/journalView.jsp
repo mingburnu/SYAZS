@@ -150,10 +150,8 @@
 					</tr>
 					<tr>
 						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${entity.referenceOwners}">
-								<div>${item.name}</div>
-							</c:forEach> <c:forEach var="item" items="${entity.database.referenceOwners}">
-								<div>${item.name}</div>
+						<td><c:forEach var="item" items="${referenceOwners}">
+								<div>${item[1]}</div>
 							</c:forEach></td>
 					</tr>
 				</tbody>

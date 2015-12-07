@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -65,6 +66,15 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dao;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getResOwners(long serNo) {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT dr.serNo, dr.name FROM Database d JOIN d.referenceOwners dr WHERE d.serNo = :serNo");
+		queryLanguage.addParameter("serNo", serNo);
+		return (List<Object[]>) dao.findByHQL(queryLanguage);
+	}
+
 	public List<Database> getAllDb() throws Exception {
 		DsRestrictions restrictions = getDsRestrictions();
 		return dao.findByRestrictions(restrictions);
@@ -72,5 +82,16 @@ public class DatabaseService extends GenericServiceFull<Database> {
 
 	public long countToatal() {
 		return dao.countAll();
+	}
+
+	public long countByOwner(long ownerSerNo) {
+		return dao.countByOwner(ownerSerNo);
+	}
+
+	public DataSet<Database> getByOwner(DataSet<Database> ds) throws Exception {
+		DsRestrictions restrictions = getDsRestrictions();
+		restrictions.createAlias("referenceOwners", "dr");
+		restrictions.eq("dr.serNo", ds.getEntity().getRefSerNo());
+		return dao.findByRestrictions(restrictions, ds);
 	}
 }

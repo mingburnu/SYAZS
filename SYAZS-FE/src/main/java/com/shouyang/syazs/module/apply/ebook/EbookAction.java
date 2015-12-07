@@ -1,9 +1,5 @@
 package com.shouyang.syazs.module.apply.ebook;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.apply.database.DatabaseService;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
@@ -34,6 +31,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Autowired
 	private Database database;
+	
+	@Autowired
+	private DatabaseService databaseService;
 
 	@Autowired
 	private ReferenceOwner referenceOwner;
@@ -111,52 +111,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	public String owner() throws Exception {
-		referenceOwner = referenceOwnerService.getBySerNo(getEntity()
-				.getRefSerNo());
-
 		getRequest().setAttribute(
 				"owner",
 				getRequest().getContextPath()
 						+ "/crud/apply.ebook.owner.action");
 
-		DataSet<Ebook> ds = initDataSet();
-		List<Ebook> ebooks = new ArrayList<Ebook>(referenceOwner.getEbooks());
-		List<Database> databases = new ArrayList<Database>(
-				referenceOwner.getDatabases());
-
-		Iterator<Database> iterator = databases.iterator();
-		while (iterator.hasNext()) {
-			database = iterator.next();
-			ebooks.addAll(database.getEbooks());
-		}
-
-		ds.getPager().setTotalRecord((long) ebooks.size());
-		int first = ds.getPager().getOffset();
-		int last = first + ds.getPager().getRecordPerPage();
-
-		int i = 0;
-		while (i < ebooks.size()) {
-			if (i >= first && i < last) {
-				ds.getResults().add(ebooks.get(i));
-			}
-			i++;
-		}
+		DataSet<Ebook> ds = ebookService.getByOwner(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			ds.getPager().setCurrentPage(
 					(int) Math.ceil(ds.getPager().getTotalRecord()
 							/ ds.getPager().getRecordPerPage()));
-			first = ds.getPager().getOffset();
-			last = first + ds.getPager().getRecordPerPage();
-
-			int j = 0;
-			while (j < databases.size()) {
-				if (j >= first && j < last) {
-					ds.getResults().add(ebooks.get(j));
-				}
-				j++;
-			}
-
+			ds = ebookService.getByOwner(ds);
 		}
 
 		setDs(ds);
@@ -203,14 +169,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	public String view() throws Exception {
 		if (hasEntity()) {
-			List<String> ownerNameList = new ArrayList<String>();
-
-			String ownerNames = ownerNameList.toString().replace("[", "")
-					.replace("]", "");
-			getRequest().setAttribute("ownerNames", ownerNames);
 			ebook.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
+			setOwners();
 			setEntity(ebook);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -226,6 +188,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String count() {
 		getRequest().setAttribute("count", ebookService.countToatal());
 		return COUNT;
+	}
+
+	protected void setOwners() {
+		if (ebook.getDatabase() != null && ebook.getDatabase().hasSerNo()) {
+			getRequest().setAttribute(
+					"referenceOwners",
+					databaseService
+							.getResOwners(ebook.getDatabase().getSerNo()));
+		} else {
+			getRequest().setAttribute("referenceOwners",
+					ebookService.getResOwners(ebook.getSerNo()));
+		}
 	}
 
 	protected boolean hasEntity() throws Exception {

@@ -1,5 +1,6 @@
 package com.shouyang.syazs.module.apply.database;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,12 +17,16 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
+import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @Service
 public class DatabaseService extends GenericServiceFull<Database> {
 
 	@Autowired
 	private Database entity;
+
+	@Autowired
+	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private DatabaseDao dao;
@@ -109,6 +114,28 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		makeUserInfo(dbEntity);
 
 		return dbEntity;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getResOwners(long serNo) {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT dr.serNo, dr.name FROM Database d JOIN d.referenceOwners dr WHERE d.serNo = :serNo");
+		queryLanguage.addParameter("serNo", serNo);
+		return (List<Object[]>) dao.findByHQL(queryLanguage);
+	}
+
+	public List<ReferenceOwner> getcheckOwners(long serNo) throws Exception {
+		List<Object[]> checks = (List<Object[]>) getResOwners(serNo);
+		List<ReferenceOwner> checkOwners = new ArrayList<ReferenceOwner>();
+		for (int i = 0; i < checks.size(); i++) {
+			referenceOwner = new ReferenceOwner();
+			referenceOwner.setSerNo((Long) checks.get(i)[0]);
+			referenceOwner.setName(checks.get(i)[1].toString());
+			checkOwners.add(referenceOwner);
+		}
+
+		return checkOwners;
 	}
 
 	public boolean isUnusedUUID(String uuid) throws Exception {

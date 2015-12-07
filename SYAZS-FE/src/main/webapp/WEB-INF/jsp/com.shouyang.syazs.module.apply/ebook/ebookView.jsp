@@ -95,17 +95,21 @@
 					<td class="t_02">${entity.bookInfoIntegral}</td>
 				</tr>
 			</c:if>
+			<c:if test="${not empty entity.database}">
+				<tr>
+					<td class="t_01">資料庫</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
+				</tr>
+			</c:if>
 			<tr>
 				<td class="t_01">館藏</td>
-				<td class="t_02"><c:choose>
-						<c:when test="${not empty entity.database}">
-							<c:forEach items="${entity.database.referenceOwners }"
-								var="owner">${owner.name }</c:forEach>
-						</c:when>
-						<c:otherwise>
-							<c:forEach items="${entity.referenceOwners }" var="owner">${owner.name }</c:forEach>
-						</c:otherwise>
-					</c:choose></td>
+				<td class="t_02"><c:forEach items="${referenceOwners }"
+						var="owner" varStatus="status">
+						<c:choose>
+							<c:when test="${!status.last }">${owner[1]}、</c:when>
+							<c:otherwise>${owner[1]}</c:otherwise>
+						</c:choose>
+					</c:forEach></td>
 			</tr>
 		</table>
 

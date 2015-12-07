@@ -3,6 +3,7 @@ package com.shouyang.syazs.module.apply.ebook;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -179,7 +181,28 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getResOwners(long serNo) {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT er.serNo, er.name FROM Ebook e JOIN e.referenceOwners er WHERE e.serNo = :serNo");
+		queryLanguage.addParameter("serNo", serNo);
+		return (List<Object[]>) dao.findByHQL(queryLanguage);
+	}
+
 	public long countToatal() {
 		return dao.countAll();
+	}
+
+	public long countByOwner(long ownerSerNo) {
+		return dao.countByOwner(ownerSerNo);
+	}
+
+	public DataSet<Ebook> getByOwner(DataSet<Ebook> ds) throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		String hql = "SELECT e FROM Ebook e JOIN e.referenceOwners er WHERE er.serNo=:ownerSerNo OR e.serNo IN (SELECT e.serNo FROM Ebook e JOIN e.database ed JOIN ed.referenceOwners edr WHERE edr.serNo=:ownerSerNo)";
+		queryLanguage.setHql(hql);
+		queryLanguage.addParameter("ownerSerNo", ds.getEntity().getRefSerNo());
+		return dao.findByHQL(queryLanguage, ds);
 	}
 }

@@ -1,5 +1,7 @@
 package com.shouyang.syazs.module.apply.referenceOwner;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -79,10 +81,19 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 			ds = referenceOwnerService.getByRestrictions(ds);
 		}
 
+		List<ReferenceOwner> results = ds.getResults();
+		for (int i = 0; i < results.size(); i++) {
+			referenceOwner = results.get(i);
+			referenceOwner.setCounts(new Long[] {
+					databaseService.countByOwner(referenceOwner.getSerNo()),
+					ebookService.countByOwner(referenceOwner.getSerNo()),
+					journalService.countByOwner(referenceOwner.getSerNo()) });
+		}
+
 		setDs(ds);
 		return LIST;
 	}
-	
+
 	public String notePoint() {
 		getSession().put("entityRecord", getEntity());
 		getSession().put("pagerRecord", getPager());

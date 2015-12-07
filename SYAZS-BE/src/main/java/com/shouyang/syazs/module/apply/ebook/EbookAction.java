@@ -137,12 +137,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							errorMessages.add(getEntity().getRefSerNo()[i]
 									+ "為不可利用的流水號");
 						} else {
-							referenceOwner = referenceOwnerService
-									.getBySerNo(getEntity().getRefSerNo()[i]);
-							if (referenceOwner == null) {
+							Object[] ownerValue = referenceOwnerService
+									.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
+							if (ownerValue == null) {
 								errorMessages.add(getEntity().getRefSerNo()[i]
 										+ "為不可利用的流水號");
 							} else {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setSerNo(getEntity()
+										.getRefSerNo()[i]);
+								referenceOwner
+										.setName(ownerValue[1].toString());
+
 								getEntity().getOwners().add(referenceOwner);
 							}
 						}
@@ -175,11 +181,16 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						if (getEntity().getRefSerNo()[i] < 1) {
 							continue;
 						} else {
-							referenceOwner = referenceOwnerService
-									.getBySerNo(getEntity().getRefSerNo()[i]);
-							if (referenceOwner == null) {
+							Object[] ownerValue = referenceOwnerService
+									.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
+							if (ownerValue == null) {
 								continue;
 							} else {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setSerNo(getEntity()
+										.getRefSerNo()[i]);
+								referenceOwner
+										.setName(ownerValue[1].toString());
 								getEntity().getOwners().add(referenceOwner);
 							}
 						}
@@ -259,13 +270,20 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 								errorMessages.add(getEntity().getRefSerNo()[i]
 										+ "為不可利用的流水號");
 							} else {
-								referenceOwner = referenceOwnerService
-										.getBySerNo(getEntity().getRefSerNo()[i]);
-								if (referenceOwner == null) {
+								Object[] ownerValue = referenceOwnerService
+										.getOwnerBySerNo(getEntity()
+												.getRefSerNo()[i]);
+								if (ownerValue == null) {
 									errorMessages
 											.add(getEntity().getRefSerNo()[i]
 													+ "為不可利用的流水號");
 								} else {
+									referenceOwner = new ReferenceOwner();
+									referenceOwner.setSerNo(getEntity()
+											.getRefSerNo()[i]);
+									referenceOwner.setName(ownerValue[1]
+											.toString());
+
 									getEntity().getOwners().add(referenceOwner);
 								}
 							}
@@ -298,11 +316,17 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							if (getEntity().getRefSerNo()[i] < 1) {
 								continue;
 							} else {
-								referenceOwner = referenceOwnerService
-										.getBySerNo(getEntity().getRefSerNo()[i]);
-								if (referenceOwner == null) {
+								Object[] ownerValue = referenceOwnerService
+										.getOwnerBySerNo(getEntity()
+												.getRefSerNo()[i]);
+								if (ownerValue == null) {
 									continue;
 								} else {
+									referenceOwner = new ReferenceOwner();
+									referenceOwner.setSerNo(getEntity()
+											.getRefSerNo()[i]);
+									referenceOwner.setName(ownerValue[1]
+											.toString());
 									getEntity().getOwners().add(referenceOwner);
 								}
 							}
@@ -362,8 +386,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
-					ebook.getReferenceOwners());
+			List<ReferenceOwner> owners = ebookService.getcheckOwners(ebook
+					.getSerNo());
 			ebook.setOwners(owners);
 			getRequest().setAttribute("uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(owners));
@@ -439,6 +463,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 
 			ebook = ebookService.save(getEntity(), getLoginUser());
+			setOwners();
 			setEntity(ebook);
 			addActionMessage("新增成功");
 			return VIEW;
@@ -476,6 +501,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 
 			ebook = ebookService.update(getEntity(), getLoginUser());
+			setOwners();
 			setEntity(ebook);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -514,6 +540,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
+			setOwners();
 			setEntity(ebook);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -1370,6 +1397,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		return null;
+	}
+
+	protected void setOwners() {
+		if (ebook.getDatabase() != null && ebook.getDatabase().hasSerNo()) {
+			getRequest().setAttribute(
+					"referenceOwners",
+					databaseService
+							.getResOwners(ebook.getDatabase().getSerNo()));
+		} else {
+			getRequest().setAttribute("referenceOwners",
+					ebookService.getResOwners(ebook.getSerNo()));
+		}
 	}
 
 	@SuppressWarnings("rawtypes")

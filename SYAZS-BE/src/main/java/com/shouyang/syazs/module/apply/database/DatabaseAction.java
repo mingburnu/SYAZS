@@ -37,6 +37,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Sets;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
@@ -101,12 +102,17 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						errorMessages.add(getEntity().getRefSerNo()[i]
 								+ "為不可利用的流水號");
 					} else {
-						referenceOwner = referenceOwnerService
-								.getBySerNo(getEntity().getRefSerNo()[i]);
-						if (referenceOwner == null) {
+						Object[] ownerValue = referenceOwnerService
+								.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
+						if (ownerValue == null) {
 							errorMessages.add(getEntity().getRefSerNo()[i]
 									+ "為不可利用的流水號");
 						} else {
+							referenceOwner = new ReferenceOwner();
+							referenceOwner
+									.setSerNo(getEntity().getRefSerNo()[i]);
+							referenceOwner.setName(ownerValue[1].toString());
+
 							getEntity().getOwners().add(referenceOwner);
 						}
 					}
@@ -161,12 +167,18 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 							errorMessages.add(getEntity().getRefSerNo()[i]
 									+ "為不可利用的流水號");
 						} else {
-							referenceOwner = referenceOwnerService
-									.getBySerNo(getEntity().getRefSerNo()[i]);
-							if (referenceOwner == null) {
+							Object[] ownerValue = referenceOwnerService
+									.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
+							if (ownerValue == null) {
 								errorMessages.add(getEntity().getRefSerNo()[i]
 										+ "為不可利用的流水號");
 							} else {
+								referenceOwner = new ReferenceOwner();
+								referenceOwner.setSerNo(getEntity()
+										.getRefSerNo()[i]);
+								referenceOwner
+										.setName(ownerValue[1].toString());
+
 								getEntity().getOwners().add(referenceOwner);
 							}
 						}
@@ -229,8 +241,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<ReferenceOwner> owners = new ArrayList<ReferenceOwner>(
-					database.getReferenceOwners());
+			List<ReferenceOwner> owners = databaseService
+					.getcheckOwners(database.getSerNo());
 			database.setOwners(owners);
 			getRequest().setAttribute("uncheckReferenceOwners",
 					referenceOwnerService.getUncheckOwners(owners));
@@ -276,6 +288,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					new HashSet<ReferenceOwner>(getEntity().getOwners()));
 
 			database = databaseService.save(getEntity(), getLoginUser());
+			setOwners();
 			setEntity(database);
 			addActionMessage("新增成功");
 			return VIEW;
@@ -303,6 +316,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					new HashSet<ReferenceOwner>(getEntity().getOwners()));
 			database = databaseService.update(getEntity(), getLoginUser(),
 					"uuIdentifier");
+			setOwners();
 			setEntity(database);
 			addActionMessage("修改成功");
 			return VIEW;
@@ -342,6 +356,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
+			setOwners();
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -351,7 +366,23 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	public String box() throws Exception {
-		getRequest().setAttribute("resDbs", databaseService.getAllDbs());
+		List<Database> allDbs = databaseService.getAllDbs();
+		Set<ReferenceOwner> owners = Sets.newHashSet();
+		for (int i = 0; i < allDbs.size(); i++) {
+			database = allDbs.get(i);
+			List<Object[]> dataList = databaseService.getResOwners(database
+					.getSerNo());
+			for (int j = 0; j < dataList.size(); j++) {
+				referenceOwner = new ReferenceOwner();
+				referenceOwner.setSerNo((Long) dataList.get(j)[0]);
+				referenceOwner.setName(dataList.get(j)[1].toString());
+				owners.add(referenceOwner);
+			}
+
+			database.setReferenceOwners(owners);
+		}
+
+		getRequest().setAttribute("resDbs", allDbs);
 		return BOX;
 	}
 
@@ -904,6 +935,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		return null;
+	}
+
+	protected void setOwners() {
+		getRequest().setAttribute("referenceOwners",
+				databaseService.getResOwners(database.getSerNo()));
 	}
 
 	@SuppressWarnings("rawtypes")
