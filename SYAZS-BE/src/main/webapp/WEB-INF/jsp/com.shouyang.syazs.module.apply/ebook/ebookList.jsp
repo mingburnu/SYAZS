@@ -1,3 +1,4 @@
+<%@ page import="org.owasp.esapi.ESAPI"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -91,6 +92,12 @@ function goImport(){
 </script>
 </head>
 <body>
+	<%
+		String isbn = "";
+		if (request.getParameter("entity.isbn") != null) {
+			isbn = request.getParameter("entity.isbn");
+		}
+	%>
 	<s:form action="apply.ebook.list" namespace="/crud" method="post"
 		onsubmit="return false;">
 		<div class="tabs-box">
@@ -111,7 +118,7 @@ function goImport(){
 								<c:when test="${entity.option=='entity.isbn' }">
 									<td align="left"><input type="text" name="entity.isbn"
 										id="search" class="input_text"
-										value="<esapi:encodeForHTMLAttribute><%=request.getParameter("entity.isbn")%></esapi:encodeForHTMLAttribute>"></td>
+										value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>"></td>
 								</c:when>
 								<c:otherwise>
 									<td align="left"><s:textfield name="entity.bookName"
