@@ -161,7 +161,7 @@ public class AuthorizationAction extends GenericAction<AccountNumber> {
 				&& getLoginUser() == null) {
 			try {
 				user = new AccountNumber();
-				user.setUserId("guest");
+				user.setUserId("訪客");
 				user.setCustomer(getMatchCustomer(ip,
 						ipRangeService.getAllIpList()));
 				ds.setEntity(user);
@@ -198,7 +198,7 @@ public class AuthorizationAction extends GenericAction<AccountNumber> {
 		if (validateIp(ip, allipList) && getLoginUser() == null) {
 			try {
 				user = new AccountNumber();
-				user.setUserId("guest");
+				user.setUserId("訪客");
 				user.setCustomer(getMatchCustomer(ip, allipList));
 				ds.setEntity(user);
 				ds = userService.getByRestrictions(ds);

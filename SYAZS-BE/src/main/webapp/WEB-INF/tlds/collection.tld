@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://java.sun.com/xml/ns/j2ee
+		http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	<tlib-version>2.0</tlib-version>
+	<short-name>cfn</short-name>
+	<uri>http://java.sy.com/jsp/jstl/cfn</uri>
+	<function>
+		<name>containsInt</name>
+		<function-class>com.shouyang.syazs.core.tag.CollectionFn</function-class>
+		<function-signature>boolean containsInt(java.util.Collection,
+          java.lang.Object)</function-signature>
+	</function>
+</taglib>

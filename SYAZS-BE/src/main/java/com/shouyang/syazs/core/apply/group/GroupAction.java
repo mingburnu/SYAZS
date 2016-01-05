@@ -21,12 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,6 +35,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Lists;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
@@ -82,11 +83,11 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 	@Override
 	protected void validateSave() throws Exception {
 		if (hasCustomer()) {
-			// if (getEntity().getCustomer().getSerNo() == 9) {TODO
-			// if (!getLoginUser().getRole().equals(Role.系統管理員)) {
-			// errorMessages.add("權限不符");
-			// }
-			// }
+			if (getEntity().getCustomer().getSerNo() == 9) {
+				if (!getLoginUser().getRole().equals(Role.系統管理員)) {
+					errorMessages.add("權限不符");
+				}
+			}
 
 			if (StringUtils.isBlank(getEntity().getFirstLevelOption())
 					|| (!getEntity().getFirstLevelOption().equals("new") && !getEntity()
@@ -1147,6 +1148,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
 
 			setDs(ds);
 			return QUEUE;
@@ -1289,6 +1291,7 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 		}
 
 		if (!hasActionErrors()) {
+			List<Group> importGroups = Lists.newArrayList();
 			Iterator<?> iterator = checkItemSet.iterator();
 			int successCount = 0;
 			while (iterator.hasNext()) {
@@ -1372,17 +1375,81 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 						}
 					}
 				}
-				group.setDataStatus("已存在");
+
+				group.setDataStatus("已匯入");
+				importGroups.add(group);
 				++successCount;
 			}
 
-			recheck();
 			getRequest().setAttribute("successCount", successCount);
+			recheck(importGroups, successCount);
 			return VIEW;
 		} else {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws IOException {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		getEntity().setReportFile("group_error.xlsx");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet spreadsheet = workbook.createSheet("group_error");
+		XSSFRow row;
+
+		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+		Integer mark = 1;
+		empinfo.put(mark.toString(), new Object[] { "Level 1", "Level 2",
+				"Level 3", "錯誤原因" });
+
+		int i = 0;
+		while (i < importList.size()) {
+			group = (Group) importList.get(i);
+			if (!group.getDataStatus().equals("正常")) {
+				mark = mark + 1;
+				Object[] objects = new Object[4];
+
+				if (group.getFirstLevelGroup() != null) {
+					objects[0] = group.getFirstLevelGroup().getGroupName();
+				}
+
+				if (group.getSecondLevelGroup() != null) {
+					objects[1] = group.getSecondLevelGroup().getGroupName();
+				}
+
+				if (group.getThirdLevelGroup() != null) {
+					objects[2] = group.getThirdLevelGroup().getGroupName();
+				}
+
+				objects[3] = group.getDataStatus();
+				empinfo.put(mark.toString(), objects);
+			}
+			i++;
+		}
+
+		Set<String> keyid = empinfo.keySet();
+		int rowid = 0;
+		for (String key : keyid) {
+			row = spreadsheet.createRow(rowid++);
+			Object[] objectArr = empinfo.get(key);
+			int cellid = 0;
+			for (Object obj : objectArr) {
+				Cell cell = row.createCell(cellid++);
+				cell.setCellValue((String) obj);
+			}
+		}
+
+		ByteArrayOutputStream boas = new ByteArrayOutputStream();
+		workbook.write(boas);
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+
+		return XLSX;
 	}
 
 	public String example() throws Exception {
@@ -1440,52 +1507,63 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
+			return WorkbookFactory.create(is);
+		} catch (InvalidFormatException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-
-		return null;
 	}
 
-	protected void recheck() throws Exception {
+	protected void recheck(List<Group> importGroups, int successCount)
+			throws Exception {
 		List<?> importList = (List<?>) getSession().get("importList");
-		if (importList != null) {
-			Iterator<?> iterator = importList.iterator();
-			int normal = 0;
-			while (iterator.hasNext()) {
-				group = (Group) iterator.next();
-				if (group.getDataStatus().equals("正常")) {
-					repeatFirstGroup = groupService.getRepeatMainGroup(group
-							.getFirstLevelGroup().getGroupName(), group
-							.getFirstLevelGroup().getCustomer().getSerNo());
-					if (repeatFirstGroup != null) {
-						if (group.getSecondLevelGroup() != null) {
-							repeatSecondGroup = groupService.getRepeatSubGroup(
-									group.getSecondLevelGroup().getGroupName(),
-									group.getSecondLevelGroup().getCustomer()
-											.getSerNo(), repeatFirstGroup);
-							if (repeatSecondGroup != null) {
-								group.setDataStatus("已存在");
-							} else {
-								normal++;
+		int insert = (int) getSession().get("insert");
+
+		for (int i = 0; i < importGroups.size(); i++) {
+			if (importList != null) {
+				Iterator<?> iterator = importList.iterator();
+				while (iterator.hasNext()) {
+					group = (Group) iterator.next();
+					if (group.getDataStatus().equals("正常")) {
+						if (group.getSecondLevelGroup() == null
+								&& group.getThirdLevelGroup() == null) {
+							if (group
+									.getFirstLevelGroup()
+									.getGroupName()
+									.equals(importGroups.get(i)
+											.getFirstLevelGroup()
+											.getGroupName())) {
+								group.setDataStatus("已匯入");
+								++insert;
 							}
 						} else {
-							group.setDataStatus("已存在");
+							if (group.getThirdLevelGroup() == null) {
+								if (importGroups.get(i).getSecondLevelGroup() != null) {
+									if (importGroups
+											.get(i)
+											.getFirstLevelGroup()
+											.getGroupName()
+											.equals(group.getFirstLevelGroup()
+													.getGroupName())
+											&& importGroups
+													.get(i)
+													.getSecondLevelGroup()
+													.getGroupName()
+													.equals(group
+															.getSecondLevelGroup()
+															.getGroupName())) {
+										group.setDataStatus("已匯入");
+										++insert;
+									}
+								}
+							}
 						}
-					} else {
-						normal++;
 					}
 				}
 			}
-
-			getSession().put("normal", normal);
 		}
+
+		getSession().put("insert", insert + successCount);
 	}
 }

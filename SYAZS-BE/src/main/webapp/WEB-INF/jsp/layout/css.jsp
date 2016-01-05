@@ -11,7 +11,7 @@ input#listForm_currentPageHeader,input#listForm_currentRowHeader {
 	width: 11.6%;
 }
 
-span#span-num-tip,span#span-title-name-tip, span#span-tip {
+span#span-num-tip,span#span-title-name-tip,span#span-tip {
 	color: red;
 }
 
@@ -26,17 +26,22 @@ textarea#content {
 
 input#datName {
 	border: 1px solid #888888;
-    background-color: #ffffff;
-    color: #565656;
-    margin: 0px;
-    padding: 2px 4px;
-    float: left;
+	background-color: #ffffff;
+	color: #565656;
+	margin: 0px;
+	padding: 2px 4px;
+	float: left;
 }
 
 div#selectDb {
 	border: 1px solid rgba(0, 0, 0, 0);
 	padding: 2.5px 4px;
 	float: left;
+}
+
+a.error.number {
+	cursor: pointer;
+	color: red;
 }
 <%
 UserAgent userAgent = UserAgent.parseUserAgentString (request.getHeader

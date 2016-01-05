@@ -21,12 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
@@ -97,10 +98,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (accountNumberService.getSerNoByUserId(getEntity()
 						.getUserId()) != 0) {
 					errorMessages.add("用戶代碼已存在");
-				}
-
-				if (getEntity().getUserId().equals("guest")) {
-					errorMessages.add("不可使用guest作為用戶代碼");
 				}
 			}
 		}
@@ -299,8 +296,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 			accountNumber = accountNumberService.getBySerNo(accountNumber
 					.getSerNo());
-			
-			if (getLoginUser().getSerNo().equals( accountNumber.getSerNo())) {
+
+			if (getLoginUser().getSerNo().equals(accountNumber.getSerNo())) {
 				getLoginUser().setCustomer(customer);
 			}
 
@@ -643,64 +640,62 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
 						rowValues[2], rowValues[4], Role.valueOf(role),
 						Status.valueOf(status), customer);
+				List<String> errorList = Lists.newArrayList();
 
 				if (StringUtils.isBlank(accountNumber.getUserId())) {
-					accountNumber.setDataStatus("帳號空白");
+					errorList.add("帳號空白");
 				} else {
 					if (accountNumber.getUserId().replaceAll("[0-9a-zA-Z]", "")
 							.length() != 0) {
-						accountNumber.setDataStatus("帳號必須英數");
+						errorList.add("帳號必須英數");
 					} else {
 						long serNo = accountNumberService
 								.getSerNoByUserId(accountNumber.getUserId());
 						if (serNo != 0) {
-							accountNumber.setDataStatus("已存在");
-						} else {
-							long cusSerNo = customerService
-									.getCusSerNoByName(customer.getName());
-							if (cusSerNo != 0) {
-								accountNumber.getCustomer().setSerNo(cusSerNo);
-							}
-
-							if (getLoginUser().getRole().equals(Role.管理員)) {
-								if (StringUtils.isBlank(accountNumber
-										.getUserId())
-										|| accountNumber.getUserId()
-												.replaceAll("[0-9a-zA-Z]", "")
-												.length() != 0
-										|| StringUtils.isBlank(accountNumber
-												.getUserPw())
-										|| !isLegalRole
-										|| !getLoginUser()
-												.getCustomer()
-												.getName()
-												.equals(accountNumber
-														.getCustomer()
-														.getName())) {
-									accountNumber.setDataStatus("資料錯誤");
-								}
-							} else {
-								if (StringUtils.isBlank(accountNumber
-										.getUserId())
-										|| accountNumber.getUserId()
-												.replaceAll("[0-9a-zA-Z]", "")
-												.length() != 0
-										|| StringUtils.isBlank(accountNumber
-												.getUserPw())
-										|| !accountNumber.getCustomer()
-												.hasSerNo() || !isLegalRole) {
-									accountNumber.setDataStatus("資料錯誤");
-								}
-							}
+							errorList.add("帳號已存在");
 						}
 					}
 				}
 
-				if (!isEmail(accountNumber.getEmail())) {
-					accountNumber.setEmail(null);
+				if (StringUtils.isBlank(accountNumber.getUserPw())) {
+					errorList.add("密碼空白");
 				}
 
-				if (accountNumber.getDataStatus() == null) {
+				if (StringUtils.isBlank(customer.getName())) {
+					errorList.add("沒有客戶");
+				} else {
+					long cusSerNo = customerService.getCusSerNoByName(customer
+							.getName());
+					if (cusSerNo != 0) {
+						accountNumber.getCustomer().setSerNo(cusSerNo);
+					} else {
+						errorList.add("無此客戶");
+					}
+				}
+
+				if (getLoginUser().getRole().equals(Role.管理員)) {
+					if (!getLoginUser().getCustomer().getName()
+							.equals(accountNumber.getCustomer().getName())) {
+						errorList.add("客戶錯誤");
+					}
+				} else {
+					if (!accountNumber.getCustomer().hasSerNo()) {
+						errorList.add("客戶錯誤");
+					}
+				}
+
+				if (!isLegalRole) {
+					errorList.add("角色錯誤");
+				}
+
+				if (!isEmail(accountNumber.getEmail())) {
+					errorList.add("email錯誤");
+				}
+
+				if (errorList.size() != 0) {
+					accountNumber.setDataStatus(errorList.toString()
+							.replace("[", "").replace("]", ""));
+				} else {
 					accountNumber.setDataStatus("正常");
 				}
 
@@ -745,6 +740,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
 
 			setDs(ds);
 			return QUEUE;
@@ -893,18 +889,76 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				int index = (Integer) iterator.next();
 				accountNumber = (AccountNumber) importList.get(index);
 				accountNumberService.save(accountNumber, getLoginUser());
-				accountNumber.setDataStatus("已存在");
+				accountNumber.setDataStatus("已匯入");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
-			int normal = (int) getSession().get("normal");
-			getSession().put("normal", normal - successCount);
+			int insert = (int) getSession().get("insert");
+			getSession().put("insert", insert + successCount);
 			return VIEW;
 		} else {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws IOException {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		getEntity().setReportFile("accountNumber_error.xlsx");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet spreadsheet = workbook.createSheet("accountNumber_error");
+		XSSFRow row;
+
+		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+		Integer mark = 1;
+		empinfo.put(mark.toString(), new Object[] { "userID/使用者",
+				"userPW/使用者密碼", "userName/姓名", "fk_name/用戶名稱", "email",
+				"role/角色", "status/狀態", "錯誤原因" });
+
+		int i = 0;
+		while (i < importList.size()) {
+			accountNumber = (AccountNumber) importList.get(i);
+			if (!accountNumber.getDataStatus().equals("正常")
+					&& !accountNumber.getDataStatus().equals("已匯入")) {
+				mark = mark + 1;
+				empinfo.put(
+						mark.toString(),
+						new Object[] { accountNumber.getUserId(),
+								accountNumber.getUserPw(),
+								accountNumber.getUserName(),
+								accountNumber.getCustomer().getName(),
+								accountNumber.getEmail(),
+								accountNumber.getRole().getRole(),
+								accountNumber.getStatus().getStatus(),
+								accountNumber.getDataStatus() });
+			}
+			i++;
+		}
+
+		Set<String> keyid = empinfo.keySet();
+		int rowid = 0;
+		for (String key : keyid) {
+			row = spreadsheet.createRow(rowid++);
+			Object[] objectArr = empinfo.get(key);
+			int cellid = 0;
+			for (Object obj : objectArr) {
+				Cell cell = row.createCell(cellid++);
+				cell.setCellValue((String) obj);
+			}
+		}
+
+		ByteArrayOutputStream boas = new ByteArrayOutputStream();
+		workbook.write(boas);
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+
+		return XLSX;
 	}
 
 	public String example() throws Exception {
@@ -962,18 +1016,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
+			return WorkbookFactory.create(is);
+		} catch (InvalidFormatException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-
-		return null;
 	}
 
 	protected boolean isEmail(String email) {

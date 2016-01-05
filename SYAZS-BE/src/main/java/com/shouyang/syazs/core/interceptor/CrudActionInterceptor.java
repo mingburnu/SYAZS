@@ -49,8 +49,9 @@ public class CrudActionInterceptor extends RootInterceptor {
 			String method = invocation.getProxy().getMethod();
 
 			List<String> methodList = Arrays.asList("queue", "paginate",
-					"getCheckedItem", "allCheckedItem", "clearCheckedItem",
-					"importData");
+					"addAllItem", "getCheckedItem", "allCheckedItem",
+					"allUncheckedItem", "removeAllItem", "importData",
+					"backErrors");
 
 			if (!methodList.contains(method)) {
 				if (request.getSession().getAttribute("importList") != null) {
@@ -58,7 +59,10 @@ public class CrudActionInterceptor extends RootInterceptor {
 					request.getSession().removeAttribute("importList");
 					request.getSession().removeAttribute("total");
 					request.getSession().removeAttribute("normal");
+					request.getSession().removeAttribute("insert");
 					request.getSession().removeAttribute("checkItemSet");
+					request.getSession().removeAttribute("tip");
+					request.getSession().removeAttribute("allChecked");
 				}
 			}
 		}

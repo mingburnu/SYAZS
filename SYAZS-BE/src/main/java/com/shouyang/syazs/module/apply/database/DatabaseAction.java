@@ -22,12 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,6 +37,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
@@ -478,6 +479,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			List<String> titles = databaseService.getAllDbTitles();
 			Map<String, Integer> checkRepeatTitle = new HashMap<String, Integer>();
 			int normal = 0;
+			int tip = 0;
 
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 				Row row = sheet.getRow(i);
@@ -531,7 +533,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					k++;
 				}
 
-				StringBuilder objStatus = new StringBuilder();
+				List<String> errorList = Lists.newArrayList();
 
 				Category category = null;
 				Object objCategory = getEnum(
@@ -562,8 +564,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						rowValues[13], category);
 
 				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
-				if (StringUtils.isNotBlank(rowValues[15].replace("、", ""))) {
-					String[] names = rowValues[15].trim().split("、");
+				if (StringUtils.isNotBlank(rowValues[15].replace(",", ""))) {
+					String[] names = rowValues[15].trim().split(",");
 
 					int j = 0;
 					while (j < names.length) {
@@ -576,8 +578,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 													.getName()));
 
 							if (referenceOwner.getSerNo() == 0) {
-								objStatus.append(referenceOwner.getName()
-										+ "不存在<br>");
+								errorList.add(referenceOwner.getName() + "不存在");
 							}
 							owners.add(referenceOwner);
 						}
@@ -594,21 +595,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				database.getResourcesBuyers().setDataStatus("");
 
 				if (CollectionUtils.isEmpty(database.getReferenceOwners())) {
-					objStatus.append("沒有擁有者<br>");
+					errorList.add("沒有擁有者");
 				}
 
 				if (StringUtils.isBlank(database.getDbTitle())) {
-					objStatus.append("沒有資料庫名稱<br>");
+					errorList.add("沒有資料庫名稱");
 				}
 
 				if (!isURL(database.getUrl())) {
-					objStatus.append("url不正確<br>");
+					errorList.add("url不正確");
 				}
 
-				database.setDataStatus(objStatus.toString());
-
 				if (titles.contains(database.getDbTitle().toLowerCase())) {
-					database.getResourcesBuyers().setDataStatus("已有同名資源<br>");
+					database.getResourcesBuyers().setDataStatus("同名資料庫已存在<br>");
 				}
 
 				if (StringUtils.isNotBlank(database.getDbTitle())) {
@@ -633,12 +632,25 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 							originalData.size());
 				}
 
-				if (StringUtils.isEmpty(database.getDataStatus())) {
+				if (errorList.size() != 0) {
+					database.setDataStatus(errorList.toString()
+							.replace("[", "").replace("]", ""));
+				} else {
 					database.setDataStatus("正常");
 					++normal;
 				}
 
 				originalData.add(database);
+			}
+
+			Iterator<Database> iterator = originalData.iterator();
+			while (iterator.hasNext()) {
+				database = iterator.next();
+				if (StringUtils.isNotBlank(database.getResourcesBuyers()
+						.getDataStatus())
+						&& database.getDataStatus().equals("正常")) {
+					++tip;
+				}
 			}
 
 			List<Database> excelData = new ArrayList<Database>(originalData);
@@ -664,6 +676,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
+			getSession().put("tip", tip);
 
 			setDs(ds);
 			return QUEUE;
@@ -819,13 +833,177 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 
 			getRequest().setAttribute("successCount", successCount);
-			int normal = (int) getSession().get("normal");
-			getSession().put("normal", normal - successCount);
+			int insert = (int) getSession().get("insert");
+			getSession().put("insert", insert + successCount);
 			return VIEW;
 		} else {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws Exception {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		} else if (getEntity().getOption().equals("errors")) {
+
+			getEntity().setReportFile("database_error.xlsx");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet spreadsheet = workbook.createSheet("database_error");
+			XSSFRow row;
+
+			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+			Integer mark = 1;
+			empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
+					"主題", "分類", "收錄年代", "出版時間差", "資源種類", "URL", "公開資源", "起始日",
+					"到期日", "資源類型", "購買人名稱", "錯誤提示", "其他提示" });
+
+			int i = 0;
+			while (i < importList.size()) {
+				database = (Database) importList.get(i);
+				if (!database.getDataStatus().equals("正常")
+						&& !database.getDataStatus().equals("已匯入")) {
+					List<String> ownerNames = Lists.newArrayList();
+					for (ReferenceOwner owner : database.getReferenceOwners()) {
+						ownerNames.add(owner.getName());
+					}
+
+					String tips = database.getResourcesBuyers().getDataStatus()
+							.replace("<br>", ",");
+					if (tips.length() > 0) {
+						tips = tips.substring(0, tips.length() - 1);
+					}
+
+					mark = mark + 1;
+					empinfo.put(
+							mark.toString(),
+							new Object[] {
+									database.getDbTitle(),
+									database.getLanguages(),
+									database.getIncludedSpecies(),
+									database.getPublishName(),
+									database.getContent(),
+									database.getTopic(),
+									database.getClassification(),
+									database.getIndexedYears(),
+									database.getEmbargo(),
+									database.getType().getType(),
+									database.getUrl(),
+									database.getOpenAccess().toString(),
+									database.getResourcesBuyers()
+											.getStartDate(),
+									database.getResourcesBuyers()
+											.getMaturityDate(),
+									database.getResourcesBuyers().getCategory()
+											.getCategory(),
+									ownerNames.toString().substring(1,
+											ownerNames.toString().length() - 1),
+									database.getDataStatus(), tips });
+				}
+				i++;
+			}
+
+			Set<String> keyid = empinfo.keySet();
+			int rowid = 0;
+			for (String key : keyid) {
+				row = spreadsheet.createRow(rowid++);
+				Object[] objectArr = empinfo.get(key);
+				int cellid = 0;
+				for (Object obj : objectArr) {
+					Cell cell = row.createCell(cellid++);
+					cell.setCellValue((String) obj);
+				}
+			}
+
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			workbook.write(boas);
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
+		} else if (getEntity().getOption().equals("tips")) {
+			getEntity().setReportFile("database_tip.xlsx");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet spreadsheet = workbook.createSheet("database_tip");
+			XSSFRow row;
+
+			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+			Integer mark = 1;
+			empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
+					"主題", "分類", "收錄年代", "出版時間差", "資源種類", "URL", "公開資源", "起始日",
+					"到期日", "資源類型", "購買人名稱", "物件狀態", "其他提示" });
+
+			int i = 0;
+			while (i < importList.size()) {
+				database = (Database) importList.get(i);
+				if (database.getDataStatus().equals("正常")
+						|| database.getDataStatus().equals("已匯入")) {
+					List<String> ownerNames = Lists.newArrayList();
+					for (ReferenceOwner owner : database.getReferenceOwners()) {
+						ownerNames.add(owner.getName());
+					}
+
+					String tips = database.getResourcesBuyers().getDataStatus()
+							.replace("<br>", ",");
+					if (tips.length() > 0) {
+						tips = tips.substring(0, tips.length() - 1);
+					}
+
+					mark = mark + 1;
+					empinfo.put(
+							mark.toString(),
+							new Object[] {
+									database.getDbTitle(),
+									database.getLanguages(),
+									database.getIncludedSpecies(),
+									database.getPublishName(),
+									database.getContent(),
+									database.getTopic(),
+									database.getClassification(),
+									database.getIndexedYears(),
+									database.getEmbargo(),
+									database.getType().getType(),
+									database.getUrl(),
+									database.getOpenAccess().toString(),
+									database.getResourcesBuyers()
+											.getStartDate(),
+									database.getResourcesBuyers()
+											.getMaturityDate(),
+									database.getResourcesBuyers().getCategory()
+											.getCategory(),
+									ownerNames.toString().substring(1,
+											ownerNames.toString().length() - 1),
+									database.getDataStatus(), tips });
+				}
+				i++;
+			}
+
+			Set<String> keyid = empinfo.keySet();
+			int rowid = 0;
+			for (String key : keyid) {
+				row = spreadsheet.createRow(rowid++);
+				Object[] objectArr = empinfo.get(key);
+				int cellid = 0;
+				for (Object obj : objectArr) {
+					Cell cell = row.createCell(cellid++);
+					cell.setCellValue((String) obj);
+				}
+			}
+
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			workbook.write(boas);
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+
+		return XLSX;
 	}
 
 	public String example() throws Exception {
@@ -923,18 +1101,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
+			return WorkbookFactory.create(is);
+		} catch (InvalidFormatException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-
-		return null;
 	}
 
 	protected void setOwners() {

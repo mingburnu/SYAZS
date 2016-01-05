@@ -194,7 +194,7 @@ function goImport(){
 									</c:otherwise>
 								</c:choose></td>
 							<td>${item.userId }</td>
-							<td align="center"><esapi:encodeForHTMLAttribute>${item.userName }</esapi:encodeForHTMLAttribute></td>
+							<td align="center"><esapi:encodeForHTML>${item.userName }</esapi:encodeForHTML></td>
 							<td>${item.customer.name }</td>
 							<td align="center">${item.email }</td>
 							<td>${item.role.role }</td>

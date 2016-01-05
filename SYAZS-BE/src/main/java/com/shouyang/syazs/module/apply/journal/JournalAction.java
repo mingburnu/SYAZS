@@ -39,6 +39,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Lists;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
@@ -640,6 +641,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			Map<String, Integer> checkRepeatTitle = new HashMap<String, Integer>();
 
 			int normal = 0;
+			int tip = 0;
 
 			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 				Row row = sheet.getRow(i);
@@ -695,7 +697,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					k++;
 				}
 
-				StringBuilder objStatus = new StringBuilder();
+				List<String> errorList = Lists.newArrayList();
 				StringBuilder resStatus = new StringBuilder();
 
 				boolean openAccess = false;
@@ -740,8 +742,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 												.getName()));
 
 								if (referenceOwner.getSerNo() == 0) {
-									objStatus.append(referenceOwner.getName()
-											+ "不存在<br>");
+									errorList.add(referenceOwner.getName()
+											+ "不存在");
 								}
 								owners.add(referenceOwner);
 							}
@@ -758,39 +760,47 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					journal.getResourcesBuyers().setDataStatus("");
 
 					if (CollectionUtils.isEmpty(journal.getReferenceOwners())) {
-						objStatus.append("沒有擁有者<br>");
+						errorList.add("沒有擁有者");
 					}
 				} else {
-					database = databaseService.getByUUID(rowValues[15].trim());
-
 					journal = new Journal(rowValues[0], rowValues[1],
 							rowValues[2], rowValues[3].trim(), rowValues[4],
 							rowValues[5], rowValues[6], rowValues[7],
 							rowValues[8], rowValues[9], rowValues[10], version,
-							rowValues[12], rowValues[13], openAccess, database,
+							rowValues[12], rowValues[13], openAccess, null,
 							null, new ResourcesBuyers(), null);
 					journal.getResourcesBuyers().setDataStatus("");
 
 					if (StringUtils.isNotBlank(rowValues[15])) {
-						if (database == null) {
-							objStatus.append("資料庫代碼錯誤<br>");
+						database = databaseService.getByUUID(rowValues[15]
+								.trim());
+						if (database != null) {
+							journal.setDatabase(database);
+						} else {
+							errorList.add("資料庫代碼錯誤");
+							database = new Database();
+							database.setUuIdentifier(rowValues[15]);
+							journal.setDatabase(database);
 						}
 					} else {
-						objStatus.append("資料庫代碼空白<br>");
+						errorList.add("資料庫代碼空白");
+						database = new Database();
+						database.setUuIdentifier(rowValues[15]);
+						journal.setDatabase(database);
 					}
 				}
 
 				if (StringUtils.isBlank(journal.getTitle())) {
-					objStatus.append("標題空白<br>");
+					errorList.add("標題空白");
 				}
 
 				if (!isURL(journal.getUrl())) {
-					objStatus.append("url不正確<br>");
+					errorList.add("url不正確");
 				}
 
 				if (StringUtils.isNotEmpty(journal.getCongressClassification())) {
 					if (!isLCC(journal.getCongressClassification())) {
-						objStatus.append("LCC不正確<br>");
+						errorList.add("LCC不正確");
 					}
 				}
 
@@ -824,7 +834,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 						checkRepeatIssn.put(issn, originalData.size());
 					} else {
-						objStatus.append("ISSN不正確<br>");
+						errorList.add("ISSN不正確<br>");
 					}
 				} else {
 					if (StringUtils.isNotBlank(journal.getTitle())) {
@@ -862,14 +872,25 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 				journal.getResourcesBuyers()
 						.setDataStatus(resStatus.toString());
-				journal.setDataStatus(objStatus.toString());
-
-				if (StringUtils.isEmpty(journal.getDataStatus())) {
+				if (errorList.size() != 0) {
+					journal.setDataStatus(errorList.toString().replace("[", "")
+							.replace("]", ""));
+				} else {
 					journal.setDataStatus("正常");
 					++normal;
 				}
 
 				originalData.add(journal);
+			}
+
+			Iterator<Journal> iterator = originalData.iterator();
+			while (iterator.hasNext()) {
+				journal = iterator.next();
+				if (StringUtils.isNotBlank(journal.getResourcesBuyers()
+						.getDataStatus())
+						&& journal.getDataStatus().equals("正常")) {
+					++tip;
+				}
 			}
 
 			List<Journal> excelData = new ArrayList<Journal>(originalData);
@@ -895,6 +916,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
+			getSession().put("tip", tip);
 
 			return QUEUE;
 		} else {
@@ -1060,6 +1083,301 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws Exception {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		} else if (getEntity().getOption().equals("errors")) {
+			getEntity().setReportFile("journal_error.xlsx");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet spreadsheet = workbook.createSheet("journal_error");
+			XSSFRow row;
+
+			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+			Integer mark = 1;
+			List<?> cellNames = (List<?>) getSession().get("cellNames");
+
+			if (cellNames.size() == 16) {
+				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
+						"語文", "出版項", "出版年", "標題", "編號", "刊別", "國會分類號", "版本",
+						"出版時間差", "URL", "公開資源", "資料庫UUID", "錯誤提示", "其他提示" });
+
+				int i = 0;
+				while (i < importList.size()) {
+					journal = (Journal) importList.get(i);
+					if (!journal.getDataStatus().equals("正常")
+							&& !journal.getDataStatus().equals("已匯入")) {
+
+						Integer version = journal.getVersion();
+						StringBuilder versionBuilder = new StringBuilder("");
+						if (version != null) {
+							versionBuilder.append(version);
+						}
+
+						String tips = journal.getResourcesBuyers()
+								.getDataStatus().replace("<br>", ",");
+						if (tips.length() > 0) {
+							tips = tips.substring(0, tips.length() - 1);
+						}
+
+						mark = mark + 1;
+						empinfo.put(
+								mark.toString(),
+								new Object[] {
+										journal.getTitle(),
+										journal.getAbbreviationTitle(),
+										journal.getTitleEvolution(),
+										journal.getIssn(),
+										journal.getLanguages(),
+										journal.getPublishName(),
+										journal.getPublishYear(),
+										journal.getCaption(),
+										journal.getNumB(),
+										journal.getPublication(),
+										journal.getCongressClassification(),
+										versionBuilder.toString(),
+										journal.getEmbargo(),
+										journal.getUrl(),
+										journal.getOpenAccess().toString(),
+										journal.getDatabase().getUuIdentifier(),
+										journal.getDataStatus(), tips });
+					}
+					i++;
+				}
+
+			} else {
+				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
+						"語文", "出版項", "出版年", "標題", "編號", "刊別", "國會分類號", "版本",
+						"出版時間差", "URL", "公開資源", "起始日", "到期日", "資源類型", "購買人名稱",
+						"錯誤提示", "其他提示" });
+
+				int i = 0;
+				while (i < importList.size()) {
+					journal = (Journal) importList.get(i);
+					if (!journal.getDataStatus().equals("正常")
+							&& !journal.getDataStatus().equals("已匯入")) {
+						List<String> ownerNames = Lists.newArrayList();
+						for (ReferenceOwner owner : journal
+								.getReferenceOwners()) {
+							ownerNames.add(owner.getName());
+						}
+
+						Integer version = journal.getVersion();
+						StringBuilder versionBuilder = new StringBuilder("");
+						if (version != null) {
+							versionBuilder.append(version);
+						}
+
+						String tips = journal.getResourcesBuyers()
+								.getDataStatus().replace("<br>", ",");
+						if (tips.length() > 0) {
+							tips = tips.substring(0, tips.length() - 1);
+						}
+
+						mark = mark + 1;
+						empinfo.put(
+								mark.toString(),
+								new Object[] {
+										journal.getTitle(),
+										journal.getAbbreviationTitle(),
+										journal.getTitleEvolution(),
+										journal.getIssn(),
+										journal.getLanguages(),
+										journal.getPublishName(),
+										journal.getPublishYear(),
+										journal.getCaption(),
+										journal.getNumB(),
+										journal.getPublication(),
+										journal.getCongressClassification(),
+										versionBuilder.toString(),
+										journal.getEmbargo(),
+										journal.getUrl(),
+										journal.getOpenAccess().toString(),
+										journal.getResourcesBuyers()
+												.getStartDate(),
+										journal.getResourcesBuyers()
+												.getMaturityDate(),
+										journal.getResourcesBuyers()
+												.getCategory().getCategory(),
+										ownerNames.toString()
+												.substring(
+														1,
+														ownerNames.toString()
+																.length() - 1),
+										journal.getDataStatus(), tips });
+					}
+					i++;
+				}
+			}
+
+			Set<String> keyid = empinfo.keySet();
+			int rowid = 0;
+			for (String key : keyid) {
+				row = spreadsheet.createRow(rowid++);
+				Object[] objectArr = empinfo.get(key);
+				int cellid = 0;
+				for (Object obj : objectArr) {
+					Cell cell = row.createCell(cellid++);
+					cell.setCellValue((String) obj);
+				}
+			}
+
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			workbook.write(boas);
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
+
+		} else if (getEntity().getOption().equals("tips")) {
+			getEntity().setReportFile("journal_tip.xlsx");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet spreadsheet = workbook.createSheet("journal_tip");
+			XSSFRow row;
+
+			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+			Integer mark = 1;
+			List<?> cellNames = (List<?>) getSession().get("cellNames");
+
+			if (cellNames.size() == 16) {
+				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
+						"語文", "出版項", "出版年", "標題", "編號", "刊別", "國會分類號", "版本",
+						"出版時間差", "URL", "公開資源", "資料庫UUID", "物件狀態", "其他提示" });
+
+				int i = 0;
+				while (i < importList.size()) {
+					journal = (Journal) importList.get(i);
+					if (journal.getDataStatus().equals("正常")
+							|| journal.getDataStatus().equals("已匯入")) {
+
+						Integer version = journal.getVersion();
+						StringBuilder versionBuilder = new StringBuilder("");
+						if (version != null) {
+							versionBuilder.append(version);
+						}
+
+						String tips = journal.getResourcesBuyers()
+								.getDataStatus().replace("<br>", ",");
+						if (tips.length() > 0) {
+							tips = tips.substring(0, tips.length() - 1);
+						}
+
+						mark = mark + 1;
+						empinfo.put(
+								mark.toString(),
+								new Object[] {
+										journal.getTitle(),
+										journal.getAbbreviationTitle(),
+										journal.getTitleEvolution(),
+										journal.getIssn(),
+										journal.getLanguages(),
+										journal.getPublishName(),
+										journal.getPublishYear(),
+										journal.getCaption(),
+										journal.getNumB(),
+										journal.getPublication(),
+										journal.getCongressClassification(),
+										versionBuilder.toString(),
+										journal.getEmbargo(),
+										journal.getUrl(),
+										journal.getOpenAccess().toString(),
+										journal.getDatabase().getUuIdentifier(),
+										journal.getDataStatus(), tips });
+					}
+					i++;
+				}
+			} else {
+				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
+						"語文", "出版項", "出版年", "標題", "編號", "刊別", "國會分類號", "版本",
+						"出版時間差", "URL", "公開資源", "起始日", "到期日", "資源類型", "購買人名稱",
+						"物件狀態", "其他提示" });
+
+				int i = 0;
+				while (i < importList.size()) {
+					journal = (Journal) importList.get(i);
+					if (journal.getDataStatus().equals("正常")
+							|| journal.getDataStatus().equals("已匯入")) {
+						List<String> ownerNames = Lists.newArrayList();
+						for (ReferenceOwner owner : journal
+								.getReferenceOwners()) {
+							ownerNames.add(owner.getName());
+						}
+
+						Integer version = journal.getVersion();
+						StringBuilder versionBuilder = new StringBuilder("");
+						if (version != null) {
+							versionBuilder.append(version);
+						}
+
+						String tips = journal.getResourcesBuyers()
+								.getDataStatus().replace("<br>", ",");
+						if (tips.length() > 0) {
+							tips = tips.substring(0, tips.length() - 1);
+						}
+
+						mark = mark + 1;
+						empinfo.put(
+								mark.toString(),
+								new Object[] {
+										journal.getTitle(),
+										journal.getAbbreviationTitle(),
+										journal.getTitleEvolution(),
+										journal.getIssn(),
+										journal.getLanguages(),
+										journal.getPublishName(),
+										journal.getPublishYear(),
+										journal.getCaption(),
+										journal.getNumB(),
+										journal.getPublication(),
+										journal.getCongressClassification(),
+										versionBuilder.toString(),
+										journal.getEmbargo(),
+										journal.getUrl(),
+										journal.getOpenAccess().toString(),
+										journal.getResourcesBuyers()
+												.getStartDate(),
+										journal.getResourcesBuyers()
+												.getMaturityDate(),
+										journal.getResourcesBuyers()
+												.getCategory().getCategory(),
+										ownerNames.toString()
+												.substring(
+														1,
+														ownerNames.toString()
+																.length() - 1),
+										journal.getDataStatus(), tips });
+					}
+					i++;
+				}
+			}
+
+			Set<String> keyid = empinfo.keySet();
+			int rowid = 0;
+			for (String key : keyid) {
+				row = spreadsheet.createRow(rowid++);
+				Object[] objectArr = empinfo.get(key);
+				int cellid = 0;
+				for (Object obj : objectArr) {
+					Cell cell = row.createCell(cellid++);
+					cell.setCellValue((String) obj);
+				}
+			}
+
+			ByteArrayOutputStream boas = new ByteArrayOutputStream();
+			workbook.write(boas);
+			getEntity().setInputStream(
+					new ByteArrayInputStream(boas.toByteArray()));
+
+		} else {
+			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+		return XLSX;
 	}
 
 	public String example() throws Exception {

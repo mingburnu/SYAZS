@@ -71,16 +71,16 @@
 				<tbody>
 					<tr>
 						<th width="130">用戶代碼</th>
-						<td><esapi:encodeForHTMLAttribute>${entity.userId }</esapi:encodeForHTMLAttribute></td>
+						<td><esapi:encodeForHTML>${entity.userId }</esapi:encodeForHTML></td>
 
 					</tr>
 					<tr>
 						<th width="130">用戶姓名</th>
-						<td><esapi:encodeForHTMLAttribute>${entity.userName }</esapi:encodeForHTMLAttribute></td>
+						<td><esapi:encodeForHTML>${entity.userName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">客戶名稱</th>
-						<td><esapi:encodeForHTMLAttribute>${entity.customer.name }</esapi:encodeForHTMLAttribute></td>
+						<td><esapi:encodeForHTML>${entity.customer.name }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">E-Mail</th>

@@ -33,7 +33,10 @@ public class PageActionInterceptor extends RootInterceptor {
 			session.remove("importList");
 			session.remove("total");
 			session.remove("normal");
+			session.remove("insert");
 			session.remove("checkItemSet");
+			session.remove("tip");
+			session.remove("allChecked");
 		}
 
 		if (invocation.getAction().toString().contains("feLogs")) {

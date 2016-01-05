@@ -24,12 +24,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -38,6 +38,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Lists;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.group.Group;
 import com.shouyang.syazs.core.apply.group.GroupService;
@@ -419,33 +420,36 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 				customer = new Customer(rowValues[0], rowValues[1],
 						rowValues[2], rowValues[4], rowValues[3], "");
+				List<String> errorList = Lists.newArrayList();
 
 				if (StringUtils.isBlank(customer.getName())) {
-					customer.setDataStatus("名稱空白");
+					errorList.add("名稱空白");
 				} else {
 					if (customer.getName()
 							.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "")
 							.length() != 0) {
-						customer.setDataStatus("名稱字元異常");
+						errorList.add("名稱字元異常");
 					} else {
 						long cusSerNo = customerService
 								.getCusSerNoByName(customer.getName());
 						if (cusSerNo != 0) {
-							customer.setDataStatus("已存在");
-						}
-
-						if (StringUtils.isNotEmpty(customer.getTel())) {
-							String tel = customer.getTel()
-									.replaceAll("[/()+-]", "").replace(" ", "");
-							if (!NumberUtils.isDigits(tel)) {
-								customer.setTel(null);
-							}
+							errorList.add("已存在");
 						}
 					}
-
 				}
 
-				if (customer.getDataStatus() == null) {
+				if (StringUtils.isNotEmpty(customer.getTel())) {
+					String tel = customer.getTel().replaceAll("[/()+-]", "")
+							.replace(" ", "");
+					if (!NumberUtils.isDigits(tel)) {
+						errorList.add("電話異常");
+					}
+				}
+
+				if (errorList.size() != 0) {
+					customer.setDataStatus(errorList.toString()
+							.replace("[", "").replace("]", ""));
+				} else {
 					customer.setDataStatus("正常");
 				}
 
@@ -488,6 +492,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
 
 			setDs(ds);
 			return QUEUE;
@@ -501,8 +506,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		if (importList == null) {
 			return IMPORT;
 		}
-
-		clearCheckedItem();
 
 		DataSet<Customer> ds = initDataSet();
 		ds.getPager().setTotalRecord((long) importList.size());
@@ -540,6 +543,33 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	@SuppressWarnings("unchecked")
+	public String addAllItem() {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		if (getSession().containsKey("checkItemSet")) {
+			checkItemSet = (Set<Integer>) getSession().get("checkItemSet");
+		}
+
+		Integer i = 0;
+		while (i < importList.size()) {
+			customer = (Customer) importList.get(i);
+			if (customer.getDataStatus().equals("正常")) {
+				checkItemSet.add(i);
+				log.info(customer);
+			}
+			i++;
+		}
+		log.info(checkItemSet);
+		getSession().put("allChecked", true);
+		getSession().put("checkItemSet", checkItemSet);
+		return QUEUE;
+	}
+
+	@SuppressWarnings("unchecked")
 	public String getCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
@@ -566,11 +596,12 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				}
 			}
 		}
-
+		log.info(checkItemSet);
 		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
 	}
 
+	@SuppressWarnings("unchecked")
 	public String allCheckedItem() {
 		List<?> importList = (List<?>) getSession().get("importList");
 		if (importList == null) {
@@ -578,6 +609,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		if (getSession().containsKey("checkItemSet")) {
+			checkItemSet = (Set<Integer>) getSession().get("checkItemSet");
+		}
 
 		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
 			Set<Integer> deRepeatSet = new HashSet<Integer>(
@@ -603,19 +637,54 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				i++;
 			}
 		}
-
+		log.info(checkItemSet);
 		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
 	}
 
-	public String clearCheckedItem() {
+	public String allUncheckedItem() {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
+					Arrays.asList(getEntity().getImportItem()));
+			getEntity().setImportItem(
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
+
+			int i = 0;
+			while (i < getEntity().getImportItem().length) {
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					checkItemSet.remove(getEntity().getImportItem()[i]);
+
+					if (checkItemSet.size() == 0) {
+						break;
+					}
+				}
+				i++;
+			}
+		}
+		log.info(checkItemSet);
+		getSession().put("checkItemSet", checkItemSet);
+		return QUEUE;
+	}
+
+	public String removeAllItem() {
 		if (getSession().get("importList") == null) {
 			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		getSession().put("allChecked", false);
 		getSession().put("checkItemSet", checkItemSet);
-		return null;
+		log.info(checkItemSet);
+		return QUEUE;
 	}
 
 	public String importData() throws Exception {
@@ -642,18 +711,75 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 						new Group(
 								new GroupMapping(null, customer.getName(), 0),
 								customer, customer.getName()), getLoginUser());
-				customer.setDataStatus("已存在");
+				customer.setDataStatus("已匯入");
 				++successCount;
 			}
 
 			getRequest().setAttribute("successCount", successCount);
-			int normal = (int) getSession().get("normal");
-			getSession().put("normal", normal - successCount);
+			int insert = (int) getSession().get("insert");
+			getSession().put("insert", insert + successCount);
+			getSession().remove("checkItemSet");
+			getSession().remove("allChecked");
+			log.info(getSession().get("checkItemSet"));
 			return VIEW;
 		} else {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws IOException {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		getEntity().setReportFile("customer_error.xlsx");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet spreadsheet = workbook.createSheet("customer_error");
+		XSSFRow row;
+
+		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+		Integer mark = 1;
+		empinfo.put(mark.toString(), new Object[] { "name/姓名", "egName/英文姓名",
+				"address/地址", "tel/電話", "contactUserName/聯絡人", "錯誤原因" });
+
+		int i = 0;
+		while (i < importList.size()) {
+			customer = (Customer) importList.get(i);
+			if (!customer.getDataStatus().equals("正常")
+					&& !customer.getDataStatus().equals("已匯入")) {
+				mark = mark + 1;
+				empinfo.put(
+						mark.toString(),
+						new Object[] { customer.getName(),
+								customer.getEngName(), customer.getAddress(),
+								customer.getTel(),
+								customer.getContactUserName(),
+								customer.getDataStatus() });
+			}
+			i++;
+		}
+
+		Set<String> keyid = empinfo.keySet();
+		int rowid = 0;
+		for (String key : keyid) {
+			row = spreadsheet.createRow(rowid++);
+			Object[] objectArr = empinfo.get(key);
+			int cellid = 0;
+			for (Object obj : objectArr) {
+				Cell cell = row.createCell(cellid++);
+				cell.setCellValue((String) obj);
+			}
+		}
+
+		ByteArrayOutputStream boas = new ByteArrayOutputStream();
+		workbook.write(boas);
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+
+		return XLSX;
 	}
 
 	public String example() throws Exception {
@@ -710,17 +836,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
+			return WorkbookFactory.create(is);
+		} catch (InvalidFormatException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-
-		return null;
 	}
 }

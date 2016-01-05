@@ -1,8 +1,11 @@
+<%@ page import="java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cfn" uri="http://java.sy.com/jsp/jstl/cfn"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -17,10 +20,52 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
+	function allBox() {
+		if ($("input.all.box").attr("checked")) {
+			addAllBox();
+		} else {
+			removeAllBox();
+		}
+	}
+
+	function cancelAllBox() {
+
+	}
+
+	function addAllBox() {
+		$(".checkbox.queue:visible").each(function() {
+			$(this).attr("checked", "checked");
+		});
+
+		$.ajax({
+			type : "POST",
+			url : "<c:url value = '/'/>crud/apply.customer.addAllItem.action",
+			dataType : "html",
+			success : function(message) {
+
+			}
+		});
+	}
+
+	function removeAllBox() {
+		$(".checkbox.queue:visible").each(function() {
+			$(this).attr("checked", false);
+		});
+
+		$
+				.ajax({
+					type : "POST",
+					url : "<c:url value = '/'/>crud/apply.customer.removeAllItem.action",
+					dataType : "html",
+					success : function(message) {
+
+					}
+				});
+	}
+
 	function allRow(action) {
+		var importItem = "";
 		if (action == 1) {
-			checkedValues = new Array($(".checkbox.queue:visible").length);
-			var importItem = "";
 			$(".checkbox.queue:visible").each(
 					function() {
 						$(this).attr("checked", "checked");
@@ -39,10 +84,23 @@
 						}
 					});
 		} else {
-			clearCheckedItem();
-			$(".checkbox.queue:visible").each(function() {
-				$(this).removeAttr("checked");
-			});
+			$(".checkbox.queue:visible").each(
+					function() {
+						$(this).removeAttr("checked");
+						importItem = importItem + "entity.importItem="
+								+ $(this).val() + "&";
+					});
+
+			$
+					.ajax({
+						type : "POST",
+						url : "<c:url value = '/'/>crud/apply.customer.allUncheckedItem.action",
+						dataType : "html",
+						data : importItem.slice(0, importItem.length - 1),
+						success : function(message) {
+
+						}
+					});
 		}
 	}
 
@@ -59,6 +117,11 @@
 				});
 	}
 
+	function getErrors() {
+		var url = "<c:url value = '/'/>crud/apply.customer.backErrors.action";
+		window.open(url, "_top");
+	}
+
 	function checkData() {
 		//檢查資料是否已被勾選
 		//進行動作
@@ -72,18 +135,6 @@
 			goAlert("訊息", "請選擇一筆或一筆以上的資料");
 		}
 	}
-
-	function clearCheckedItem() {
-		$
-				.ajax({
-					type : "POST",
-					url : "<c:url value = '/'/>crud/apply.customer.clearCheckedItem.action",
-					dataType : "html",
-					success : function(message) {
-
-					}
-				});
-	}
 </script>
 </head>
 <body>
@@ -92,7 +143,15 @@
 		<table cellspacing="1" class="list-table queue">
 			<tbody>
 				<tr>
-					<th></th>
+					<th><c:choose>
+							<c:when test="${allChecked }">
+								<input type="checkbox" class="all box" onclick="allBox()"
+									checked="checked">
+							</c:when>
+							<c:otherwise>
+								<input type="checkbox" class="all box" onclick="allBox()">
+							</c:otherwise>
+						</c:choose></th>
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
 						<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
 					</c:forEach>
@@ -102,9 +161,21 @@
 					<tr>
 						<td><c:choose>
 								<c:when test="${item.dataStatus=='正常'}">
-									<input type="checkbox" class="checkbox queue" name="checkItem"
-										value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
-										onclick="getCheckedItem(this.value)">
+									<c:choose>
+										<c:when
+											test="${cfn:containsInt(checkItemSet,(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index) }">
+											<input type="checkbox" class="checkbox queue"
+												name="checkItem"
+												value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
+												onclick="getCheckedItem(this.value)" checked="checked">
+										</c:when>
+										<c:otherwise>
+											<input type="checkbox" class="checkbox queue"
+												name="checkItem"
+												value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
+												onclick="getCheckedItem(this.value)">
+										</c:otherwise>
+									</c:choose>
 								</c:when>
 								<c:otherwise>
 									<input type="checkbox" disabled="disabled">
@@ -115,7 +186,7 @@
 						<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.contactUserName }</esapi:encodeForHTML></td>
 						<td align="center"><esapi:encodeForHTML>${item.tel }</esapi:encodeForHTML></td>
-						<td align="center">${item.dataStatus }</td>
+						<td align="center">${fn:replace(item.dataStatus, ',', '<br>')}</td>
 					</tr>
 				</c:forEach>
 			</tbody>
@@ -160,8 +231,16 @@
 		</div>
 		<div class="detail_note">
 			<div class="detail_note_title">Note</div>
-			<div class="detail_note_content">共${total }筆記錄(正常筆數 :${normal }
-				;異常筆數 :${total-normal })</div>
+			<div class="detail_note_content">
+				共${total }筆記錄(正常筆數 : ${normal } ;異常筆數 :
+				<c:choose>
+					<c:when test="${total-normal>0 }">
+						<a class="error number" onclick="getErrors()">${total-normal }</a>
+					</c:when>
+					<c:otherwise>0</c:otherwise>
+				</c:choose>
+				;已匯入 : ${insert })
+			</div>
 		</div>
 	</s:form>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />

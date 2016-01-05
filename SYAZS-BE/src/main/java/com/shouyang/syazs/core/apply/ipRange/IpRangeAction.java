@@ -20,12 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -502,9 +502,8 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 						rowValues[1]);
 
 				if (!isIp(ipRange.getIpRangeStart())
-						|| !isIp(ipRange.getIpRangeStart())
-						|| !ipRange.getCustomer().hasSerNo()) {
-					ipRange.setDataStatus("資料錯誤");
+						|| !isIp(ipRange.getIpRangeStart())) {
+					ipRange.setDataStatus("格式錯誤");
 				} else if (isPrivateIp(ipRange.getIpRangeStart(),
 						ipRange.getIpRangeEnd())) {
 					ipRange.setDataStatus("私有IP");
@@ -516,7 +515,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 									.split("\\.")[1]) != Integer
 									.parseInt(ipRange.getIpRangeEnd().split(
 											"\\.")[1])) {
-						ipRange.setDataStatus("資料錯誤");
+						ipRange.setDataStatus("開頭不同");
 					} else if (Integer.parseInt(ipRange.getIpRangeStart()
 							.split("\\.")[2])
 							* 1000
@@ -526,9 +525,8 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 							* 1000
 							+ Integer.parseInt(ipRange.getIpRangeEnd().split(
 									"\\.")[3])) {
-						ipRange.setDataStatus("資料錯誤");
+						ipRange.setDataStatus("起值大於迄值");
 					} else {
-
 						IpRange repeatIpRange = checkRepeatIpRange(
 								ipRange.getIpRangeStart(),
 								ipRange.getIpRangeEnd(),
@@ -586,6 +584,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
 
 			setDs(ds);
 			return QUEUE;
@@ -760,7 +759,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 				ipRange.setIpRangeStart(ipStartBuilder.toString());
 				ipRange.setIpRangeEnd(ipEndBuilder.toString());
 				ipRangeService.save(ipRange, getLoginUser());
-				ipRange.setDataStatus("已存在");
+				ipRange.setDataStatus("已匯入");
 				++successCount;
 			}
 
@@ -772,6 +771,58 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws IOException {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		getEntity().setReportFile("ipRange_error.xlsx");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet spreadsheet = workbook.createSheet("ipRange_error");
+		XSSFRow row;
+
+		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+		Integer mark = 1;
+		empinfo.put(mark.toString(), new Object[] { "IP Range開始", "IP Range結束",
+				"錯誤原因" });
+
+		int i = 0;
+		while (i < importList.size()) {
+			ipRange = (IpRange) importList.get(i);
+			if (!ipRange.getDataStatus().equals("正常")
+					&& !ipRange.getDataStatus().equals("已匯入")) {
+				mark = mark + 1;
+				empinfo.put(
+						mark.toString(),
+						new Object[] { ipRange.getIpRangeStart(),
+								ipRange.getIpRangeEnd(),
+								ipRange.getDataStatus() });
+			}
+			i++;
+		}
+
+		Set<String> keyid = empinfo.keySet();
+		int rowid = 0;
+		for (String key : keyid) {
+			row = spreadsheet.createRow(rowid++);
+			Object[] objectArr = empinfo.get(key);
+			int cellid = 0;
+			for (Object obj : objectArr) {
+				Cell cell = row.createCell(cellid++);
+				cell.setCellValue((String) obj);
+			}
+		}
+
+		ByteArrayOutputStream boas = new ByteArrayOutputStream();
+		workbook.write(boas);
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+
+		return XLSX;
 	}
 
 	public String example() throws Exception {
@@ -907,17 +958,11 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
+			return WorkbookFactory.create(is);
+		} catch (InvalidFormatException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-
-		return null;
 	}
 }

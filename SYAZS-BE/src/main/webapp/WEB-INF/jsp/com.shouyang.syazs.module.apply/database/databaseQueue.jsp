@@ -3,6 +3,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -19,7 +20,6 @@
 <script type="text/javascript">
 	function allRow(action) {
 		if (action == 1) {
-			checkedValues = new Array($(".checkbox.queue:visible").length);
 			var importItem = "";
 			$(".checkbox.queue:visible").each(
 					function() {
@@ -57,6 +57,16 @@
 
 					}
 				});
+	}
+
+	function getErrors() {
+		var url = "<c:url value = '/'/>crud/apply.database.backErrors.action?entity.option=errors";
+		window.open(url, "_top");
+	}
+
+	function getTips() {
+		var url = "<c:url value = '/'/>crud/apply.database.backErrors.action?entity.option=tips";
+		window.open(url, "_top");
 	}
 
 	function checkData() {
@@ -133,7 +143,7 @@
 								<esapi:encodeForHTML>${owner.name }</esapi:encodeForHTML>
 								<br>
 							</c:forEach></td>
-						<td align="center">${item.dataStatus }</td>
+						<td align="center">${fn:replace(item.dataStatus, ',', '<br>')}</td>
 					</tr>
 				</c:forEach>
 			</tbody>
@@ -176,8 +186,23 @@
 		</div>
 		<div class="detail_note">
 			<div class="detail_note_title">Note</div>
-			<div class="detail_note_content">共${total }筆記錄(正常筆數 :${normal }
-				;異常筆數 :${total-normal })</div>
+			<div class="detail_note_content">
+				共${total }筆記錄(正常筆數 : ${normal } ;異常筆數 :
+				<c:choose>
+					<c:when test="${total-normal>0 }">
+						<a class="error number" onclick="getErrors()">${total-normal }</a>
+					</c:when>
+					<c:otherwise>0</c:otherwise>
+				</c:choose>
+				;已匯入 : ${insert } ;其他提示 :
+				<c:choose>
+					<c:when test="${tip>0 }">
+						<a class="error number" onclick="getTips()">${tip }</a>
+					</c:when>
+					<c:otherwise>0</c:otherwise>
+				</c:choose>
+				)
+			</div>
 		</div>
 	</s:form>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />

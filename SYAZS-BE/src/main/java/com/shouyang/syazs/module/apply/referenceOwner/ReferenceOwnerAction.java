@@ -22,12 +22,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import com.google.common.collect.Lists;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
@@ -384,33 +385,36 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 
 				referenceOwner = new ReferenceOwner(rowValues[0], rowValues[1],
 						rowValues[2], rowValues[4], rowValues[3], "");
+				List<String> errorList = Lists.newArrayList();
 
 				if (StringUtils.isBlank(referenceOwner.getName())) {
-					referenceOwner.setDataStatus("名稱空白");
+					errorList.add("名稱空白");
 				} else {
 					if (referenceOwner.getName()
 							.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "")
 							.length() != 0) {
-						referenceOwner.setDataStatus("名稱字元異常");
+						errorList.add("名稱字元異常");
 					} else {
 						long cusSerNo = referenceOwnerService
 								.getRefSerNoByName(referenceOwner.getName());
 						if (cusSerNo != 0) {
-							referenceOwner.setDataStatus("已存在");
-						}
-
-						if (StringUtils.isNotEmpty(referenceOwner.getTel())) {
-							String tel = referenceOwner.getTel()
-									.replaceAll("[/()+-]", "").replace(" ", "");
-							if (!NumberUtils.isDigits(tel)) {
-								referenceOwner.setTel(null);
-							}
+							errorList.add("已存在");
 						}
 					}
-
 				}
 
-				if (referenceOwner.getDataStatus() == null) {
+				if (StringUtils.isNotEmpty(referenceOwner.getTel())) {
+					String tel = referenceOwner.getTel()
+							.replaceAll("[/()+-]", "").replace(" ", "");
+					if (!NumberUtils.isDigits(tel)) {
+						errorList.add("電話異常");
+					}
+				}
+
+				if (errorList.size() != 0) {
+					referenceOwner.setDataStatus(errorList.toString()
+							.replace("[", "").replace("]", ""));
+				} else {
 					referenceOwner.setDataStatus("正常");
 				}
 
@@ -427,7 +431,6 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 						++normal;
 					}
 				}
-
 				originalData.add(referenceOwner);
 			}
 
@@ -455,6 +458,7 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 			getSession().put("importList", excelData);
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
+			getSession().put("insert", 0);
 
 			setDs(ds);
 			return QUEUE;
@@ -608,13 +612,68 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 			}
 
 			getRequest().setAttribute("successCount", successCount);
-			int normal = (int) getSession().get("normal");
-			getSession().put("normal", normal - successCount);
+			int insert = (int) getSession().get("insert");
+			getSession().put("insert", insert + successCount);
 			return VIEW;
 		} else {
 			paginate();
 			return QUEUE;
 		}
+	}
+
+	public String backErrors() throws IOException {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		getEntity().setReportFile("referenceOwner_error.xlsx");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet spreadsheet = workbook.createSheet("referenceOwner_error");
+		XSSFRow row;
+
+		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
+
+		Integer mark = 1;
+		empinfo.put(mark.toString(), new Object[] { "name/姓名", "egName/英文姓名",
+				"address/地址", "tel/電話", "contactUserName/聯絡人", "錯誤原因" });
+
+		int i = 0;
+		while (i < importList.size()) {
+			referenceOwner = (ReferenceOwner) importList.get(i);
+			if (!referenceOwner.getDataStatus().equals("正常")
+					&& !referenceOwner.getDataStatus().equals("已匯入")) {
+				mark = mark + 1;
+				empinfo.put(
+						mark.toString(),
+						new Object[] { referenceOwner.getName(),
+								referenceOwner.getEngName(),
+								referenceOwner.getAddress(),
+								referenceOwner.getTel(),
+								referenceOwner.getContactUserName(),
+								referenceOwner.getDataStatus() });
+			}
+			i++;
+		}
+
+		Set<String> keyid = empinfo.keySet();
+		int rowid = 0;
+		for (String key : keyid) {
+			row = spreadsheet.createRow(rowid++);
+			Object[] objectArr = empinfo.get(key);
+			int cellid = 0;
+			for (Object obj : objectArr) {
+				Cell cell = row.createCell(cellid++);
+				cell.setCellValue((String) obj);
+			}
+		}
+
+		ByteArrayOutputStream boas = new ByteArrayOutputStream();
+		workbook.write(boas);
+		getEntity()
+				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+
+		return XLSX;
 	}
 
 	public String example() throws Exception {
@@ -672,17 +731,11 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 	// 判斷文件類型
 	protected Workbook createWorkBook(InputStream is) throws IOException {
 		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
+			return WorkbookFactory.create(is);
+		} catch (InvalidFormatException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-
-		return null;
 	}
 }
