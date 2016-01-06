@@ -17,9 +17,49 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
+	function allBox() {
+		if ($("input.all.box").attr("checked")) {
+			addAllBox();
+		} else {
+			removeAllBox();
+		}
+	}
+
+	function addAllBox() {
+		$(".checkbox.queue:visible").each(function() {
+			$(this).attr("checked", "checked");
+		});
+
+		$
+				.ajax({
+					type : "POST",
+					url : "<c:url value = '/'/>crud/apply.referenceOwner.addAllItem.action",
+					dataType : "html",
+					success : function(message) {
+
+					}
+				});
+	}
+
+	function removeAllBox() {
+		$(".checkbox.queue:visible").each(function() {
+			$(this).attr("checked", false);
+		});
+
+		$
+				.ajax({
+					type : "POST",
+					url : "<c:url value = '/'/>crud/apply.referenceOwner.removeAllItem.action",
+					dataType : "html",
+					success : function(message) {
+
+					}
+				});
+	}
+
 	function allRow(action) {
+		var importItem = "";
 		if (action == 1) {
-			var importItem = "";
 			$(".checkbox.queue:visible").each(
 					function() {
 						$(this).attr("checked", "checked");
@@ -38,10 +78,23 @@
 						}
 					});
 		} else {
-			clearCheckedItem();
-			$(".checkbox.queue:visible").each(function() {
-				$(this).removeAttr("checked");
-			});
+			$(".checkbox.queue:visible").each(
+					function() {
+						$(this).removeAttr("checked");
+						importItem = importItem + "entity.importItem="
+								+ $(this).val() + "&";
+					});
+
+			$
+					.ajax({
+						type : "POST",
+						url : "<c:url value = '/'/>crud/apply.referenceOwner.allUncheckedItem.action",
+						dataType : "html",
+						data : importItem.slice(0, importItem.length - 1),
+						success : function(message) {
+
+						}
+					});
 		}
 	}
 
@@ -57,7 +110,7 @@
 					}
 				});
 	}
-	
+
 	function getErrors() {
 		var url = "<c:url value = '/'/>crud/apply.referenceOwner.backErrors.action";
 		window.open(url, "_top");

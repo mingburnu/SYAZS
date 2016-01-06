@@ -493,6 +493,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			getSession().put("total", excelData.size());
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
+			getSession().put("clazz", this.getClass());
 
 			setDs(ds);
 			return QUEUE;
@@ -559,11 +560,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			customer = (Customer) importList.get(i);
 			if (customer.getDataStatus().equals("正常")) {
 				checkItemSet.add(i);
-				log.info(customer);
 			}
 			i++;
 		}
-		log.info(checkItemSet);
+
 		getSession().put("allChecked", true);
 		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
@@ -596,7 +596,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				}
 			}
 		}
-		log.info(checkItemSet);
+
 		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
 	}
@@ -637,7 +637,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				i++;
 			}
 		}
-		log.info(checkItemSet);
+
 		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
 	}
@@ -670,7 +670,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				i++;
 			}
 		}
-		log.info(checkItemSet);
+
 		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
 	}
@@ -683,7 +683,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
 		getSession().put("allChecked", false);
 		getSession().put("checkItemSet", checkItemSet);
-		log.info(checkItemSet);
 		return QUEUE;
 	}
 
@@ -720,7 +719,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			getSession().put("insert", insert + successCount);
 			getSession().remove("checkItemSet");
 			getSession().remove("allChecked");
-			log.info(getSession().get("checkItemSet"));
 			return VIEW;
 		} else {
 			paginate();

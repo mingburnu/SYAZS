@@ -1039,6 +1039,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
 			getSession().put("tip", tip);
+			getSession().put("clazz", this.getClass());
 
 			return QUEUE;
 		} else {
@@ -1051,8 +1052,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		if (importList == null) {
 			return IMPORT;
 		}
-
-		clearCheckedItem();
 
 		DataSet<Ebook> ds = initDataSet();
 		ds.getPager().setTotalRecord((long) importList.size());
@@ -1086,6 +1085,32 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		setDs(ds);
+		return QUEUE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public String addAllItem() {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		if (getSession().containsKey("checkItemSet")) {
+			checkItemSet = (Set<Integer>) getSession().get("checkItemSet");
+		}
+
+		Integer i = 0;
+		while (i < importList.size()) {
+			ebook = (Ebook) importList.get(i);
+			if (ebook.getDataStatus().equals("正常")) {
+				checkItemSet.add(i);
+			}
+			i++;
+		}
+
+		getSession().put("allChecked", true);
+		getSession().put("checkItemSet", checkItemSet);
 		return QUEUE;
 	}
 
@@ -1156,14 +1181,48 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		return QUEUE;
 	}
 
-	public String clearCheckedItem() {
+	public String allUncheckedItem() {
+		List<?> importList = (List<?>) getSession().get("importList");
+		if (importList == null) {
+			return IMPORT;
+		}
+
+		Set<Integer> checkItemSet = new TreeSet<Integer>();
+
+		if (ArrayUtils.isNotEmpty(getEntity().getImportItem())) {
+			Set<Integer> deRepeatSet = new HashSet<Integer>(
+					Arrays.asList(getEntity().getImportItem()));
+			getEntity().setImportItem(
+					deRepeatSet.toArray(new Integer[deRepeatSet.size()]));
+
+			int i = 0;
+			while (i < getEntity().getImportItem().length) {
+				if (getEntity().getImportItem()[i] != null
+						&& getEntity().getImportItem()[i] >= 0
+						&& getEntity().getImportItem()[i] < importList.size()) {
+					checkItemSet.remove(getEntity().getImportItem()[i]);
+
+					if (checkItemSet.size() == 0) {
+						break;
+					}
+				}
+				i++;
+			}
+		}
+
+		getSession().put("checkItemSet", checkItemSet);
+		return QUEUE;
+	}
+
+	public String removeAllItem() {
 		if (getSession().get("importList") == null) {
 			return IMPORT;
 		}
 
 		Set<Integer> checkItemSet = new TreeSet<Integer>();
+		getSession().put("allChecked", false);
 		getSession().put("checkItemSet", checkItemSet);
-		return null;
+		return QUEUE;
 	}
 
 	public String importData() throws Exception {
@@ -1198,8 +1257,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 
 			getRequest().setAttribute("successCount", successCount);
-			int normal = (int) getSession().get("normal");
-			getSession().put("normal", normal - successCount);
+			int insert = (int) getSession().get("insert");
+			getSession().put("insert", insert + successCount);
+			getSession().remove("checkItemSet");
+			getSession().remove("allChecked");
 			return VIEW;
 		} else {
 			paginate();

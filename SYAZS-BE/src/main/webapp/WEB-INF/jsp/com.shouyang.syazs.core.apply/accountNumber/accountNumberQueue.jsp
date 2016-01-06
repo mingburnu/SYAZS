@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cfn" uri="http://java.sy.com/jsp/jstl/cfn"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -18,9 +19,49 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
+	function allBox() {
+		if ($("input.all.box").attr("checked")) {
+			addAllBox();
+		} else {
+			removeAllBox();
+		}
+	}
+
+	function addAllBox() {
+		$(".checkbox.queue:visible").each(function() {
+			$(this).attr("checked", "checked");
+		});
+
+		$
+				.ajax({
+					type : "POST",
+					url : "<c:url value = '/'/>crud/apply.accountNumber.addAllItem.action",
+					dataType : "html",
+					success : function(message) {
+
+					}
+				});
+	}
+
+	function removeAllBox() {
+		$(".checkbox.queue:visible").each(function() {
+			$(this).attr("checked", false);
+		});
+
+		$
+				.ajax({
+					type : "POST",
+					url : "<c:url value = '/'/>crud/apply.accountNumber.removeAllItem.action",
+					dataType : "html",
+					success : function(message) {
+
+					}
+				});
+	}
+
 	function allRow(action) {
+		var importItem = "";
 		if (action == 1) {
-			var importItem = "";
 			$(".checkbox.queue:visible").each(
 					function() {
 						$(this).attr("checked", "checked");
@@ -39,10 +80,23 @@
 						}
 					});
 		} else {
-			clearCheckedItem();
-			$(".checkbox.queue:visible").each(function() {
-				$(this).removeAttr("checked");
-			});
+			$(".checkbox.queue:visible").each(
+					function() {
+						$(this).removeAttr("checked");
+						importItem = importItem + "entity.importItem="
+								+ $(this).val() + "&";
+					});
+
+			$
+					.ajax({
+						type : "POST",
+						url : "<c:url value = '/'/>crud/apply.accountNumber.allUncheckedItem.action",
+						dataType : "html",
+						data : importItem.slice(0, importItem.length - 1),
+						success : function(message) {
+
+						}
+					});
 		}
 	}
 
@@ -58,7 +112,7 @@
 					}
 				});
 	}
-	
+
 	function getErrors() {
 		var url = "<c:url value = '/'/>crud/apply.accountNumber.backErrors.action";
 		window.open(url, "_top");
@@ -68,7 +122,6 @@
 		//檢查資料是否已被勾選
 		//進行動作
 		if ($("input.checkbox.queue:checked").length > 0) {
-
 			goDetail_Main(
 					'<c:url value = '/'/>crud/apply.accountNumber.importData.action',
 					'#apply_accountNumber_paginate', '&pager.currentPage='
@@ -76,18 +129,6 @@
 		} else {
 			goAlert("訊息", "請選擇一筆或一筆以上的資料");
 		}
-	}
-
-	function clearCheckedItem() {
-		$
-				.ajax({
-					type : "POST",
-					url : "<c:url value = '/'/>crud/apply.accountNumber.clearCheckedItem.action",
-					dataType : "html",
-					success : function(message) {
-
-					}
-				});
 	}
 </script>
 </head>
@@ -97,7 +138,15 @@
 		<table cellspacing="1" class="list-table queue">
 			<tbody>
 				<tr>
-					<th></th>
+					<th><c:choose>
+							<c:when test="${allChecked }">
+								<input type="checkbox" class="all box" onclick="allBox()"
+									checked="checked">
+							</c:when>
+							<c:otherwise>
+								<input type="checkbox" class="all box" onclick="allBox()">
+							</c:otherwise>
+						</c:choose></th>
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
 						<c:if test="${1 ne status.index }">
 							<th><esapi:encodeForHTMLAttribute>${item}</esapi:encodeForHTMLAttribute></th>
@@ -109,9 +158,21 @@
 					<tr>
 						<td><c:choose>
 								<c:when test="${item.dataStatus=='正常'}">
-									<input type="checkbox" class="checkbox queue"
-										value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
-										onclick="getCheckedItem(this.value)">
+									<c:choose>
+										<c:when
+											test="${cfn:containsInt(checkItemSet,(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index) }">
+											<input type="checkbox" class="checkbox queue"
+												name="checkItem"
+												value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
+												onclick="getCheckedItem(this.value)" checked="checked">
+										</c:when>
+										<c:otherwise>
+											<input type="checkbox" class="checkbox queue"
+												name="checkItem"
+												value="${(ds.pager.currentPage-1) * ds.pager.recordPerPage + status.index }"
+												onclick="getCheckedItem(this.value)">
+										</c:otherwise>
+									</c:choose>
 								</c:when>
 								<c:otherwise>
 									<input type="checkbox" disabled="disabled">

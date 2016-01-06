@@ -28,10 +28,6 @@
 		}
 	}
 
-	function cancelAllBox() {
-
-	}
-
 	function addAllBox() {
 		$(".checkbox.queue:visible").each(function() {
 			$(this).attr("checked", "checked");
@@ -126,7 +122,6 @@
 		//檢查資料是否已被勾選
 		//進行動作
 		if ($("input.checkbox.queue:checked").length > 0) {
-
 			goDetail_Main(
 					'<c:url value = '/'/>crud/apply.customer.importData.action',
 					'#apply_customer_paginate', '&pager.currentPage='

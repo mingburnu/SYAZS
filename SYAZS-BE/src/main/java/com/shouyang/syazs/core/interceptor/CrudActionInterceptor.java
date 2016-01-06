@@ -45,16 +45,14 @@ public class CrudActionInterceptor extends RootInterceptor {
 
 		if (!invocation.getAction().toString().contains("beLogs")
 				&& !invocation.getAction().toString().contains("feLogs")) {
-
 			String method = invocation.getProxy().getMethod();
 
-			List<String> methodList = Arrays.asList("queue", "paginate",
-					"addAllItem", "getCheckedItem", "allCheckedItem",
-					"allUncheckedItem", "removeAllItem", "importData",
-					"backErrors");
+			List<String> methodList = Arrays.asList("paginate", "addAllItem",
+					"getCheckedItem", "allCheckedItem", "allUncheckedItem",
+					"removeAllItem", "importData", "backErrors");
 
 			if (!methodList.contains(method)) {
-				if (request.getSession().getAttribute("importList") != null) {
+				if (request.getSession().getAttribute("clazz") != null) {
 					request.getSession().removeAttribute("cellNames");
 					request.getSession().removeAttribute("importList");
 					request.getSession().removeAttribute("total");
@@ -63,6 +61,21 @@ public class CrudActionInterceptor extends RootInterceptor {
 					request.getSession().removeAttribute("checkItemSet");
 					request.getSession().removeAttribute("tip");
 					request.getSession().removeAttribute("allChecked");
+					request.getSession().removeAttribute("clazz");
+				}
+			} else {
+				if (request.getSession().getAttribute("clazz") != null
+						&& !request.getSession().getAttribute("clazz")
+								.equals(invocation.getAction().getClass())) {
+					request.getSession().removeAttribute("cellNames");
+					request.getSession().removeAttribute("importList");
+					request.getSession().removeAttribute("total");
+					request.getSession().removeAttribute("normal");
+					request.getSession().removeAttribute("insert");
+					request.getSession().removeAttribute("checkItemSet");
+					request.getSession().removeAttribute("tip");
+					request.getSession().removeAttribute("allChecked");
+					request.getSession().removeAttribute("clazz");
 				}
 			}
 		}
