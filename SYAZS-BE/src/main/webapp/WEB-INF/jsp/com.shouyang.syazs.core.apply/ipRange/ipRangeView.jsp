@@ -28,9 +28,7 @@
 	}
 
 	function reimport() {
-		goDetail_Sub(
-				"<c:url value = '/'/>crud/apply.ipRange.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
-				"IP-匯入");
+		goDetail_Sub("<c:url value = '/'/>crud/apply.ipRange.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}");
 	}
 </script>
 </head>

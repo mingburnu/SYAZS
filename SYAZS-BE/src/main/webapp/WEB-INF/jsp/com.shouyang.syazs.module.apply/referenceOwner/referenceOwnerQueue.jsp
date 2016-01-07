@@ -141,6 +141,21 @@
 					}
 				});
 	}
+
+	function closeDetail() {
+		$("#div_Detail").hide();
+		UI_Resize();
+		$.ajax({
+			type : "POST",
+			url : "<c:url value = '/'/>page/copyright.action",
+			dataType : "html",
+			success : function(message) {
+
+			}
+		});
+
+		resetCloseDetail();
+	}
 </script>
 </head>
 <body>

@@ -26,9 +26,7 @@
 	}
 
 	function reimport() {
-		goDetail_Sub(
-				"<c:url value = '/'/>crud/apply.group.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
-				"群組-匯入");
+		goDetail_Sub("<c:url value = '/'/>crud/apply.group.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}");
 	}
 </script>
 <c:if test="${empty successCount }">

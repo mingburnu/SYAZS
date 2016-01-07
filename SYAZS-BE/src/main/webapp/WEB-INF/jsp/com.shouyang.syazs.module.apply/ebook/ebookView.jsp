@@ -56,9 +56,7 @@
 <c:if test="${empty entity.serNo}">
 	<script type="text/javascript">
 		function reimport() {
-			goDetail(
-					"<c:url value = '/'/>crud/apply.ebook.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
-					"電子書-匯入");
+			goDetail("<c:url value = '/'/>crud/apply.ebook.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}");
 		}
 	</script>
 </c:if>

@@ -51,7 +51,8 @@ public class ClassNotFoundFilter implements Filter {
 			String entityName = actionName.substring(0,
 					actionName.lastIndexOf("."));
 
-			if (entityName != null && !entityName.equals("main")) {
+			if (entityName != null && !entityName.equals("main")
+					&& !entityName.equals("copyright")) {
 				try {
 					if (entityName.length() == 0) {
 						entityName = " ";

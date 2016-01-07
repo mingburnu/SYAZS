@@ -79,6 +79,10 @@
 			<result name="success">/WEB-INF/jsp/index.jsp</result>
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 		</action>
+		<action name="copyright" class="commonMainPageAction">
+			<result name="success">/WEB-INF/jsp/layout/footer.jsp</result>
+			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
+		</action>
 		<action name="*" class="{1}Action">
 			<result name="success">${entity.location}{1}/{1}List.jsp
 			</result>

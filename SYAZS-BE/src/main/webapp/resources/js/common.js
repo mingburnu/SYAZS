@@ -109,29 +109,6 @@ function goDetail_import(argURL, argTitle, argData, argFormId) {
 		}
 	});
 }
-// 打開Detail畫面之函式
-function goDetailNloading(argURL, argTitle, argData) {
-	$("#div_Detail .content > .header > .title").html(argTitle);
-	$.ajax({
-		type : "POST",
-		url : argURL,
-		data : argData,
-		async : true,
-		cache : false,
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			// $("#div_Detail .content > .contain").html('<div
-			// class="message">連結失敗!</div>');
-			goAlert("結果", XMLHttpRequest.responseText);
-			closeLoading();
-		},
-		success : function(msg) {
-			$("#div_Detail").show();
-			UI_Resize();
-			$(window).scrollTop(0);
-			$("#div_Detail .content > .contain").empty().html(msg);
-		}
-	});
-}
 
 // 關閉Detail畫面之函式
 function closeDetail() {

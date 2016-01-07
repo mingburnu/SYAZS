@@ -72,7 +72,7 @@ public class Ebook extends ModuleProperties {
 	@Column(name = "cnclassbzstr")
 	private String cnClassBzStr;
 
-	// 美國國家圖書館類碼
+	// 杜威十進位圖書分類法
 	@Column(name = "bookinfoIntegeregral")
 	private String bookInfoIntegral;
 

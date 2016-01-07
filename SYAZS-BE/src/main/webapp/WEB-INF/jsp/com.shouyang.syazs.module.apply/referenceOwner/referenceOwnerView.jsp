@@ -57,9 +57,7 @@
 <c:if test="${empty entity.serNo}">
 	<script type="text/javascript">
 		function reimport() {
-			goDetail(
-					"<c:url value = '/'/>crud/apply.referenceOwner.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}",
-					"擁有者-匯入");
+			goDetail("<c:url value = '/'/>crud/apply.referenceOwner.paginate.action?pager.currentPage=${pager.currentPage}&pager.recordPerPage=${pager.recordPerPage}");
 		}
 	</script>
 </c:if>

@@ -126,6 +126,21 @@
 			goAlert("訊息", "請選擇一筆或一筆以上的資料");
 		}
 	}
+	
+	function closeDetail_2() {
+		$("#div_Detail").hide();
+		UI_Resize();
+		$.ajax({
+			type : "POST",
+			url : "<c:url value = '/'/>page/copyright.action",
+			dataType : "html",
+			success : function(message) {
+
+			}
+		});
+
+		resetCloseDetail_2();
+	}
 </script>
 </head>
 <body>

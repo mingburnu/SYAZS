@@ -28,7 +28,7 @@ public class PageActionInterceptor extends RootInterceptor {
 		removeErrorParameters(invocation);
 
 		Map<String, Object> session = ActionContext.getContext().getSession();
-		if (session.get("importList") != null) {
+		if (session.get("clazz") != null) {
 			session.remove("cellNames");
 			session.remove("importList");
 			session.remove("total");
@@ -37,6 +37,7 @@ public class PageActionInterceptor extends RootInterceptor {
 			session.remove("checkItemSet");
 			session.remove("tip");
 			session.remove("allChecked");
+			session.remove("clazz");
 		}
 
 		if (invocation.getAction().toString().contains("feLogs")) {
