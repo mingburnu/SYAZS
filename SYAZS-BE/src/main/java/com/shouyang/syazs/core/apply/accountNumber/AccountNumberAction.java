@@ -240,9 +240,10 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				initDataSet(), getLoginUser());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			ds.getPager().setCurrentPage(
-					(int) Math.ceil(ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage()));
+			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
+					.doubleValue()
+					/ ds.getPager().getRecordPerPage().doubleValue());
+			ds.getPager().setCurrentPage(lastPage.intValue());
 			ds = accountNumberService.getByRestrictions(ds, getLoginUser());
 		}
 
@@ -762,29 +763,33 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		int first = ds.getPager().getOffset();
 		int last = first + ds.getPager().getRecordPerPage();
 
-		int i = 0;
-		while (i < importList.size()) {
-			if (i >= first && i < last) {
-				ds.getResults().add((AccountNumber) importList.get(i));
+		int index = first;
+		while (index >= first && index < last) {
+			if (index < importList.size()) {
+				ds.getResults().add((AccountNumber) importList.get(index));
+			} else {
+				break;
 			}
-			i++;
+			index++;
 		}
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			ds.getPager().setCurrentPage(
-					(int) Math.ceil(ds.getPager().getTotalRecord()
-							/ ds.getPager().getRecordPerPage()));
+			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
+					.doubleValue()
+					/ ds.getPager().getRecordPerPage().doubleValue());
+			ds.getPager().setCurrentPage(lastPage.intValue());
 			first = ds.getPager().getOffset();
 			last = first + ds.getPager().getRecordPerPage();
 
-			int j = 0;
-			while (j < importList.size()) {
-				if (j >= first && j < last) {
-					ds.getResults().add((AccountNumber) importList.get(j));
+			index = first;// TODO
+			while (index >= first && index < last) {
+				if (index < importList.size()) {
+					ds.getResults().add((AccountNumber) importList.get(index));
+				} else {
+					break;
 				}
-				j++;
+				index++;
 			}
-
 		}
 
 		setDs(ds);

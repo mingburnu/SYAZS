@@ -92,7 +92,7 @@
 		$("input[name='entity.database.serNo']").val("").trigger('change');
 		setResField();
 	}
-	
+
 	function clearResDbs() {
 		$("#div_ResDbs .content .header .title").html("");
 		$("#div_ResDbs .content .contain").html("");

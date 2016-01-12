@@ -22,98 +22,107 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-//切換查詢項目
-$(document).ready(function() {
-	$("select#listForm_searchCondition").change(function() {
-		$("input#search").attr("name", $(this).val());
-	});	
-});
+	//切換查詢項目
+	$(document).ready(function() {
+		$("select#listForm_searchCondition").change(function() {
+			$("input#search").attr("name", $(this).val());
+		});
+	});
 
-function goSearch(){
-	goMain("<%=request.getContextPath()%>/crud/apply.referenceOwner.list.action",	"#apply_referenceOwner_list", "");
-}
+	function goSearch() {
+		goMain("<c:url value = '/'/>crud/apply.referenceOwner.list.action",
+				"#apply_referenceOwner_list", "");
+	}
 
-//新增
-function goAdd(){
-	goDetail('<%=request.getContextPath()%>/crud/apply.referenceOwner.add.action','客戶-新增');
-}
+	//新增
+	function goAdd() {
+		goDetail("<c:url value = '/'/>crud/apply.referenceOwner.add.action",
+				'客戶-新增');
+	}
 
-//刪除多筆資料之函式
-function goDelete() {
-	//檢查資料是否已被勾選
-	var IsSelected = false;
-	for (var i = 0; i < $(".checkbox").length; i++) {
-		if ($(".checkbox").get(i).checked) {
-			IsSelected = true;
-			break;
+	//刪除多筆資料之函式
+	function goDelete() {
+		//檢查資料是否已被勾選
+		var IsSelected = false;
+		for (var i = 0; i < $(".checkbox").length; i++) {
+			if ($(".checkbox").get(i).checked) {
+				IsSelected = true;
+				break;
+			}
+		}
+
+		//進行刪除動作
+		if (IsSelected) {
+			var f = {
+				trueText : '是',
+				trueFunc : function() {
+					var url = '<c:url value="/crud/apply.referenceOwner.delete.action"/>';
+					var data = $('#apply_referenceOwner_list').serialize()
+							+ '&pager.currentPage=' + '${ds.pager.currentPage}';
+					goMain(url, '', data);
+				},
+				falseText : '否',
+				falseFunc : function() {
+					//不進行刪除...
+				}
+			};
+			goAlert('提醒', '您確定要刪除所勾選的資料嗎?', f);
+		} else {
+			goAlert("提醒", "請選擇一筆或一筆以上的資料");
 		}
 	}
-		
-	//進行刪除動作
-	if (IsSelected) {
+
+	//資料檢視
+	function goView(serNo) {
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			var url = "<c:url value = '/'/>crud/apply.referenceOwner.view.action";
+			var data = 'entity.serNo=' + serNo;
+			goDetail(url, '用戶-檢視', data);
+		}
+	}
+
+	//更新資料
+	function goUpdate(serNo) {
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			goDetail(
+					"<c:url value = '/'/>crud/apply.referenceOwner.edit.action?"
+							+ 'entity.serNo=' + serNo, '客戶-修改');
+		}
+	}
+
+	//單筆刪除
+	function goDel(serNo) {
 		var f = {
-				trueText:'是',
-				trueFunc:function(){
-					var url = '<c:url value="/crud/apply.referenceOwner.delete.action"/>';    
-					var data = $('#apply_referenceOwner_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
-					goMain(url,'',data);
-                    },
-                    falseText:'否',
-                    falseFunc:function(){
-                    	//不進行刪除...
-                   }
-		};
-		goAlert('提醒','您確定要刪除所勾選的資料嗎?',f);
-	} else {
-		goAlert("提醒","請選擇一筆或一筆以上的資料");
-	}
-}
-	
-//資料檢視
-function goView(serNo){
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-        var url = "<c:url value = '/'/>crud/apply.referenceOwner.view.action";
-        var data = 'entity.serNo='+serNo;
-        goDetail(url,'用戶-檢視',data);
-	}
-}
-	
-//更新資料
-function goUpdate(serNo) {
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-		goDetail('<%=request.getContextPath()%>/crud/apply.referenceOwner.edit.action?'+'entity.serNo='+serNo,'客戶-修改');
-	}
-}
-	
-//單筆刪除
-function goDel(serNo){
-	var f = {
-		trueText:'是',
-		trueFunc:function(){
-			var url = '<c:url value = "/crud/apply.referenceOwner.delete.action"/>';
-			var data =$('#apply_referenceOwner_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}'+'&entity.checkItem='+serNo;
-			goMain(url,'',data);
+			trueText : '是',
+			trueFunc : function() {
+				var url = '<c:url value = "/crud/apply.referenceOwner.delete.action"/>';
+				var data = $('#apply_referenceOwner_list').serialize()
+						+ '&pager.currentPage=' + '${ds.pager.currentPage}'
+						+ '&entity.checkItem=' + serNo;
+				goMain(url, '', data);
 			},
-			falseText:'否',
-			falseFunc:function(){
+			falseText : '否',
+			falseFunc : function() {
 				//不進行刪除...
 			}
 		};
-		
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-		goAlert('提醒','確定要刪除此筆資料嗎?',f);
-	} else {
-		goAlert('提醒','錯誤','');
-	}
-}
 
-//批次匯入
-function goImport(){
-	goDetail('<%=request.getContextPath()%>/crud/apply.referenceOwner.imports.action?','客戶-匯入');
-}
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			goAlert('提醒', '確定要刪除此筆資料嗎?', f);
+		} else {
+			goAlert('提醒', '錯誤', '');
+		}
+	}
+
+	//批次匯入
+	function goImport() {
+		goDetail(
+				"<c:url value = '/'/>crud/apply.referenceOwner.imports.action?",
+				'客戶-匯入');
+	}
 </script>
 </head>
 <body>
@@ -199,12 +208,12 @@ function goImport(){
 							<td align="center">${item.tel }</td>
 							<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
 							<td align="center"><a class="state-default2"
-								onclick="goView(${item.serNo });"><span
+								onclick="goView('${item.serNo }')"><span
 									class="icon-default icon-view"></span>檢視</a> <a
-								class="state-default2" onclick="goUpdate(${item.serNo});"><span
+								class="state-default2" onclick="goUpdate('${item.serNo}')"><span
 									class="icon-default icon-edit"></span>修改</a> <c:if
 									test="${login.role =='系統管理員'}">
-									<a class="state-default2" onclick="goDel(${item.serNo});"><span
+									<a class="state-default2" onclick="goDel('${item.serNo}')"><span
 										class="icon-default icon-delete"></span>刪除</a>
 								</c:if></td>
 					</c:forEach>

@@ -27,68 +27,73 @@
 </c:set>
 
 <script type="text/javascript">
-//IE press Enter GoPage
-$(document).ready(function() {
-	$("input.pp").keyup(function(e) {
-		if (e.keyCode == 13) {
-			gotoPage($(this).val());
-		}
+	//IE press Enter GoPage
+	$(document).ready(function() {
+		$("input.pp").keyup(function(e) {
+			if (e.keyCode == 13) {
+				gotoPage($(this).val());
+			}
+		});
 	});
-});
 
-function gotoPage(page){
-	var isNum = /^\d+$/.test(page);
-	var lastPage = "${lastPage}";
+	function gotoPage(page) {
+		var isNum = /^\d+$/.test(page);
+		var lastPage = "${lastPage}";
 
-	if (!isNum){
-		page="${currentPage}";
-	} else {
-		if (parseInt(page) < 1){
-			page=1;
-		} else if (parseInt(page)>parseInt(lastPage)){
-			page=parseInt(lastPage);
+		if (!isNum) {
+			page = "${currentPage}";
+		} else {
+			if (parseInt(page) < 1) {
+				page = 1;
+			} else if (parseInt(page) > parseInt(lastPage)) {
+				page = parseInt(lastPage);
+			}
 		}
+
+		var url = $("form").attr("action") + "?pager.currentPage=" + page;
+		var data = $("form:eq(0)").serialize();
+
+		$.ajax({
+			url : url,
+			data : data,
+			success : function(result) {
+				$("#container").html(result);
+			}
+		});
+		$("body").scrollTop(0);
 	}
 
-    var url = $("form").attr("action")+"?pager.currentPage="+ page;
-	var data = $("form:eq(0)").serialize(); 
+	function upperChangeSize(recordPerPage) {
+		var url = $("form").attr("action") + "?pager.recordPoint="
+				+ "${recordPoint}";
+		var data = $("form:eq(0)").serialize();
 
-	$.ajax({
-		url: url, 
-		data: data,
-		success: function(result){
-            $("#container").html(result);
-        }});
-	$("body").scrollTop(0);
-}
+		$.ajax({
+			url : url,
+			data : data,
+			success : function(result) {
+				$("#container").html(result);
+			}
+		});
 
-function upperChangeSize(recordPerPage) {
-	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}";
-	var data = $("form:eq(0)").serialize();
+		$("body").scrollTop(0);
+	}
 
-	$.ajax({
-		url: url, 
-		data:data,
-		success: function(result){
-        $("#container").html(result);
-    }});
-	
-	$("body").scrollTop(0);
-}
+	function bottomChangeSize(recordPerPage) {
+		var url = $("form").attr("action") + "?pager.recordPoint="
+				+ "${recordPoint}";
+		var data = $("form:eq(1)").serialize();
 
-function bottomChangeSize(recordPerPage) {
-	var url= $("form").attr("action")+"?pager.recordPoint="+"${recordPoint}";
-	var data = $("form:eq(1)").serialize();
-	
-	$.ajax({
-		url: url, 
-		data:data,
-		success: function(result){
-        $("#container").html(result);
-    }});
-	
-	$("body").scrollTop(0);
-}
+		$.ajax({
+			url : url,
+			data : data,
+			success : function(result) {
+				$("#container").html(result);
+			}
+		});
+
+		$("body").scrollTop(0);
+	}
 </script>
 
 <pg:pager url="${goToPage}" items="${totalRecord}"
@@ -101,7 +106,7 @@ function bottomChangeSize(recordPerPage) {
 
 				</c:when>
 				<c:otherwise>
-					<a class="bb" onclick="gotoPage(${pageNumber})">&nbsp;</a>
+					<a class="bb" onclick="gotoPage('${pageNumber}')">&nbsp;</a>
 				</c:otherwise>
 			</c:choose>
 		</pg:first>
@@ -112,7 +117,7 @@ function bottomChangeSize(recordPerPage) {
 
 				</c:when>
 				<c:otherwise>
-					<a class="b" onclick="gotoPage(${currentPage-1})">&nbsp;</a>
+					<a class="b" onclick="gotoPage('${currentPage-1}')">&nbsp;</a>
 
 				</c:otherwise>
 			</c:choose>
@@ -126,7 +131,7 @@ function bottomChangeSize(recordPerPage) {
 
 				</c:when>
 				<c:otherwise>
-					<a class="n" onclick="gotoPage(${currentPage+1})">&nbsp;</a>
+					<a class="n" onclick="gotoPage('${currentPage+1}')">&nbsp;</a>
 
 				</c:otherwise>
 			</c:choose>
@@ -138,7 +143,7 @@ function bottomChangeSize(recordPerPage) {
 
 				</c:when>
 				<c:otherwise>
-					<a class="nn" onclick='gotoPage(${pageNumber})'>&nbsp;</a>
+					<a class="nn" onclick="gotoPage('${pageNumber}')">&nbsp;</a>
 				</c:otherwise>
 			</c:choose>
 		</pg:last>

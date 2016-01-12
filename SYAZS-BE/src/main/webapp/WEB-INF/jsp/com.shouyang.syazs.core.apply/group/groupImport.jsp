@@ -70,8 +70,8 @@
 					$("#div_Detail_2").show();
 					UI_Resize();
 					$(window).scrollTop(0);
-					$("#div_Detail_2 .content > .header > .title")
-							.html("Group-匯入");
+					$("#div_Detail_2 .content > .header > .title").html(
+							"Group-匯入");
 					$("#div_Detail_2 .content > .contain").empty().html(data);
 					closeLoading();
 
@@ -98,17 +98,20 @@
 
 			//Add iframe to body
 			iframe.appendTo('body');
-			iframe.load(function(e) {
-				var doc = getDoc(iframe[0]);
-				var docRoot = doc.body ? doc.body : doc.documentElement;
-				var data = docRoot.innerHTML;
-				$("#div_Detail_2").show();
-				UI_Resize();
-				$(window).scrollTop(0);
-				$("#div_Detail_2 .content > .header > .title").html("Group-匯入");
-				$("#div_Detail_2 .content > .contain").empty().html(data);
-				closeLoading();
-			});
+			iframe
+					.load(function(e) {
+						var doc = getDoc(iframe[0]);
+						var docRoot = doc.body ? doc.body : doc.documentElement;
+						var data = docRoot.innerHTML;
+						$("#div_Detail_2").show();
+						UI_Resize();
+						$(window).scrollTop(0);
+						$("#div_Detail_2 .content > .header > .title").html(
+								"Group-匯入");
+						$("#div_Detail_2 .content > .contain").empty().html(
+								data);
+						closeLoading();
+					});
 		}
 	}
 </script>

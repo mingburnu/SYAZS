@@ -17,97 +17,104 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-function goSearch(){
-    goMain("<%=request.getContextPath()%>/crud/apply.accountNumber.list.action","#apply_accountNumber_list", "");
-}
-
-//新增
-function goAdd(){
-    goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.add.action','帳戶-新增');
-}
-
-//失效多筆資料之函式
-function goDeauthorize(){
-    //檢查資料是否已被勾選
-    var IsSelected = false;
-    for(var i=0;i<$(".checkbox").length;i++){
-        if($(".checkbox").get(i).checked){
-            IsSelected = true;
-            break;
-        }
-    }
-    //進行失效動作
-    if(IsSelected){
-    	var f = {
-                trueText:'是',
-                trueFunc:function(){
-                        var url = '<%=request.getContextPath()%>/crud/apply.accountNumber.deauthorize.action';
-                        var data = $('#apply_accountNumber_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
-                        goMain(url,'',data);
-                },
-                falseText:'否',
-                falseFunc:function(){
-                        //不進行刪除...
-                }
-        };
-    	goAlert('提醒','您確定要失效所勾選的帳戶嗎?',f);
-    }else{
-    	goAlert("提醒","請選擇一筆或一筆以上的資料");
-    }
-}
-
-//生效多筆資料之函式
-function goAuthorize(){
-    //檢查資料是否已被勾選
-    var IsSelected = false;
-    for(var i=0;i<$(".checkbox").length;i++){
-        if($(".checkbox").get(i).checked){
-            IsSelected = true;
-            break;
-        }
-    }
-    //進行生效動作
-    if(IsSelected){
-    	var f = {
-                trueText:'是',
-                trueFunc:function(){
-                        var url = '<%=request.getContextPath()%>/crud/apply.accountNumber.authorize.action';
-                        var data = $('#apply_accountNumber_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
-                        goMain(url,'',data);
-                },
-                falseText:'否',
-                falseFunc:function(){
-                	//不進行刪除...
-                }
-        };
-    	goAlert('提醒','您確定要生效所勾選的帳戶嗎?',f);
-    }else{
-    	goAlert("提醒","請選擇一筆或一筆以上的資料");
-    }
-}
-
-//資料檢視
-function goView(serNo){
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-        var url = "<c:url value = '/'/>crud/apply.accountNumber.view.action";
-        var data = 'entity.serNo='+serNo;
-        goDetail(url,'帳戶-檢視',data);
+	function goSearch() {
+		goMain("<c:url value = '/'/>crud/apply.accountNumber.list.action",
+				"#apply_accountNumber_list", "");
 	}
-}
 
-//更新資料
-function goUpdate(serNo) {
-	var isNum = /^\d+$/.test(serNo);
-	if (isNum && parseInt(serNo) > 0){
-	goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.edit.action?'+'entity.serNo='+serNo,'帳戶-修改');
+	//新增
+	function goAdd() {
+		goDetail("<c:url value = '/'/>crud/apply.accountNumber.add.action",
+				'帳戶-新增');
 	}
-}
 
-//批次匯入
-function goImport(){
-	goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.imports.action','帳戶-匯入');
-}
+	//失效多筆資料之函式
+	function goDeauthorize() {
+		//檢查資料是否已被勾選
+		var IsSelected = false;
+		for (var i = 0; i < $(".checkbox").length; i++) {
+			if ($(".checkbox").get(i).checked) {
+				IsSelected = true;
+				break;
+			}
+		}
+		//進行失效動作
+		if (IsSelected) {
+			var f = {
+				trueText : '是',
+				trueFunc : function() {
+					var url = "<c:url value = '/'/>crud/apply.accountNumber.deauthorize.action";
+					var data = $('#apply_accountNumber_list').serialize()
+							+ '&pager.currentPage=' + '${ds.pager.currentPage}';
+					goMain(url, '', data);
+				},
+				falseText : '否',
+				falseFunc : function() {
+					//不進行刪除...
+				}
+			};
+			goAlert('提醒', '您確定要失效所勾選的帳戶嗎?', f);
+		} else {
+			goAlert("提醒", "請選擇一筆或一筆以上的資料");
+		}
+	}
+
+	//生效多筆資料之函式
+	function goAuthorize() {
+		//檢查資料是否已被勾選
+		var IsSelected = false;
+		for (var i = 0; i < $(".checkbox").length; i++) {
+			if ($(".checkbox").get(i).checked) {
+				IsSelected = true;
+				break;
+			}
+		}
+		//進行生效動作
+		if (IsSelected) {
+			var f = {
+				trueText : '是',
+				trueFunc : function() {
+					var url = "<c:url value = '/'/>crud/apply.accountNumber.authorize.action";
+					var data = $('#apply_accountNumber_list').serialize()
+							+ '&pager.currentPage=' + '${ds.pager.currentPage}';
+					goMain(url, '', data);
+				},
+				falseText : '否',
+				falseFunc : function() {
+					//不進行刪除...
+				}
+			};
+			goAlert('提醒', '您確定要生效所勾選的帳戶嗎?', f);
+		} else {
+			goAlert("提醒", "請選擇一筆或一筆以上的資料");
+		}
+	}
+
+	//資料檢視
+	function goView(serNo) {
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			var url = "<c:url value = '/'/>crud/apply.accountNumber.view.action";
+			var data = 'entity.serNo=' + serNo;
+			goDetail(url, '帳戶-檢視', data);
+		}
+	}
+
+	//更新資料
+	function goUpdate(serNo) {
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			goDetail(
+					"<c:url value = '/'/>crud/apply.accountNumber.edit.action?"
+							+ 'entity.serNo=' + serNo, '帳戶-修改');
+		}
+	}
+
+	//批次匯入
+	function goImport() {
+		goDetail("<c:url value = '/'/>crud/apply.accountNumber.imports.action",
+				'帳戶-匯入');
+	}
 </script>
 </head>
 <body>
@@ -200,9 +207,9 @@ function goImport(){
 							<td>${item.role.role }</td>
 							<td align="center">${item.status.status }</td>
 							<td align="center"><a class="state-default2"
-								onclick="goView(${item.serNo });"><span
+								onclick="goView('${item.serNo }')"><span
 									class="icon-default icon-view"></span>檢視</a> <a
-								class="state-default2" onclick="goUpdate(${item.serNo});"><span
+								class="state-default2" onclick="goUpdate('${item.serNo}')"><span
 									class="icon-default icon-edit"></span>修改</a></td>
 						</tr>
 					</c:forEach>

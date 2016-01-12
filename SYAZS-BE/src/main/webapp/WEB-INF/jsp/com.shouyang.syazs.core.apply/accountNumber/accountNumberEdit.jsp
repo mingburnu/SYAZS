@@ -8,11 +8,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
-	
 	//重設所有欄位(清空)
 	function resetData() {
-		goDetail('<%=request.getContextPath()%>/crud/apply.accountNumber.edit.action?'
-						+ 'entity.serNo=${entity.serNo}', '帳戶-修改');
+		goDetail("<c:url value = '/'/>crud/apply.accountNumber.edit.action?"
+				+ 'entity.serNo=${entity.serNo}', '帳戶-修改');
 	}
 
 	//遞交表單

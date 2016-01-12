@@ -73,7 +73,8 @@
 <c:if
 	test="${(login.role =='系統管理員') || (login.role =='維護人員') || (login.role =='管理員') }">
 	<%
-		response.sendRedirect(request.getContextPath() + "/page/main.action");
+		response.sendRedirect(request.getContextPath()
+					+ "/page/main.action");
 	%>
 </c:if>
 <body style="background-color: #FFFFFF; margin-top: 100px;">

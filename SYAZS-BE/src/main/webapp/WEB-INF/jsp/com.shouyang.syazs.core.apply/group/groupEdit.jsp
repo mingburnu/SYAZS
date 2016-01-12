@@ -78,7 +78,7 @@
 </script>
 <style type="text/css">
 select.input_text {
-    width: 103px;
+	width: 103px;
 }
 
 input[name="entity.secondLevelOption"] {

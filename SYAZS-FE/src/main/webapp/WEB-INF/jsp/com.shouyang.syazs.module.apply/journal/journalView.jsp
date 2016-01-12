@@ -11,10 +11,11 @@
 		var data = "entity.option="
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
-				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>".replace(/\&/g, "%26")
-				+ "&entity.refSerNo=" + "${ds.entity.refSerNo}"
-				+ "&pager.recordPoint=" + "${ds.pager.recordPoint}"
-				+ "&pager.recordPerPage=" + "${ds.pager.recordPerPage}";
+				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
+						.replace(/\&/g, "%26") + "&entity.refSerNo="
+				+ "${ds.entity.refSerNo}" + "&pager.recordPoint="
+				+ "${ds.pager.recordPoint}" + "&pager.recordPerPage="
+				+ "${ds.pager.recordPerPage}";
 		$.ajax({
 			url : url,
 			data : data,
@@ -23,9 +24,10 @@
 			}
 		});
 	}
-	
-	function link(serNo){
-		var url="<%=request.getContextPath()%>"+"/crud/apply.journal.click.action?entity.serNo="+serNo;
+
+	function link(serNo) {
+		var url = "<c:url value = '/'/>crud/apply.journal.click.action?entity.serNo="
+				+ serNo;
 		window.open(url);
 	}
 </script>
@@ -36,7 +38,7 @@
 			class="table_03">
 			<tr>
 				<td class="t_01">刊名</td>
-				<td class="t_02"><a onclick="link(${entity.serNo });"><esapi:encodeForHTML>${entity.title }</esapi:encodeForHTML></a></td>
+				<td class="t_02"><a onclick="link('${entity.serNo }')"><esapi:encodeForHTML>${entity.title }</esapi:encodeForHTML></a></td>
 			</tr>
 			<c:if test="${not empty entity.abbreviationTitle}">
 				<tr>

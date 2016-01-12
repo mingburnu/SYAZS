@@ -5,30 +5,38 @@
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <script type="text/javascript">
-function view(serNo){
-	var data=$("form:eq(0)").serialize()+"&entity.backURL="+"${list}${focus}${owner}${prefix}";
-	var url="<%=request.getContextPath()%>"+"/crud/apply.journal.view.action?entity.serNo="+serNo+"&pager.recordPoint="+"${ds.pager.recordPoint}";
-	$.ajax({
-		url: url,
-		data: data,
-		success: function(result){
-			$("#container").html(result);
-		}
-	});
-}
+	function view(serNo) {
+		var data = $("form:eq(0)").serialize() + "&entity.backURL="
+				+ "${list}${focus}${owner}${prefix}";
+		var url = "<c:url value = '/'/>crud/apply.journal.view.action?entity.serNo="
+				+ serNo + "&pager.recordPoint=" + "${ds.pager.recordPoint}";
+		$.ajax({
+			url : url,
+			data : data,
+			success : function(result) {
+				$("#container").html(result);
+			}
+		});
+	}
 
-function link(serNo){
-	var url="<%=request.getContextPath()%>"+"/crud/apply.journal.click.action?entity.serNo="+serNo;
-	window.open(url);
-}
+	function link(serNo) {
+		var url = "<c:url value = '/'/>crud/apply.journal.click.action?entity.serNo="
+				+ serNo;
+		window.open(url);
+	}
 
-function goBack() {
-	<c:choose>
-	<c:when test="${not empty list}">goURL("<c:url value='/' />page/query.action");</c:when>
-	<c:when test="${not empty focus || not empty prefix}">goURL("<c:url value='/' />page/journal.action");</c:when>
-	<c:otherwise>goURL("<c:url value='/' />crud/apply.referenceOwner.list.action?entity.indexTerm=<esapi:encodeForJavaScript>${entityRecord.indexTerm}</esapi:encodeForJavaScript>".replace(/\&/g, "%26")+"&pager.recordPoint=${pagerRecord.recordPoint}&pager.recordPerPage=${pagerRecord.recordPerPage}");</c:otherwise>
-	</c:choose>
-}
+	function goBack() {
+		<c:choose>
+		<c:when test="${not empty list}">goURL("<c:url value='/' />page/query.action");
+		</c:when>
+		<c:when test="${not empty focus || not empty prefix}">goURL("<c:url value='/' />page/journal.action");
+		</c:when>
+		<c:otherwise>goURL("<c:url value='/' />crud/apply.referenceOwner.list.action?entity.indexTerm=<esapi:encodeForJavaScript>${entityRecord.indexTerm}</esapi:encodeForJavaScript>"
+				.replace(/\&/g, "%26")
+				+ "&pager.recordPoint=${pagerRecord.recordPoint}&pager.recordPerPage=${pagerRecord.recordPerPage}");
+		</c:otherwise>
+		</c:choose>
+	}
 </script>
 <style>
 .list td a:hover {
@@ -181,9 +189,9 @@ function goBack() {
 						<c:when test="${num > 0}">
 							<tr valign="top">
 								<td>${orderInt}</td>
-								<td><a onclick="link(${item.serNo });"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
+								<td><a onclick="link('${item.serNo }')"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
 								<td><c:if test="${item.openAccess }">V</c:if></td>
-								<td><a onclick="view(${item.serNo})">檢視</a></td>
+								<td><a onclick="view('${item.serNo }')">檢視</a></td>
 								<td><c:choose>
 										<c:when test="${not empty item.publishName}">
 											<esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML>
@@ -201,9 +209,9 @@ function goBack() {
 						<c:otherwise>
 							<tr valign="top" class="odd">
 								<td>${orderInt}</td>
-								<td><a onclick="link(${item.serNo });"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
+								<td><a onclick="link('${item.serNo }')"><esapi:encodeForHTML>${item.title}</esapi:encodeForHTML></a></td>
 								<td><c:if test="${item.openAccess }">V</c:if></td>
-								<td><a onclick="view(${item.serNo})">檢視</a></td>
+								<td><a onclick="view('${item.serNo }')">檢視</a></td>
 								<td><c:choose>
 										<c:when test="${not empty item.publishName}">
 											<esapi:encodeForHTML>${item.publishName}</esapi:encodeForHTML>

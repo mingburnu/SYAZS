@@ -15,58 +15,63 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-//新增IP Range
-function goAdd_detail() {
-	var url = "<c:url value = '/'/>/crud/apply.ipRange.add.action";
-	var data ='entity.customer.serNo='+'${entity.customer.serNo }';
-	goDetail_2(url, 'IP Range管理-新增', data);
-}
-
-//IP Range編輯
-function goUpdate_detail(listNo,serNo) {
-	var isNum = /^\d+$/.test(serNo);
-	var islistNo = /^\d+$/.test(listNo);
-	if (isNum && islistNo && parseInt(serNo) > 0){
-		var url = "<c:url value = '/'/>crud/apply.ipRange.edit.action";
-		var data = 'entity.serNo=' + serNo +'&entity.listNo='+listNo+'&entity.customer.serNo='+'${entity.customer.serNo }';
-		goDetail_2(url, 'IP Range管理-修改', data); 
+	//新增IP Range
+	function goAdd_detail() {
+		var url = "<c:url value = '/'/>/crud/apply.ipRange.add.action";
+		var data = 'entity.customer.serNo=' + '${entity.customer.serNo }';
+		goDetail_2(url, 'IP Range管理-新增', data);
 	}
-}
 
-//單筆刪除
-function goDel_detail(serNo) {
-	 var f = {
-			 trueText:'是',
-			 trueFunc:function(){
-				 var url = "<c:url value = '/'/>crud/apply.ipRange.delete.action";
-				 var data = $('#apply_ipRange_list').serialize()+'&entity.serNo='+serNo+'&entity.customer.serNo='+'${entity.customer.serNo }'+'&pager.currentPage='+'${ds.pager.currentPage}';
-				 goDetail_Main(url,'',data);
-			     },
-			  falseText:'否',
-			  falseFunc:function(){
-				  //不進行刪除...
-			  }
-	 };
+	//IP Range編輯
+	function goUpdate_detail(listNo, serNo) {
+		var isNum = /^\d+$/.test(serNo);
+		var islistNo = /^\d+$/.test(listNo);
+		if (isNum && islistNo && parseInt(serNo) > 0) {
+			var url = "<c:url value = '/'/>crud/apply.ipRange.edit.action";
+			var data = 'entity.serNo=' + serNo + '&entity.listNo=' + listNo
+					+ '&entity.customer.serNo=' + '${entity.customer.serNo }';
+			goDetail_2(url, 'IP Range管理-修改', data);
+		}
+	}
 
-	 var isNum = /^\d+$/.test(serNo);
-	 if (isNum && parseInt(serNo) > 0){
-		 goAlert('提醒','確定要刪除此筆資料嗎?',f);
-	 } else {
-		 goAlert('提醒','錯誤','');
-	 }
-}
+	//單筆刪除
+	function goDel_detail(serNo) {
+		var f = {
+			trueText : '是',
+			trueFunc : function() {
+				var url = "<c:url value = '/'/>crud/apply.ipRange.delete.action";
+				var data = $('#apply_ipRange_list').serialize()
+						+ '&entity.serNo=' + serNo + '&entity.customer.serNo='
+						+ '${entity.customer.serNo }' + '&pager.currentPage='
+						+ '${ds.pager.currentPage}';
+				goDetail_Main(url, '', data);
+			},
+			falseText : '否',
+			falseFunc : function() {
+				//不進行刪除...
+			}
+		};
 
-function closeDetail() {
-	$("#div_Detail").hide();
-	UI_Resize();
-	$("#div_Detail .content > .header > .title").empty();
-	$("#div_Detail .content > .contain").empty();
-}
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			goAlert('提醒', '確定要刪除此筆資料嗎?', f);
+		} else {
+			goAlert('提醒', '錯誤', '');
+		}
+	}
 
-//批次匯入
-function goImport_detail(){
-	goDetail_2('<%=request.getContextPath()%>/crud/apply.ipRange.imports.action?','IP-匯入','entity.customer.serNo='+'${entity.customer.serNo}');
-}
+	function closeDetail() {
+		$("#div_Detail").hide();
+		UI_Resize();
+		$("#div_Detail .content > .header > .title").empty();
+		$("#div_Detail .content > .contain").empty();
+	}
+
+	//批次匯入
+	function goImport_detail() {
+		goDetail_2("<c:url value = '/'/>crud/apply.ipRange.imports.action?",
+				'IP-匯入', 'entity.customer.serNo=' + '${entity.customer.serNo}');
+	}
 </script>
 </head>
 <body>
@@ -108,19 +113,19 @@ function goImport_detail(){
 									<c:when test="${9 eq entity.customer.serNo }">
 										<c:if test="${login.role == '系統管理員' }">
 											<a class="state-default2"
-												onclick="goUpdate_detail(${orderInt},${item.serNo});"><span
+												onclick="goUpdate_detail('${orderInt}','${item.serNo}')"><span
 												class="icon-default icon-edit"></span>修改</a>
 											<a class="state-default2"
-												onclick="goDel_detail(${item.serNo});"><span
+												onclick="goDel_detail('${item.serNo}')"><span
 												class="icon-default icon-delete"></span>刪除</a>
 										</c:if>
 									</c:when>
 									<c:otherwise>
 										<a class="state-default2"
-											onclick="goUpdate_detail(${orderInt},${item.serNo});"><span
+											onclick="goUpdate_detail('${orderInt}','${item.serNo}')"><span
 											class="icon-default icon-edit"></span>修改</a>
 										<a class="state-default2"
-											onclick="goDel_detail(${item.serNo});"><span
+											onclick="goDel_detail('${item.serNo}')"><span
 											class="icon-default icon-delete"></span>刪除</a>
 									</c:otherwise>
 								</c:choose></td>

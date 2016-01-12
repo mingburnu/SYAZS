@@ -26,13 +26,15 @@
 	padding: 0;
 	font-size: 13px;
 	color: #fff;
-	background: url("<c:url value = '/'/>resources/images/btn_01.png") 0 0
+	background:
+		url("<%=request.getContextPath()%>/resources/images/btn_01.png") 0 0
 		no-repeat;
 	cursor: pointer;
 }
 
 .btn_01:hover {
-	background: url("<c:url value = '/'/>resources/images/btn_01.png") 0
+	background:
+		url("<%=request.getContextPath()%>/resources/images/btn_01.png") 0
 		-30px no-repeat;
 }
 
@@ -63,7 +65,8 @@
 .input_02 {
 	width: 200px;
 	height: 35px;
-	background: url("<c:url value = '/'/>resources/images/input_02.png") 0 0
+	background:
+		url("<%=request.getContextPath()%>/resources/images/input_02.png") 0 0
 		no-repeat;
 	margin: 0;
 	padding: 0 0 0 10px;
@@ -71,7 +74,8 @@
 
 .input_02 span {
 	display: block;
-	background: url("<c:url value = '/'/>resources/images/input_02.png")
+	background:
+		url("<%=request.getContextPath()%>/resources/images/input_02.png")
 		100% 0 no-repeat;
 	margin: 0;
 	padding: 5px 10px 5px 0;
@@ -106,7 +110,7 @@ input:-webkit-autofill {
 }
 </style>
 <script type="text/javascript"
-	src="<c:url value = '/'/>resources/js/jquery-1.7.2.min.js"></script>
+	src="<%=request.getContextPath()%>/resources/js/jquery-1.7.2.min.js"></script>
 <s:if test="hasActionErrors()">
 	<script type="text/javascript">
 		$(document)
@@ -149,7 +153,7 @@ input:-webkit-autofill {
 		<s:form action="login" namespace="/authorization" method="post"
 			name="form_01">
 			<div align="center">
-				<img src="<c:url value = '/'/>resources/images/login_box_header.png"
+				<img src="<c:url value = '/resources/images/login_box_header.png'/>"
 					width="360" height="80">
 			</div>
 			<div align="center" class="login_box">

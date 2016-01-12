@@ -17,70 +17,73 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-//切換查詢項目
-$(document).ready(function() {
-	$("select#listForm_searchCondition").change(function() {
-		$("input#search").attr("name", $(this).val());
+	//切換查詢項目
+	$(document).ready(function() {
+		$("select#listForm_searchCondition").change(function() {
+			$("input#search").attr("name", $(this).val());
+		});
 	});
-});
 
-function goSearch(){
-    goMain("<%=request.getContextPath()%>/crud/apply.journal.list.action",
-			"#apply_journal_list", "");
-}
+	function goSearch() {
+		goMain("<c:url value = '/'/>crud/apply.journal.list.action",
+				"#apply_journal_list", "");
+	}
 
-//新增
-function goAdd(){
-        goDetail('<%=request.getContextPath()%>/crud/apply.journal.add.action','期刊-新增');
-}
+	//新增
+	function goAdd() {
+		goDetail("<c:url value = '/'/>crud/apply.journal.add.action", '期刊-新增');
+	}
 
-//刪除多筆資料之函式
-function goDelete() {
-	//檢查資料是否已被勾選
-	var IsSelected = false;
-	for (var i = 0; i < $(".checkbox").length; i++) {
-		if ($(".checkbox").get(i).checked) {
-			IsSelected = true;
-			break;
+	//刪除多筆資料之函式
+	function goDelete() {
+		//檢查資料是否已被勾選
+		var IsSelected = false;
+		for (var i = 0; i < $(".checkbox").length; i++) {
+			if ($(".checkbox").get(i).checked) {
+				IsSelected = true;
+				break;
+			}
+		}
+
+		//進行刪除動作
+		if (IsSelected) {
+			var f = {
+				trueText : '是',
+				trueFunc : function() {
+					var url = "<c:url value='/crud/apply.journal.delete.action'/>";
+					var data = $('#apply_journal_list').serialize()
+							+ '&pager.currentPage=' + '${ds.pager.currentPage}';
+					goMain(url, '', data);
+				},
+				falseText : '否',
+				falseFunc : function() {
+					//不進行刪除...
+				}
+			};
+			goAlert('提醒', '您確定要刪除所勾選的資料嗎?', f);
+		} else {
+			goAlert("提醒", "請選擇一筆或一筆以上的資料");
 		}
 	}
-	
-	//進行刪除動作
-	if (IsSelected) {
-		var f = {
-                trueText:'是',
-                trueFunc:function(){
-                        var url = "<c:url value='/crud/apply.journal.delete.action'/>";
-                        var data = $('#apply_journal_list').serialize()+'&pager.currentPage='+'${ds.pager.currentPage}';
-                        goMain(url,'',data);
-                },
-                falseText:'否',
-                falseFunc:function(){
-                        //不進行刪除...
-                }
-        };
-		goAlert('提醒','您確定要刪除所勾選的資料嗎?',f);
-	} else {
-		goAlert("提醒","請選擇一筆或一筆以上的資料");
+
+	//資料檢視
+	function goView(serNo) {
+		var url = "<c:url value = '/'/>crud/apply.journal.view.action";
+		var data = 'entity.serNo=' + serNo;
+		goDetail(url, '期刊-檢視', data);
 	}
-}
 
-//資料檢視
-function goView(serNo){
-        var url = "<c:url value = '/'/>crud/apply.journal.view.action";
-        var data = 'entity.serNo='+serNo;
-        goDetail(url,'期刊-檢視',data);
-}
+	//更新資料
+	function goUpdate(serNo) {
+		goDetail("<c:url value = '/'/>crud/apply.journal.edit.action?"
+				+ 'entity.serNo=' + serNo, '期刊-修改');
+	}
 
-//更新資料
-function goUpdate(serNo) {
-	goDetail('<%=request.getContextPath()%>/crud/apply.journal.edit.action?'+'entity.serNo='+serNo,'期刊-修改');
-}
-
-//批次匯入
-function goImport(){
-	goDetail('<%=request.getContextPath()%>/crud/apply.journal.imports.action','期刊-匯入');
-}
+	//批次匯入
+	function goImport() {
+		goDetail("<c:url value = '/'/>crud/apply.journal.imports.action",
+				'期刊-匯入');
+	}
 </script>
 
 </head>
@@ -159,9 +162,9 @@ function goImport(){
 							<td>${item.cUid }</td>
 							<td align="center">${item.uUid }</td>
 							<td align="center"><a class="state-default2"
-								onclick="goView(${item.serNo })"><span
+								onclick="goView('${item.serNo }')"><span
 									class="icon-default icon-view"></span>檢視</a> <a
-								class="state-default2" onclick="goUpdate(${item.serNo})"><span
+								class="state-default2" onclick="goUpdate('${item.serNo}')"><span
 									class="icon-default icon-edit"></span>修改</a></td>
 						</tr>
 					</c:forEach>
@@ -209,11 +212,11 @@ function goImport(){
 
 	<s:if test="hasActionMessages()">
 		<script language="javascript" type="text/javascript">
-            var msg = "";
-            <s:iterator value="actionMessages">msg += '<s:property escape="true"/><br>';
-            </s:iterator>;
-            goAlert('訊息', msg);
-        </script>
+			var msg = "";
+			<s:iterator value="actionMessages">msg += '<s:property escape="true"/><br>';
+			</s:iterator>;
+			goAlert('訊息', msg);
+		</script>
 	</s:if>
 	<s:if test="hasActionErrors()">
 		<script language="javascript" type="text/javascript">
