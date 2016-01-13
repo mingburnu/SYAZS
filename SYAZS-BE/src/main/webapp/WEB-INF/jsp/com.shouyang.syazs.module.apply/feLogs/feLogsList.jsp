@@ -1,4 +1,3 @@
-<%@ page import="org.owasp.esapi.ESAPI"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -67,12 +66,20 @@
 		if ($("input#customerSerNo").attr("checked")) {
 			var customerSerNo = $("input#customerSerNo").val();
 			if (customerSerNo != null && customerSerNo > 0) {
-				window.open(url, "exports");
+				$.fileDownload(url, {
+					failCallback : function(html, url) {
+						goAlert("訊息", "請正確填寫機構名稱");
+					}
+				});
 			} else {
 				goAlert("訊息", "請正確填寫機構名稱");
 			}
 		} else {
-			window.open(url, "exports");
+			$.fileDownload(url, {
+				failCallback : function(html, url) {
+					goAlert("訊息", "請正確填寫機構名稱");
+				}
+			});
 		}
 	}
 	</c:when>
@@ -101,12 +108,20 @@
 		if ($("input#customerSerNo").attr("checked")) {
 			var customerSerNo = $("input#customerSerNo").val();
 			if (customerSerNo != null && customerSerNo > 0) {
-				window.open(url, "exports");
+				$.fileDownload(url, {
+					failCallback : function(html, url) {
+						goAlert("訊息", "請正確填寫機構名稱");
+					}
+				});
 			} else {
 				goAlert("訊息", "請正確填寫機構名稱");
 			}
 		} else {
-			window.open(url, "exports");
+			$.fileDownload(url, {
+				failCallback : function(html, url) {
+					goAlert("訊息", "請正確填寫機構名稱");
+				}
+			});
 		}
 	}
 	</c:when>
@@ -135,12 +150,20 @@
 		if ($("input#customerSerNo").attr("checked")) {
 			var customerSerNo = $("input#customerSerNo").val();
 			if (customerSerNo != null && customerSerNo > 0) {
-				window.open(url, "exports");
+				$.fileDownload(url, {
+					failCallback : function(html, url) {
+						goAlert("訊息", "請正確填寫機構名稱");
+					}
+				});
 			} else {
 				goAlert("訊息", "請正確填寫機構名稱");
 			}
 		} else {
-			window.open(url, "exports");
+			$.fileDownload(url, {
+				failCallback : function(html, url) {
+					goAlert("訊息", "請正確填寫機構名稱");
+				}
+			});
 		}
 	}
 	</c:when>
@@ -635,7 +658,6 @@
 			</s:form>
 		</c:when>
 	</c:choose>
-	<iframe name="exports" style="display: none;"></iframe>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 </body>
 </html>
