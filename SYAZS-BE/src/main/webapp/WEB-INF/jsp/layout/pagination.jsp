@@ -65,10 +65,20 @@
 			}
 
 			//變更顯示筆數
-			function changePageSize_detail() {
-				goDetail_Main($('#' + $("form:eq(1)").attr("id"))
-						.attr("action"), '#' + $("form:eq(1)").attr("id"),
-						'&pager.recordPoint=' + '${recordPoint }');
+			function changePageSize_detail(size) {
+				$
+						.ajax({
+							url : "<c:url value = '/'/>cookies.jsp?pager.recordPerPage="
+									+ size,
+							success : function(result) {
+								goDetail_Main($(
+										'#' + $("form:eq(1)").attr("id")).attr(
+										"action"), '#'
+										+ $("form:eq(1)").attr("id"),
+										'&pager.recordPoint='
+												+ '${recordPoint }');
+							}
+						});
 			}
 		</script>
 	</c:when>
@@ -107,11 +117,20 @@
 			}
 
 			//變更顯示筆數
-			function changePageSize_detail_2() {
-				goDetail_Sub(
-						$('#' + $("form:eq(2)").attr("id")).attr("action"), '#'
-								+ $("form:eq(2)").attr("id"),
-						'&pager.recordPoint=' + '${recordPoint }');
+			function changePageSize_detail_2(size) {
+				$
+						.ajax({
+							url : "<c:url value = '/'/>cookies.jsp?pager.recordPerPage="
+									+ size,
+							success : function(result) {
+								goDetail_Sub(
+										$('#' + $("form:eq(2)").attr("id"))
+												.attr("action"), '#'
+												+ $("form:eq(2)").attr("id"),
+										'&pager.recordPoint='
+												+ '${recordPoint }');
+							}
+						});
 			}
 		</script>
 	</c:when>
@@ -149,10 +168,19 @@
 			}
 
 			//變更顯示筆數
-			function changePageSize() {
-				goMain($('#' + $("form:eq(0)").attr("id")).attr("action"), '#'
-						+ $("form:eq(0)").attr("id"), '&pager.recordPoint='
-						+ '${recordPoint }');
+			function changePageSize(size) {
+				$
+						.ajax({
+							url : "<c:url value = '/'/>cookies.jsp?pager.recordPerPage="
+									+ size,
+							success : function(result) {
+								goMain($('#' + $("form:eq(0)").attr("id"))
+										.attr("action"), '#'
+										+ $("form:eq(0)").attr("id"),
+										'&pager.recordPoint='
+												+ '${recordPoint }');
+							}
+						});
 			}
 		</script>
 	</c:otherwise>

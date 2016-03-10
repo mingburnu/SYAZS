@@ -100,12 +100,34 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.numB }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty entity.database}">
-				<tr>
-					<td class="t_01">資料庫</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
-				</tr>
-			</c:if>
+			<c:choose>
+				<c:when test="${not empty entity.database}">
+					<tr>
+						<td class="t_01">資料庫</td>
+						<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
+					</tr>
+					<c:if
+						test="${(not empty entity.database.resourcesBuyers.startDate)||(not empty entity.database.resourcesBuyers.maturityDate)}">
+						<tr>
+							<td class="t_01">起訂日期</td>
+							<td class="t_02"><s:property
+									value="entity.database.resourcesBuyers.startDate" />~<s:property
+									value="entity.database.resourcesBuyers.maturityDate" /></td>
+						</tr>
+					</c:if>
+				</c:when>
+				<c:otherwise>
+					<c:if
+						test="${(not empty entity.resourcesBuyers.startDate)||(not empty entity.resourcesBuyers.maturityDate)}">
+						<tr>
+							<td class="t_01">起訂日期</td>
+							<td class="t_02"><s:property
+									value="entity.resourcesBuyers.startDate" />~<s:property
+									value="entity.resourcesBuyers.maturityDate" /></td>
+						</tr>
+					</c:if>
+				</c:otherwise>
+			</c:choose>
 			<tr>
 				<td class="t_01">館藏</td>
 				<td class="t_02"><c:forEach items="${referenceOwners }"

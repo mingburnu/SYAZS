@@ -72,7 +72,7 @@ public class Database extends ModuleProperties {
 	@Column(name = "IndexedYears")
 	private String indexedYears;
 
-	// 出版時間差
+	// 全文取得授權刊期
 	@Column(name = "embargo")
 	private String embargo;
 

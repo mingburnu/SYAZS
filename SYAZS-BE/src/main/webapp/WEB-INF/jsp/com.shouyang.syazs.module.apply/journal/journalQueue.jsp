@@ -211,7 +211,7 @@
 						<td><esapi:encodeForHTML>${item.title }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.abbreviationTitle }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.issn }</esapi:encodeForHTML><br>
-							<span id="span-tip">${item.resourcesBuyers.dataStatus }</span></td>
+							<span id="span-queue-tip" class="tip">${item.resourcesBuyers.dataStatus }</span></td>
 						<td><c:choose>
 								<c:when test="${true eq item.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
@@ -247,12 +247,14 @@
 									<jsp:param name="detail" value="1" />
 								</jsp:include></td>
 							<td>每頁顯示 <select id="listForm_pageSize"
-								name="pager.recordPerPage" onchange="changePageSize_detail()">
+								name="pager.recordPerPage"
+								onchange="changePageSize_detail(this.value)">
 									<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 									<option value="5">5</option>
 									<option value="10">10</option>
 									<option value="20">20</option>
 									<option value="50">50</option>
+									<option value="100">100</option>
 							</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
 								value="${ds.pager.currentPage }" type="number" min="1"
 								max="${totalPage }" onchange="gotoPage_detail(this.value)">

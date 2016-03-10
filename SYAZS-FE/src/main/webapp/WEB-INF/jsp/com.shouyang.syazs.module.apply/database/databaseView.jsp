@@ -72,7 +72,9 @@
 				test="${(not empty entity.resourcesBuyers.startDate)||(not empty entity.resourcesBuyers.maturityDate)}">
 				<tr>
 					<td class="t_01">起訂日期</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.resourcesBuyers.startDate }</esapi:encodeForHTML>~<esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate }</esapi:encodeForHTML></td>
+					<td class="t_02"><s:property
+							value="entity.resourcesBuyers.startDate" />~<s:property
+							value="entity.resourcesBuyers.maturityDate" /></td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.topic}">

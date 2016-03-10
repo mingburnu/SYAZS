@@ -63,26 +63,30 @@
 		$("body").scrollTop(0);
 	}
 
-	function upperChangeSize(recordPerPage) {
-		var url = $("form").attr("action") + "?pager.recordPoint="
-				+ "${recordPoint}";
-		var data = $("form:eq(0)").serialize();
-
+	function upperChangeSize(size) {
+		var url = "<c:url value = '/'/>cookies.jsp?pager.recordPerPage=" + size;
 		$.ajax({
 			url : url,
-			data : data,
 			success : function(result) {
-				$("#container").html(result);
+				goMain(0);
 			}
 		});
-
-		$("body").scrollTop(0);
 	}
 
 	function bottomChangeSize(recordPerPage) {
+		var url = "<c:url value = '/'/>cookies.jsp?pager.recordPerPage=" + size;
+		$.ajax({
+			url : url,
+			success : function(result) {
+				goMain(1);
+			}
+		});
+	}
+
+	function goMain(formIndex) {
 		var url = $("form").attr("action") + "?pager.recordPoint="
 				+ "${recordPoint}";
-		var data = $("form:eq(1)").serialize();
+		var data = $("form:eq(" + formIndex + ")").serialize();
 
 		$.ajax({
 			url : url,

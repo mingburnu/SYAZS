@@ -97,31 +97,31 @@ insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, con
 insert into referenceOwner(serNo, cUid, uUid, cDTime, uDTime, name, engName, contactUserName) values(15, 'admin', 'admin', sysdate(), sysdate(), '疾病管制署', 'CDC', '王小明');
 
 --resourcesBuyers
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(1, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(2, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(3, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(4, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(5, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(6, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(7, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(8, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(9, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(10, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(11, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(12, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(13, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(14, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(15, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(16, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(17, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(18, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(19, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(20, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(21, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(22, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(23, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(24, '1980', '2020', '買斷');
-insert into resourcesBuyers(serNo, startdate, maturitydate, Rcategory) values(25, '1980', '2020', '買斷');
+insert into resourcesBuyers(serNo, Rcategory) values(1, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(2, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(3, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(4, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(5, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(6, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(7, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(8, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(9, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(10, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(11, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(12, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(13, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(14, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(15, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(16, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(17, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(18, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(19, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(20, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(21, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(22, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(23, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(24, '賣斷');
+insert into resourcesBuyers(serNo, Rcategory) values(25, '賣斷');
 
 --database
 insert into db(serNo, cUid, uUid, cDTime, uDTime, DBtitle, Rtype, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate() , 'History', '資料庫', 8, random_uuid(), true);
@@ -171,15 +171,15 @@ insert into ref_jou(ref_serNo, jou_serNo) values(3, 6);
 insert into ref_jou(ref_serNo, jou_serNo) values(3, 7);
 
 --ebook
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 3, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 2, 'Melanie Goldfarb MD' , 'Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Metal Cats', 9781576876770, 1, 'Alexandra Crockett' , '', 19, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Hitler: A Biography', 9780393337617, 3, 'Ian Kershaw' , '', 20, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Edison - A Biography', 9780965569934, 2, 'Matthew Josephson' , '', 21, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(6, 'admin', 'admin', sysdate(), sysdate(), 'The Normans', 9781405149655, 1, 'Marjorie Chibnall' , '', 22, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(7, 'admin', 'admin', sysdate(), sysdate(), 'The Huns', 9780631214434, 3, 'E. A. Thompson' , '', 23, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(8, 'admin', 'admin', sysdate(), sysdate(), 'Racist', 9780753821503, 2, 'Kunal Basu' , '', 24, random_uuid(), true);
-insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN ,version, authername, authers, res_serNo, uuIdentifier, openAccess) values(9, 'admin', 'admin', sysdate(), sysdate(), 'Ten Little Indians', 9780802141170, 1, 'Sherman Alexie' , '', 25, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(1, 'admin', 'admin', sysdate(), sysdate(), 'The Anglo-Saxons', 9780140143959, 'James Campbell' , 'Eric John, Patrick Wormald', 17, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(2, 'admin', 'admin', sysdate(), sysdate(), 'Pocket Surgery', 9781451112962, 'Melanie Goldfarb MD' , 'Mark A. Gromski BA, James M. Hurst MD FACS, Daniel B. Jones MD MS', 18, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(3, 'admin', 'admin', sysdate(), sysdate(), 'Metal Cats', 9781576876770, 'Alexandra Crockett' , '', 19, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(4, 'admin', 'admin', sysdate(), sysdate(), 'Hitler: A Biography', 9780393337617, 'Ian Kershaw' , '', 20, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(5, 'admin', 'admin', sysdate(), sysdate(), 'Edison - A Biography', 9780965569934, 'Matthew Josephson' , '', 21, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(6, 'admin', 'admin', sysdate(), sysdate(), 'The Normans', 9781405149655, 'Marjorie Chibnall' , '', 22, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(7, 'admin', 'admin', sysdate(), sysdate(), 'The Huns', 9780631214434, 'E. A. Thompson' , '', 23, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(8, 'admin', 'admin', sysdate(), sysdate(), 'Racist', 9780753821503, 'Kunal Basu' , '', 24, random_uuid(), true);
+insert into ebook(serNo, cUid, uUid, cDTime, uDTime, bookname, ISBN, authername, authers, res_serNo, uuIdentifier, openAccess) values(9, 'admin', 'admin', sysdate(), sysdate(), 'Ten Little Indians', 9780802141170, 'Sherman Alexie' , '', 25, random_uuid(), true);
 
 --ref_ebk
 insert into ref_ebk(ref_serNo, ebk_serNo) values(4, 1);

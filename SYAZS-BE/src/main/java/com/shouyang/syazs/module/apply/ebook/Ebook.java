@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -58,7 +60,8 @@ public class Ebook extends ModuleProperties {
 
 	// 電子書出版日期
 	@Column(name = "pubdate")
-	private String pubDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime pubDate;
 
 	// 語系
 	@Column(name = "languages")
@@ -66,7 +69,7 @@ public class Ebook extends ModuleProperties {
 
 	// 版本
 	@Column(name = "Version")
-	private Integer version;
+	private String version;
 
 	// 中國圖書分類碼
 	@Column(name = "cnclassbzstr")
@@ -209,7 +212,7 @@ public class Ebook extends ModuleProperties {
 	/**
 	 * @return the pubDate
 	 */
-	public String getPubDate() {
+	public LocalDateTime getPubDate() {
 		return pubDate;
 	}
 
@@ -217,7 +220,7 @@ public class Ebook extends ModuleProperties {
 	 * @param pubDate
 	 *            the pubDate to set
 	 */
-	public void setPubDate(String pubDate) {
+	public void setPubDate(LocalDateTime pubDate) {
 		this.pubDate = pubDate;
 	}
 
@@ -239,7 +242,7 @@ public class Ebook extends ModuleProperties {
 	/**
 	 * @return the version
 	 */
-	public Integer getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
@@ -247,7 +250,7 @@ public class Ebook extends ModuleProperties {
 	 * @param version
 	 *            the version to set
 	 */
-	public void setVersion(Integer version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -407,12 +410,12 @@ public class Ebook extends ModuleProperties {
 	}
 
 	public Ebook(String bookName, Long isbn, String publishName,
-			String autherName, String authers, String uppeName, String pubDate,
-			String languages, Integer version, String cnClassBzStr,
-			String bookInfoIntegral, String style, String publication,
-			String url, Boolean openAccess, Database database,
-			String uuIdentifier, ResourcesBuyers resourcesBuyers,
-			Set<ReferenceOwner> referenceOwners) {
+			String autherName, String authers, String uppeName,
+			LocalDateTime pubDate, String languages, String version,
+			String cnClassBzStr, String bookInfoIntegral, String style,
+			String publication, String url, Boolean openAccess,
+			Database database, String uuIdentifier,
+			ResourcesBuyers resourcesBuyers, Set<ReferenceOwner> referenceOwners) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;

@@ -69,7 +69,7 @@
 					$("#div_Detail").show();
 					UI_Resize();
 					$(window).scrollTop(0);
-					$("#div_Detail .content > .header > .title").html("用戶-匯入");
+					$("#div_Detail .content > .header > .title").html("訂閱單位-匯入");
 					$("#div_Detail .content > .contain").empty().html(data);
 					closeLoading();
 
@@ -103,7 +103,7 @@
 				$("#div_Detail").show();
 				UI_Resize();
 				$(window).scrollTop(0);
-				$("#div_Detail .content > .header > .title").html("用戶-匯入");
+				$("#div_Detail .content > .header > .title").html("訂閱單位-匯入");
 				$("#div_Detail .content > .contain").empty().html(data);
 				closeLoading();
 			});

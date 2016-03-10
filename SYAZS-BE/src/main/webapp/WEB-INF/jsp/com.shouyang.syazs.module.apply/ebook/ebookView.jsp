@@ -92,7 +92,7 @@
 					</tr>
 					<tr>
 						<th width="130">出版日期</th>
-						<td><esapi:encodeForHTML>${entity.pubDate }</esapi:encodeForHTML></td>
+						<td><s:property value="entity.pubDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">語文</th>
@@ -115,7 +115,7 @@
 						<td><a href="${entity.url }" target="_blank">${entity.url }</a></td>
 					</tr>
 					<tr>
-						<th width="130">公開資源</th>
+						<th width="130">開放近用</th>
 						<td><c:choose>
 								<c:when test="${true eq entity.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
@@ -129,12 +129,14 @@
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}${entity.database.resourcesBuyers.startDate}</esapi:encodeForHTML>
+						<td><s:property value="entity.resourcesBuyers.startDate" />
+							<s:property value="entity.database.resourcesBuyers.startDate" />
 						</td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}${entity.database.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
+						<td><s:property value="entity.resourcesBuyers.maturityDate" />
+							<s:property value="entity.database.resourcesBuyers.maturityDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>

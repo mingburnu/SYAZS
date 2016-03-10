@@ -6,6 +6,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
@@ -22,10 +24,12 @@ public class ResourcesBuyers extends GenericEntitySerNo {
 	 */
 	private static final long serialVersionUID = 6786606719444916598L;
 	@Column(name = "startdate")
-	private String startDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime startDate;
 
 	@Column(name = "maturitydate")
-	private String maturityDate;
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime maturityDate;
 
 	@Column(name = "Rcategory")
 	@Enumerated(EnumType.STRING)
@@ -34,7 +38,7 @@ public class ResourcesBuyers extends GenericEntitySerNo {
 	/**
 	 * @return the startDate
 	 */
-	public String getStartDate() {
+	public LocalDateTime getStartDate() {
 		return startDate;
 	}
 
@@ -42,14 +46,14 @@ public class ResourcesBuyers extends GenericEntitySerNo {
 	 * @param startDate
 	 *            the startDate to set
 	 */
-	public void setStartDate(String startDate) {
+	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
 
 	/**
 	 * @return the maturityDate
 	 */
-	public String getMaturityDate() {
+	public LocalDateTime getMaturityDate() {
 		return maturityDate;
 	}
 
@@ -57,7 +61,7 @@ public class ResourcesBuyers extends GenericEntitySerNo {
 	 * @param maturityDate
 	 *            the maturityDate to set
 	 */
-	public void setMaturityDate(String maturityDate) {
+	public void setMaturityDate(LocalDateTime maturityDate) {
 		this.maturityDate = maturityDate;
 	}
 
@@ -81,7 +85,7 @@ public class ResourcesBuyers extends GenericEntitySerNo {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ResourcesBuyers(String startDate, String maturityDate,
+	public ResourcesBuyers(LocalDateTime startDate, LocalDateTime maturityDate,
 			Category category) {
 		super();
 		this.startDate = startDate;

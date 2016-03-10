@@ -81,7 +81,7 @@ public class Journal extends ModuleProperties {
 	@Column(name = "version")
 	private Integer version;
 
-	// 出版時間差
+	// 全文取得授權刊期
 	@Column(name = "embargo")
 	private String embargo;
 

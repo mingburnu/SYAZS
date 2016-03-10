@@ -1,3 +1,4 @@
+<%@ page import="org.owasp.esapi.ESAPI"%>
 <%@ page import="java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -74,7 +75,7 @@
 	function checkTitle() {
 		var dbTitle = $("input#apply_database_update_entity_dbTitle").val();
 		if (dbTitle == null || dbTitle.trim() == "") {
-			$("#span-tip").html("");
+			$("#span-title-name-tip").html("");
 		} else {
 			goTitleNameTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.serNo=${entity.serNo}&entity.dbTitle='
 					+ dbTitle);
@@ -103,12 +104,37 @@ textarea#apply_database_update_entity_content {
 </style>
 </head>
 <body>
+	<%
+		String startDate = "";
+		if (request.getParameter("entity.resourcesBuyers.startDate") != null) {
+			startDate = request
+					.getParameter("entity.resourcesBuyers.startDate");
+		} else {
+			if (request.getAttribute("entity.resourcesBuyers.startDate") != null) {
+				startDate = request
+						.getAttribute("entity.resourcesBuyers.startDate")
+						.toString().split("T")[0];
+			}
+		}
+
+		String maturityDate = "";
+		if (request.getParameter("entity.resourcesBuyers.maturityDate") != null) {
+			maturityDate = request
+					.getParameter("entity.resourcesBuyers.maturityDate");
+		} else {
+			if (request.getAttribute("entity.resourcesBuyers.maturityDate") != null) {
+				maturityDate = request
+						.getAttribute("entity.resourcesBuyers.maturityDate")
+						.toString().split("T")[0];
+			}
+		}
+	%>
 	<s:form namespace="/crud" action="apply.database.update">
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">資料庫題名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.dbTitle" cssClass="input_text" /><span
-					id="span-title-name-tip"></span></td>
+				<td><s:textfield name="entity.dbTitle" cssClass="input_text" />&nbsp;<span
+					id="span-title-name-tip" class="tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>
@@ -148,18 +174,25 @@ textarea#apply_database_update_entity_content {
 				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">出版時間差</th>
+				<th width="130">全文取得授權刊期</th>
 				<td><s:textfield name="entity.embargo" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
-				<td><s:textfield name="entity.resourcesBuyers.startDate"
-						cssClass="input_text" /></td>
+				<td><input type="text" name="entity.resourcesBuyers.startDate"
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
+					id="apply_database_update_entity_resourcesBuyers_startDate"
+					class="input_text">&nbsp;<span id="span-date-tip"
+					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
-				<td><s:textfield name="entity.resourcesBuyers.maturityDate"
-						cssClass="input_text" /></td>
+				<td><input type="text"
+					name="entity.resourcesBuyers.maturityDate"
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
+					id="apply_database_update_entity_resourcesBuyers_maturityDate"
+					class="input_text">&nbsp;<span id="span-date-tip"
+					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>
@@ -192,7 +225,7 @@ textarea#apply_database_update_entity_content {
 					</c:choose></td>
 			</tr>
 			<tr>
-				<th width="130">公開資源</th>
+				<th width="130">開放近用</th>
 				<td><c:choose>
 						<c:when test="${true eq entity.openAccess }">
 							<s:radio name="entity.openAccess"

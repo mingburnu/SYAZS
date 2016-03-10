@@ -18,7 +18,6 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
-import com.shouyang.syazs.core.converter.JodaTimeConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionLog;
 
@@ -39,9 +38,6 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 	@Autowired
 	private CustomerService customerService;
-
-	@Autowired
-	private JodaTimeConverter jodaTimeConverter;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -276,8 +272,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 				empinfo.put(
 						String.valueOf(i + 2),
 						new Object[] {
-								getDateString(getEntity().getStart()) + "~"
-										+ getDateString(getEntity().getEnd()),
+								dateToString(getEntity().getStart()) + "~"
+										+ dateToString(getEntity().getEnd()),
 								String.valueOf(feLogs.getRank()),
 								feLogs.getKeyword(),
 								String.valueOf(feLogs.getCount()) });
@@ -351,8 +347,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 				empinfo.put(
 						String.valueOf(i + 2),
 						new Object[] {
-								getDateString(getEntity().getStart()) + "~"
-										+ getDateString(getEntity().getEnd()),
+								dateToString(getEntity().getStart()) + "~"
+										+ dateToString(getEntity().getEnd()),
 								String.valueOf(feLogs.getRank()),
 								feLogs.getAccountNumber().getUserId(),
 								feLogs.getAccountNumber().getUserName(),
@@ -443,8 +439,8 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 
 				empinfo.put(String.valueOf(i + 2),
 						new Object[] {
-								getDateString(getEntity().getStart()) + "~"
-										+ getDateString(getEntity().getEnd()),
+								dateToString(getEntity().getStart()) + "~"
+										+ dateToString(getEntity().getEnd()),
 								String.valueOf(feLogs.getRank()), type, title,
 								String.valueOf(feLogs.getCount()),
 								feLogs.getCustomer().getName() });
@@ -473,9 +469,5 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 		} else {
 			return null;
 		}
-	}
-
-	protected String getDateString(LocalDateTime dateTime) {
-		return jodaTimeConverter.convertToString(null, dateTime);
 	}
 }

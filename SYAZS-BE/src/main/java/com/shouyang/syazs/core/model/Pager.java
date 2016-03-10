@@ -95,10 +95,10 @@ public class Pager implements Serializable {
 		if (recordPerPage != null && recordPerPage > 0 && recordPoint != null
 				&& recordPoint >= 0) {
 
-			if (recordPerPage <= 50) {
+			if (recordPerPage <= 100) {
 				pager.setRecordPerPage(recordPerPage);
 			} else {
-				pager.setRecordPerPage(50);
+				pager.setRecordPerPage(100);
 			}
 
 			pager.setCurrentPage(recordPoint / recordPerPage + 1);
@@ -108,10 +108,10 @@ public class Pager implements Serializable {
 		} else if (recordPerPage != null && recordPerPage > 0
 				&& recordPoint != null) {
 
-			if (recordPerPage <= 50) {
+			if (recordPerPage <= 100) {
 				pager.setRecordPerPage(recordPerPage);
 			} else {
-				pager.setRecordPerPage(50);
+				pager.setRecordPerPage(100);
 			}
 
 			pager.setRecordPerPage(recordPerPage);
@@ -120,10 +120,10 @@ public class Pager implements Serializable {
 		} else if (recordPerPage != null && recordPerPage > 0
 				&& recordPoint == null) {
 
-			if (recordPerPage <= 50) {
+			if (recordPerPage <= 100) {
 				pager.setRecordPerPage(recordPerPage);
 			} else {
-				pager.setRecordPerPage(50);
+				pager.setRecordPerPage(100);
 			}
 
 			pager.setRecordPerPage(recordPerPage);

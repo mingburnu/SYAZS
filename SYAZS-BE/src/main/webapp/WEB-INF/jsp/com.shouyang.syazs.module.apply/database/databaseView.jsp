@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -88,7 +89,7 @@
 						<td><esapi:encodeForHTML>${entity.includedSpecies }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">公開資源</th>
+						<th width="130">開放近用</th>
 						<td><c:choose>
 								<c:when test="${true eq entity.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
@@ -97,6 +98,10 @@
 					<tr>
 						<th width="130">URL</th>
 						<td><a href="${entity.url }" target="_blank">${entity.url }</a></td>
+					</tr>
+					<tr>
+						<th width="130">全文取得授權刊期</th>
+						<td><esapi:encodeForHTML>${entity.embargo }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">主題</th>
@@ -112,11 +117,11 @@
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.startDate}</esapi:encodeForHTML></td>
+						<td><s:property value="entity.resourcesBuyers.startDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><esapi:encodeForHTML>${entity.resourcesBuyers.maturityDate}</esapi:encodeForHTML></td>
+						<td><s:property value="entity.resourcesBuyers.maturityDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>

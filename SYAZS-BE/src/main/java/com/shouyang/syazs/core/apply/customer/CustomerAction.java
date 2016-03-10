@@ -160,7 +160,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	@Override
-	public String list() throws Exception {// TODO
+	public String list() throws Exception {
 		if (StringUtils.isNotBlank(getEntity().getOption())) {
 			if (!getEntity().getOption().equals("entity.name")
 					&& !getEntity().getOption().equals("entity.engName")) {
@@ -511,7 +511,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		DataSet<Customer> ds = initDataSet();
 		ds.getPager().setTotalRecord((long) importList.size());
-
 		int first = ds.getPager().getOffset();
 		int last = first + ds.getPager().getRecordPerPage();
 
@@ -533,7 +532,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			first = ds.getPager().getOffset();
 			last = first + ds.getPager().getRecordPerPage();
 
-			index = first;// TODO
+			index = first;
 			while (index >= first && index < last) {
 				if (index < importList.size()) {
 					ds.getResults().add((Customer) importList.get(index));
@@ -745,8 +744,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 
 		Integer mark = 1;
-		empinfo.put(mark.toString(), new Object[] { "name/姓名", "egName/英文姓名",
-				"address/地址", "tel/電話", "contactUserName/聯絡人", "錯誤原因" });
+		empinfo.put(mark.toString(), new Object[] { "用戶名稱", "用戶英文名稱",
+				"address/地址", "contactUserName/聯絡人", "tel/電話", "錯誤原因" });
 
 		int i = 0;
 		while (i < importList.size()) {
@@ -758,9 +757,8 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 						mark.toString(),
 						new Object[] { customer.getName(),
 								customer.getEngName(), customer.getAddress(),
-								customer.getTel(),
 								customer.getContactUserName(),
-								customer.getDataStatus() });
+								customer.getTel(), customer.getDataStatus() });
 			}
 			i++;
 		}
@@ -796,11 +794,11 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "name/姓名", "egName/英文姓名", "address/地址",
-				"tel/電話", "contactUserName/聯絡人" });
+		empinfo.put("1", new Object[] { "用戶名稱", "用戶英文名稱", "address/地址",
+				"contactUserName/聯絡人", "tel/電話" });
 
 		empinfo.put("2", new Object[] { "國防醫學中心", "ndmc", "台北市內湖區民權東路六段161號",
-				"886-2-87923100", "總機" });
+				"總機", "886-2-87923100" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();

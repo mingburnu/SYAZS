@@ -130,13 +130,13 @@
 				.val();
 
 		if (isbn == null || isbn.trim() == "") {
-			$("#span-tip").html("ISBN未填寫");
+			$("#span-num-tip").html("ISBN未填寫");
 		} else {
 			if (isValidISBN(isbn)) {
 				goNumTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
 						+ isbn + '&entity.database.serNo=' + datSerNo);
 			} else {
-				$("#span-tip").html("");
+				$("#span-num-tip").html("");
 			}
 		}
 	}
@@ -150,7 +150,7 @@
 			goTitleNameTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.bookName='
 					+ name + '&entity.database.serNo=' + datSerNo);
 		} else {
-			$("#span-title-tip").html("");
+			$("#span-title-name-tip").html("");
 		}
 	}
 </script>
@@ -180,20 +180,54 @@ input#referenceOwner_name {
 				isbn = request.getAttribute("entity.isbn").toString();
 			}
 		}
+
+		String pubDate = "";
+		if (request.getParameter("entity.pubDate") != null) {
+			pubDate = request.getParameter("entity.pubDate");
+		} else {
+			if (request.getAttribute("entity.pubDate") != null) {
+				pubDate = request.getAttribute("entity.pubDate").toString()
+						.split("T")[0];
+			}
+		}
+
+		String startDate = "";
+		if (request.getParameter("entity.resourcesBuyers.startDate") != null) {
+			startDate = request
+					.getParameter("entity.resourcesBuyers.startDate");
+		} else {
+			if (request.getAttribute("entity.resourcesBuyers.startDate") != null) {
+				startDate = request
+						.getAttribute("entity.resourcesBuyers.startDate")
+						.toString().split("T")[0];
+			}
+		}
+
+		String maturityDate = "";
+		if (request.getParameter("entity.resourcesBuyers.maturityDate") != null) {
+			maturityDate = request
+					.getParameter("entity.resourcesBuyers.maturityDate");
+		} else {
+			if (request.getAttribute("entity.resourcesBuyers.maturityDate") != null) {
+				maturityDate = request
+						.getAttribute("entity.resourcesBuyers.maturityDate")
+						.toString().split("T")[0];
+			}
+		}
 	%>
 	<s:form namespace="/crud" action="apply.ebook.update">
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">書名<span class="required">(&#8226;)</span></th>
 				<td><s:textfield name="entity.bookName" cssClass="input_text" />&nbsp;<span
-					id="span-title-name-tip"></span></td>
+					id="span-title-name-tip" class="tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">ISBN/13碼</th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_update_entity_isbn"
-					value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>"><span
-					id="span-num-tip"></span></td>
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>">&nbsp;<span
+					id="span-num-tip" class="tip"></span></td>
 			</tr>
 			<tr>
 				<th width="130">出版社</th>
@@ -214,7 +248,10 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">出版日期</th>
-				<td><s:textfield name="entity.pubDate" cssClass="input_text" /></td>
+				<td><input type="text" name="entity.pubDate"
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(pubDate)%>"
+					id="apply_ebook_update_entity_pubDate" class="input_text">&nbsp;<span
+					id="span-date-tip" class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">語文</th>
@@ -248,7 +285,7 @@ input#referenceOwner_name {
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">公開資源</th>
+				<th width="130">開放近用</th>
 				<td><c:choose>
 						<c:when test="${true eq entity.openAccess }">
 							<s:radio name="entity.openAccess"
@@ -274,13 +311,20 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
-				<td><s:textfield name="entity.resourcesBuyers.startDate"
-						cssClass="input_text" /></td>
+				<td><input type="text" name="entity.resourcesBuyers.startDate"
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
+					id="apply_ebook_update_entity_resourcesBuyers_startDate"
+					class="input_text">&nbsp;<span id="span-date-tip"
+					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
-				<td><s:textfield name="entity.resourcesBuyers.maturityDate"
-						cssClass="input_text" /></td>
+				<td><input type="text"
+					name="entity.resourcesBuyers.maturityDate"
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
+					id="apply_ebook_update_entity_resourcesBuyers_maturityDate"
+					class="input_text">&nbsp;<span id="span-date-tip"
+					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>

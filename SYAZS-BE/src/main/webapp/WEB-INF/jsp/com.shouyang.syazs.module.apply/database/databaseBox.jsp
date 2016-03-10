@@ -3,6 +3,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -120,12 +121,10 @@ div#resDbRow {
 					<label>UUID</label>：${item.uuIdentifier }
 				</div>
 				<div id="startDate">
-					<label>起始日</label>：
-					<esapi:encodeForHTML>${item.resourcesBuyers.startDate }</esapi:encodeForHTML>
+					<label>起始日</label>：${fn:split(item.resourcesBuyers.startDate, 'T')[0]}
 				</div>
 				<div id="maturityDate">
-					<label>到期日</label>：
-					<esapi:encodeForHTML>${item.resourcesBuyers.maturityDate }</esapi:encodeForHTML>
+					<label>到期日</label>：${fn:split(item.resourcesBuyers.maturityDate, 'T')[0]}
 				</div>
 				<div id="category">
 					<label>資源類別</label>：${item.resourcesBuyers.category }

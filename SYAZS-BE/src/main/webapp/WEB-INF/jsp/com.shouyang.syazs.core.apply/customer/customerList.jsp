@@ -264,12 +264,14 @@
 										<jsp:param name="detail" value="0" />
 									</jsp:include></td>
 								<td>每頁顯示 <select id="listForm_pageSize"
-									name="pager.recordPerPage" onchange="changePageSize()">
+									name="pager.recordPerPage"
+									onchange="changePageSize(this.value)">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>
 										<option value="20">20</option>
 										<option value="50">50</option>
+										<option value="100">100</option>
 								</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
 									value="${ds.pager.currentPage }" type="number" min="1"
 									max="${totalPage }" onchange="gotoPage(this.value)"> 頁,

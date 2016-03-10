@@ -36,7 +36,7 @@
 		<div id="menu_items_3" style="display: none;">
 			<div class="menu-items">
 				<a
-					onclick="goURL('<%=request.getContextPath()%>/page/referenceOwner.action');">擁有人</a>
+					onclick="goURL('<%=request.getContextPath()%>/page/referenceOwner.action');">訂閱單位</a>
 			</div>
 
 			<div class="menu-items">

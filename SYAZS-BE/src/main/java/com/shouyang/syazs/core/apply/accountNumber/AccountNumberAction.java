@@ -42,7 +42,6 @@ import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
-import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
@@ -72,9 +71,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Autowired
 	private CustomerService customerService;
-
-	@Autowired
-	private EnumConverter enumConverter;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -611,8 +607,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (StringUtils.isBlank(rowValues[5])) {
 					role = Role.不明.getRole();
 				} else {
-					Object object = getEnum(
-							new String[] { rowValues[5].trim() }, Role.class);
+					Object object = toEnum(rowValues[5].trim(), Role.class);
 					if (object != null
 							&& roleList.contains(Role.valueOf(rowValues[5]
 									.trim()))) {
@@ -627,8 +622,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 				if (StringUtils.isBlank(rowValues[6])) {
 					status = Status.審核中.getStatus();
 				} else {
-					Object object = getEnum(
-							new String[] { rowValues[6].trim() }, Status.class);
+					Object object = toEnum(rowValues[6].trim(), Status.class);
 					if (object != null) {
 						status = rowValues[6].trim();
 					} else {
@@ -781,7 +775,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			first = ds.getPager().getOffset();
 			last = first + ds.getPager().getRecordPerPage();
 
-			index = first;// TODO
+			index = first;
 			while (index >= first && index < last) {
 				if (index < importList.size()) {
 					ds.getResults().add((AccountNumber) importList.get(index));
@@ -1093,11 +1087,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	protected boolean isEmail(String email) {
 		return ESAPI.validator().isValidInput("account Email", email, "Email",
 				254, true);
-	}
-
-	@SuppressWarnings("rawtypes")
-	protected Object getEnum(String[] values, Class toClass) {
-		return enumConverter.convertFromString(null, values, toClass);
 	}
 
 	protected boolean hasCustomer() throws Exception {

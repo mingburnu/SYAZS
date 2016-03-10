@@ -701,8 +701,8 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 
 		Integer mark = 1;
-		empinfo.put(mark.toString(), new Object[] { "name/姓名", "egName/英文姓名",
-				"address/地址", "tel/電話", "contactUserName/聯絡人", "錯誤原因" });
+		empinfo.put(mark.toString(), new Object[] { "訂閱單位名稱", "訂閱單位英文名稱",
+				"address/地址", "contactUserName/聯絡人", "tel/電話", "錯誤原因" });
 
 		int i = 0;
 		while (i < importList.size()) {
@@ -715,8 +715,8 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 						new Object[] { referenceOwner.getName(),
 								referenceOwner.getEngName(),
 								referenceOwner.getAddress(),
-								referenceOwner.getTel(),
 								referenceOwner.getContactUserName(),
+								referenceOwner.getTel(),
 								referenceOwner.getDataStatus() });
 			}
 			i++;
@@ -753,11 +753,11 @@ public class ReferenceOwnerAction extends GenericWebActionFull<ReferenceOwner> {
 		XSSFRow row;
 		// This data needs to be written (Object[])
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "name/姓名", "egName/英文姓名", "address/地址",
-				"tel/電話", "contactUserName/聯絡人" });
+		empinfo.put("1", new Object[] { "訂閱單位名稱", "訂閱單位英文名稱", "address/地址",
+				"contactUserName/聯絡人", "tel/電話" });
 
 		empinfo.put("2", new Object[] { "雲天河", "Tien-Ho Yun",
-				"台北市內湖區民權東路六段161號", "886-2-87923100", "總機" });
+				"台北市內湖區民權東路六段161號", "總機", "886-2-87923100" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();

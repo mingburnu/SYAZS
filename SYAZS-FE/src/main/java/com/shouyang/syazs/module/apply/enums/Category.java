@@ -7,12 +7,12 @@ package com.shouyang.syazs.module.apply.enums;
  * @version 2014/10/15
  */
 public enum Category {
-	/** 買斷. */
-	買斷("買斷"),
+	/** 賣斷. */
+	賣斷("賣斷"),
 
-	/** 租貸. */
-	租貸("租貸"),
-	
+	/** 租賃. */
+	租賃("租賃"),
+
 	/** 未註明. */
 	未註明("");
 
@@ -29,4 +29,18 @@ public enum Category {
 		return category;
 	}
 
+	public static Category getByToken(Integer token) {
+		switch (token) {
+		case 0:
+			return Category.未註明;
+
+		case 1:
+			return Category.賣斷;
+
+		case 2:
+			return Category.租賃;
+		}
+
+		return Category.未註明;
+	}
 }

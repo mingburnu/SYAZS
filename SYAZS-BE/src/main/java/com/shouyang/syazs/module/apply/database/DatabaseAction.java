@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -39,7 +40,6 @@ import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
@@ -72,9 +72,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Autowired
 	private ReferenceOwnerService referenceOwnerService;
 
-	@Autowired
-	private EnumConverter enumConverter;
-
 	@Override
 	protected void validateSave() throws Exception {
 		if (StringUtils.isBlank(getEntity().getDbTitle())) {
@@ -85,8 +82,32 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			errorMessages.add("URL格式不正確");
 		}
 
+		if (StringUtils.isNotEmpty(getRequest().getParameter(
+				"entity.resourcesBuyers.startDate"))) {
+			if (getEntity().getResourcesBuyers().getStartDate() == null) {
+				errorMessages.add("起始日不正確");
+			}
+		}
+
+		if (StringUtils.isNotEmpty(getRequest().getParameter(
+				"entity.resourcesBuyers.maturityDate"))) {
+			if (getEntity().getResourcesBuyers().getMaturityDate() == null) {
+				errorMessages.add("到期日不正確");
+			}
+		}
+
+		if (getEntity().getResourcesBuyers().getStartDate() != null
+				&& getEntity().getResourcesBuyers().getMaturityDate() != null) {
+			if (getEntity()
+					.getResourcesBuyers()
+					.getStartDate()
+					.isAfter(getEntity().getResourcesBuyers().getMaturityDate())) {
+				errorMessages.add("到期日早於起始日");
+			}
+		}
+
 		if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
-			errorMessages.add("至少選擇一筆以上擁有人");
+			errorMessages.add("至少選擇一筆以上訂閱單位");
 		} else {
 			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
 					.getRefSerNo()));
@@ -150,8 +171,34 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				errorMessages.add("URL格式不正確");
 			}
 
+			if (StringUtils.isNotEmpty(getRequest().getParameter(
+					"entity.resourcesBuyers.startDate"))) {
+				if (getEntity().getResourcesBuyers().getStartDate() == null) {
+					errorMessages.add("起始日不正確");
+				}
+			}
+
+			if (StringUtils.isNotEmpty(getRequest().getParameter(
+					"entity.resourcesBuyers.maturityDate"))) {
+				if (getEntity().getResourcesBuyers().getMaturityDate() == null) {
+					errorMessages.add("到期日不正確");
+				}
+			}
+
+			if (getEntity().getResourcesBuyers().getStartDate() != null
+					&& getEntity().getResourcesBuyers().getMaturityDate() != null) {
+				if (getEntity()
+						.getResourcesBuyers()
+						.getStartDate()
+						.isAfter(
+								getEntity().getResourcesBuyers()
+										.getMaturityDate())) {
+					errorMessages.add("到期日早於起始日");
+				}
+			}
+
 			if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
-				errorMessages.add("至少選擇一筆以上擁有人");
+				errorMessages.add("至少選擇一筆以上訂閱單位");
 			} else {
 				Set<Long> deRepeatSet = new HashSet<Long>(
 						Arrays.asList(getEntity().getRefSerNo()));
@@ -537,17 +584,33 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				List<String> errorList = Lists.newArrayList();
 
 				Category category = null;
-				Object objCategory = getEnum(
-						new String[] { rowValues[14].trim() }, Category.class);
-				if (objCategory != null) {
-					category = (Category) objCategory;
-				} else {
+				if (StringUtils.isNotBlank(rowValues[14])) {
+					switch (row.getCell(14).getCellType()) {
+					case 0:
+						Double d = Double.parseDouble(rowValues[14]);
+						if (d >= 0 && d % 1 == 0) {
+							category = Category.getByToken(d.intValue());
+						}
+						break;
+
+					case 1:
+						if (NumberUtils.isDigits(rowValues[14])) {
+							category = Category.getByToken(Integer
+									.parseInt(rowValues[14]));
+						} else {
+							category = (Category) toEnum(rowValues[14].trim(),
+									Category.class);
+						}
+						break;
+					}
+				}
+
+				if (category == null) {
 					category = Category.未註明;
 				}
 
 				Type type = null;
-				Object objType = getEnum(new String[] { rowValues[9].trim() },
-						Type.class);
+				Object objType = toEnum(rowValues[9].trim(), Type.class);
 				if (objType != null) {
 					type = (Type) objType;
 				} else {
@@ -555,14 +618,42 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 
 				boolean openAccess = false;
-				if (rowValues[11].toLowerCase().equals("yes")
-						|| rowValues[11].toLowerCase().equals("true")
-						|| rowValues[11].equals("是")) {
-					openAccess = true;
+
+				if (StringUtils.isNotBlank(rowValues[11])) {
+					switch (row.getCell(11).getCellType()) {
+					case 0:
+						if (row.getCell(11).getNumericCellValue() == 1) {
+							openAccess = true;
+						}
+						break;
+
+					case 1:
+						if (rowValues[11].equals("1")
+								|| rowValues[11].toLowerCase().equals("yes")
+								|| rowValues[11].toLowerCase().equals("true")
+								|| rowValues[11].equals("是")
+								|| rowValues[11].equals("真")) {
+							openAccess = true;
+						}
+						break;
+
+					case 2:
+						if (row.getCell(11).getCellFormula().equals("TRUE()")) {
+							openAccess = true;
+						}
+						break;
+
+					case 4:
+						if (row.getCell(11).getBooleanCellValue()) {
+							openAccess = row.getCell(11).getBooleanCellValue();
+						}
+						break;
+					}
 				}
 
-				resourcesBuyers = new ResourcesBuyers(rowValues[12],
-						rowValues[13], category);
+				resourcesBuyers = new ResourcesBuyers(
+						toLocalDateTime(rowValues[12]),
+						toLocalDateTime(rowValues[13]), category);
 
 				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
 				if (StringUtils.isNotBlank(rowValues[15].replace(",", ""))) {
@@ -593,10 +684,34 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						rowValues[6], rowValues[7], rowValues[8], type,
 						rowValues[10], openAccess, null, resourcesBuyers,
 						new HashSet<ReferenceOwner>(owners));
+				database.setTempNotes(new String[] { rowValues[12],
+						rowValues[13] });
 				database.getResourcesBuyers().setDataStatus("");
 
 				if (CollectionUtils.isEmpty(database.getReferenceOwners())) {
-					errorList.add("沒有擁有者");
+					errorList.add("沒有訂閱單位");
+				}
+
+				if (StringUtils.isNotEmpty(database.getTempNotes()[0])
+						&& database.getResourcesBuyers().getStartDate() == null) {
+					errorList.add("起始日錯誤");
+				}
+
+				if (StringUtils.isNotEmpty(database.getTempNotes()[1])
+						&& database.getResourcesBuyers().getMaturityDate() == null) {
+					errorList.add("到期日錯誤");
+				}
+
+				if (database.getResourcesBuyers().getStartDate() != null
+						&& database.getResourcesBuyers().getMaturityDate() != null) {
+					if (database
+							.getResourcesBuyers()
+							.getStartDate()
+							.isAfter(
+									database.getResourcesBuyers()
+											.getMaturityDate())) {
+						errorList.add("到期日早於起始日");
+					}
 				}
 
 				if (StringUtils.isBlank(database.getDbTitle())) {
@@ -927,8 +1042,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			Integer mark = 1;
 			empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
-					"主題", "分類", "收錄年代", "出版時間差", "資源種類", "URL", "公開資源", "起始日",
-					"到期日", "資源類型", "購買人名稱", "錯誤提示", "其他提示" });
+					"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用",
+					"起始日", "到期日", "資源類型", "訂閱單位", "錯誤提示", "其他提示" });
 
 			int i = 0;
 			while (i < importList.size()) {
@@ -962,10 +1077,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 									database.getType().getType(),
 									database.getUrl(),
 									database.getOpenAccess().toString(),
-									database.getResourcesBuyers()
-											.getStartDate(),
-									database.getResourcesBuyers()
-											.getMaturityDate(),
+									database.getTempNotes()[0],
+									database.getTempNotes()[1],
 									database.getResourcesBuyers().getCategory()
 											.getCategory(),
 									ownerNames.toString().substring(1,
@@ -1001,8 +1114,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			Integer mark = 1;
 			empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
-					"主題", "分類", "收錄年代", "出版時間差", "資源種類", "URL", "公開資源", "起始日",
-					"到期日", "資源類型", "購買人名稱", "物件狀態", "其他提示" });
+					"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用",
+					"起始日", "到期日", "資源類型", "訂閱單位", "物件狀態", "其他提示" });
 
 			int i = 0;
 			while (i < importList.size()) {
@@ -1036,10 +1149,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 									database.getType().getType(),
 									database.getUrl(),
 									database.getOpenAccess().toString(),
-									database.getResourcesBuyers()
-											.getStartDate(),
-									database.getResourcesBuyers()
-											.getMaturityDate(),
+									database.getTempNotes()[0],
+									database.getTempNotes()[1],
 									database.getResourcesBuyers().getCategory()
 											.getCategory(),
 									ownerNames.toString().substring(1,
@@ -1085,8 +1196,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 
 		empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
-				"主題", "分類", "收錄年代", "出版時間差", "資源種類", "URL", "公開資源", "起始日",
-				"到期日", "資源類型", "購買人名稱" });
+				"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用", "起始日",
+				"到期日", "資源類型", "訂閱單位" });
 
 		empinfo.put(
 				"2",
@@ -1097,12 +1208,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						"碩亞數碼",
 						"本選輯專為台灣地理空間、人文風情與歷史社會風貌打造的平台檢索系統，精心挑選遠足文化出版社最具代表性的出版品，並經由台灣百餘位學界教授、地方文史工作者、公部門專業研究員共同編撰，以豐富的數位內容與專業平台檢索系統的結合，引領讀者按圖索驥，開啟「台灣學」新視野。 @內容皆採全文本(pure –efile)格式製作，可支援關鍵字全文檢索。@提供讀者二大閱讀模式：(1)【下載】離線閱讀授權範圍內下載並安裝”L&B專屬之SMART Reader閱讀器”至您的桌機/筆電，即使無法網際網路連線，也能進行閱讀、管理下載書目(離線閱讀檔案共可使用30天)。運用章節標引導航、全文檢索、文字引用及底線等標註多樣化常用文具，為使用者節省並增加資訊檢索的正確率，有效提升學術研究、主題討論之品質。(2)【線上閱讀】連線閱讀：Flash翻頁式電子書@本平臺之電子書不限制同時使用人數，目前提供約60本電子書。",
 						"台灣行旅", "地理、人文、歷史 、社會", "N/A", "N/A", "電子書",
-						"http://lb20.tpml.libraryandbook.net/FE", "否", "N/A",
-						"N/A", "租貸", "高雄醫學院附設醫院、疾病管制署" });
+						"http://lb20.tpml.libraryandbook.net/FE", "否",
+						"2015/05/10", "", "租賃", "高雄醫學院附設醫院,疾病管制署" });
 		empinfo.put("3", new Object[] { "Tesuka Manga手塚治虫系列漫畫電子書", "中文", "漫畫",
 				"iGroup", "繁體中文12種157冊、日文15種377冊、英文6種55冊", "手塚治虫系列漫畫", "N/A",
 				"N/A", "N/A", "電子書", "http://www.mymanga365.com/tezuka/", "否",
-				"N/A", "N/A", "租貸", "高雄醫學院附設醫院" });
+				"", "2015-10-15", "租賃", "高雄醫學院附設醫院" });
 
 		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
@@ -1178,10 +1289,5 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	protected void setOwners() {
 		getRequest().setAttribute("referenceOwners",
 				databaseService.getResOwners(database.getSerNo()));
-	}
-
-	@SuppressWarnings("rawtypes")
-	protected Object getEnum(String[] values, Class toClass) {
-		return enumConverter.convertFromString(null, values, toClass);
 	}
 }

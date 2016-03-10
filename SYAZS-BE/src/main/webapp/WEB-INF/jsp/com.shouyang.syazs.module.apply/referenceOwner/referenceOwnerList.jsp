@@ -37,7 +37,7 @@
 	//新增
 	function goAdd() {
 		goDetail("<c:url value = '/'/>crud/apply.referenceOwner.add.action",
-				'客戶-新增');
+				'訂閱單位-新增');
 	}
 
 	//刪除多筆資料之函式
@@ -78,7 +78,7 @@
 		if (isNum && parseInt(serNo) > 0) {
 			var url = "<c:url value = '/'/>crud/apply.referenceOwner.view.action";
 			var data = 'entity.serNo=' + serNo;
-			goDetail(url, '用戶-檢視', data);
+			goDetail(url, '訂閱單位-檢視', data);
 		}
 	}
 
@@ -88,7 +88,7 @@
 		if (isNum && parseInt(serNo) > 0) {
 			goDetail(
 					"<c:url value = '/'/>crud/apply.referenceOwner.edit.action?"
-							+ 'entity.serNo=' + serNo, '客戶-修改');
+							+ 'entity.serNo=' + serNo, '訂閱單位-修改');
 		}
 	}
 
@@ -121,7 +121,7 @@
 	function goImport() {
 		goDetail(
 				"<c:url value = '/'/>crud/apply.referenceOwner.imports.action?",
-				'客戶-匯入');
+				'訂閱單位-匯入');
 	}
 </script>
 </head>
@@ -160,7 +160,7 @@
 			</div>
 		</div>
 		<div id="div_nav">
-			目前位置：<span>書目資料管理</span> &gt; <span>擁有人</span>
+			目前位置：<span>書目資料管理</span> &gt; <span>訂閱單位</span>
 		</div>
 		<div class="list-box">
 			<div class="list-buttons">
@@ -232,12 +232,14 @@
 										<jsp:param name="detail" value="0" />
 									</jsp:include></td>
 								<td>每頁顯示 <select id="listForm_pageSize"
-									name="pager.recordPerPage" onchange="changePageSize()">
+									name="pager.recordPerPage"
+									onchange="changePageSize(this.value)">
 										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 										<option value="5">5</option>
 										<option value="10">10</option>
 										<option value="20">20</option>
 										<option value="50">50</option>
+										<option value="100">100</option>
 								</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
 									value="${ds.pager.currentPage }" type="number" min="1"
 									max="${totalPage }" onchange="gotoPage(this.value)"> 頁,
