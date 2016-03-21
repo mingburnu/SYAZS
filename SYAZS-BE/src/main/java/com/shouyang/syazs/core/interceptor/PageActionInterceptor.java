@@ -2,9 +2,11 @@ package com.shouyang.syazs.core.interceptor;
 
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -28,21 +30,36 @@ public class PageActionInterceptor extends RootInterceptor {
 		removeErrorParameters(invocation);
 
 		Map<String, Object> session = ActionContext.getContext().getSession();
-		if (session.get("clazz") != null) {
-			session.remove("cellNames");
-			session.remove("importList");
-			session.remove("total");
-			session.remove("normal");
-			session.remove("insert");
-			session.remove("checkItemSet");
-			session.remove("tip");
-			session.remove("allChecked");
-			session.remove("clazz");
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+
+		if (invocation.getProxy().getActionName().equals("addCookies")) {
+			if (NumberUtils.isDigits(request
+					.getParameter("pager.recordPerPage"))) {
+				Cookie recordPerPage = new Cookie("recordPerPage",
+						request.getParameter("pager.recordPerPage"));
+				recordPerPage.setMaxAge(60 * 60 * 24);
+				recordPerPage.setPath(request.getContextPath());
+
+				response.addCookie(recordPerPage);
+
+				response.setContentType("text/html");
+			}
+		} else {
+			if (session.get("clazz") != null) {
+				session.remove("cellNames");
+				session.remove("importList");
+				session.remove("total");
+				session.remove("normal");
+				session.remove("insert");
+				session.remove("checkItemSet");
+				session.remove("tip");
+				session.remove("allChecked");
+				session.remove("clazz");
+			}
 		}
 
 		if (invocation.getAction().toString().contains("feLogs")) {
-			HttpServletRequest request = ServletActionContext.getRequest();
-			HttpServletResponse response = ServletActionContext.getResponse();
 			String option = request.getParameter("entity.option");
 			if (option != null) {
 				if (option.equals("logins")) {

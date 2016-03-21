@@ -207,8 +207,12 @@
 								</c:otherwise>
 							</c:choose></td>
 						<td><esapi:encodeForHTML>${item.bookName }</esapi:encodeForHTML></td>
-						<td><esapi:encodeForHTML>${item.isbn }${item.tempNotes[0] }</esapi:encodeForHTML><br>
-							<span id="span-queue-tip" class="tip">${item.resourcesBuyers.dataStatus }</span></td>
+						<td><c:choose>
+								<c:when test="${item.isbn != null }">${item.isbn }</c:when>
+								<c:otherwise>
+									<esapi:encodeForHTML>${item.tempNotes[0] }</esapi:encodeForHTML>
+								</c:otherwise>
+							</c:choose><br> <span id="span-queue-tip" class="tip">${item.resourcesBuyers.dataStatus }</span></td>
 						<td><esapi:encodeForHTML>${item.cnClassBzStr }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.bookInfoIntegral }</esapi:encodeForHTML></td>
 						<td><c:choose>

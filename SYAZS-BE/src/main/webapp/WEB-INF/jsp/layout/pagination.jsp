@@ -68,7 +68,7 @@
 			function changePageSize_detail(size) {
 				$
 						.ajax({
-							url : "<c:url value = '/'/>cookies.jsp?pager.recordPerPage="
+							url : "<c:url value = '/'/>page/addCookies.action?pager.recordPerPage="
 									+ size,
 							success : function(result) {
 								goDetail_Main($(
@@ -120,7 +120,7 @@
 			function changePageSize_detail_2(size) {
 				$
 						.ajax({
-							url : "<c:url value = '/'/>cookies.jsp?pager.recordPerPage="
+							url : "<c:url value = '/'/>page/addCookies.action?pager.recordPerPage="
 									+ size,
 							success : function(result) {
 								goDetail_Sub(
@@ -171,7 +171,7 @@
 			function changePageSize(size) {
 				$
 						.ajax({
-							url : "<c:url value = '/'/>cookies.jsp?pager.recordPerPage="
+							url : "<c:url value = '/'/>page/addCookies.action?pager.recordPerPage="
 									+ size,
 							success : function(result) {
 								goMain($('#' + $("form:eq(0)").attr("id"))

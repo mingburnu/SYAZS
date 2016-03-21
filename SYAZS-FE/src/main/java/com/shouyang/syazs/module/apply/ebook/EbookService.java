@@ -49,7 +49,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
 				.trim(), "－０１２３４５６７８９", "-0123456789");
 
-		if (ISBN_Validator.isIsbn(indexTerm)) {
+		if (ISBN_Validator.isIsbn13(indexTerm)) {
 			restrictions.eq("isbn", Long.parseLong(indexTerm.replace("-", "")));
 		} else {
 			indexTerm = indexTerm.replaceAll(
@@ -127,7 +127,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 				return ds;
 			}
 		} else if (option.equals("ISBN 等於")) {
-			if (ISBN_Validator.isIsbn(indexTerm)) {
+			if (ISBN_Validator.isIsbn13(indexTerm)) {
 				restrictions.eq("isbn",
 						Long.parseLong(indexTerm.replace("-", "")));
 			} else {

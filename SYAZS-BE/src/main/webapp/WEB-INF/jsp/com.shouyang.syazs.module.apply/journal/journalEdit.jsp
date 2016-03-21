@@ -185,6 +185,16 @@ input#referenceOwner_name {
 						.toString().split("T")[0];
 			}
 		}
+
+		String publishYear = "";
+		if (request.getParameter("entity.publishYear") != null) {
+			publishYear = request.getParameter("entity.publishYear");
+		} else {
+			if (request.getAttribute("entity.publishYear") != null) {
+				publishYear = request.getAttribute("entity.publishYear")
+						.toString();
+			}
+		}
 	%>
 	<s:form namespace="/crud" action="apply.journal.update">
 		<table cellspacing="1" class="detail-table">
@@ -223,8 +233,10 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">出版年</th>
-				<td><s:textfield name="entity.publishYear"
-						cssClass="input_text" /></td>
+				<td><input type="text" name="entity.publishYear"
+					value="<%=ESAPI.encoder().encodeForHTMLAttribute(publishYear)%>"
+					id="apply_journal_update_entity_publishYear" class="input_text">&nbsp;<span
+					id="span-year-tip" class="tip">yyyy</span></td>
 			</tr>
 			<tr>
 				<th width="130">刊別</th>
@@ -250,7 +262,8 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">URL<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.url" cssClass="input_text" />&nbsp;<span
+					id="span-url-tip" class="tip">http://www.sydt.com.tw或https://www.sydt.com.tw</span></td>
 			</tr>
 			<tr>
 				<th width="130">開放近用</th>
@@ -282,7 +295,7 @@ input#referenceOwner_name {
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
 					id="apply_journal_update_entity_resourcesBuyers_startDate"
 					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
@@ -291,7 +304,7 @@ input#referenceOwner_name {
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
 					id="apply_journal_update_entity_resourcesBuyers_maturityDate"
 					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>

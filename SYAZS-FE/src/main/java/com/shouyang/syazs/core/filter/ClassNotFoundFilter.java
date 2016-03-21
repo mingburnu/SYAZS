@@ -52,7 +52,8 @@ public class ClassNotFoundFilter implements Filter {
 					actionName.lastIndexOf("."));
 
 			if (entityName != null && !entityName.equals("index")
-					&& !entityName.equals("query")) {
+					&& !entityName.equals("query")
+					&& !entityName.equals("addCookies")) {
 				try {
 					if (entityName.length() == 0) {
 						entityName = " ";

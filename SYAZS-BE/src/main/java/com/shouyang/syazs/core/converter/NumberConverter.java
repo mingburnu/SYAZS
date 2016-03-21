@@ -20,6 +20,10 @@ public class NumberConverter extends RootConverter {
 				if (toClass.equals(Integer.class)) {
 					return Integer.parseInt(values[0]);
 				}
+
+				if (toClass.equals(Short.class)) {
+					return Short.parseShort(values[0]);
+				}
 			}
 		} catch (NumberFormatException e) {
 			return null;

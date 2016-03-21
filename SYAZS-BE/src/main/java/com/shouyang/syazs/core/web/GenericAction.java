@@ -19,6 +19,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.converter.EnumConverter;
 import com.shouyang.syazs.core.converter.JodaTimeConverter;
+import com.shouyang.syazs.core.converter.NumberConverter;
 import com.shouyang.syazs.core.entity.Entity;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
@@ -46,6 +47,9 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 
 	@Autowired
 	private EnumConverter enumConverter;
+
+	@Autowired
+	private NumberConverter numberConverter;
 
 	@Autowired
 	private T entity;
@@ -134,10 +138,16 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 		return enumConverter.convertFromString(null, values, toClass);
 	}
 
+	@SuppressWarnings("rawtypes")
+	protected Object toNumber(String value, Class toClass) {
+		String[] values = new String[] { value };
+		return numberConverter.convertFromString(null, values, toClass);
+	}
+
 	protected String dateToString(LocalDateTime dateTime) {
 		return jodaTimeConverter.convertToString(null, dateTime);
 	}
-	
+
 	public String trys() {
 		return ADD;
 	}

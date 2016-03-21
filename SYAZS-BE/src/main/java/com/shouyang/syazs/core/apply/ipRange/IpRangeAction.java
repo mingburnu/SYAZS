@@ -26,6 +26,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -848,6 +849,13 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 		getEntity().setReportFile("ipRange_error.xlsx");
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet spreadsheet = workbook.createSheet("ipRange_error");
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
 
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -879,7 +887,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 
@@ -892,21 +900,23 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 	}
 
 	public String example() throws Exception {
-		// reportFile = "ipRange_sample.xlsx";
 		getEntity().setReportFile("ipRange_sample.xlsx");
-		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		// Create a blank sheet
 		XSSFSheet spreadsheet = workbook.createSheet("customer");
-		// Create row object
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
-		// This data needs to be written (Object[])
+
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 		empinfo.put("1", new Object[] { "IP Range開始", "IP Range結束" });
 
 		empinfo.put("2", new Object[] { "122.15.26.91", "122.15.26.98" });
 
-		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
 		int rowid = 0;
 		for (String key : keyid) {
@@ -915,7 +925,7 @@ public class IpRangeAction extends GenericWebActionFull<IpRange> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 

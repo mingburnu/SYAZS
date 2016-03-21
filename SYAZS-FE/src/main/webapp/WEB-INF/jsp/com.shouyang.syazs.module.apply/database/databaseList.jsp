@@ -65,13 +65,12 @@
 									</select>
 									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.list" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.database.list" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -95,13 +94,12 @@
 									</select>
 									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.owner" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.database.owner" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -205,13 +203,12 @@
 									</select>
 									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.list" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.database.list" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -235,13 +232,12 @@
 									</select>
 									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.database.owner" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.database.owner" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>

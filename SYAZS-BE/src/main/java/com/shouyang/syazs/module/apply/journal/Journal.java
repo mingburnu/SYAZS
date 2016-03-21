@@ -59,7 +59,7 @@ public class Journal extends ModuleProperties {
 
 	// 出版年
 	@Column(name = "publishyear")
-	private String publishYear;
+	private Short publishYear;
 
 	// 標題
 	@Column(name = "caption")
@@ -79,7 +79,7 @@ public class Journal extends ModuleProperties {
 
 	// 版本
 	@Column(name = "version")
-	private Integer version;
+	private String version;
 
 	// 全文取得授權刊期
 	@Column(name = "embargo")
@@ -210,7 +210,7 @@ public class Journal extends ModuleProperties {
 	/**
 	 * @return the publishYear
 	 */
-	public String getPublishYear() {
+	public Short getPublishYear() {
 		return publishYear;
 	}
 
@@ -218,7 +218,7 @@ public class Journal extends ModuleProperties {
 	 * @param publishYear
 	 *            the publishYear to set
 	 */
-	public void setPublishYear(String publishYear) {
+	public void setPublishYear(Short publishYear) {
 		this.publishYear = publishYear;
 	}
 
@@ -285,7 +285,7 @@ public class Journal extends ModuleProperties {
 	/**
 	 * @return the version
 	 */
-	public Integer getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
@@ -293,7 +293,7 @@ public class Journal extends ModuleProperties {
 	 * @param version
 	 *            the version to set
 	 */
-	public void setVersion(Integer version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -409,11 +409,11 @@ public class Journal extends ModuleProperties {
 
 	public Journal(String title, String abbreviationTitle,
 			String titleEvolution, String issn, String languages,
-			String publishName, String publishYear, String caption,
-			String numB, String publication, String congressClassification,
-			Integer version, String embargo, String url, Boolean openAccess,
-			Database database, String uuIdentifier,
-			ResourcesBuyers resourcesBuyers, Set<ReferenceOwner> referenceOwners) {
+			String publishName, Short publishYear, String caption, String numB,
+			String publication, String congressClassification, String version,
+			String embargo, String url, Boolean openAccess, Database database,
+			String uuIdentifier, ResourcesBuyers resourcesBuyers,
+			Set<ReferenceOwner> referenceOwners) {
 		super();
 		this.title = title;
 		this.abbreviationTitle = abbreviationTitle;

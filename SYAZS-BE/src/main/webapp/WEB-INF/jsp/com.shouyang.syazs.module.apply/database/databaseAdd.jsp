@@ -160,7 +160,8 @@ textarea#apply_database_save_entity_content {
 			</tr>
 			<tr>
 				<th width="130">URL<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.url" cssClass="input_text" />&nbsp;<span
+					id="span-url-tip" class="tip">http://www.sydt.com.tw或https://www.sydt.com.tw</span></td>
 			</tr>
 			<tr>
 				<th width="130">全文取得授權刊期</th>
@@ -172,7 +173,7 @@ textarea#apply_database_save_entity_content {
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
 					id="apply_database_save_entity_resourcesBuyers_startDate"
 					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
@@ -181,7 +182,7 @@ textarea#apply_database_save_entity_content {
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
 					id="apply_database_save_entity_resourcesBuyers_maturityDate"
 					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>

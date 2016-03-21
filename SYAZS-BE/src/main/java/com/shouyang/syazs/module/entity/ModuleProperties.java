@@ -26,9 +26,6 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	@Transient
 	private Long[] resDbSerNo;
 
-	@Transient
-	private String[] tempNotes;
-
 	/**
 	 * @return the owners
 	 */
@@ -72,20 +69,5 @@ public abstract class ModuleProperties extends GenericEntityFull {
 	 */
 	public void setResDbSerNo(Long[] resDbSerNo) {
 		this.resDbSerNo = resDbSerNo;
-	}
-
-	/**
-	 * @return the tempNotes
-	 */
-	public String[] getTempNotes() {
-		return tempNotes;
-	}
-
-	/**
-	 * @param tempNotes
-	 *            the tempNotes to set
-	 */
-	public void setTempNotes(String[] tempNotes) {
-		this.tempNotes = tempNotes;
 	}
 }

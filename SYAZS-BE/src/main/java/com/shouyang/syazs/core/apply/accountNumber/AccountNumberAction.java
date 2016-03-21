@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -972,6 +973,12 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		getEntity().setReportFile("accountNumber_error.xlsx");
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet spreadsheet = workbook.createSheet("accountNumber_error");
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
 		XSSFRow row;
 
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -1009,7 +1016,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 
@@ -1023,14 +1030,17 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	public String example() throws Exception {
 		getEntity().setReportFile("account_sample.xlsx");
-
-		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		// Create a blank sheet
 		XSSFSheet spreadsheet = workbook.createSheet("account");
-		// Create row object
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
-		// This data needs to be written (Object[])
+
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 		empinfo.put("1",
 				new Object[] { "userID/使用者", "userPW/使用者密碼", "userName/姓名",
@@ -1039,7 +1049,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		empinfo.put("2", new Object[] { "cdc", "cdc", "XXX", "疾病管制局",
 				"cdc@cdc.org", "管理員", "生效" });
 
-		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
 		int rowid = 0;
 		for (String key : keyid) {
@@ -1048,7 +1057,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 

@@ -29,9 +29,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.joda.time.LocalDateTime;
 import org.owasp.esapi.ESAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -85,13 +87,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		if (getEntity().getIsbn() != null) {
-			if (!ISBN_Validator.isIsbn(getEntity().getIsbn())) {
+			if (!ISBN_Validator.isIsbn13(getEntity().getIsbn())) {
 				errorMessages.add("ISBN不正確");
 			}
 		} else {
 			if (StringUtils
 					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
-				if (!ISBN_Validator.isIsbn(getRequest().getParameter(
+				if (!ISBN_Validator.isIsbn13(getRequest().getParameter(
 						"entity.isbn"))) {
 					errorMessages.add("ISBN不正確");
 				}
@@ -236,13 +238,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 
 			if (getEntity().getIsbn() != null) {
-				if (!ISBN_Validator.isIsbn(getEntity().getIsbn())) {
+				if (!ISBN_Validator.isIsbn13(getEntity().getIsbn())) {
 					errorMessages.add("ISBN不正確");
 				}
 			} else {
 				if (StringUtils.isNotBlank(getRequest().getParameter(
 						"entity.isbn"))) {
-					if (!ISBN_Validator.isIsbn(getRequest().getParameter(
+					if (!ISBN_Validator.isIsbn13(getRequest().getParameter(
 							"entity.isbn"))) {
 						errorMessages.add("ISBN不正確");
 					}
@@ -449,7 +451,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			if (getEntity().getIsbn() == null) {
 				if (StringUtils.isNotEmpty(getRequest().getParameter(
 						"entity.isbn"))) {
-					if (ISBN_Validator.isIsbn(getRequest().getParameter(
+					if (ISBN_Validator.isIsbn13(getRequest().getParameter(
 							"entity.isbn").trim())) {
 						getEntity().setIsbn(
 								Long.parseLong(getRequest()
@@ -594,7 +596,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		if (getEntity().getIsbn() != null) {
-			if (ISBN_Validator.isIsbn(getEntity().getIsbn())) {
+			if (ISBN_Validator.isIsbn13(getEntity().getIsbn())) {
 				if (hasRepeatIsbn(isbn, serNo)) {
 					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
@@ -605,7 +607,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		} else {
 			if (StringUtils.isNotBlank(isbn)) {
-				if (ISBN_Validator.isIsbn(isbn)) {
+				if (ISBN_Validator.isIsbn13(isbn)) {
 					if (hasRepeatIsbn(isbn, serNo)) {
 						getRequest().setAttribute("tip", "已有相同ISBN");
 					}
@@ -787,59 +789,26 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 				boolean openAccess = false;
 				if (StringUtils.isNotBlank(rowValues[14])) {
-					switch (row.getCell(14).getCellType()) {
-					case 0:
-						if (row.getCell(14).getNumericCellValue() == 1) {
-							openAccess = true;
-						}
-						break;
-
-					case 1:
-						if (rowValues[14].equals("1")
-								|| rowValues[14].toLowerCase().equals("yes")
-								|| rowValues[14].toLowerCase().equals("true")
-								|| rowValues[14].equals("是")
-								|| rowValues[14].equals("真")) {
-							openAccess = true;
-						}
-						break;
-					case 2:
-						if (row.getCell(14).getCellFormula().equals("TRUE()")) {
-							openAccess = true;
-						}
-						break;
-
-					case 4:
-						if (row.getCell(14).getBooleanCellValue()) {
-							openAccess = row.getCell(14).getBooleanCellValue();
-						}
-						break;
+					if (rowValues[11].equals("1")
+							|| rowValues[14].toLowerCase().equals("yes")
+							|| rowValues[14].toLowerCase().equals("true")
+							|| rowValues[14].equals("是")
+							|| rowValues[14].equals("真")) {
+						openAccess = true;
 					}
 				}
 
-				String isbn = rowValues[1].trim();
+				Long isbn = (Long) toNumber(rowValues[1].trim(), Long.class);
+				LocalDateTime pubDate = toLocalDateTime(rowValues[6].trim());
 
 				if (length > 16) {
 					Category category = null;
-					if (StringUtils.isNotBlank(rowValues[17])) {
-						switch (row.getCell(17).getCellType()) {
-						case 0:
-							Double d = Double.parseDouble(rowValues[17]);
-							if (d >= 0 && d % 1 == 0) {
-								category = Category.getByToken(d.intValue());
-							}
-							break;
-
-						case 1:
-							if (NumberUtils.isDigits(rowValues[17])) {
-								category = Category.getByToken(Integer
-										.parseInt(rowValues[17]));
-							} else {
-								category = (Category) toEnum(
-										rowValues[17].trim(), Category.class);
-							}
-							break;
-						}
+					if (NumberUtils.isDigits(rowValues[17])) {
+						category = Category.getByToken(Integer
+								.parseInt(rowValues[17]));
+					} else {
+						category = (Category) toEnum(rowValues[17].trim(),
+								Category.class);
 					}
 
 					if (category == null) {
@@ -847,8 +816,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					}
 
 					resourcesBuyers = new ResourcesBuyers(
-							toLocalDateTime(rowValues[15]),
-							toLocalDateTime(rowValues[16]), category);
+							toLocalDateTime(rowValues[15].trim()),
+							toLocalDateTime(rowValues[16].trim()), category);
 
 					if (StringUtils.isNotEmpty(rowValues[15])
 							&& resourcesBuyers.getStartDate() == null) {
@@ -893,53 +862,25 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						errorList.add("沒有訂閱單位");
 					}
 
-					if (NumberUtils.isDigits(isbn)) {
-						ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
-								rowValues[2], rowValues[3], rowValues[4],
-								rowValues[5], toLocalDateTime(rowValues[6]),
-								rowValues[7], rowValues[8], rowValues[9],
-								rowValues[10], rowValues[12], rowValues[13],
-								rowValues[11], openAccess, null, null,
-								resourcesBuyers, owners);
-						ebook.setTempNotes(new String[] { null, rowValues[6],
-								rowValues[15], rowValues[16] });
-						ebook.getResourcesBuyers().setDataStatus("");
-
-					} else {
-						ebook = new Ebook(rowValues[0], null, rowValues[2],
-								rowValues[3], rowValues[4], rowValues[5],
-								toLocalDateTime(rowValues[6]), rowValues[7],
-								rowValues[8], rowValues[9], rowValues[10],
-								rowValues[12], rowValues[13], rowValues[11],
-								openAccess, null, null, resourcesBuyers, owners);
-						ebook.setTempNotes(new String[] { isbn, rowValues[6],
-								rowValues[15], rowValues[16] });
-						ebook.getResourcesBuyers().setDataStatus("");
-					}
+					ebook = new Ebook(rowValues[0], isbn, rowValues[2],
+							rowValues[3], rowValues[4], rowValues[5], pubDate,
+							rowValues[7], rowValues[8], rowValues[9],
+							rowValues[10], rowValues[12], rowValues[13],
+							rowValues[11], openAccess, null, null,
+							resourcesBuyers, owners);
+					ebook.setTempNotes(new String[] { rowValues[1],
+							rowValues[6], rowValues[15], rowValues[16] });
+					ebook.getResourcesBuyers().setDataStatus("");
 				} else {
-					if (NumberUtils.isDigits(isbn)) {
-						ebook = new Ebook(rowValues[0], Long.parseLong(isbn),
-								rowValues[2], rowValues[3], rowValues[4],
-								rowValues[5], toLocalDateTime(rowValues[6]),
-								rowValues[7], rowValues[8], rowValues[9],
-								rowValues[10], rowValues[12], rowValues[13],
-								rowValues[11], openAccess, null, null,
-								new ResourcesBuyers(), null);
-						ebook.setTempNotes(new String[] { null, rowValues[6],
-								null, null });
-						ebook.getResourcesBuyers().setDataStatus("");
-					} else {
-						ebook = new Ebook(rowValues[0], null, rowValues[2],
-								rowValues[3], rowValues[4], rowValues[5],
-								toLocalDateTime(rowValues[6]), rowValues[7],
-								rowValues[8], rowValues[9], rowValues[10],
-								rowValues[12], rowValues[13], rowValues[11],
-								openAccess, null, null, new ResourcesBuyers(),
-								null);
-						ebook.setTempNotes(new String[] { isbn, rowValues[6],
-								null, null });
-						ebook.getResourcesBuyers().setDataStatus("");
-					}
+					ebook = new Ebook(rowValues[0], isbn, rowValues[2],
+							rowValues[3], rowValues[4], rowValues[5], pubDate,
+							rowValues[7], rowValues[8], rowValues[9],
+							rowValues[10], rowValues[12], rowValues[13],
+							rowValues[11], openAccess, null, null,
+							new ResourcesBuyers(), null);
+					ebook.setTempNotes(new String[] { rowValues[1],
+							rowValues[6], null, null });
+					ebook.getResourcesBuyers().setDataStatus("");
 
 					if (StringUtils.isNotBlank(rowValues[15])) {
 						database = databaseService.getByUUID(rowValues[15]
@@ -973,61 +914,62 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					errorList.add("出版日錯誤");
 				}
 
-				if (ebook.getIsbn() != null) {
-					if (ISBN_Validator.isIsbn(ebook.getIsbn())) {
-						if (hasRepeatIsbn(isbn, null)) {
-							resStatus.append("已有相同ISBN<br>");
-						}
+				if (StringUtils.isNotEmpty(ebook.getTempNotes()[0])) {
+					if (ISBN_Validator.isIsbn13(ebook.getIsbn())
+							|| ISBN_Validator.isIsbn13(ebook.getTempNotes()[0])) {
 
-						if (dbHasRepeatIsbn(isbn, null, ebook.getDatabase())) {
-							resStatus.append("DB有相同ISBN<br>");
-						}
-
-						if (checkRepeatIsbn.containsKey(ebook.getIsbn())) {
-							resStatus.append("清單有同ISBN資源<br>");
-
-							String status = originalData
-									.get(checkRepeatIsbn.get(ebook.getIsbn()))
-									.getResourcesBuyers().getDataStatus()
-									+ "清單有同ISBN資源<br>";
-							originalData
-									.get(checkRepeatIsbn.get(ebook.getIsbn()))
-									.getResourcesBuyers()
-									.setDataStatus(
-											status.replace(
-													"清單有同ISBN資源<br>清單有同ISBN資源<br>",
-													"清單有同ISBN資源<br>"));
-						}
-
-						checkRepeatIsbn.put(ebook.getIsbn(),
-								originalData.size());
-					} else {
-						errorList.add("ISBN不正確");
-					}
-				} else {
-					if (StringUtils.isNotEmpty(isbn)) {
-						if (ISBN_Validator.isIsbn(isbn)) {
-							if (hasRepeatIsbn(isbn, null)) {
+						if (isbn != null) {
+							if (hasRepeatIsbn(isbn.toString(), null)) {
 								resStatus.append("已有相同ISBN<br>");
 							}
 
-							if (dbHasRepeatIsbn(isbn, null, ebook.getDatabase())) {
+							if (dbHasRepeatIsbn(isbn.toString(), null,
+									ebook.getDatabase())) {
 								resStatus.append("DB有相同ISBN<br>");
 							}
 
-							if (checkRepeatIsbn.containsKey(Long.parseLong(isbn
-									.replace("-", "")))) {
+							if (checkRepeatIsbn.containsKey(isbn)) {
+								resStatus.append("清單有同ISBN資源<br>");
+
+								String status = originalData
+										.get(checkRepeatIsbn.get(isbn))
+										.getResourcesBuyers().getDataStatus()
+										+ "清單有同ISBN資源<br>";
+								originalData
+										.get(checkRepeatIsbn.get(isbn))
+										.getResourcesBuyers()
+										.setDataStatus(
+												status.replace(
+														"清單有同ISBN資源<br>清單有同ISBN資源<br>",
+														"清單有同ISBN資源<br>"));
+							}
+
+							checkRepeatIsbn.put(isbn, originalData.size());
+
+						} else {
+							if (hasRepeatIsbn(ebook.getTempNotes()[0], null)) {
+								resStatus.append("已有相同ISBN<br>");
+							}
+
+							if (dbHasRepeatIsbn(ebook.getTempNotes()[0], null,
+									ebook.getDatabase())) {
+								resStatus.append("DB有相同ISBN<br>");
+							}
+
+							if (checkRepeatIsbn.containsKey(Long
+									.parseLong(ebook.getTempNotes()[0].replace(
+											"-", "")))) {
 								resStatus.append("清單有同ISBN資源<br>");
 
 								String status = originalData
 										.get(checkRepeatIsbn.get(Long
-												.parseLong(isbn
+												.parseLong(ebook.getTempNotes()[0]
 														.replace("-", ""))))
 										.getResourcesBuyers().getDataStatus()
 										+ "清單有同ISBN資源<br>";
 								originalData
 										.get(checkRepeatIsbn.get(Long
-												.parseLong(isbn
+												.parseLong(ebook.getTempNotes()[0]
 														.replace("-", ""))))
 										.getResourcesBuyers()
 										.setDataStatus(
@@ -1036,45 +978,44 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 														"清單有同ISBN資源<br>"));
 							}
 
-							checkRepeatIsbn.put(
-									Long.parseLong(isbn.replace("-", "")),
+							checkRepeatIsbn.put(Long.parseLong(ebook
+									.getTempNotes()[0].replace("-", "")),
 									originalData.size());
-						} else {
-							errorList.add("ISBN不正確");
 						}
 					} else {
-						if (StringUtils.isNotBlank(ebook.getBookName())) {
-							if (hasRepeatName(ebook.getBookName(), null)) {
-								resStatus.append("已有無ISBN同名資源<br>");
-							}
-
-							if (dbHasRepeatName(ebook.getBookName(), null,
-									ebook.getDatabase())) {
-								resStatus.append("Db有無ISBN同名資源<br>");
-							}
-
-							if (checkRepeatName
-									.containsKey(ebook.getBookName())) {
-								resStatus.append("清單有無ISBN同名資源<br>");
-
-								String status = originalData
-										.get(checkRepeatName.get(ebook
-												.getBookName()))
-										.getResourcesBuyers().getDataStatus()
-										+ "清單有無ISBN同名資源<br>";
-								originalData
-										.get(checkRepeatName.get(ebook
-												.getBookName()))
-										.getResourcesBuyers()
-										.setDataStatus(
-												status.replace(
-														"清單有無ISBN同名資源<br>清單有無ISBN同名資源<br>",
-														"清單有無ISBN同名資源<br>"));
-							}
-
-							checkRepeatName.put(ebook.getBookName(),
-									originalData.size());
+						errorList.add("ISBN不正確");
+					}
+				} else {
+					if (StringUtils.isNotBlank(ebook.getBookName())) {
+						if (hasRepeatName(ebook.getBookName(), null)) {
+							resStatus.append("已有無ISBN同名資源<br>");
 						}
+
+						if (dbHasRepeatName(ebook.getBookName(), null,
+								ebook.getDatabase())) {
+							resStatus.append("Db有無ISBN同名資源<br>");
+						}
+
+						if (checkRepeatName.containsKey(ebook.getBookName())) {
+							resStatus.append("清單有無ISBN同名資源<br>");
+
+							String status = originalData
+									.get(checkRepeatName.get(ebook
+											.getBookName()))
+									.getResourcesBuyers().getDataStatus()
+									+ "清單有無ISBN同名資源<br>";
+							originalData
+									.get(checkRepeatName.get(ebook
+											.getBookName()))
+									.getResourcesBuyers()
+									.setDataStatus(
+											status.replace(
+													"清單有無ISBN同名資源<br>清單有無ISBN同名資源<br>",
+													"清單有無ISBN同名資源<br>"));
+						}
+
+						checkRepeatName.put(ebook.getBookName(),
+								originalData.size());
 					}
 				}
 
@@ -1336,8 +1277,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				ebook = (Ebook) importList.get(index);
 
 				if (ebook.getIsbn() == null
-						&& StringUtils.isNotEmpty(ebook.getTempNotes()[0])) {
-					ebook.setIsbn(Long.parseLong(ebook.getTempNotes()[0]
+						&& StringUtils.isNotBlank(ebook.getTempNotes()[0])) {
+					ebook.setIsbn(Long.parseLong(ebook.getTempNotes()[0].trim()
 							.replace("-", "")));
 				}
 
@@ -1370,6 +1311,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			getEntity().setReportFile("ebook_error.xlsx");
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet spreadsheet = workbook.createSheet("ebook_error");
+			XSSFCellStyle cellStyle = workbook.createCellStyle();
+			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
 			XSSFRow row;
 
 			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -1389,17 +1333,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					if (!ebook.getDataStatus().equals("正常")
 							&& !ebook.getDataStatus().equals("已匯入")) {
 
-						Long isbn = ebook.getIsbn();
-
-						StringBuilder isbnBuilder = new StringBuilder("");
-						if (isbn != null) {
-							isbnBuilder.append(isbn);
-						}
-
-						if (ebook.getTempNotes()[0] != null) {
-							isbnBuilder.append(ebook.getTempNotes()[0]);
-						}
-
 						String tips = ebook.getResourcesBuyers()
 								.getDataStatus().replace("<br>", ",");
 						if (tips.length() > 0) {
@@ -1410,7 +1343,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						empinfo.put(
 								mark.toString(),
 								new Object[] { ebook.getBookName(),
-										isbnBuilder.toString(),
+										ebook.getTempNotes()[0],
 										ebook.getPublishName(),
 										ebook.getAutherName(),
 										ebook.getAuthers(),
@@ -1445,17 +1378,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							ownerNames.add(owner.getName());
 						}
 
-						Long isbn = ebook.getIsbn();
-
-						StringBuilder isbnBuilder = new StringBuilder("");
-						if (isbn != null) {
-							isbnBuilder.append(isbn);
-						}
-
-						if (ebook.getTempNotes()[0] != null) {
-							isbnBuilder.append(ebook.getTempNotes()[0]);
-						}
-
 						String tips = ebook.getResourcesBuyers()
 								.getDataStatus().replace("<br>", ",");
 						if (tips.length() > 0) {
@@ -1467,7 +1389,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 								mark.toString(),
 								new Object[] {
 										ebook.getBookName(),
-										isbnBuilder.toString(),
+										ebook.getTempNotes()[0],
 										ebook.getPublishName(),
 										ebook.getAutherName(),
 										ebook.getAuthers(),
@@ -1504,7 +1426,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				int cellid = 0;
 				for (Object obj : objectArr) {
 					Cell cell = row.createCell(cellid++);
-					cell.setCellValue((String) obj);
+					cell.setCellStyle(cellStyle);
+					cell.setCellValue(obj.toString());
 				}
 			}
 
@@ -1517,6 +1440,13 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			getEntity().setReportFile("ebook_tip.xlsx");
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet spreadsheet = workbook.createSheet("ebook_tip");
+			XSSFCellStyle cellStyle = workbook.createCellStyle();
+			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+			for (int i = 0; i < 30; i++) {
+				spreadsheet.setDefaultColumnStyle(i, cellStyle);
+			}
+
 			XSSFRow row;
 
 			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -1536,17 +1466,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					if (ebook.getDataStatus().equals("正常")
 							|| ebook.getDataStatus().equals("已匯入")) {
 
-						Long isbn = ebook.getIsbn();
-
-						StringBuilder isbnBuilder = new StringBuilder("");
-						if (isbn != null) {
-							isbnBuilder.append(isbn);
-						}
-
-						if (ebook.getTempNotes()[0] != null) {
-							isbnBuilder.append(ebook.getTempNotes()[0]);
-						}
-
 						String tips = ebook.getResourcesBuyers()
 								.getDataStatus().replace("<br>", ",");
 						if (tips.length() > 0) {
@@ -1557,7 +1476,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						empinfo.put(
 								mark.toString(),
 								new Object[] { ebook.getBookName(),
-										isbnBuilder.toString(),
+										ebook.getTempNotes()[0],
 										ebook.getPublishName(),
 										ebook.getAutherName(),
 										ebook.getAuthers(),
@@ -1591,51 +1510,38 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							ownerNames.add(owner.getName());
 						}
 
-						Long isbn = ebook.getIsbn();
-
-						StringBuilder isbnBuilder = new StringBuilder("");
-						if (isbn != null) {
-							isbnBuilder.append(isbn);
-						}
-						if (ebook.getTempNotes()[0] != null) {
-							isbnBuilder.append(ebook.getTempNotes()[2]);
-						}
-
 						String tips = ebook.getResourcesBuyers()
 								.getDataStatus().replace("<br>", ",");
 						if (tips.length() > 0) {
 							tips = tips.substring(0, tips.length() - 1);
 						}
 
+						Object[] values = new Object[] {
+								ebook.getBookName(),
+								ebook.getTempNotes()[0],
+								ebook.getPublishName(),
+								ebook.getAutherName(),
+								ebook.getAuthers(),
+								ebook.getUppeName(),
+								ebook.getTempNotes()[1],
+								ebook.getLanguages(),
+								ebook.getVersion(),
+								ebook.getCnClassBzStr(),
+								ebook.getBookInfoIntegral(),
+								ebook.getUrl(),
+								ebook.getStyle(),
+								ebook.getPublication(),
+								ebook.getOpenAccess().toString(),
+								ebook.getTempNotes()[2],
+								ebook.getTempNotes()[3],
+								ebook.getResourcesBuyers().getCategory()
+										.getCategory(),
+								ownerNames.toString().substring(1,
+										ownerNames.toString().length() - 1),
+								ebook.getDataStatus(), tips };
+
 						mark = mark + 1;
-						empinfo.put(
-								mark.toString(),
-								new Object[] {
-										ebook.getBookName(),
-										isbnBuilder.toString(),
-										ebook.getPublishName(),
-										ebook.getAutherName(),
-										ebook.getAuthers(),
-										ebook.getUppeName(),
-										ebook.getTempNotes()[1],
-										ebook.getLanguages(),
-										ebook.getVersion(),
-										ebook.getCnClassBzStr(),
-										ebook.getBookInfoIntegral(),
-										ebook.getUrl(),
-										ebook.getStyle(),
-										ebook.getPublication(),
-										ebook.getOpenAccess().toString(),
-										ebook.getTempNotes()[2],
-										ebook.getTempNotes()[3],
-										ebook.getResourcesBuyers()
-												.getCategory().getCategory(),
-										ownerNames.toString()
-												.substring(
-														1,
-														ownerNames.toString()
-																.length() - 1),
-										ebook.getDataStatus(), tips });
+						empinfo.put(mark.toString(), values);
 					}
 					i++;
 				}
@@ -1649,7 +1555,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				int cellid = 0;
 				for (Object obj : objectArr) {
 					Cell cell = row.createCell(cellid++);
-					cell.setCellValue((String) obj);
+					cell.setCellValue(obj.toString());
 				}
 			}
 
@@ -1667,14 +1573,17 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	public String example() throws Exception {
 		getEntity().setReportFile("ebook_sample.xlsx");
-
-		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		// Create a blank sheet
 		XSSFSheet spreadsheet = workbook.createSheet("ebook");
-		// Create row object
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
-		// This data needs to be written (Object[])
+
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 
 		if (StringUtils.isBlank(getEntity().getOption())) {
@@ -1690,7 +1599,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			empinfo.put("1", new Object[] { "書名", "ISBN/13碼", "出版社", "第一作者",
 					"次要作者", "系列叢書名", "出版日期", "語文", "版本", "中國圖書分類碼", "杜威十進位分類號",
 					"URL", "類型", "出版地", "開放近用", "資料庫UUID" });
-
 			empinfo.put(
 					"2",
 					new Object[] {
@@ -1699,7 +1607,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							"Frank Eperjesi", "Hannah Bartlett & Mark Dunne",
 							"N/A", "2008/2/7", "eng", "1", "410", "617",
 							"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi",
-							"醫學", "Netherlands", "是",
+							"醫學", "Netherlands", "1",
 							"7e123992-bc2d-4edd-a98a-0a290738bea8" });
 			empinfo.put(
 					"3",
@@ -1716,8 +1624,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 							"961",
 							"752",
 							"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
-							"醫學", "Taiwan", "是",
+							"醫學", "Taiwan", "0",
 							"7e123992-bc2d-4edd-a98a-0a290738bea8" });
+			empinfo.put("4", new Object[] {
+					"Edited by Faith C.S. Ho and P.C. Wu", "9789622093362",
+					"Hong Kong University Press", "	Faith C.S. Ho", "P.C. Wu",
+					"N/A", "1995-4-4", "eng", "N/A", "961", "752",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"醫學", "HK", "0", "7e123992-bc2d-4edd-a98a-0a290738bea8" });
 		} else {
 			empinfo.put("1", new Object[] { "書名", "ISBN/13碼", "出版社", "第一作者",
 					"次要作者", "系列叢書名", "出版日期", "語文", "版本", "中國圖書分類碼", "杜威十進位分類號",
@@ -1727,18 +1641,24 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					"Ophthalmic clinical procedures：a multimedia guide",
 					"978-0-08-044978-4", "Elsevier(ClinicalKey)",
 					"Frank Eperjesi", "Hannah Bartlett & Mark Dunne", "N/A",
-					"2008/2/7", "eng", "1", "410", "617",
+					"2008-2-7", "eng", "1", "410", "617",
 					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
-					"Netherlands", "是", "2000/10/10", "", "租賃",
+					"Netherlands", "1", "2000/10/10", "", "0",
 					"疾病管制署,高雄醫學院附設醫院" });
 			empinfo.put("3", new Object[] { "C嘉魔法彩繪", "978-9-88-807293-4",
-					"青森文化", "陳嘉慧", "N/A", "N/A", "2011", "cht", "N/A", "961",
-					"752",
+					"青森文化", "陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A",
+					"961", "752",
 					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
-					"醫學", "Taiwan", "是", "", "2015-10-14", "賣斷", "高雄醫學院附設醫院" });
+					"醫學", "Taiwan", "0", "", "2015-10-14", "1", "高雄醫學院附設醫院" });
+			empinfo.put("4", new Object[] {
+					"Edited by Faith C.S. Ho and P.C. Wu", "9789622093362",
+					"Hong Kong University Press", "	Faith C.S. Ho", "P.C. Wu",
+					"N/A", "1995-4-4", "eng", "N/A", "961", "752",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"醫學", "HK", "0", "1999-5-23", "2015-10-14", "2",
+					"高雄醫學院附設醫院" });
 		}
 
-		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
 		int rowid = 0;
 		for (String key : keyid) {
@@ -1747,7 +1667,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 

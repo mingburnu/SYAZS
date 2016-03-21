@@ -64,7 +64,8 @@
 	}
 
 	function upperChangeSize(size) {
-		var url = "<c:url value = '/'/>cookies.jsp?pager.recordPerPage=" + size;
+		var url = "<c:url value = '/'/>page/addCookies.action?pager.recordPerPage="
+				+ size;
 		$.ajax({
 			url : url,
 			success : function(result) {
@@ -73,8 +74,9 @@
 		});
 	}
 
-	function bottomChangeSize(recordPerPage) {
-		var url = "<c:url value = '/'/>cookies.jsp?pager.recordPerPage=" + size;
+	function bottomChangeSize(size) {
+		var url = "<c:url value = '/'/>page/addCookies.action?pager.recordPerPage="
+				+ size;
 		$.ajax({
 			url : url,
 			success : function(result) {

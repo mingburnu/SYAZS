@@ -67,13 +67,12 @@
 									</select>
 									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.list" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.list" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -97,13 +96,12 @@
 									</select>
 									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.owner" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.owner" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -128,13 +126,12 @@
 									<s:hidden name="entity.option" />
 									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.focus" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.focus" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -158,13 +155,12 @@
 									</select>
 									<s:hidden name="entity.option" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.prefix" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.prefix" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -251,13 +247,12 @@
 									</select>
 									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.list" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.list" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -281,13 +276,12 @@
 									</select>
 									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.owner" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.owner" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -312,13 +306,12 @@
 									<s:hidden name="entity.option" />
 									<s:hidden name="entity.indexTerm" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.focus" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.focus" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>
@@ -342,13 +335,12 @@
 									</select>
 									<s:hidden name="entity.option" />
 								</s:form></td>
-							<td align="right" class="p_02"><c:if
-									test="${ds.pager.totalRecord > 0 }"><jsp:include
-										page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.journal.prefix" />
-										<jsp:param name="pager" value="${ds.pager}" />
-									</jsp:include></c:if></td>
+							<td align="right" class="p_02"><jsp:include
+									page="/WEB-INF/jsp/layout/pagination.jsp">
+									<jsp:param name="namespace" value="/crud" />
+									<jsp:param name="action" value="apply.journal.prefix" />
+									<jsp:param name="pager" value="${ds.pager}" />
+								</jsp:include></td>
 						</tr>
 					</table>
 				</div>

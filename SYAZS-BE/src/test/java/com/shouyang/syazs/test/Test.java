@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
+import com.shouyang.syazs.module.apply.ebook.ISBN_Validator;
+
 public class Test {
 	public static void main(String[] args) throws Exception {
 
@@ -45,21 +47,28 @@ public class Test {
 		System.out.println(s);
 
 		String listHql = "SELECT B.accountNumber, B.customer, B.customer.serNo, B.actionType, count(B.accountNumber) FROM BeLogs B WHERE B.cDTime >'";
-		
+
 		System.out.println(listHql.toLowerCase().indexOf("from "));
-		int index =listHql.toLowerCase().indexOf("from ");
-		System.out.println(listHql.substring(index,listHql.length()));
+		int index = listHql.toLowerCase().indexOf("from ");
+		System.out.println(listHql.substring(index, listHql.length()));
 		System.out.println(Modifier.toString(9).contains("public"));
-		
-//		Pattern pattern4 = Pattern
-//				.compile("(97)([8-9])(\\-)(\\d{1,5})(\\-)(\\d{2,5})(\\-)(\\d{1,6})(\\-)(\\d)");
-//		System.out.println(pattern4.matcher("978-0-08-044978-4").matches());
-		
-		Pattern pattern = Pattern.compile("(97)([8-9])(\\-)(\\d{1,5})(\\-)(\\d{2,5})(\\-)(\\d{1,6})(\\-)(\\d)");
-		Matcher isbnMatcher = pattern.matcher("978-0-12-345678-9");
-		while (isbnMatcher.find()){
-		System.out.println("ISBN Number is valid and number is : "+isbnMatcher.group());
+
+		// Pattern pattern4 = Pattern
+		// .compile("(97)([8-9])(\\-)(\\d{1,5})(\\-)(\\d{2,5})(\\-)(\\d{1,6})(\\-)(\\d)");
+		// System.out.println(pattern4.matcher("978-0-08-044978-4").matches());
+
+		Pattern pattern = Pattern
+				.compile("(97)([8-9])(\\-)(\\d{1,5})(\\-)(\\d{2,5})(\\-)(\\d{1,6})(\\-)(\\d)");
+		Matcher isbnMatcher = pattern.matcher("978-986-181-728-6");
+		while (isbnMatcher.find()) {
+			System.out.println("ISBN Number is valid and number is : "
+					+ isbnMatcher.group());
 		}
+
+		System.out.println(ISBN_Validator.toIsbn10("978-0552162401"));
+		Long ss = null;
+		System.out.println("978-986-181-728-6".trim().replace("-", "")
+				.substring(3, 12));
 	}
 
 	private static boolean check(String s) {

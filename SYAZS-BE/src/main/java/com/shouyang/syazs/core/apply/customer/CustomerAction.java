@@ -30,6 +30,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -739,6 +740,13 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		getEntity().setReportFile("customer_error.xlsx");
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet spreadsheet = workbook.createSheet("customer_error");
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
 
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -771,7 +779,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 
@@ -784,15 +792,18 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 	}
 
 	public String example() throws Exception {
-		// reportFile = "customer_sample.xlsx";
 		getEntity().setReportFile("customer_sample.xlsx");
-		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		// Create a blank sheet
 		XSSFSheet spreadsheet = workbook.createSheet("customer");
-		// Create row object
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
-		// This data needs to be written (Object[])
+
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 		empinfo.put("1", new Object[] { "用戶名稱", "用戶英文名稱", "address/地址",
 				"contactUserName/聯絡人", "tel/電話" });
@@ -800,7 +811,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		empinfo.put("2", new Object[] { "國防醫學中心", "ndmc", "台北市內湖區民權東路六段161號",
 				"總機", "886-2-87923100" });
 
-		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
 		int rowid = 0;
 		for (String key : keyid) {
@@ -809,7 +819,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 

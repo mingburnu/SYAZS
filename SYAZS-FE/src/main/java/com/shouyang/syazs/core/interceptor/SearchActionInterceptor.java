@@ -3,6 +3,7 @@ package com.shouyang.syazs.core.interceptor;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,6 +57,20 @@ public class SearchActionInterceptor extends RootInterceptor {
 			if (session.get("entityRecord") != null) {
 				session.remove("entityRecord");
 				session.remove("pagerRecord");
+			}
+
+			if (invocation.getProxy().getActionName().equals("addCookies")) {
+				if (NumberUtils.isDigits(request
+						.getParameter("pager.recordPerPage"))) {
+					Cookie recordPerPage = new Cookie("recordPerPage",
+							request.getParameter("pager.recordPerPage"));
+					recordPerPage.setMaxAge(60 * 60 * 24);
+					recordPerPage.setPath(request.getContextPath());
+
+					response.addCookie(recordPerPage);
+
+					response.setContentType("text/html");
+				}
 			}
 		}
 
@@ -114,7 +129,7 @@ public class SearchActionInterceptor extends RootInterceptor {
 			if (StringUtils.isBlank(indexTerm)) {
 				addActionError(invocation, "．請輸入關鍵字。");
 			}
-			
+
 			if (session.get("entityRecord") != null) {
 				session.remove("entityRecord");
 				session.remove("pagerRecord");
@@ -265,7 +280,7 @@ public class SearchActionInterceptor extends RootInterceptor {
 			String item = request.getServletPath().replace("/crud/apply.", "")
 					.replace(".prefix.action", "");
 			String option = request.getParameter("entity.option");
-			
+
 			if (session.get("entityRecord") != null) {
 				session.remove("entityRecord");
 				session.remove("pagerRecord");

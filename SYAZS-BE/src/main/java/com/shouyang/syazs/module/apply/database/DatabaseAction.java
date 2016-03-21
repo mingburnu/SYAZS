@@ -29,6 +29,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -584,25 +585,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				List<String> errorList = Lists.newArrayList();
 
 				Category category = null;
-				if (StringUtils.isNotBlank(rowValues[14])) {
-					switch (row.getCell(14).getCellType()) {
-					case 0:
-						Double d = Double.parseDouble(rowValues[14]);
-						if (d >= 0 && d % 1 == 0) {
-							category = Category.getByToken(d.intValue());
-						}
-						break;
 
-					case 1:
-						if (NumberUtils.isDigits(rowValues[14])) {
-							category = Category.getByToken(Integer
-									.parseInt(rowValues[14]));
-						} else {
-							category = (Category) toEnum(rowValues[14].trim(),
-									Category.class);
-						}
-						break;
-					}
+				if (NumberUtils.isDigits(rowValues[14])) {
+					category = Category.getByToken(Integer
+							.parseInt(rowValues[14]));
+				} else {
+					category = (Category) toEnum(rowValues[14].trim(),
+							Category.class);
 				}
 
 				if (category == null) {
@@ -618,42 +607,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				}
 
 				boolean openAccess = false;
-
 				if (StringUtils.isNotBlank(rowValues[11])) {
-					switch (row.getCell(11).getCellType()) {
-					case 0:
-						if (row.getCell(11).getNumericCellValue() == 1) {
-							openAccess = true;
-						}
-						break;
-
-					case 1:
-						if (rowValues[11].equals("1")
-								|| rowValues[11].toLowerCase().equals("yes")
-								|| rowValues[11].toLowerCase().equals("true")
-								|| rowValues[11].equals("是")
-								|| rowValues[11].equals("真")) {
-							openAccess = true;
-						}
-						break;
-
-					case 2:
-						if (row.getCell(11).getCellFormula().equals("TRUE()")) {
-							openAccess = true;
-						}
-						break;
-
-					case 4:
-						if (row.getCell(11).getBooleanCellValue()) {
-							openAccess = row.getCell(11).getBooleanCellValue();
-						}
-						break;
+					if (rowValues[11].equals("1")
+							|| rowValues[11].toLowerCase().equals("yes")
+							|| rowValues[11].toLowerCase().equals("true")
+							|| rowValues[11].equals("是")
+							|| rowValues[11].equals("真")) {
+						openAccess = true;
 					}
 				}
 
 				resourcesBuyers = new ResourcesBuyers(
-						toLocalDateTime(rowValues[12]),
-						toLocalDateTime(rowValues[13]), category);
+						toLocalDateTime(rowValues[12].trim()),
+						toLocalDateTime(rowValues[13].trim()), category);
 
 				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
 				if (StringUtils.isNotBlank(rowValues[15].replace(",", ""))) {
@@ -1032,10 +998,16 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (StringUtils.isBlank(getEntity().getOption())) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else if (getEntity().getOption().equals("errors")) {
-
 			getEntity().setReportFile("database_error.xlsx");
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet spreadsheet = workbook.createSheet("database_error");
+			XSSFCellStyle cellStyle = workbook.createCellStyle();
+			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+			for (int i = 0; i < 30; i++) {
+				spreadsheet.setDefaultColumnStyle(i, cellStyle);
+			}
+
 			XSSFRow row;
 
 			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -1096,7 +1068,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				int cellid = 0;
 				for (Object obj : objectArr) {
 					Cell cell = row.createCell(cellid++);
-					cell.setCellValue((String) obj);
+					cell.setCellValue(obj.toString());
 				}
 			}
 
@@ -1108,6 +1080,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			getEntity().setReportFile("database_tip.xlsx");
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet spreadsheet = workbook.createSheet("database_tip");
+			XSSFCellStyle cellStyle = workbook.createCellStyle();
+			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+			for (int i = 0; i < 30; i++) {
+				spreadsheet.setDefaultColumnStyle(i, cellStyle);
+			}
+
 			XSSFRow row;
 
 			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
@@ -1168,7 +1147,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				int cellid = 0;
 				for (Object obj : objectArr) {
 					Cell cell = row.createCell(cellid++);
-					cell.setCellValue((String) obj);
+					cell.setCellValue(obj.toString());
 				}
 			}
 
@@ -1185,14 +1164,17 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	public String example() throws Exception {
 		getEntity().setReportFile("database_sample.xlsx");
-
-		// Create blank workbook
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		// Create a blank sheet
 		XSSFSheet spreadsheet = workbook.createSheet("database");
-		// Create row object
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+
+		for (int i = 0; i < 30; i++) {
+			spreadsheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
 		XSSFRow row;
-		// This data needs to be written (Object[])
+
 		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
 
 		empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
@@ -1209,13 +1191,20 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						"本選輯專為台灣地理空間、人文風情與歷史社會風貌打造的平台檢索系統，精心挑選遠足文化出版社最具代表性的出版品，並經由台灣百餘位學界教授、地方文史工作者、公部門專業研究員共同編撰，以豐富的數位內容與專業平台檢索系統的結合，引領讀者按圖索驥，開啟「台灣學」新視野。 @內容皆採全文本(pure –efile)格式製作，可支援關鍵字全文檢索。@提供讀者二大閱讀模式：(1)【下載】離線閱讀授權範圍內下載並安裝”L&B專屬之SMART Reader閱讀器”至您的桌機/筆電，即使無法網際網路連線，也能進行閱讀、管理下載書目(離線閱讀檔案共可使用30天)。運用章節標引導航、全文檢索、文字引用及底線等標註多樣化常用文具，為使用者節省並增加資訊檢索的正確率，有效提升學術研究、主題討論之品質。(2)【線上閱讀】連線閱讀：Flash翻頁式電子書@本平臺之電子書不限制同時使用人數，目前提供約60本電子書。",
 						"台灣行旅", "地理、人文、歷史 、社會", "N/A", "N/A", "電子書",
 						"http://lb20.tpml.libraryandbook.net/FE", "否",
-						"2015/05/10", "", "租賃", "高雄醫學院附設醫院,疾病管制署" });
+						"2015-05-10", "", "0", "高雄醫學院附設醫院,疾病管制署" });
 		empinfo.put("3", new Object[] { "Tesuka Manga手塚治虫系列漫畫電子書", "中文", "漫畫",
 				"iGroup", "繁體中文12種157冊、日文15種377冊、英文6種55冊", "手塚治虫系列漫畫", "N/A",
 				"N/A", "N/A", "電子書", "http://www.mymanga365.com/tezuka/", "否",
-				"", "2015-10-15", "租賃", "高雄醫學院附設醫院" });
+				"", "2015-10-15", "1", "高雄醫學院附設醫院" });
+		empinfo.put("4", new Object[] { "Nature Publish Group", "英文", "期刊",
+				"nature.com", "", "Science & Medicine Journal", "N/A", "N/A",
+				"N/A", "期刊", "http://www.nature.com/", "否", "", "2015-10-15",
+				"2", "高雄醫學院附設醫院" });
+		empinfo.put("5", new Object[] { "台灣地理線上百科資料庫 ", "中文", "多媒體", "SYDT",
+				"", "台灣地理", "N/A", "N/A", "N/A", "資料庫",
+				"http://geo.twonline.libraryandbook.net/main.action", "否", "",
+				"2015-10-15", "1", "高雄醫學院附設醫院" });
 
-		// Iterate over data and write to sheet
 		Set<String> keyid = empinfo.keySet();
 		int rowid = 0;
 		for (String key : keyid) {
@@ -1224,7 +1213,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			int cellid = 0;
 			for (Object obj : objectArr) {
 				Cell cell = row.createCell(cellid++);
-				cell.setCellValue((String) obj);
+				cell.setCellValue(obj.toString());
 			}
 		}
 

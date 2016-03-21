@@ -129,9 +129,7 @@
 		var datSerNo = $("input#apply_ebook_update_entity_database_serNo")
 				.val();
 
-		if (isbn == null || isbn.trim() == "") {
-			$("#span-num-tip").html("ISBN未填寫");
-		} else {
+		if (isbn != null && isbn.trim() != "") {
 			if (isValidISBN(isbn)) {
 				goNumTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
 						+ isbn + '&entity.database.serNo=' + datSerNo);
@@ -251,7 +249,7 @@ input#referenceOwner_name {
 				<td><input type="text" name="entity.pubDate"
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(pubDate)%>"
 					id="apply_ebook_update_entity_pubDate" class="input_text">&nbsp;<span
-					id="span-date-tip" class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					id="span-date-tip" class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">語文</th>
@@ -273,7 +271,8 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">URL<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.url" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.url" cssClass="input_text" />&nbsp;<span
+					id="span-url-tip" class="tip">http://www.sydt.com.tw或https://www.sydt.com.tw</span></td>
 			</tr>
 			<tr>
 				<th width="130">類型</th>
@@ -315,7 +314,7 @@ input#referenceOwner_name {
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
 					id="apply_ebook_update_entity_resourcesBuyers_startDate"
 					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
@@ -324,7 +323,7 @@ input#referenceOwner_name {
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
 					id="apply_ebook_update_entity_resourcesBuyers_maturityDate"
 					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-MM-dd或yyyy/MM/dd</span></td>
+					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>
