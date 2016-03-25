@@ -70,39 +70,3 @@ function isValidISSN(issn) {
 
 	return ((sum % 11) == 0);
 }
-
-//檢查 ISBN
-function isValidISBN(isbn) {
-	var patt1 = /^(978|979)\-{1}\d{1}\-{1}\d{2}\-{1}\d{6}\-{1}\d{1}$/;
-	var patt2 = /^(978|979)\d{10}$/;
-	if (!patt1.test(isbn.trim()) && !patt2.test(isbn.trim())) {
-		return false;
-	}
-
-	isbn = isbn.replace(/[^\d]/g, "");
-	var chars = isbn.split('');
-
-	var sum = 0;
-	for (var i = 0; i < chars.length - 1; i++) {
-		if (i % 2 == 0) {
-			sum = sum + parseInt(chars[i]) * 1;
-		} else {
-			sum = sum + parseInt(chars[i]) * 3;
-		}
-	}
-
-	var remainder = sum % 10;
-	var num = 10 - remainder;
-
-	if (num == 10) {
-		if (parseInt(chars[12]) != 0) {
-			return false;
-		}
-	} else {
-		if (parseInt(chars[12]) != num) {
-			return false;
-		}
-	}
-
-	return true;
-}

@@ -10,10 +10,6 @@ public class ISBN_Validator {
 
 	private static ISBNValidator isbnValidator = new ISBNValidator();
 
-	public static boolean isIsbn13(Long isbn) {
-		return isIsbn13(isbn + "");
-	}
-
 	public static boolean isIsbn13(String isbn) {
 		Pattern amazonPattern = Pattern
 				.compile("(97)([8-9])(\\-)(\\d)(\\d{2})(\\d{6})(\\d)");

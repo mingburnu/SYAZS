@@ -21,6 +21,17 @@
 
 	//Excel列表
 	function goQueue() {
+		var f = document.getElementById("file");
+		if (f.files.length == 0) {
+			goAlert("訊息", "請選擇檔案");
+			return;
+		}
+
+		if (f.files.item(0).size > 10485760) {
+			goAlert("訊息", "檔案超過10MB，請分批");
+			return;
+		}
+
 		function getDoc(frame) {
 			var doc = null;
 
@@ -108,7 +119,6 @@
 				closeLoading();
 			});
 		}
-
 	}
 </script>
 </head>

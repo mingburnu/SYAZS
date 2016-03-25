@@ -2,7 +2,7 @@ package com.shouyang.syazs.core.apply.group;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,8 +23,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -37,6 +35,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Role;
@@ -899,12 +898,14 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 		return IMPORT;
 	}
 
-	public String queue() throws Exception {
+	@SuppressWarnings("resource")
+	public String queue() throws Exception {// TODO
 		if (ArrayUtils.isEmpty(getEntity().getFile())
 				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
+			if (!getFileMime(getEntity().getFile()[0],
+					getEntity().getFileFileName()[0]).equals("text/csv")) {
 				addActionError("檔案格式錯誤");
 			} else {
 				if (!hasCustomer()) {
@@ -920,235 +921,140 @@ public class GroupAction extends GenericWebActionGroup<Group> {
 		}
 
 		if (!hasActionErrors()) {
-			Workbook book = createWorkBook(new FileInputStream(getEntity()
-					.getFile()[0]));
-			Sheet sheet = book.createSheet();
-			if (book.getNumberOfSheets() != 0) {
-				sheet = book.getSheetAt(0);
-			}
-
-			Row firstRow = sheet.getRow(0);
-			if (firstRow == null) {
-				firstRow = sheet.createRow(0);
-			}
-
-			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[3];
-			int n = 0;
-			while (n < rowTitles.length) {
-				if (firstRow.getCell(n) == null) {
-					rowTitles[n] = "";
-				} else {
-					int typeInt = firstRow.getCell(n).getCellType();
-					switch (typeInt) {
-					case 0:
-						String tempNumeric = "";
-						tempNumeric = tempNumeric
-								+ firstRow.getCell(n).getNumericCellValue();
-						rowTitles[n] = tempNumeric;
-						break;
-
-					case 1:
-						rowTitles[n] = firstRow.getCell(n).getStringCellValue();
-						break;
-
-					case 2:
-						rowTitles[n] = firstRow.getCell(n).getCellFormula();
-						break;
-
-					case 3:
-						rowTitles[n] = "";
-						break;
-
-					case 4:
-						String tempBoolean = "";
-						tempBoolean = ""
-								+ firstRow.getCell(n).getBooleanCellValue();
-						rowTitles[n] = tempBoolean;
-						break;
-
-					case 5:
-						String tempByte = "";
-						tempByte = tempByte
-								+ firstRow.getCell(n).getErrorCellValue();
-						rowTitles[n] = tempByte;
-						break;
-					}
-
-				}
-
-				cellNames.add(rowTitles[n]);
-				n++;
-			}
 
 			LinkedHashSet<Group> originalData = new LinkedHashSet<Group>();
+			int normal = 0;
+
+			CSVReader reader = new CSVReader(new FileReader(getEntity()
+					.getFile()[0]), ',');
+
+			String[] row;
+			int rowLength = 3;
+
 			getEntity().getCustomer().setName(
 					customerService.getBySerNo(
 							getEntity().getCustomer().getSerNo()).getName());
 
-			int normal = 0;
-
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					continue;
+			while ((row = reader.readNext()) != null) {
+				if (row.length < rowLength) {
+					String[] spaceArray = new String[rowLength - row.length];
+					row = ArrayUtils.addAll(row, spaceArray);
 				}
 
-				String[] rowValues = new String[3];
-				int k = 0;
-				while (k < rowValues.length) {
-					if (row.getCell(k) == null) {
-						rowValues[k] = "";
-					} else {
-						int typeInt = row.getCell(k).getCellType();
-						switch (typeInt) {
-						case 0:
-							String tempNumeric = "";
-							tempNumeric = tempNumeric
-									+ row.getCell(k).getNumericCellValue();
-							rowValues[k] = tempNumeric;
-							break;
+				if (reader.getRecordsRead() == 1) {
+					cellNames = Arrays.asList(row);
+				} else {
+					group = new Group();
 
-						case 1:
-							rowValues[k] = row.getCell(k).getStringCellValue();
-							break;
-
-						case 2:
-							rowValues[k] = row.getCell(k).getCellFormula();
-							break;
-
-						case 3:
-							rowValues[k] = "";
-							break;
-
-						case 4:
-							String tempBoolean = "";
-							tempBoolean = ""
-									+ row.getCell(k).getBooleanCellValue();
-							rowValues[k] = tempBoolean;
-							break;
-
-						case 5:
-							String tempByte = "";
-							tempByte = tempByte
-									+ row.getCell(k).getErrorCellValue();
-							rowValues[k] = tempByte;
-							break;
-						}
-
-					}
-					k++;
-				}
-
-				group = new Group();
-
-				if (StringUtils.isNotBlank(rowValues[0].trim())) {
-					group.setFirstLevelGroup(new Group(null, getEntity()
-							.getCustomer(), rowValues[0].trim()));
-				}
-
-				if (StringUtils.isNotBlank(rowValues[1].trim())) {
-					group.setSecondLevelGroup(new Group(null, getEntity()
-							.getCustomer(), rowValues[1].trim()));
-				}
-
-				if (StringUtils.isNotBlank(rowValues[2].trim())) {
-					group.setThirdLevelGroup(new Group(null, getEntity()
-							.getCustomer(), rowValues[2].trim()));
-				}
-
-				if (group.getFirstLevelGroup() == null) {
-					group.setDataStatus("Level 1 錯誤");
-				}
-
-				if (group.getFirstLevelGroup() != null
-						&& group.getThirdLevelGroup() != null
-						&& group.getSecondLevelGroup() == null) {
-					group.setDataStatus("Level 2 錯誤");
-				}
-
-				if (group.getDataStatus() == null) {
-					if (group.getSecondLevelGroup() == null
-							&& group.getThirdLevelGroup() == null) {
-						if (groupService.isRepeatMainGroup(group
-								.getFirstLevelGroup().getGroupName(),
-								getEntity().getCustomer().getSerNo())) {
-							group.setDataStatus("已存在");
-						}
+					if (StringUtils.isNotBlank(row[0].trim())) {
+						group.setFirstLevelGroup(new Group(null, getEntity()
+								.getCustomer(), row[0].trim()));
 					}
 
-					if (group.getSecondLevelGroup() != null
-							&& group.getThirdLevelGroup() == null) {
-						parentGroup = groupService.getRepeatMainGroup(group
-								.getFirstLevelGroup().getGroupName(),
-								getEntity().getCustomer().getSerNo());
-						if (parentGroup != null) {
-							if (groupService.isRepeatSubGroup(group
-									.getSecondLevelGroup().getGroupName(),
-									getEntity().getCustomer().getSerNo(),
-									parentGroup)) {
+					if (StringUtils.isNotBlank(row[1].trim())) {
+						group.setSecondLevelGroup(new Group(null, getEntity()
+								.getCustomer(), row[1].trim()));
+					}
+
+					if (StringUtils.isNotBlank(row[2].trim())) {
+						group.setThirdLevelGroup(new Group(null, getEntity()
+								.getCustomer(), row[2].trim()));
+					}
+
+					if (group.getFirstLevelGroup() == null) {
+						group.setDataStatus("Level 1 錯誤");
+					}
+
+					if (group.getFirstLevelGroup() != null
+							&& group.getThirdLevelGroup() != null
+							&& group.getSecondLevelGroup() == null) {
+						group.setDataStatus("Level 2 錯誤");
+					}
+
+					if (group.getDataStatus() == null) {
+						if (group.getSecondLevelGroup() == null
+								&& group.getThirdLevelGroup() == null) {
+							if (groupService.isRepeatMainGroup(group
+									.getFirstLevelGroup().getGroupName(),
+									getEntity().getCustomer().getSerNo())) {
 								group.setDataStatus("已存在");
 							}
 						}
-					}
 
-					if (group.getSecondLevelGroup() != null
-							&& group.getThirdLevelGroup() != null) {
-						parentGroup = groupService.getRepeatMainGroup(group
-								.getFirstLevelGroup().getGroupName(),
-								getEntity().getCustomer().getSerNo());
-						if (parentGroup != null) {
-							parentGroup = groupService.getRepeatSubGroup(group
-									.getSecondLevelGroup().getGroupName(),
-									getEntity().getCustomer().getSerNo(),
-									parentGroup);
+						if (group.getSecondLevelGroup() != null
+								&& group.getThirdLevelGroup() == null) {
+							parentGroup = groupService.getRepeatMainGroup(group
+									.getFirstLevelGroup().getGroupName(),
+									getEntity().getCustomer().getSerNo());
 							if (parentGroup != null) {
 								if (groupService.isRepeatSubGroup(group
-										.getThirdLevelGroup().getGroupName(),
+										.getSecondLevelGroup().getGroupName(),
 										getEntity().getCustomer().getSerNo(),
 										parentGroup)) {
 									group.setDataStatus("已存在");
 								}
 							}
 						}
+
+						if (group.getSecondLevelGroup() != null
+								&& group.getThirdLevelGroup() != null) {
+							parentGroup = groupService.getRepeatMainGroup(group
+									.getFirstLevelGroup().getGroupName(),
+									getEntity().getCustomer().getSerNo());
+							if (parentGroup != null) {
+								parentGroup = groupService.getRepeatSubGroup(
+										group.getSecondLevelGroup()
+												.getGroupName(), getEntity()
+												.getCustomer().getSerNo(),
+										parentGroup);
+								if (parentGroup != null) {
+									if (groupService.isRepeatSubGroup(group
+											.getThirdLevelGroup()
+											.getGroupName(), getEntity()
+											.getCustomer().getSerNo(),
+											parentGroup)) {
+										group.setDataStatus("已存在");
+									}
+								}
+							}
+						}
+
+						if (group.getDataStatus() == null) {
+							group.setDataStatus("正常");
+
+							if (!originalData.contains(group)) {
+								normal++;
+							}
+						}
+
+						originalData.add(group);
 					}
-
 				}
-
-				if (group.getDataStatus() == null) {
-					group.setDataStatus("正常");
-
-					if (!originalData.contains(group)) {
-						normal++;
-					}
-				}
-
-				originalData.add(group);
 			}
 
-			List<Group> excelData = new ArrayList<Group>(originalData);
+			List<Group> csvData = new ArrayList<Group>(originalData);
 
 			DataSet<Group> ds = initDataSet();
-			ds.getPager().setTotalRecord((long) excelData.size());
+			ds.getPager().setTotalRecord((long) csvData.size());
 
-			if (excelData.size() < ds.getPager().getRecordPerPage()) {
+			if (csvData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
-				while (i < excelData.size()) {
-					ds.getResults().add(excelData.get(i));
+				while (i < csvData.size()) {
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					ds.getResults().add(excelData.get(i));
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			}
 
 			getSession().put("cellNames", cellNames);
-			getSession().put("importList", excelData);
-			getSession().put("total", excelData.size());
+			getSession().put("importList", csvData);
+			getSession().put("total", csvData.size());
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
 			getSession().put("clazz", this.getClass());

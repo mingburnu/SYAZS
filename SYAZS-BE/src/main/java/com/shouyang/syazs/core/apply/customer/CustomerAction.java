@@ -2,9 +2,9 @@ package com.shouyang.syazs.core.apply.customer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
@@ -24,22 +23,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.group.Group;
 import com.shouyang.syazs.core.apply.group.GroupService;
@@ -291,208 +282,121 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		return IMPORT;
 	}
 
+	@SuppressWarnings("resource")
 	public String queue() throws Exception {
 		if (ArrayUtils.isEmpty(getEntity().getFile())
 				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
-				addActionError("檔案格式錯誤");
+			if (getEntity().getFile()[0].length() > 10 * 1024 * 1024) {
+				addActionError("檔案超過10MB，請分批");
+			} else {
+				if (!getFileMime(getEntity().getFile()[0],
+						getEntity().getFileFileName()[0]).equals("text/csv")) {
+					addActionError("檔案格式錯誤");
+				}
 			}
 		}
 
-		if (!hasActionErrors()) {
-			Workbook book = createWorkBook(new FileInputStream(getEntity()
-					.getFile()[0]));
-			Sheet sheet = book.createSheet();
-			if (book.getNumberOfSheets() != 0) {
-				sheet = book.getSheetAt(0);
-			}
-
-			Row firstRow = sheet.getRow(0);
-			if (firstRow == null) {
-				firstRow = sheet.createRow(0);
-			}
-
-			// 保存列名
+		if (!hasActionErrors()) {// TODO
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[5];
-			int n = 0;
-			while (n < rowTitles.length) {
-				if (firstRow.getCell(n) == null) {
-					rowTitles[n] = "";
-				} else {
-					int typeInt = firstRow.getCell(n).getCellType();
-					switch (typeInt) {
-					case 0:
-						String tempNumeric = "";
-						tempNumeric = tempNumeric
-								+ firstRow.getCell(n).getNumericCellValue();
-						rowTitles[n] = tempNumeric;
-						break;
-
-					case 1:
-						rowTitles[n] = firstRow.getCell(n).getStringCellValue();
-						break;
-
-					case 2:
-						rowTitles[n] = firstRow.getCell(n).getCellFormula();
-						break;
-
-					case 3:
-						rowTitles[n] = "";
-						break;
-
-					case 4:
-						String tempBoolean = "";
-						tempBoolean = ""
-								+ firstRow.getCell(n).getBooleanCellValue();
-						rowTitles[n] = tempBoolean;
-						break;
-
-					case 5:
-						String tempByte = "";
-						tempByte = tempByte
-								+ firstRow.getCell(n).getErrorCellValue();
-						rowTitles[n] = tempByte;
-						break;
-					}
-
-				}
-
-				cellNames.add(rowTitles[n]);
-				n++;
-			}
+			List<String> errorList = Lists.newArrayList();
 
 			LinkedHashSet<Customer> originalData = new LinkedHashSet<Customer>();
 			Map<String, Customer> checkRepeatRow = new LinkedHashMap<String, Customer>();
 			int normal = 0;
 
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					continue;
+			CSVReader reader = new CSVReader(new FileReader(getEntity()
+					.getFile()[0]), ',');
+
+			String[] row;
+			int rowLength = 6;
+			while ((row = reader.readNext()) != null) {
+				if (row.length < rowLength) {
+					String[] spaceArray = new String[rowLength - row.length];
+					row = ArrayUtils.addAll(row, spaceArray);
 				}
 
-				String[] rowValues = new String[5];
-				int k = 0;
-				while (k < rowValues.length) {
-					if (row.getCell(k) == null) {
-						rowValues[k] = "";
-					} else {
-						int typeInt = row.getCell(k).getCellType();
-						switch (typeInt) {
-						case 0:
-							String tempNumeric = "";
-							tempNumeric = tempNumeric
-									+ row.getCell(k).getNumericCellValue();
-							rowValues[k] = tempNumeric;
-							break;
-
-						case 1:
-							rowValues[k] = row.getCell(k).getStringCellValue();
-							break;
-
-						case 2:
-							rowValues[k] = row.getCell(k).getCellFormula();
-							break;
-
-						case 3:
-							rowValues[k] = "";
-							break;
-
-						case 4:
-							String tempBoolean = "";
-							tempBoolean = ""
-									+ row.getCell(k).getBooleanCellValue();
-							rowValues[k] = tempBoolean;
-							break;
-
-						case 5:
-							String tempByte = "";
-							tempByte = tempByte
-									+ row.getCell(k).getErrorCellValue();
-							rowValues[k] = tempByte;
-							break;
-						}
-
-					}
-					k++;
-				}
-
-				customer = new Customer(rowValues[0], rowValues[1],
-						rowValues[2], rowValues[4], rowValues[3], "");
-				List<String> errorList = Lists.newArrayList();
-
-				if (StringUtils.isBlank(customer.getName())) {
-					errorList.add("名稱空白");
+				if (reader.getRecordsRead() == 1) {
+					cellNames = Arrays.asList(row);
 				} else {
-					if (customer.getName()
-							.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "")
-							.length() != 0) {
-						errorList.add("名稱字元異常");
+					customer = new Customer(row[0], row[1], row[2], row[4],
+							row[3], row[5]);
+
+					if (StringUtils.isBlank(customer.getName())) {
+						errorList.add("名稱空白");
 					} else {
-						long cusSerNo = customerService
-								.getCusSerNoByName(customer.getName());
-						if (cusSerNo != 0) {
-							errorList.add("已存在");
+						if (customer.getName()
+								.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "")
+								.length() != 0) {
+							errorList.add("名稱字元異常");
+						} else {
+							long cusSerNo = customerService
+									.getCusSerNoByName(customer.getName());
+							if (cusSerNo != 0) {
+								errorList.add("已存在");
+							}
+
+							if (StringUtils.isNotEmpty(customer.getTel())) {
+								String tel = customer.getTel()
+										.replaceAll("[/()+-]", "")
+										.replace(" ", "");
+								if (!NumberUtils.isDigits(tel)) {
+									errorList.add("電話異常");
+								}
+							}
+
+							if (errorList.size() != 0) {
+								customer.setDataStatus(errorList.toString()
+										.replace("[", "").replace("]", ""));
+							} else {
+								customer.setDataStatus("正常");
+							}
+
+							if (customer.getDataStatus().equals("正常")
+									&& !originalData.contains(customer)) {
+
+								if (checkRepeatRow.containsKey(customer
+										.getName())) {
+									customer.setDataStatus("名稱重複");
+
+								} else {
+									checkRepeatRow.put(customer.getName(),
+											customer);
+
+									++normal;
+								}
+							}
+
+							originalData.add(customer);
 						}
 					}
+
 				}
-
-				if (StringUtils.isNotEmpty(customer.getTel())) {
-					String tel = customer.getTel().replaceAll("[/()+-]", "")
-							.replace(" ", "");
-					if (!NumberUtils.isDigits(tel)) {
-						errorList.add("電話異常");
-					}
-				}
-
-				if (errorList.size() != 0) {
-					customer.setDataStatus(errorList.toString()
-							.replace("[", "").replace("]", ""));
-				} else {
-					customer.setDataStatus("正常");
-				}
-
-				if (customer.getDataStatus().equals("正常")
-						&& !originalData.contains(customer)) {
-
-					if (checkRepeatRow.containsKey(customer.getName())) {
-						customer.setDataStatus("名稱重複");
-
-					} else {
-						checkRepeatRow.put(customer.getName(), customer);
-
-						++normal;
-					}
-				}
-
-				originalData.add(customer);
 			}
 
-			List<Customer> excelData = new ArrayList<Customer>(originalData);
+			List<Customer> csvData = new ArrayList<Customer>(originalData);
 
 			DataSet<Customer> ds = initDataSet();
-			ds.getPager().setTotalRecord((long) excelData.size());
+			ds.getPager().setTotalRecord((long) csvData.size());
 
-			if (excelData.size() < ds.getPager().getRecordPerPage()) {
+			if (csvData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
-				while (i < excelData.size()) {
-					ds.getResults().add(excelData.get(i));
+				while (i < csvData.size()) {
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					ds.getResults().add(excelData.get(i));
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			}
 
 			getSession().put("cellNames", cellNames);
-			getSession().put("importList", excelData);
-			getSession().put("total", excelData.size());
+			getSession().put("importList", csvData);
+			getSession().put("total", csvData.size());
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
 			getSession().put("clazz", this.getClass());
@@ -737,96 +641,56 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			return IMPORT;
 		}
 
-		getEntity().setReportFile("customer_error.xlsx");
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet spreadsheet = workbook.createSheet("customer_error");
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-		for (int i = 0; i < 30; i++) {
-			spreadsheet.setDefaultColumnStyle(i, cellStyle);
-		}
-
-		XSSFRow row;
-
-		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-		Integer mark = 1;
-		empinfo.put(mark.toString(), new Object[] { "用戶名稱", "用戶英文名稱",
-				"address/地址", "contactUserName/聯絡人", "tel/電話", "錯誤原因" });
+		List<String[]> rows = new ArrayList<String[]>();
+		rows.add(new String[] { "用戶名稱", "用戶英文名稱", "address/地址",
+				"contactUserName/聯絡人", "tel/電話", "備註", "錯誤原因" });
 
 		int i = 0;
 		while (i < importList.size()) {
 			customer = (Customer) importList.get(i);
 			if (!customer.getDataStatus().equals("正常")
 					&& !customer.getDataStatus().equals("已匯入")) {
-				mark = mark + 1;
-				empinfo.put(
-						mark.toString(),
-						new Object[] { customer.getName(),
-								customer.getEngName(), customer.getAddress(),
-								customer.getContactUserName(),
-								customer.getTel(), customer.getDataStatus() });
+				rows.add(new String[] { customer.getName(),
+						customer.getEngName(), customer.getAddress(),
+						customer.getContactUserName(), customer.getTel(),
+						customer.getDataStatus() });
 			}
 			i++;
 		}
 
-		Set<String> keyid = empinfo.keySet();
-		int rowid = 0;
-		for (String key : keyid) {
-			row = spreadsheet.createRow(rowid++);
-			Object[] objectArr = empinfo.get(key);
-			int cellid = 0;
-			for (Object obj : objectArr) {
-				Cell cell = row.createCell(cellid++);
-				cell.setCellValue(obj.toString());
-			}
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.NO_ESCAPE_CHARACTER, "\n");
 
-		ByteArrayOutputStream boas = new ByteArrayOutputStream();
-		workbook.write(boas);
+		writer.writeAll(rows);
+		writer.close();
+
+		getEntity().setReportFile("customer_error.csv");
 		getEntity()
-				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
 		return XLSX;
 	}
 
 	public String example() throws Exception {
-		getEntity().setReportFile("customer_sample.xlsx");
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet spreadsheet = workbook.createSheet("customer");
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+		List<String[]> rows = new ArrayList<String[]>();
+		rows.add(new String[] { "用戶名稱", "用戶英文名稱", "address/地址",
+				"contactUserName/聯絡人", "tel/電話", "備註" });
+		rows.add(new String[] { "國防醫學中心", "ndmc", "台北市內湖區民權東路六段161號", "總機",
+				"886-2-87923100" });
 
-		for (int i = 0; i < 30; i++) {
-			spreadsheet.setDefaultColumnStyle(i, cellStyle);
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.NO_ESCAPE_CHARACTER, "\n");
 
-		XSSFRow row;
+		writer.writeAll(rows);
+		writer.close();
 
-		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1", new Object[] { "用戶名稱", "用戶英文名稱", "address/地址",
-				"contactUserName/聯絡人", "tel/電話" });
-
-		empinfo.put("2", new Object[] { "國防醫學中心", "ndmc", "台北市內湖區民權東路六段161號",
-				"總機", "886-2-87923100" });
-
-		Set<String> keyid = empinfo.keySet();
-		int rowid = 0;
-		for (String key : keyid) {
-			row = spreadsheet.createRow(rowid++);
-			Object[] objectArr = empinfo.get(key);
-			int cellid = 0;
-			for (Object obj : objectArr) {
-				Cell cell = row.createCell(cellid++);
-				cell.setCellValue(obj.toString());
-			}
-		}
-
-		ByteArrayOutputStream boas = new ByteArrayOutputStream();
-		workbook.write(boas);
+		getEntity().setReportFile("customer_sample.csv");
 		getEntity()
-				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
 		return XLSX;
 	}
@@ -842,16 +706,5 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 		}
 
 		return true;
-	}
-
-	// 判斷文件類型
-	protected Workbook createWorkBook(InputStream is) throws IOException {
-		try {
-			return WorkbookFactory.create(is);
-		} catch (InvalidFormatException e) {
-			return null;
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
 	}
 }

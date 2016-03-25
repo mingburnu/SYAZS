@@ -163,7 +163,9 @@
 							</c:otherwise>
 						</c:choose></th>
 					<c:forEach var="item" items="${cellNames}" varStatus="status">
-						<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
+						<c:if test="${5 ne status.index }">
+							<th><esapi:encodeForHTML>${item}</esapi:encodeForHTML></th>
+						</c:if>
 					</c:forEach>
 					<th></th>
 				</tr>

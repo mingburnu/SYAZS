@@ -2,9 +2,10 @@ package com.shouyang.syazs.core.apply.accountNumber;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,15 +23,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.owasp.esapi.ESAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -38,6 +32,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opensymphony.xwork2.ActionContext;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
@@ -473,268 +469,180 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		return IMPORT;
 	}
 
+	@SuppressWarnings("resource")
 	public String queue() throws Exception {
 		if (ArrayUtils.isEmpty(getEntity().getFile())
 				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
-				addActionError("檔案格式錯誤");
+			if (getEntity().getFile()[0].length() > 10485760) {
+				addActionError("檔案超過10MB，請分批");
+			} else {
+				if (!getFileMime(getEntity().getFile()[0],
+						getEntity().getFileFileName()[0]).equals("text/csv")) {
+					addActionError("檔案格式錯誤");
+				}
 			}
 		}
 
-		if (!hasActionErrors()) {
-			Workbook book = createWorkBook(new FileInputStream(getEntity()
-					.getFile()[0]));
-			Sheet sheet = book.createSheet();
-			if (book.getNumberOfSheets() != 0) {
-				sheet = book.getSheetAt(0);
-			}
-
-			Row firstRow = sheet.getRow(0);
-			if (firstRow == null) {
-				firstRow = sheet.createRow(0);
-			}
-
-			// 保存列名
+		if (!hasActionErrors()) {// TODO
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[7];
-			int n = 0;
-			while (n < rowTitles.length) {
-				if (firstRow.getCell(n) == null) {
-					rowTitles[n] = "";
-				} else {
-					int typeInt = firstRow.getCell(n).getCellType();
-					switch (typeInt) {
-					case 0:
-						String tempNumeric = "";
-						tempNumeric = tempNumeric
-								+ firstRow.getCell(n).getNumericCellValue();
-						rowTitles[n] = tempNumeric;
-						break;
+			List<String> errorList = Lists.newArrayList();
 
-					case 1:
-						rowTitles[n] = firstRow.getCell(n).getStringCellValue();
-						break;
-
-					case 2:
-						rowTitles[n] = firstRow.getCell(n).getCellFormula();
-						break;
-
-					case 3:
-						rowTitles[n] = "";
-						break;
-
-					case 4:
-						String tempBoolean = "";
-						tempBoolean = ""
-								+ firstRow.getCell(n).getBooleanCellValue();
-						rowTitles[n] = tempBoolean;
-						break;
-
-					case 5:
-						String tempByte = "";
-						tempByte = tempByte
-								+ firstRow.getCell(n).getErrorCellValue();
-						rowTitles[n] = tempByte;
-						break;
-					}
-
-				}
-
-				cellNames.add(rowTitles[n]);
-				n++;
-			}
-
-			List<Role> roleList = getLegalRoles();
 			LinkedHashSet<AccountNumber> originalData = new LinkedHashSet<AccountNumber>();
 			Map<String, AccountNumber> checkRepeatRow = new LinkedHashMap<String, AccountNumber>();
 			int normal = 0;
 
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					continue;
+			CSVReader reader = new CSVReader(new FileReader(getEntity()
+					.getFile()[0]), ',');
+
+			String[] row;
+			int rowLength = 7;
+			List<Role> roleList = getLegalRoles();
+
+			while ((row = reader.readNext()) != null) {
+				if (row.length < rowLength) {
+					String[] spaceArray = new String[rowLength - row.length];
+					row = ArrayUtils.addAll(row, spaceArray);
 				}
 
-				String[] rowValues = new String[7];
-				int k = 0;
-				while (k < rowValues.length) {
-					if (row.getCell(k) == null) {
-						rowValues[k] = "";
-					} else {
-						int typeInt = row.getCell(k).getCellType();
-						switch (typeInt) {
-						case 0:
-							String tempNumeric = "";
-							tempNumeric = tempNumeric
-									+ row.getCell(k).getNumericCellValue();
-							rowValues[k] = tempNumeric;
-							break;
+				if (reader.getRecordsRead() == 1) {
+					cellNames = Arrays.asList(row);
 
-						case 1:
-							rowValues[k] = row.getCell(k).getStringCellValue();
-							break;
-
-						case 2:
-							rowValues[k] = row.getCell(k).getCellFormula();
-							break;
-
-						case 3:
-							rowValues[k] = "";
-							break;
-
-						case 4:
-							String tempBoolean = "";
-							tempBoolean = ""
-									+ row.getCell(k).getBooleanCellValue();
-							rowValues[k] = tempBoolean;
-							break;
-
-						case 5:
-							String tempByte = "";
-							tempByte = tempByte
-									+ row.getCell(k).getErrorCellValue();
-							rowValues[k] = tempByte;
-							break;
-						}
-
-					}
-					k++;
-				}
-
-				String role = "";
-				boolean isLegalRole = false;
-				if (StringUtils.isBlank(rowValues[5])) {
-					role = Role.不明.getRole();
 				} else {
-					Object object = toEnum(rowValues[5].trim(), Role.class);
-					if (object != null
-							&& roleList.contains(Role.valueOf(rowValues[5]
-									.trim()))) {
-						role = rowValues[5].trim();
-						isLegalRole = true;
-					} else {
+					String role = "";
+					boolean isLegalRole = false;
+					if (StringUtils.isBlank(row[5])) {
 						role = Role.不明.getRole();
-					}
-				}
-
-				String status = "";
-				if (StringUtils.isBlank(rowValues[6])) {
-					status = Status.審核中.getStatus();
-				} else {
-					Object object = toEnum(rowValues[6].trim(), Status.class);
-					if (object != null) {
-						status = rowValues[6].trim();
 					} else {
-						status = Status.審核中.getStatus();
-					}
-				}
-
-				customer = new Customer();
-				customer.setName(rowValues[3].trim());
-				accountNumber = new AccountNumber(rowValues[0], rowValues[1],
-						rowValues[2], rowValues[4], Role.valueOf(role),
-						Status.valueOf(status), customer);
-				List<String> errorList = Lists.newArrayList();
-
-				if (StringUtils.isBlank(accountNumber.getUserId())) {
-					errorList.add("帳號空白");
-				} else {
-					if (accountNumber.getUserId().replaceAll("[0-9a-zA-Z]", "")
-							.length() != 0) {
-						errorList.add("帳號必須英數");
-					} else {
-						long serNo = accountNumberService
-								.getSerNoByUserId(accountNumber.getUserId());
-						if (serNo != 0) {
-							errorList.add("帳號已存在");
+						Object object = toEnum(row[5].trim(), Role.class);
+						if (object != null
+								&& roleList
+										.contains(Role.valueOf(row[5].trim()))) {
+							role = row[5].trim();
+							isLegalRole = true;
+						} else {
+							role = Role.不明.getRole();
 						}
 					}
-				}
 
-				if (StringUtils.isBlank(accountNumber.getUserPw())) {
-					errorList.add("密碼空白");
-				}
-
-				if (StringUtils.isBlank(customer.getName())) {
-					errorList.add("沒有客戶");
-				} else {
-					long cusSerNo = customerService.getCusSerNoByName(customer
-							.getName());
-					if (cusSerNo != 0) {
-						accountNumber.getCustomer().setSerNo(cusSerNo);
+					String status = "";
+					if (StringUtils.isBlank(row[6])) {
+						status = Status.審核中.getStatus();
 					} else {
-						errorList.add("無此客戶");
+						Object object = toEnum(row[6].trim(), Status.class);
+						if (object != null) {
+							status = row[6].trim();
+						} else {
+							status = Status.審核中.getStatus();
+						}
 					}
-				}
 
-				if (getLoginUser().getRole().equals(Role.管理員)) {
-					if (!getLoginUser().getCustomer().getName()
-							.equals(accountNumber.getCustomer().getName())) {
-						errorList.add("客戶錯誤");
-					}
-				} else {
-					if (!accountNumber.getCustomer().hasSerNo()) {
-						errorList.add("客戶錯誤");
-					}
-				}
+					customer = new Customer();
+					customer.setName(row[3].trim());
+					accountNumber = new AccountNumber(row[0], row[1], row[2],
+							row[4], Role.valueOf(role), Status.valueOf(status),
+							customer);
 
-				if (!isLegalRole) {
-					errorList.add("角色錯誤");
-				}
-
-				if (!isEmail(accountNumber.getEmail())) {
-					errorList.add("email錯誤");
-				}
-
-				if (errorList.size() != 0) {
-					accountNumber.setDataStatus(errorList.toString()
-							.replace("[", "").replace("]", ""));
-				} else {
-					accountNumber.setDataStatus("正常");
-				}
-
-				if (accountNumber.getDataStatus().equals("正常")
-						&& !originalData.contains(accountNumber)) {
-
-					if (checkRepeatRow.containsKey(accountNumber.getUserId())) {
-						accountNumber.setDataStatus("帳號重複");
-
+					if (StringUtils.isBlank(accountNumber.getUserId())) {
+						errorList.add("帳號空白");
 					} else {
-						checkRepeatRow.put(accountNumber.getUserId(),
-								accountNumber);
-
-						++normal;
+						if (accountNumber.getUserId()
+								.replaceAll("[0-9a-zA-Z]", "").length() != 0) {
+							errorList.add("帳號必須英數");
+						} else {
+							long serNo = accountNumberService
+									.getSerNoByUserId(accountNumber.getUserId());
+							if (serNo != 0) {
+								errorList.add("帳號已存在");
+							}
+						}
 					}
-				}
 
-				originalData.add(accountNumber);
+					if (StringUtils.isBlank(accountNumber.getUserPw())) {
+						errorList.add("密碼空白");
+					}
+
+					if (StringUtils.isBlank(customer.getName())) {
+						errorList.add("沒有客戶");
+					} else {
+						long cusSerNo = customerService
+								.getCusSerNoByName(customer.getName());
+						if (cusSerNo != 0) {
+							accountNumber.getCustomer().setSerNo(cusSerNo);
+						} else {
+							errorList.add("無此客戶");
+						}
+					}
+
+					if (getLoginUser().getRole().equals(Role.管理員)) {
+						if (!getLoginUser().getCustomer().getName()
+								.equals(accountNumber.getCustomer().getName())) {
+							errorList.add("客戶錯誤");
+						}
+					} else {
+						if (!accountNumber.getCustomer().hasSerNo()) {
+							errorList.add("客戶錯誤");
+						}
+					}
+
+					if (!isLegalRole) {
+						errorList.add("角色錯誤");
+					}
+
+					if (!isEmail(accountNumber.getEmail())) {
+						errorList.add("email錯誤");
+					}
+
+					if (errorList.size() != 0) {
+						accountNumber.setDataStatus(errorList.toString()
+								.replace("[", "").replace("]", ""));
+					} else {
+						accountNumber.setDataStatus("正常");
+					}
+
+					if (accountNumber.getDataStatus().equals("正常")
+							&& !originalData.contains(accountNumber)) {
+
+						if (checkRepeatRow.containsKey(accountNumber
+								.getUserId())) {
+							accountNumber.setDataStatus("帳號重複");
+
+						} else {
+							checkRepeatRow.put(accountNumber.getUserId(),
+									accountNumber);
+
+							++normal;
+						}
+					}
+
+					originalData.add(accountNumber);
+				}
 			}
 
-			List<AccountNumber> excelData = new ArrayList<AccountNumber>(
+			List<AccountNumber> csvData = new ArrayList<AccountNumber>(
 					originalData);
 
 			DataSet<AccountNumber> ds = initDataSet();
-			ds.getPager().setTotalRecord((long) excelData.size());
+			ds.getPager().setTotalRecord((long) csvData.size());
 
-			if (excelData.size() < ds.getPager().getRecordPerPage()) {
+			if (csvData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
-				while (i < excelData.size()) {
-					ds.getResults().add(excelData.get(i));
+				while (i < csvData.size()) {
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					ds.getResults().add(excelData.get(i));
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			}
 
 			getSession().put("cellNames", cellNames);
-			getSession().put("importList", excelData);
-			getSession().put("total", excelData.size());
+			getSession().put("importList", csvData);
+			getSession().put("total", csvData.size());
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
 			getSession().put("clazz", this.getClass());
@@ -970,101 +878,59 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			return IMPORT;
 		}
 
-		getEntity().setReportFile("accountNumber_error.xlsx");
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet spreadsheet = workbook.createSheet("accountNumber_error");
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-		for (int i = 0; i < 30; i++) {
-			spreadsheet.setDefaultColumnStyle(i, cellStyle);
-		}
-		XSSFRow row;
-
-		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-		Integer mark = 1;
-		empinfo.put(mark.toString(), new Object[] { "userID/使用者",
-				"userPW/使用者密碼", "userName/姓名", "fk_name/用戶名稱", "email",
-				"role/角色", "status/狀態", "錯誤原因" });
+		List<String[]> rows = new ArrayList<String[]>();
+		rows.add(new String[] { "userID/使用者", "userPW/使用者密碼", "userName/姓名",
+				"fk_name/用戶名稱", "email", "role/角色", "status/狀態", "錯誤原因" });
 
 		int i = 0;
 		while (i < importList.size()) {
 			accountNumber = (AccountNumber) importList.get(i);
 			if (!accountNumber.getDataStatus().equals("正常")
 					&& !accountNumber.getDataStatus().equals("已匯入")) {
-				mark = mark + 1;
-				empinfo.put(
-						mark.toString(),
-						new Object[] { accountNumber.getUserId(),
-								accountNumber.getUserPw(),
-								accountNumber.getUserName(),
-								accountNumber.getCustomer().getName(),
-								accountNumber.getEmail(),
-								accountNumber.getRole().getRole(),
-								accountNumber.getStatus().getStatus(),
-								accountNumber.getDataStatus() });
+				rows.add(new String[] { accountNumber.getUserId(),
+						accountNumber.getUserPw(), accountNumber.getUserName(),
+						accountNumber.getCustomer().getName(),
+						accountNumber.getEmail(),
+						accountNumber.getRole().getRole(),
+						accountNumber.getStatus().getStatus(),
+						accountNumber.getDataStatus() });
 			}
 			i++;
 		}
 
-		Set<String> keyid = empinfo.keySet();
-		int rowid = 0;
-		for (String key : keyid) {
-			row = spreadsheet.createRow(rowid++);
-			Object[] objectArr = empinfo.get(key);
-			int cellid = 0;
-			for (Object obj : objectArr) {
-				Cell cell = row.createCell(cellid++);
-				cell.setCellValue(obj.toString());
-			}
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.NO_ESCAPE_CHARACTER, "\n");
 
-		ByteArrayOutputStream boas = new ByteArrayOutputStream();
-		workbook.write(boas);
+		writer.writeAll(rows);
+		writer.close();
+
+		getEntity().setReportFile("account_error.csv");
 		getEntity()
-				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
 		return XLSX;
 	}
 
 	public String example() throws Exception {
-		getEntity().setReportFile("account_sample.xlsx");
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet spreadsheet = workbook.createSheet("account");
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+		List<String[]> rows = new ArrayList<String[]>();
+		rows.add(new String[] { "userID/使用者", "userPW/使用者密碼", "userName/姓名",
+				"fk_name/用戶名稱", "email", "role/角色", "status/狀態" });
+		rows.add(new String[] { "cdc", "cdc", "XXX", "疾病管制局", "cdc@cdc.org",
+				"管理員", "生效" });
 
-		for (int i = 0; i < 30; i++) {
-			spreadsheet.setDefaultColumnStyle(i, cellStyle);
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.NO_ESCAPE_CHARACTER, "\n");
 
-		XSSFRow row;
+		writer.writeAll(rows);
+		writer.close();
 
-		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-		empinfo.put("1",
-				new Object[] { "userID/使用者", "userPW/使用者密碼", "userName/姓名",
-						"fk_name/用戶名稱", "email", "role/角色", "status/狀態" });
-
-		empinfo.put("2", new Object[] { "cdc", "cdc", "XXX", "疾病管制局",
-				"cdc@cdc.org", "管理員", "生效" });
-
-		Set<String> keyid = empinfo.keySet();
-		int rowid = 0;
-		for (String key : keyid) {
-			row = spreadsheet.createRow(rowid++);
-			Object[] objectArr = empinfo.get(key);
-			int cellid = 0;
-			for (Object obj : objectArr) {
-				Cell cell = row.createCell(cellid++);
-				cell.setCellValue(obj.toString());
-			}
-		}
-
-		ByteArrayOutputStream boas = new ByteArrayOutputStream();
-		workbook.write(boas);
+		getEntity().setReportFile("account_sample.csv");
 		getEntity()
-				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
 		return XLSX;
 	}

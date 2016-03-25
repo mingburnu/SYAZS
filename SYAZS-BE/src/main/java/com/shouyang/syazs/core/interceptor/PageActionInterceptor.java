@@ -39,7 +39,7 @@ public class PageActionInterceptor extends RootInterceptor {
 				Cookie recordPerPage = new Cookie("recordPerPage",
 						request.getParameter("pager.recordPerPage"));
 				recordPerPage.setMaxAge(60 * 60 * 24);
-				recordPerPage.setPath(request.getContextPath());
+				recordPerPage.setPath(request.getContextPath() + "/crud");
 
 				response.addCookie(recordPerPage);
 

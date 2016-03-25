@@ -86,17 +86,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			errorMessages.add("書名不得空白");
 		}
 
-		if (getEntity().getIsbn() != null) {
-			if (!ISBN_Validator.isIsbn13(getEntity().getIsbn())) {
+		if (StringUtils.isNotBlank(getRequest().getParameter("entity.isbn"))) {
+			String isbn = getRequest().getParameter("entity.isbn");
+			if (!ISBN_Validator.isIsbn13(isbn)
+					&& !ISBN_Validator.isIsbn10(isbn)) {
 				errorMessages.add("ISBN不正確");
-			}
-		} else {
-			if (StringUtils
-					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
-				if (!ISBN_Validator.isIsbn13(getRequest().getParameter(
-						"entity.isbn"))) {
-					errorMessages.add("ISBN不正確");
-				}
 			}
 		}
 
@@ -237,17 +231,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				errorMessages.add("書名不得空白");
 			}
 
-			if (getEntity().getIsbn() != null) {
-				if (!ISBN_Validator.isIsbn13(getEntity().getIsbn())) {
+			if (StringUtils
+					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
+				String isbn = getRequest().getParameter("entity.isbn");
+				if (!ISBN_Validator.isIsbn13(isbn)
+						&& !ISBN_Validator.isIsbn10(isbn)) {
 					errorMessages.add("ISBN不正確");
-				}
-			} else {
-				if (StringUtils.isNotBlank(getRequest().getParameter(
-						"entity.isbn"))) {
-					if (!ISBN_Validator.isIsbn13(getRequest().getParameter(
-							"entity.isbn"))) {
-						errorMessages.add("ISBN不正確");
-					}
 				}
 			}
 
@@ -448,18 +437,18 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		if (getEntity().getOption().equals("entity.isbn")) {
-			if (getEntity().getIsbn() == null) {
-				if (StringUtils.isNotEmpty(getRequest().getParameter(
-						"entity.isbn"))) {
-					if (ISBN_Validator.isIsbn13(getRequest().getParameter(
-							"entity.isbn").trim())) {
-						getEntity().setIsbn(
-								Long.parseLong(getRequest()
-										.getParameter("entity.isbn").trim()
-										.replaceAll("-", "")));
-					} else {
-						getEntity().setIsbn(Long.MIN_VALUE);
-					}
+			String isbn = getRequest().getParameter("entity.isbn");
+			if (StringUtils.isNotEmpty(isbn)) {
+				if (ISBN_Validator.isIsbn13(isbn.trim())) {
+					getEntity().setIsbn(
+							Long.parseLong(isbn.trim().replaceAll("-", "")));
+				} else if (ISBN_Validator.isIsbn10(isbn.trim())) {
+					getEntity()
+							.setIsbn(
+									Long.parseLong(ISBN_Validator.toIsbn13(isbn
+											.trim())));
+				} else {
+					getEntity().setIsbn(Long.MIN_VALUE);
 				}
 			}
 		}
@@ -484,11 +473,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			if (StringUtils
-					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
+			String isbn = getRequest().getParameter("entity.isbn");
+			if (StringUtils.isNotBlank(isbn)) {
+				if (ISBN_Validator.isIsbn10(isbn)) {
+					isbn = ISBN_Validator.toIsbn13(isbn);
+				}
+
 				getEntity().setIsbn(
-						Long.parseLong(getRequest().getParameter("entity.isbn")
-								.trim().replace("-", "")));
+						Long.parseLong(isbn.trim().replace("-", "")));
 			}
 
 			if (getEntity().getDatabase().getSerNo() != null) {
@@ -522,11 +514,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			if (StringUtils
-					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
+			String isbn = getRequest().getParameter("entity.isbn");
+			if (StringUtils.isNotBlank(isbn)) {
+				if (ISBN_Validator.isIsbn10(isbn)) {
+					isbn = ISBN_Validator.toIsbn13(isbn);
+				}
+
 				getEntity().setIsbn(
-						Long.parseLong(getRequest().getParameter("entity.isbn")
-								.trim().replace("-", "")));
+						Long.parseLong(isbn.trim().replace("-", "")));
 			}
 
 			if (getEntity().getDatabase().getSerNo() != null) {
@@ -595,8 +590,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			database = databaseService.getBySerNo(datserNo);
 		}
 
-		if (getEntity().getIsbn() != null) {
-			if (ISBN_Validator.isIsbn13(getEntity().getIsbn())) {
+		if (StringUtils.isNotBlank(isbn)) {
+			if (ISBN_Validator.isIsbn13(isbn)) {
 				if (hasRepeatIsbn(isbn, serNo)) {
 					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
@@ -605,31 +600,30 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					getRequest().setAttribute("repeat", "資料庫有重複資源");
 				}
 			}
-		} else {
-			if (StringUtils.isNotBlank(isbn)) {
-				if (ISBN_Validator.isIsbn13(isbn)) {
-					if (hasRepeatIsbn(isbn, serNo)) {
-						getRequest().setAttribute("tip", "已有相同ISBN");
-					}
 
-					if (dbHasRepeatIsbn(isbn, serNo, database)) {
-						getRequest().setAttribute("repeat", "資料庫有重複資源");
-					}
+			if (ISBN_Validator.isIsbn10(isbn)) {
+				log.info(isbn);
+				if (hasRepeatIsbn(ISBN_Validator.toIsbn13(isbn), serNo)) {
+					getRequest().setAttribute("tip", "已有相同ISBN");
 				}
-			} else {
-				if (StringUtils.isNotBlank(getEntity().getBookName())) {
-					if (hasRepeatName(getEntity().getBookName(), serNo)) {
-						getRequest().setAttribute("tip", "相同名稱且無ISBN資源存在");
-					}
 
-					if (dbHasRepeatName(getEntity().getBookName(), serNo,
-							database)) {
-						getRequest().setAttribute("repeat",
-								"資料庫有相同名稱且無ISBN資源存在");
-					}
+				if (dbHasRepeatIsbn(ISBN_Validator.toIsbn13(isbn), serNo,
+						database)) {
+					getRequest().setAttribute("repeat", "資料庫有重複資源");
+				}
+			}
+		} else {
+			if (StringUtils.isNotBlank(getEntity().getBookName())) {
+				if (hasRepeatName(getEntity().getBookName(), serNo)) {
+					getRequest().setAttribute("tip", "相同名稱且無ISBN資源存在");
+				}
+
+				if (dbHasRepeatName(getEntity().getBookName(), serNo, database)) {
+					getRequest().setAttribute("repeat", "資料庫有相同名稱且無ISBN資源存在");
 				}
 			}
 		}
+
 		return TIP;
 	}
 
@@ -915,7 +909,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 
 				if (StringUtils.isNotEmpty(ebook.getTempNotes()[0])) {
-					if (ISBN_Validator.isIsbn13(ebook.getIsbn())
+					if (ISBN_Validator.isIsbn13(ebook.getIsbn().toString())
 							|| ISBN_Validator.isIsbn13(ebook.getTempNotes()[0])) {
 
 						if (isbn != null) {

@@ -1,14 +1,26 @@
 package com.shouyang.syazs.test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.tika.metadata.HttpHeaders;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaMetadataKeys;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
 import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.shouyang.syazs.module.apply.ebook.ISBN_Validator;
 
@@ -65,10 +77,24 @@ public class Test {
 					+ isbnMatcher.group());
 		}
 
-		System.out.println(ISBN_Validator.toIsbn10("978-0552162401"));
-		Long ss = null;
+		System.out.println(ISBN_Validator.toIsbn10("9780140143959"));
+		System.out.println(ISBN_Validator.toIsbn13("0140143955"));
 		System.out.println("978-986-181-728-6".trim().replace("-", "")
 				.substring(3, 12));
+		
+		
+		File file = new File("C:\\Users\\user\\Desktop\\csv.csv");
+		AutoDetectParser parser = new AutoDetectParser();
+		parser.setParsers(new HashMap<MediaType, Parser>());
+
+		Metadata metadata = new Metadata();
+		metadata.add(TikaMetadataKeys.RESOURCE_NAME_KEY, file.getName());
+
+		InputStream stream = new FileInputStream(file);
+		parser.parse(stream, new DefaultHandler(), metadata, new ParseContext());
+		stream.close();
+
+		System.out.println(metadata.get(HttpHeaders.CONTENT_TYPE));
 	}
 
 	private static boolean check(String s) {

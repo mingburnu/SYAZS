@@ -123,14 +123,12 @@
 		var datSerNo = $("input#apply_journal_save_entity_database_serNo")
 				.val();
 
-		if (issn == null || issn.trim() == "") {
-			$("#span-num-tip").html("ISSN未填寫");
-		} else {
+		if (issn != null && issn.trim() != "") {
 			if (isValidISSN(issn.trim())) {
 				goNumTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.issn='
 						+ issn + '&entity.database.serNo=' + datSerNo);
 			} else {
-				$("#span-num-tip").html("");
+				$("#span-num-tip").html("ISSN不正確");
 			}
 		}
 	}

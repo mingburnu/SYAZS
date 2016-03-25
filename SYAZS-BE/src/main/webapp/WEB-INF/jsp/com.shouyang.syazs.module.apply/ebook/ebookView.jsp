@@ -1,3 +1,4 @@
+<%@ page import="com.shouyang.syazs.module.apply.ebook.ISBN_Validator"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
@@ -73,6 +74,11 @@
 					<tr>
 						<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
 						<td>${fn:substring(entity.isbn, 0, 13)}</td>
+					</tr>
+					<tr>
+						<th width="130">ISBN/10碼<span class="required">(&#8226;)</span></th>
+						<td><%=ISBN_Validator.toIsbn10(request.getAttribute(
+							"entity.isbn").toString())%></td>
 					</tr>
 					<tr>
 						<th width="130">出版社</th>

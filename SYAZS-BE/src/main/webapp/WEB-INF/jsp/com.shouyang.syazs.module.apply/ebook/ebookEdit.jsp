@@ -130,12 +130,8 @@
 				.val();
 
 		if (isbn != null && isbn.trim() != "") {
-			if (isValidISBN(isbn)) {
-				goNumTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
-						+ isbn + '&entity.database.serNo=' + datSerNo);
-			} else {
-				$("#span-num-tip").html("");
-			}
+			goNumTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.serNo=${entity.serNo}&entity.isbn='
+					+ isbn + '&entity.database.serNo=' + datSerNo);
 		}
 	}
 
@@ -221,7 +217,7 @@ input#referenceOwner_name {
 					id="span-title-name-tip" class="tip"></span></td>
 			</tr>
 			<tr>
-				<th width="130">ISBN/13碼</th>
+				<th width="130">ISBN</th>
 				<td><input type="text" name="entity.isbn" class="input_text"
 					id="apply_ebook_update_entity_isbn"
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>">&nbsp;<span

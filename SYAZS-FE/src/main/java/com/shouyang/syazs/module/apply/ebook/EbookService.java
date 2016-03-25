@@ -130,6 +130,9 @@ public class EbookService extends GenericServiceFull<Ebook> {
 			if (ISBN_Validator.isIsbn13(indexTerm)) {
 				restrictions.eq("isbn",
 						Long.parseLong(indexTerm.replace("-", "")));
+			} else if (ISBN_Validator.isIsbn10(indexTerm)) {
+				restrictions.eq("isbn",
+						Long.parseLong(ISBN_Validator.toIsbn13(indexTerm)));
 			} else {
 				Pager pager = ds.getPager();
 				pager.setTotalRecord(0L);
