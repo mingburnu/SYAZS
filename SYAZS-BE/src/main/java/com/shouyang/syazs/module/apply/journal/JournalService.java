@@ -1,6 +1,5 @@
 package com.shouyang.syazs.module.apply.journal;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,16 +17,12 @@ import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 import com.shouyang.syazs.module.apply.database.Database;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @Service
 public class JournalService extends GenericServiceFull<Journal> {
 
 	@Autowired
 	private Journal entity;
-
-	@Autowired
-	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private JournalDao dao;
@@ -102,6 +97,18 @@ public class JournalService extends GenericServiceFull<Journal> {
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Long> getByTitlePublishName(String title, String publishName)
+			throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT serNo FROM Journal WHERE LOWER(title) = :title AND LOWER(publishName) = :publishName");
+		queryLanguage.addParameter("title", title.trim().toLowerCase());
+		queryLanguage.addParameter("publishName", publishName.trim()
+				.toLowerCase());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
+
 	@Override
 	public Journal save(Journal entity, AccountNumber user) throws Exception {
 		Assert.notNull(entity);
@@ -118,28 +125,6 @@ public class JournalService extends GenericServiceFull<Journal> {
 		makeUserInfo(dbEntity);
 
 		return dbEntity;
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Object[]> getResOwners(long serNo) {
-		DsQueryLanguage queryLanguage = getDsQueryLanguage();
-		queryLanguage
-				.setHql("SELECT jr.serNo, jr.name FROM Journal j JOIN j.referenceOwners jr WHERE j.serNo = :serNo");
-		queryLanguage.addParameter("serNo", serNo);
-		return (List<Object[]>) dao.findByHQL(queryLanguage);
-	}
-
-	public List<ReferenceOwner> getcheckOwners(long serNo) throws Exception {
-		List<Object[]> checks = getResOwners(serNo);
-		List<ReferenceOwner> checkOwners = new ArrayList<ReferenceOwner>();
-		for (int i = 0; i < checks.size(); i++) {
-			referenceOwner = new ReferenceOwner();
-			referenceOwner.setSerNo((Long) checks.get(i)[0]);
-			referenceOwner.setName(checks.get(i)[1].toString());
-			checkOwners.add(referenceOwner);
-		}
-
-		return checkOwners;
 	}
 
 	public boolean isUnusedUUID(String uuid) throws Exception {

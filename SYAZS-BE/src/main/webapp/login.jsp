@@ -70,8 +70,7 @@
 </script>
 <title>碩陽電子資源檢索</title>
 </head>
-<c:if
-	test="${(login.role =='系統管理員') || (login.role =='維護人員') || (login.role =='管理員') }">
+<c:if test="${(login.role =='系統管理員') || (login.role =='管理員') }">
 	<%
 		response.sendRedirect(request.getContextPath()
 					+ "/page/main.action");

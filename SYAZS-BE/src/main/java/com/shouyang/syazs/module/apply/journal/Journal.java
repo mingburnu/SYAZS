@@ -6,20 +6,18 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.feLogs.FeLogs;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
@@ -53,7 +51,7 @@ public class Journal extends ModuleProperties {
 	@Column(name = "languages")
 	private String languages;
 
-	// 出版項
+	// 出版社
 	@Column(name = "publishname")
 	private String publishName;
 
@@ -93,6 +91,14 @@ public class Journal extends ModuleProperties {
 	@Column(name = "openAccess")
 	private Boolean openAccess;
 
+	@Column(name = "startdate")
+	@org.hibernate.annotations.Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime startDate;
+
+	@Column(name = "maturitydate")
+	@org.hibernate.annotations.Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime maturityDate;
+
 	// 來源資料庫
 	@ManyToOne
 	@JoinColumn(name = "dat_serNo")
@@ -108,11 +114,6 @@ public class Journal extends ModuleProperties {
 	@JoinColumn(name = "res_serNo", nullable = false)
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
-
-	// ReferenceOwner
-	@ManyToMany
-	@JoinTable(name = "ref_jou", joinColumns = @JoinColumn(name = "jou_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
-	private Set<ReferenceOwner> referenceOwners;
 
 	@OneToMany(mappedBy = "journal", orphanRemoval = true)
 	private Set<FeLogs> feLogses;
@@ -343,6 +344,36 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
+	 * @return the startDate
+	 */
+	public LocalDateTime getStartDate() {
+		return startDate;
+	}
+
+	/**
+	 * @param startDate
+	 *            the startDate to set
+	 */
+	public void setStartDate(LocalDateTime startDate) {
+		this.startDate = startDate;
+	}
+
+	/**
+	 * @return the maturityDate
+	 */
+	public LocalDateTime getMaturityDate() {
+		return maturityDate;
+	}
+
+	/**
+	 * @param maturityDate
+	 *            the maturityDate to set
+	 */
+	public void setMaturityDate(LocalDateTime maturityDate) {
+		this.maturityDate = maturityDate;
+	}
+
+	/**
 	 * @return the database
 	 */
 	public Database getDatabase() {
@@ -387,21 +418,6 @@ public class Journal extends ModuleProperties {
 		this.resourcesBuyers = resourcesBuyers;
 	}
 
-	/**
-	 * @return the referenceOwners
-	 */
-	public Set<ReferenceOwner> getReferenceOwners() {
-		return referenceOwners;
-	}
-
-	/**
-	 * @param referenceOwners
-	 *            the referenceOwners to set
-	 */
-	public void setReferenceOwners(Set<ReferenceOwner> referenceOwners) {
-		this.referenceOwners = referenceOwners;
-	}
-
 	public Journal() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -411,9 +427,10 @@ public class Journal extends ModuleProperties {
 			String titleEvolution, String issn, String languages,
 			String publishName, Short publishYear, String caption, String numB,
 			String publication, String congressClassification, String version,
-			String embargo, String url, Boolean openAccess, Database database,
-			String uuIdentifier, ResourcesBuyers resourcesBuyers,
-			Set<ReferenceOwner> referenceOwners) {
+			String embargo, String url, Boolean openAccess,
+			LocalDateTime startDate, LocalDateTime maturityDate,
+			Database database, String uuIdentifier,
+			ResourcesBuyers resourcesBuyers) {
 		super();
 		this.title = title;
 		this.abbreviationTitle = abbreviationTitle;
@@ -430,9 +447,10 @@ public class Journal extends ModuleProperties {
 		this.embargo = embargo;
 		this.url = url;
 		this.openAccess = openAccess;
+		this.startDate = startDate;
+		this.maturityDate = maturityDate;
 		this.database = database;
 		this.uuIdentifier = uuIdentifier;
 		this.resourcesBuyers = resourcesBuyers;
-		this.referenceOwners = referenceOwners;
 	}
 }

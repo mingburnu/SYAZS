@@ -7,7 +7,7 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
  * @author Roderick
  * @version 2014/3/12
  */
-public class EncryptorUtil {
+public class EncryptorUtils {
 
 	public static StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
 	

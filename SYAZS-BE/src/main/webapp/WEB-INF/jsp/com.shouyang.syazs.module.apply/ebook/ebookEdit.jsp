@@ -16,19 +16,7 @@
 					function() {
 						$("#div_Detail .content .header .close")
 								.html(
-										'<a href="#" onclick="closeDetail();clearReferenceOwners();clearResDbs();">關閉</a>');
-					});
-
-	$(document)
-			.ready(
-					function() {
-						var contain = $("#div_Detail_2 .content .header .title")
-								.html();
-						if (contain != '擁有人-新增') {
-							goReferenceOwners(
-									"<c:url value = '/'/>crud/apply.referenceOwner.box.action",
-									'擁有人-新增');
-						}
+										'<a href="#" onclick="closeDetail();clearResDbs();">關閉</a>');
 					});
 
 	$(document)
@@ -44,20 +32,6 @@
 					});
 
 	$(document).ready(function() {
-		$("img#minus").click(function() {
-			value = $(this).next().val();
-			$(this).next().attr("name", "");
-			$(this).parent().hide();
-
-			$("input#referenceOwner_unit").each(function() {
-				if ($(this).val() == value) {
-					$(this).attr("checked", false);
-				}
-			});
-		});
-	});
-
-	$(document).ready(function() {
 		$("input[name='entity.database.serNo']").click(function() {
 			var box = $(this).attr("checked");
 			$("input[name='entity.database.serNo']").attr("checked", false);
@@ -67,7 +41,6 @@
 	});
 
 	$(document).ready(function() {
-		setResField();
 		checkIsbn();
 		checkName();
 	});
@@ -88,25 +61,6 @@
 		});
 	});
 
-	function setResField() {
-		var datSerNo = $("input[name='entity.database.serNo']").val();
-		if (datSerNo == null || datSerNo == "") {
-			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.prev().show();
-			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.show();
-			$("input#referenceOwner_name").parent().parent().prev().show();
-			$("input#referenceOwner_name").parent().parent().show();
-		} else {
-			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.prev().hide();
-			$("input#referenceOwner_name").parent().parent().prev().prev()
-					.hide();
-			$("input#referenceOwner_name").parent().parent().prev().hide();
-			$("input#referenceOwner_name").parent().parent().hide();
-		}
-	}
-
 	//重設所有欄位(清空)
 	function resetData() {
 		goDetail("<c:url value = '/'/>crud/apply.ebook.edit.action?"
@@ -118,7 +72,6 @@
 		var data = $('#apply_ebook_update').serialize();
 		closeDetail();
 		clearResDbs();
-		clearReferenceOwners();
 		goDetail(
 				"<c:url value = '/'/>crud/apply.ebook.update.action?entity.serNo=${entity.serNo}",
 				'電子書-修改', data);
@@ -184,30 +137,6 @@ input#referenceOwner_name {
 						.split("T")[0];
 			}
 		}
-
-		String startDate = "";
-		if (request.getParameter("entity.resourcesBuyers.startDate") != null) {
-			startDate = request
-					.getParameter("entity.resourcesBuyers.startDate");
-		} else {
-			if (request.getAttribute("entity.resourcesBuyers.startDate") != null) {
-				startDate = request
-						.getAttribute("entity.resourcesBuyers.startDate")
-						.toString().split("T")[0];
-			}
-		}
-
-		String maturityDate = "";
-		if (request.getParameter("entity.resourcesBuyers.maturityDate") != null) {
-			maturityDate = request
-					.getParameter("entity.resourcesBuyers.maturityDate");
-		} else {
-			if (request.getAttribute("entity.resourcesBuyers.maturityDate") != null) {
-				maturityDate = request
-						.getAttribute("entity.resourcesBuyers.maturityDate")
-						.toString().split("T")[0];
-			}
-		}
 	%>
 	<s:form namespace="/crud" action="apply.ebook.update">
 		<table cellspacing="1" class="detail-table">
@@ -224,7 +153,7 @@ input#referenceOwner_name {
 					id="span-num-tip" class="tip"></span></td>
 			</tr>
 			<tr>
-				<th width="130">出版社</th>
+				<th width="130">出版社<span class="required">(&#8226;)</span></th>
 				<td><s:textfield name="entity.publishName"
 						cssClass="input_text" /></td>
 			</tr>
@@ -256,14 +185,14 @@ input#referenceOwner_name {
 				<td><s:textfield name="entity.version" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">中國圖書分類碼</th>
-				<td><s:textfield name="entity.cnClassBzStr"
-						cssClass="input_text" /></td>
+				<th width="130">分類法</th>
+				<td><s:select name="entity.classification.serNo"
+						list="ds.datas" listKey="value" listValue="key" headerKey=""
+						headerValue="-分類法-" value="%{entity.classification.serNo}" /></td>
 			</tr>
 			<tr>
-				<th width="130">杜威十進位分類號</th>
-				<td><s:textfield name="entity.bookInfoIntegral"
-						cssClass="input_text" /></td>
+				<th width="130">分類碼</th>
+				<td><s:textfield name="entity.lcsCode" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">URL<span class="required">(&#8226;)</span></th>
@@ -305,23 +234,6 @@ input#referenceOwner_name {
 					</div></td>
 			</tr>
 			<tr>
-				<th width="130">起始日</th>
-				<td><input type="text" name="entity.resourcesBuyers.startDate"
-					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
-					id="apply_ebook_update_entity_resourcesBuyers_startDate"
-					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
-			</tr>
-			<tr>
-				<th width="130">到期日</th>
-				<td><input type="text"
-					name="entity.resourcesBuyers.maturityDate"
-					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
-					id="apply_ebook_update_entity_resourcesBuyers_maturityDate"
-					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
-			</tr>
-			<tr>
 				<th width="130">資源類型</th>
 				<td><c:choose>
 						<c:when test="${empty entity.resourcesBuyers.category }">
@@ -335,30 +247,6 @@ input#referenceOwner_name {
 								listKey="name()" listValue="name()" />
 						</c:otherwise>
 					</c:choose></td>
-			</tr>
-			<tr>
-				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
-				<td><input type="text" id="referenceOwner_name"
-					class="input_text" disabled="disabled" value="增加單位"><img
-					id="add" src="<c:url value = '/'/>resources/images/add.png"
-					onclick="addReferenceOwner();"> <c:forEach var="item"
-						items="${entity.owners}" varStatus="status2">
-						<div style="">
-							<input class="input_text" disabled="disabled"
-								value="${item.name}"><img id="minus"
-								src="<c:url value = '/'/>resources/images/minus.png"><input
-								id="unit" type="hidden" value="${item.serNo }"
-								name="entity.refSerNo">
-						</div>
-					</c:forEach> <c:forEach var="item" items="${uncheckReferenceOwners}"
-						varStatus="status">
-						<div style="display: none;">
-							<input class="input_text" disabled="disabled"
-								value="${item.name}"><img id="minus"
-								src="<c:url value = '/'/>resources/images/minus.png"><input
-								id="unit" type="hidden" value="${item.serNo }">
-						</div>
-					</c:forEach></td>
 			</tr>
 		</table>
 		<div class="button_box">

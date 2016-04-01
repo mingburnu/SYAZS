@@ -110,6 +110,31 @@
 		}
 	}
 
+	//單筆刪除
+	function goDel(serNo) {
+		var f = {
+			trueText : '是',
+			trueFunc : function() {
+				var url = '<c:url value = "/crud/apply.accountNumber.delete.action"/>';
+				var data = $('#apply_accountNumber_list').serialize()
+						+ '&pager.currentPage=' + '${ds.pager.currentPage}'
+						+ '&entity.serNo=' + serNo;
+				goMain(url, '', data);
+			},
+			falseText : '否',
+			falseFunc : function() {
+				//不進行刪除...
+			}
+		};
+
+		var isNum = /^\d+$/.test(serNo);
+		if (isNum && parseInt(serNo) > 0) {
+			goAlert('提醒', '確定要刪除此筆資料嗎?', f);
+		} else {
+			goAlert('提醒', '錯誤', '');
+		}
+	}
+
 	//批次匯入
 	function goImport() {
 		goDetail("<c:url value = '/'/>crud/apply.accountNumber.imports.action",
@@ -131,23 +156,11 @@
 					<tbody>
 						<tr>
 							<td align="left">用戶代碼</td>
-							<td>客戶名稱</td>
 							<td align="left"></td>
 						</tr>
 						<tr>
 							<td align="left"><s:textfield name="entity.userId"
 									id="search" cssClass="input_text" /></td>
-							<td><c:choose>
-									<c:when test="${login.role.role != '管理員' }">
-										<s:textfield name="entity.customer.name" id="search"
-											cssClass="input_text" />
-									</c:when>
-									<c:otherwise>
-										<input type="text" maxlength="20" id="search"
-											class="input_text" disabled="disabled"
-											value="${login.customer.name }">
-									</c:otherwise>
-								</c:choose></td>
 							<td align="left"><a class="state-default"
 								onclick="goSearch();">查詢</a></td>
 						</tr>
@@ -160,21 +173,7 @@
 		</div>
 		<div class="list-box">
 			<div class="list-buttons">
-				<c:choose>
-					<c:when
-						test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
-						<a class="state-default" onclick="allSelect(1);">全選</a>
-						<a class="state-default" onclick="allSelect(0);">取消</a>
-						<a class="state-default" onclick="goAdd();">新增</a>
-						<a class="state-default" onclick="goDeauthorize();">失效</a>
-						<a class="state-default" onclick="goAuthorize();">生效</a>
-						<a class="state-default" onclick="goImport()">匯入</a>
-					</c:when>
-					<c:otherwise>
-						<a class="state-default" onclick="goAdd();">新增</a>
-						<a class="state-default" onclick="goImport()">匯入</a>
-					</c:otherwise>
-				</c:choose>
+				<a class="state-default" onclick="goAdd();">新增</a>
 			</div>
 			<table cellspacing="1" class="list-table">
 				<tbody>
@@ -182,7 +181,6 @@
 						<td colspan="8" class="topic">基本設定</td>
 					</tr>
 					<tr>
-						<th width="50" align="center">&nbsp;</th>
 						<th>用戶代碼</th>
 						<th>用戶姓名</th>
 						<th>客戶名稱</th>
@@ -193,13 +191,6 @@
 					</tr>
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
-							<td align="center" class="td_first" nowrap><c:choose>
-									<c:when test="${9 eq  item.serNo }"></c:when>
-									<c:otherwise>
-										<input type="checkbox" class="checkbox"
-											name="entity.checkItem" value="${item.serNo}">
-									</c:otherwise>
-								</c:choose></td>
 							<td>${item.userId }</td>
 							<td align="center"><esapi:encodeForHTML>${item.userName }</esapi:encodeForHTML></td>
 							<td>${item.customer.name }</td>
@@ -207,10 +198,12 @@
 							<td>${item.role.role }</td>
 							<td align="center">${item.status.status }</td>
 							<td align="center"><a class="state-default2"
-								onclick="goView('${item.serNo }')"><span
-									class="icon-default icon-view"></span>檢視</a> <a
-								class="state-default2" onclick="goUpdate('${item.serNo}')"><span
-									class="icon-default icon-edit"></span>修改</a></td>
+								onclick="goUpdate('${item.serNo}')"><span
+									class="icon-default icon-edit"></span>修改</a> <c:if
+									test="${9 ne item.serNo }">
+									<a class="state-default2" onclick="goDel('${item.serNo}')"><span
+										class="icon-default icon-delete"></span>刪除</a>
+								</c:if></td>
 						</tr>
 					</c:forEach>
 				</tbody>

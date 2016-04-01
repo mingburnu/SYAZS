@@ -40,13 +40,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
 import com.shouyang.syazs.module.apply.enums.Type;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 
 @Controller
@@ -67,81 +64,47 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
 
-	@Autowired
-	private ReferenceOwner referenceOwner;
-
-	@Autowired
-	private ReferenceOwnerService referenceOwnerService;
-
 	@Override
 	protected void validateSave() throws Exception {
+
 		if (StringUtils.isBlank(getEntity().getDbTitle())) {
 			errorMessages.add("沒有資料庫名稱");
+		}
+
+		if (StringUtils.isBlank(getEntity().getPublishName())) {
+			errorMessages.add("沒有出版社名稱");
+		}
+
+		if (errorMessages.size() == 0) {
+			if (hasRepeatDb(getEntity().getDbTitle(), getEntity()
+					.getPublishName(), getEntity().getSerNo())) {
+				errorMessages.add("資料庫重複");
+			}
 		}
 
 		if (!isURL(getEntity().getUrl())) {
 			errorMessages.add("URL格式不正確");
 		}
 
-		if (StringUtils.isNotEmpty(getRequest().getParameter(
-				"entity.resourcesBuyers.startDate"))) {
-			if (getEntity().getResourcesBuyers().getStartDate() == null) {
+		if (StringUtils.isNotEmpty(getRequest()
+				.getParameter("entity.startDate"))) {
+			if (getEntity().getStartDate() == null) {
 				errorMessages.add("起始日不正確");
 			}
 		}
 
 		if (StringUtils.isNotEmpty(getRequest().getParameter(
-				"entity.resourcesBuyers.maturityDate"))) {
-			if (getEntity().getResourcesBuyers().getMaturityDate() == null) {
+				"entity.maturityDate"))) {
+			if (getEntity().getMaturityDate() == null) {
 				errorMessages.add("到期日不正確");
 			}
 		}
 
-		if (getEntity().getResourcesBuyers().getStartDate() != null
-				&& getEntity().getResourcesBuyers().getMaturityDate() != null) {
-			if (getEntity()
-					.getResourcesBuyers()
-					.getStartDate()
-					.isAfter(getEntity().getResourcesBuyers().getMaturityDate())) {
+		if (getEntity().getStartDate() != null
+				&& getEntity().getMaturityDate() != null) {
+			if (getEntity().getStartDate().isAfter(
+					getEntity().getMaturityDate())) {
 				errorMessages.add("到期日早於起始日");
-			}
-		}
-
-		if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
-			errorMessages.add("至少選擇一筆以上訂閱單位");
-		} else {
-			Set<Long> deRepeatSet = new HashSet<Long>(Arrays.asList(getEntity()
-					.getRefSerNo()));
-			getEntity().setRefSerNo(
-					deRepeatSet.toArray(new Long[deRepeatSet.size()]));
-			getEntity().setOwners(new LinkedList<ReferenceOwner>());
-
-			int i = 0;
-			while (i < getEntity().getRefSerNo().length) {
-				if (getEntity().getRefSerNo()[i] == null) {
-					errorMessages.add("null為不可利用的流水號");
-				} else {
-					if (getEntity().getRefSerNo()[i] < 1) {
-						errorMessages.add(getEntity().getRefSerNo()[i]
-								+ "為不可利用的流水號");
-					} else {
-						Object[] ownerValue = referenceOwnerService
-								.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
-						if (ownerValue == null) {
-							errorMessages.add(getEntity().getRefSerNo()[i]
-									+ "為不可利用的流水號");
-						} else {
-							referenceOwner = new ReferenceOwner();
-							referenceOwner
-									.setSerNo(getEntity().getRefSerNo()[i]);
-							referenceOwner.setName(ownerValue[1].toString());
-
-							getEntity().getOwners().add(referenceOwner);
-						}
-					}
-				}
-
-				i++;
 			}
 		}
 
@@ -163,9 +126,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			if (StringUtils.isBlank(getEntity().getDbTitle())
-					&& StringUtils.isBlank(getEntity().getDbTitle())) {
+			if (StringUtils.isBlank(getEntity().getDbTitle())) {
 				errorMessages.add("沒有資料庫名稱");
+			}
+
+			if (StringUtils.isBlank(getEntity().getPublishName())) {
+				errorMessages.add("沒有出版社名稱");
+			}
+
+			if (errorMessages.size() == 0) {
+				if (hasRepeatDb(getEntity().getDbTitle(), getEntity()
+						.getPublishName(), getEntity().getSerNo())) {
+					errorMessages.add("資料庫重複");
+				}
 			}
 
 			if (!isURL(getEntity().getUrl())) {
@@ -173,67 +146,24 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 
 			if (StringUtils.isNotEmpty(getRequest().getParameter(
-					"entity.resourcesBuyers.startDate"))) {
-				if (getEntity().getResourcesBuyers().getStartDate() == null) {
+					"entity.startDate"))) {
+				if (getEntity().getStartDate() == null) {
 					errorMessages.add("起始日不正確");
 				}
 			}
 
 			if (StringUtils.isNotEmpty(getRequest().getParameter(
-					"entity.resourcesBuyers.maturityDate"))) {
-				if (getEntity().getResourcesBuyers().getMaturityDate() == null) {
+					"entity.maturityDate"))) {
+				if (getEntity().getMaturityDate() == null) {
 					errorMessages.add("到期日不正確");
 				}
 			}
 
-			if (getEntity().getResourcesBuyers().getStartDate() != null
-					&& getEntity().getResourcesBuyers().getMaturityDate() != null) {
-				if (getEntity()
-						.getResourcesBuyers()
-						.getStartDate()
-						.isAfter(
-								getEntity().getResourcesBuyers()
-										.getMaturityDate())) {
+			if (getEntity().getStartDate() != null
+					&& getEntity().getMaturityDate() != null) {
+				if (getEntity().getStartDate().isAfter(
+						getEntity().getMaturityDate())) {
 					errorMessages.add("到期日早於起始日");
-				}
-			}
-
-			if (ArrayUtils.isEmpty(getEntity().getRefSerNo())) {
-				errorMessages.add("至少選擇一筆以上訂閱單位");
-			} else {
-				Set<Long> deRepeatSet = new HashSet<Long>(
-						Arrays.asList(getEntity().getRefSerNo()));
-				getEntity().setRefSerNo(
-						deRepeatSet.toArray(new Long[deRepeatSet.size()]));
-				getEntity().setOwners(new LinkedList<ReferenceOwner>());
-
-				int i = 0;
-				while (i < getEntity().getRefSerNo().length) {
-					if (getEntity().getRefSerNo()[i] == null) {
-						errorMessages.add("null為不可利用的流水號");
-					} else {
-						if (getEntity().getRefSerNo()[i] < 1) {
-							errorMessages.add(getEntity().getRefSerNo()[i]
-									+ "為不可利用的流水號");
-						} else {
-							Object[] ownerValue = referenceOwnerService
-									.getOwnerBySerNo(getEntity().getRefSerNo()[i]);
-							if (ownerValue == null) {
-								errorMessages.add(getEntity().getRefSerNo()[i]
-										+ "為不可利用的流水號");
-							} else {
-								referenceOwner = new ReferenceOwner();
-								referenceOwner.setSerNo(getEntity()
-										.getRefSerNo()[i]);
-								referenceOwner
-										.setName(ownerValue[1].toString());
-
-								getEntity().getOwners().add(referenceOwner);
-							}
-						}
-					}
-
-					i++;
 				}
 			}
 
@@ -277,24 +207,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Override
 	public String add() throws Exception {
-		getRequest().setAttribute(
-				"uncheckReferenceOwners",
-				referenceOwnerService
-						.getUncheckOwners(new ArrayList<ReferenceOwner>()));
-
 		setEntity(database);
-
 		return ADD;
 	}
 
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<ReferenceOwner> owners = databaseService
-					.getcheckOwners(database.getSerNo());
-			database.setOwners(owners);
-			getRequest().setAttribute("uncheckReferenceOwners",
-					referenceOwnerService.getUncheckOwners(owners));
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -334,22 +253,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 		if (!hasActionErrors()) {
 			getEntity().setDbTitle(getEntity().getDbTitle().trim());
-			getEntity().setReferenceOwners(
-					new HashSet<ReferenceOwner>(getEntity().getOwners()));
 
 			database = databaseService.save(getEntity(), getLoginUser());
-			setOwners();
 			setEntity(database);
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
-			database = getEntity();
-
-			getRequest().setAttribute(
-					"uncheckReferenceOwners",
-					referenceOwnerService.getUncheckOwners(getEntity()
-							.getOwners()));
-			setEntity(database);
+			setEntity(getEntity());
 			return ADD;
 		}
 	}
@@ -362,22 +272,13 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		if (!hasActionErrors()) {
 			getEntity().setDbTitle(getEntity().getDbTitle().trim());
 
-			getEntity().setReferenceOwners(
-					new HashSet<ReferenceOwner>(getEntity().getOwners()));
 			database = databaseService.update(getEntity(), getLoginUser(),
 					"uuIdentifier");
-			setOwners();
 			setEntity(database);
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
-			database = getEntity();
-
-			getRequest().setAttribute(
-					"uncheckReferenceOwners",
-					referenceOwnerService.getUncheckOwners(getEntity()
-							.getOwners()));
-			setEntity(database);
+			setEntity(getEntity());
 			return EDIT;
 		}
 	}
@@ -406,7 +307,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String view() throws NumberFormatException, Exception {
 		if (hasEntity()) {
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
-			setOwners();
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -417,30 +317,12 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	public String box() throws Exception {
 		List<Database> allDbs = databaseService.getAllDbs();
-		Set<ReferenceOwner> owners = Sets.newHashSet();
-		for (int i = 0; i < allDbs.size(); i++) {
-			database = allDbs.get(i);
-			List<Object[]> dataList = databaseService.getResOwners(database
-					.getSerNo());
-			for (int j = 0; j < dataList.size(); j++) {
-				referenceOwner = new ReferenceOwner();
-				referenceOwner.setSerNo((Long) dataList.get(j)[0]);
-				referenceOwner.setName(dataList.get(j)[1].toString());
-				owners.add(referenceOwner);
-			}
-
-			database.setReferenceOwners(owners);
-		}
-
 		getRequest().setAttribute("resDbs", allDbs);
 		return BOX;
 	}
 
 	public String tip() throws Exception {
-		Long serNo = getEntity().getSerNo();
-		String dbTitle = getEntity().getDbTitle();
-
-		if (hasRepeatDbTitle(dbTitle, serNo)) {
+		if (hasRepeatDbTitle(getEntity().getDbTitle(), getEntity().getSerNo())) {
 			getRequest().setAttribute("tip", "有同名資料庫");
 		}
 
@@ -476,7 +358,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[16];
+			String[] rowTitles = new String[15];
 			int n = 0;
 			while (n < rowTitles.length) {
 				if (firstRow.getCell(n) == null) {
@@ -536,7 +418,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					continue;
 				}
 
-				String[] rowValues = new String[16];
+				String[] rowValues = new String[15];
 				int k = 0;
 				while (k < rowValues.length) {
 					if (row.getCell(k) == null) {
@@ -617,65 +499,33 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					}
 				}
 
-				resourcesBuyers = new ResourcesBuyers(
-						toLocalDateTime(rowValues[12].trim()),
-						toLocalDateTime(rowValues[13].trim()), category);
-
-				Set<ReferenceOwner> owners = new HashSet<ReferenceOwner>();
-				if (StringUtils.isNotBlank(rowValues[15].replace(",", ""))) {
-					String[] names = rowValues[15].trim().split(",");
-
-					int j = 0;
-					while (j < names.length) {
-						if (StringUtils.isNotBlank(names[j])) {
-							referenceOwner = new ReferenceOwner();
-							referenceOwner.setName(names[j].trim());
-							referenceOwner
-									.setSerNo(referenceOwnerService
-											.getRefSerNoByName(referenceOwner
-													.getName()));
-
-							if (referenceOwner.getSerNo() == 0) {
-								errorList.add(referenceOwner.getName() + "不存在");
-							}
-							owners.add(referenceOwner);
-						}
-						j++;
-					}
-
-				}
+				resourcesBuyers = new ResourcesBuyers(category);
 
 				database = new Database(rowValues[0].trim(), rowValues[1],
 						rowValues[2], rowValues[3], rowValues[4], rowValues[5],
 						rowValues[6], rowValues[7], rowValues[8], type,
-						rowValues[10], openAccess, null, resourcesBuyers,
-						new HashSet<ReferenceOwner>(owners));
+						rowValues[10], openAccess,
+						toLocalDateTime(rowValues[12].trim()),
+						toLocalDateTime(rowValues[13].trim()), null,
+						resourcesBuyers);
 				database.setTempNotes(new String[] { rowValues[12],
 						rowValues[13] });
 				database.getResourcesBuyers().setDataStatus("");
 
-				if (CollectionUtils.isEmpty(database.getReferenceOwners())) {
-					errorList.add("沒有訂閱單位");
-				}
-
 				if (StringUtils.isNotEmpty(database.getTempNotes()[0])
-						&& database.getResourcesBuyers().getStartDate() == null) {
+						&& database.getStartDate() == null) {
 					errorList.add("起始日錯誤");
 				}
 
 				if (StringUtils.isNotEmpty(database.getTempNotes()[1])
-						&& database.getResourcesBuyers().getMaturityDate() == null) {
+						&& database.getMaturityDate() == null) {
 					errorList.add("到期日錯誤");
 				}
 
-				if (database.getResourcesBuyers().getStartDate() != null
-						&& database.getResourcesBuyers().getMaturityDate() != null) {
-					if (database
-							.getResourcesBuyers()
-							.getStartDate()
-							.isAfter(
-									database.getResourcesBuyers()
-											.getMaturityDate())) {
+				if (database.getStartDate() != null
+						&& database.getMaturityDate() != null) {
+					if (database.getStartDate().isAfter(
+							database.getMaturityDate())) {
 						errorList.add("到期日早於起始日");
 					}
 				}
@@ -1022,10 +872,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				database = (Database) importList.get(i);
 				if (!database.getDataStatus().equals("正常")
 						&& !database.getDataStatus().equals("已匯入")) {
-					List<String> ownerNames = Lists.newArrayList();
-					for (ReferenceOwner owner : database.getReferenceOwners()) {
-						ownerNames.add(owner.getName());
-					}
 
 					String tips = database.getResourcesBuyers().getDataStatus()
 							.replace("<br>", ",");
@@ -1053,8 +899,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 									database.getTempNotes()[1],
 									database.getResourcesBuyers().getCategory()
 											.getCategory(),
-									ownerNames.toString().substring(1,
-											ownerNames.toString().length() - 1),
 									database.getDataStatus(), tips });
 				}
 				i++;
@@ -1101,11 +945,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				database = (Database) importList.get(i);
 				if (database.getDataStatus().equals("正常")
 						|| database.getDataStatus().equals("已匯入")) {
-					List<String> ownerNames = Lists.newArrayList();
-					for (ReferenceOwner owner : database.getReferenceOwners()) {
-						ownerNames.add(owner.getName());
-					}
-
 					String tips = database.getResourcesBuyers().getDataStatus()
 							.replace("<br>", ",");
 					if (tips.length() > 0) {
@@ -1132,8 +971,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 									database.getTempNotes()[1],
 									database.getResourcesBuyers().getCategory()
 											.getCategory(),
-									ownerNames.toString().substring(1,
-											ownerNames.toString().length() - 1),
 									database.getDataStatus(), tips });
 				}
 				i++;
@@ -1179,7 +1016,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 		empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
 				"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用", "起始日",
-				"到期日", "資源類型", "訂閱單位" });
+				"到期日", "資源類型" });
 
 		empinfo.put(
 				"2",
@@ -1191,19 +1028,19 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						"本選輯專為台灣地理空間、人文風情與歷史社會風貌打造的平台檢索系統，精心挑選遠足文化出版社最具代表性的出版品，並經由台灣百餘位學界教授、地方文史工作者、公部門專業研究員共同編撰，以豐富的數位內容與專業平台檢索系統的結合，引領讀者按圖索驥，開啟「台灣學」新視野。 @內容皆採全文本(pure –efile)格式製作，可支援關鍵字全文檢索。@提供讀者二大閱讀模式：(1)【下載】離線閱讀授權範圍內下載並安裝”L&B專屬之SMART Reader閱讀器”至您的桌機/筆電，即使無法網際網路連線，也能進行閱讀、管理下載書目(離線閱讀檔案共可使用30天)。運用章節標引導航、全文檢索、文字引用及底線等標註多樣化常用文具，為使用者節省並增加資訊檢索的正確率，有效提升學術研究、主題討論之品質。(2)【線上閱讀】連線閱讀：Flash翻頁式電子書@本平臺之電子書不限制同時使用人數，目前提供約60本電子書。",
 						"台灣行旅", "地理、人文、歷史 、社會", "N/A", "N/A", "電子書",
 						"http://lb20.tpml.libraryandbook.net/FE", "否",
-						"2015-05-10", "", "0", "高雄醫學院附設醫院,疾病管制署" });
+						"2015-05-10", "", "0" });
 		empinfo.put("3", new Object[] { "Tesuka Manga手塚治虫系列漫畫電子書", "中文", "漫畫",
 				"iGroup", "繁體中文12種157冊、日文15種377冊、英文6種55冊", "手塚治虫系列漫畫", "N/A",
 				"N/A", "N/A", "電子書", "http://www.mymanga365.com/tezuka/", "否",
-				"", "2015-10-15", "1", "高雄醫學院附設醫院" });
+				"", "2015-10-15", "1" });
 		empinfo.put("4", new Object[] { "Nature Publish Group", "英文", "期刊",
 				"nature.com", "", "Science & Medicine Journal", "N/A", "N/A",
 				"N/A", "期刊", "http://www.nature.com/", "否", "", "2015-10-15",
-				"2", "高雄醫學院附設醫院" });
+				"2" });
 		empinfo.put("5", new Object[] { "台灣地理線上百科資料庫 ", "中文", "多媒體", "SYDT",
 				"", "台灣地理", "N/A", "N/A", "N/A", "資料庫",
 				"http://geo.twonline.libraryandbook.net/main.action", "否", "",
-				"2015-10-15", "1", "高雄醫學院附設醫院" });
+				"2015-10-15", "1" });
 
 		Set<String> keyid = empinfo.keySet();
 		int rowid = 0;
@@ -1226,6 +1063,10 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	}
 
 	protected boolean isURL(String url) {
+		if (StringUtils.isNotEmpty(url)) {
+			url = url.trim();
+		}
+
 		return ESAPI.validator().isValidInput("Database URL", url, "URL",
 				Integer.MAX_VALUE, false);
 	}
@@ -1245,8 +1086,28 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	protected boolean hasRepeatDbTitle(String dbTitle, Long serNo)
 			throws Exception {
-		List<Long> results = databaseService.getSerNosByTitle(getEntity()
-				.getDbTitle());
+		List<Long> results = databaseService.getSerNosByTitle(dbTitle);
+
+		if (serNo != null) {
+			if (CollectionUtils.isNotEmpty(results)) {
+				results.remove(serNo);
+				if (results.size() != 0) {
+					return true;
+				}
+			}
+		} else {
+			if (CollectionUtils.isNotEmpty(results)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean hasRepeatDb(String dbTitle, String publishName, Long serNo)
+			throws Exception {
+		List<Long> results = databaseService.getByTitlePublishName(dbTitle,
+				publishName);
 
 		if (serNo != null) {
 			if (CollectionUtils.isNotEmpty(results)) {
@@ -1273,10 +1134,5 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
-	}
-
-	protected void setOwners() {
-		getRequest().setAttribute("referenceOwners",
-				databaseService.getResOwners(database.getSerNo()));
 	}
 }

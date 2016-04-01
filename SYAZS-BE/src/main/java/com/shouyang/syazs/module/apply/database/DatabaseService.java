@@ -1,6 +1,6 @@
 package com.shouyang.syazs.module.apply.database;
 
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,16 +17,12 @@ import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @Service
 public class DatabaseService extends GenericServiceFull<Database> {
 
 	@Autowired
 	private Database entity;
-
-	@Autowired
-	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private DatabaseDao dao;
@@ -102,10 +98,12 @@ public class DatabaseService extends GenericServiceFull<Database> {
 	public Database save(Database entity, AccountNumber user) throws Exception {
 		Assert.notNull(entity);
 
-		String uuid = UUID.randomUUID().toString();
-		while (!isUnusedUUID(uuid)) {
-			uuid = UUID.randomUUID().toString();
-		}
+		String uuid = null;
+		do {
+			uuid = Integer.toString(
+					ByteBuffer.wrap(UUID.randomUUID().toString().getBytes())
+							.getInt(), Character.MAX_RADIX);
+		} while (!isUnusedUUID(uuid));
 
 		entity.initInsert(user);
 		entity.setUuIdentifier(uuid);
@@ -116,28 +114,6 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dbEntity;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Object[]> getResOwners(long serNo) {
-		DsQueryLanguage queryLanguage = getDsQueryLanguage();
-		queryLanguage
-				.setHql("SELECT dr.serNo, dr.name FROM Database d JOIN d.referenceOwners dr WHERE d.serNo = :serNo");
-		queryLanguage.addParameter("serNo", serNo);
-		return (List<Object[]>) dao.findByHQL(queryLanguage);
-	}
-
-	public List<ReferenceOwner> getcheckOwners(long serNo) throws Exception {
-		List<Object[]> checks = (List<Object[]>) getResOwners(serNo);
-		List<ReferenceOwner> checkOwners = new ArrayList<ReferenceOwner>();
-		for (int i = 0; i < checks.size(); i++) {
-			referenceOwner = new ReferenceOwner();
-			referenceOwner.setSerNo((Long) checks.get(i)[0]);
-			referenceOwner.setName(checks.get(i)[1].toString());
-			checkOwners.add(referenceOwner);
-		}
-
-		return checkOwners;
-	}
-
 	public boolean isUnusedUUID(String uuid) throws Exception {
 		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("uuIdentifier", uuid);
@@ -146,5 +122,17 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		} else {
 			return false;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Long> getByTitlePublishName(String dbTitle, String publishName)
+			throws Exception {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT serNo FROM Database WHERE LOWER(dbTitle) = :dbTitle AND LOWER(publishName) = :publishName");
+		queryLanguage.addParameter("dbTitle", dbTitle.trim().toLowerCase());
+		queryLanguage.addParameter("publishName", publishName.trim()
+				.toLowerCase());
+		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 }

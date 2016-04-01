@@ -8,7 +8,7 @@
 		<c:if test="${login.role.role != '管理員'}">
 			<div id="menu-titles_1" class="menu-titles">
 				<a onclick="showMenuItems('1');"><span
-					class="menu-icon menu-icon-site">客戶管理</span></a>
+					class="menu-icon menu-icon-site">基本資料管理</span></a>
 			</div>
 			<div id="menu_items_1" style="">
 				<div class="menu-items">
@@ -36,12 +36,7 @@
 		<div id="menu_items_3" style="display: none;">
 			<div class="menu-items">
 				<a
-					onclick="goURL('<%=request.getContextPath()%>/page/referenceOwner.action');">訂閱單位</a>
-			</div>
-
-			<div class="menu-items">
-				<a
-					onclick="goURL('<%=request.getContextPath()%>/page/journal.action');">期刊</a>
+					onclick="goURL('<%=request.getContextPath()%>/page/journal.action');">電子期刊</a>
 			</div>
 
 			<div class="menu-items">

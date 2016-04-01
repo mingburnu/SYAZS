@@ -32,10 +32,6 @@ import com.google.common.collect.Lists;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.shouyang.syazs.core.apply.enums.Role;
-import com.shouyang.syazs.core.apply.group.Group;
-import com.shouyang.syazs.core.apply.group.GroupService;
-import com.shouyang.syazs.core.apply.groupMapping.GroupMapping;
-import com.shouyang.syazs.core.apply.groupMapping.GroupMappingService;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 
@@ -53,15 +49,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	@Autowired
 	private CustomerService customerService;
-
-	@Autowired
-	private GroupService groupService;
-
-	@Autowired
-	private GroupMapping groupMapping;
-
-	@Autowired
-	private GroupMappingService groupMappingService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -153,15 +140,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	@Override
 	public String list() throws Exception {
-		if (StringUtils.isNotBlank(getEntity().getOption())) {
-			if (!getEntity().getOption().equals("entity.name")
-					&& !getEntity().getOption().equals("entity.engName")) {
-				getEntity().setOption("entity.name");
-			}
-		} else {
-			getEntity().setOption("entity.name");
-		}
-
 		DataSet<Customer> ds = customerService.getByRestrictions(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
@@ -170,6 +148,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
 			ds = customerService.getByRestrictions(ds);
+		}
+
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getEntity().setOption("done");
 		}
 
 		setDs(ds);
@@ -183,9 +165,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 		if (!hasActionErrors()) {
 			customer = customerService.save(getEntity(), getLoginUser());
-			groupService.save(
-					new Group(new GroupMapping(null, customer.getName(), 0),
-							customer, customer.getName()), getLoginUser());
 
 			setEntity(customer);
 
@@ -615,10 +594,6 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				int index = (Integer) iterator.next();
 				customer = (Customer) importList.get(index);
 				customerService.save(customer, getLoginUser());
-				groupService.save(
-						new Group(
-								new GroupMapping(null, customer.getName(), 0),
-								customer, customer.getName()), getLoginUser());
 				customer.setDataStatus("已匯入");
 				++successCount;
 			}

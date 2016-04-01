@@ -78,14 +78,14 @@
 					</tr>
 					<tr>
 						<th width="130">ISSN<span class="required">(&#8226;)</span></th>
-						<td>${fn:substring(entity.issn, 0, 4)}-${fn:substring(entity.issn, 4, 8)}</td>
+						<td>${fn:substring(entity.issn, 0, 4)}${fn:substring(entity.issn, 4, 8)}</td>
 					</tr>
 					<tr>
 						<th width="130">語文</th>
 						<td><esapi:encodeForHTML>${entity.languages }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">出版項</th>
+						<th width="130">出版社<span class="required">(&#8226;)</span></th>
 						<td><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -113,7 +113,7 @@
 						<td><esapi:encodeForHTML>${entity.version }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">全文取得授權刊期</th>
+						<th width="130">全文取得授權刊期(embargo period)</th>
 						<td><esapi:encodeForHTML>${entity.embargo }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -135,24 +135,15 @@
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><s:property value="entity.resourcesBuyers.startDate" />
-							<s:property value="entity.database.resourcesBuyers.startDate" />
-						</td>
+						<td><s:property value="entity.startDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><s:property value="entity.resourcesBuyers.maturityDate" />
-							<s:property value="entity.database.resourcesBuyers.maturityDate" /></td>
+						<td><s:property value="entity.maturityDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>
-						<td>${entity.resourcesBuyers.category}${entity.database.resourcesBuyers.category}</td>
-					</tr>
-					<tr>
-						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${referenceOwners}">
-								<div>${item[1]}</div>
-							</c:forEach></td>
+						<td>${entity.resourcesBuyers.category}</td>
 					</tr>
 				</tbody>
 			</table>

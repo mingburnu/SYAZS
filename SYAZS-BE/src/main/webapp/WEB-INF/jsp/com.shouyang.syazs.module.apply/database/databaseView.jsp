@@ -69,7 +69,7 @@
 			<table cellspacing="1" class="detail-table">
 				<tbody>
 					<tr>
-						<th width="130">資料庫題名</th>
+						<th width="130">資料庫題名<span class="required">(&#8226;)</span></th>
 						<td><esapi:encodeForHTML>${entity.dbTitle }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -77,7 +77,7 @@
 						<td>${entity.uuIdentifier }</td>
 					</tr>
 					<tr>
-						<th width="130">出版社</th>
+						<th width="130">出版社<span class="required">(&#8226;)</span></th>
 						<td><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -96,11 +96,11 @@
 							</c:choose></td>
 					</tr>
 					<tr>
-						<th width="130">URL</th>
+						<th width="130">URL<span class="required">(&#8226;)</span></th>
 						<td><a href="${entity.url }" target="_blank">${entity.url }</a></td>
 					</tr>
 					<tr>
-						<th width="130">全文取得授權刊期</th>
+						<th width="130">全文取得授權刊期(embargo period)</th>
 						<td><esapi:encodeForHTML>${entity.embargo }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -117,11 +117,11 @@
 					</tr>
 					<tr>
 						<th width="130">起始日</th>
-						<td><s:property value="entity.resourcesBuyers.startDate" /></td>
+						<td><s:property value="entity.startDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">到期日</th>
-						<td><s:property value="entity.resourcesBuyers.maturityDate" /></td>
+						<td><s:property value="entity.maturityDate" /></td>
 					</tr>
 					<tr>
 						<th width="130">資源類型</th>
@@ -130,12 +130,6 @@
 					<tr>
 						<th width="130">資源種類</th>
 						<td>${entity.type}</td>
-					</tr>
-					<tr>
-						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${referenceOwners}">
-								<div>${item[1]}</div>
-							</c:forEach></td>
 					</tr>
 					<tr>
 						<th width="130">內容</th>

@@ -6,8 +6,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -19,9 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.classification.Classification;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.feLogs.FeLogs;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
@@ -71,14 +69,6 @@ public class Ebook extends ModuleProperties {
 	@Column(name = "Version")
 	private String version;
 
-	// 中國圖書分類碼
-	@Column(name = "cnclassbzstr")
-	private String cnClassBzStr;
-
-	// 杜威十進位圖書分類法
-	@Column(name = "bookinfoIntegeregral")
-	private String bookInfoIntegral;
-
 	// 類型
 	@Column(name = "style")
 	private String style;
@@ -101,6 +91,16 @@ public class Ebook extends ModuleProperties {
 	@Autowired
 	private Database database;
 
+	// 分類法
+	@ManyToOne
+	@JoinColumn(name = "lcs_serNo")
+	@Autowired
+	private Classification classification;
+
+	// LCS code
+	@Column(name = "lcs_code")
+	private String lcsCode;
+
 	// Universally Unique Identifier
 	@Column(name = "uuIdentifier", updatable = false, unique = true)
 	private String uuIdentifier;
@@ -110,11 +110,6 @@ public class Ebook extends ModuleProperties {
 	@JoinColumn(name = "res_serNo", nullable = false)
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
-
-	// ReferenceOwner
-	@ManyToMany
-	@JoinTable(name = "ref_ebk", joinColumns = @JoinColumn(name = "ebk_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
-	private Set<ReferenceOwner> referenceOwners;
 
 	@OneToMany(mappedBy = "ebook", orphanRemoval = true)
 	private Set<FeLogs> feLogses;
@@ -255,36 +250,6 @@ public class Ebook extends ModuleProperties {
 	}
 
 	/**
-	 * @return the cnClassBzStr
-	 */
-	public String getCnClassBzStr() {
-		return cnClassBzStr;
-	}
-
-	/**
-	 * @param cnClassBzStr
-	 *            the cnClassBzStr to set
-	 */
-	public void setCnClassBzStr(String cnClassBzStr) {
-		this.cnClassBzStr = cnClassBzStr;
-	}
-
-	/**
-	 * @return the bookInfoIntegral
-	 */
-	public String getBookInfoIntegral() {
-		return bookInfoIntegral;
-	}
-
-	/**
-	 * @param bookInfoIntegral
-	 *            the bookInfoIntegral to set
-	 */
-	public void setBookInfoIntegral(String bookInfoIntegral) {
-		this.bookInfoIntegral = bookInfoIntegral;
-	}
-
-	/**
 	 * @return the style
 	 */
 	public String getStyle() {
@@ -360,6 +325,36 @@ public class Ebook extends ModuleProperties {
 	}
 
 	/**
+	 * @return the classification
+	 */
+	public Classification getClassification() {
+		return classification;
+	}
+
+	/**
+	 * @param classification
+	 *            the classification to set
+	 */
+	public void setClassification(Classification classification) {
+		this.classification = classification;
+	}
+
+	/**
+	 * @return the lcsCode
+	 */
+	public String getLcsCode() {
+		return lcsCode;
+	}
+
+	/**
+	 * @param lcsCode
+	 *            the lcsCode to set
+	 */
+	public void setLcsCode(String lcsCode) {
+		this.lcsCode = lcsCode;
+	}
+
+	/**
 	 * @return the uuIdentifier
 	 */
 	public String getUuIdentifier() {
@@ -389,21 +384,6 @@ public class Ebook extends ModuleProperties {
 		this.resourcesBuyers = resourcesBuyers;
 	}
 
-	/**
-	 * @return the referenceOwners
-	 */
-	public Set<ReferenceOwner> getReferenceOwners() {
-		return referenceOwners;
-	}
-
-	/**
-	 * @param referenceOwners
-	 *            the referenceOwners to set
-	 */
-	public void setReferenceOwners(Set<ReferenceOwner> referenceOwners) {
-		this.referenceOwners = referenceOwners;
-	}
-
 	public Ebook() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -412,10 +392,9 @@ public class Ebook extends ModuleProperties {
 	public Ebook(String bookName, Long isbn, String publishName,
 			String autherName, String authers, String uppeName,
 			LocalDateTime pubDate, String languages, String version,
-			String cnClassBzStr, String bookInfoIntegral, String style,
-			String publication, String url, Boolean openAccess,
-			Database database, String uuIdentifier,
-			ResourcesBuyers resourcesBuyers, Set<ReferenceOwner> referenceOwners) {
+			String style, String publication, String url, Boolean openAccess,
+			Database database, Classification classification, String lcsCode,
+			String uuIdentifier, ResourcesBuyers resourcesBuyers) {
 		super();
 		this.bookName = bookName;
 		this.isbn = isbn;
@@ -426,15 +405,14 @@ public class Ebook extends ModuleProperties {
 		this.pubDate = pubDate;
 		this.languages = languages;
 		this.version = version;
-		this.cnClassBzStr = cnClassBzStr;
-		this.bookInfoIntegral = bookInfoIntegral;
 		this.style = style;
 		this.publication = publication;
 		this.url = url;
 		this.openAccess = openAccess;
 		this.database = database;
+		this.classification = classification;
+		this.lcsCode = lcsCode;
 		this.uuIdentifier = uuIdentifier;
 		this.resourcesBuyers = resourcesBuyers;
-		this.referenceOwners = referenceOwners;
 	}
 }

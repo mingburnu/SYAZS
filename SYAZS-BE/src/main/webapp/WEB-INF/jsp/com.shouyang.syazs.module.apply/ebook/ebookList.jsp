@@ -175,9 +175,7 @@
 							<td>${item.cUid }</td>
 							<td align="center">${item.uUid }</td>
 							<td align="center"><a class="state-default2"
-								onclick="goView('${item.serNo }')"><span
-									class="icon-default icon-view"></span>檢視</a> <a
-								class="state-default2" onclick="goUpdate('${item.serNo}')"><span
+								onclick="goUpdate('${item.serNo}')"><span
 									class="icon-default icon-edit"></span>修改</a></td>
 						</tr>
 					</c:forEach>

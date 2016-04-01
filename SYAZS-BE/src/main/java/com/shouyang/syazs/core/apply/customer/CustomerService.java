@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.MatchMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -26,25 +24,8 @@ public class CustomerService extends GenericServiceFull<Customer> {
 			throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
-		Customer entity = ds.getEntity();
+
 		DsRestrictions restrictions = getDsRestrictions();
-
-		if (entity.getOption().equals("entity.engName")) {
-			if (StringUtils.isNotBlank(entity.getEngName())) {
-				restrictions.likeIgnoreCase("engName", entity.getEngName(),
-						MatchMode.ANYWHERE);
-			}
-		}
-
-		if (entity.getOption().equals("entity.name")) {
-			if (StringUtils.isNotBlank(entity.getName())) {
-				restrictions.likeIgnoreCase("name", entity.getName(),
-						MatchMode.ANYWHERE);
-			}
-		}
-
-		restrictions.addOrderAsc("serNo");
-		restrictions.addOrderAsc("engName");
 
 		return dao.findByRestrictions(restrictions, ds);
 	}

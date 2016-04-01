@@ -77,11 +77,12 @@
 					</tr>
 					<tr>
 						<th width="130">ISBN/10碼<span class="required">(&#8226;)</span></th>
-						<td><%=ISBN_Validator.toIsbn10(request.getAttribute(
-							"entity.isbn").toString())%></td>
+						<td><c:if test="${not empty entity.isbn }">
+								<%=ISBN_Validator.toIsbn10(request.getAttribute(
+								"entity.isbn").toString())%></c:if></td>
 					</tr>
 					<tr>
-						<th width="130">出版社</th>
+						<th width="130">出版社<span class="required">(&#8226;)</span></th>
 						<td><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -109,12 +110,12 @@
 						<td><esapi:encodeForHTML>${entity.version }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">中國圖書分類法</th>
-						<td>${entity.cnClassBzStr }</td>
+						<th width="130">分類法</th>
+						<td>${entity.classification.classname }</td>
 					</tr>
 					<tr>
-						<th width="130">杜威十進分類法</th>
-						<td>${entity.bookInfoIntegral }</td>
+						<th width="130">分類碼</th>
+						<td>${entity.lcsCode }</td>
 					</tr>
 					<tr>
 						<th width="130">URL</th>
@@ -134,25 +135,8 @@
 							target="_blank">${entity.database.dbTitle}</a></td>
 					</tr>
 					<tr>
-						<th width="130">起始日</th>
-						<td><s:property value="entity.resourcesBuyers.startDate" />
-							<s:property value="entity.database.resourcesBuyers.startDate" />
-						</td>
-					</tr>
-					<tr>
-						<th width="130">到期日</th>
-						<td><s:property value="entity.resourcesBuyers.maturityDate" />
-							<s:property value="entity.database.resourcesBuyers.maturityDate" /></td>
-					</tr>
-					<tr>
 						<th width="130">資源類型</th>
-						<td>${entity.resourcesBuyers.category}${entity.database.resourcesBuyers.category}</td>
-					</tr>
-					<tr>
-						<th width="130">購買單位名稱</th>
-						<td><c:forEach var="item" items="${referenceOwners}">
-								<div>${item[1]}</div>
-							</c:forEach></td>
+						<td>${entity.resourcesBuyers.category}</td>
 					</tr>
 				</tbody>
 			</table>

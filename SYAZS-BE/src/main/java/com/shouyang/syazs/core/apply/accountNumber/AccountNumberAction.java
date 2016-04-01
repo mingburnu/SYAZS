@@ -71,12 +71,9 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	protected void validateSave() throws Exception {
-		List<Role> roleList = getLegalRoles();
-
-		if (getEntity().getRole() == null
-				|| !roleList.contains(getEntity().getRole())) {
-			errorMessages.add("角色錯誤");
-		}
+		getLegalRoles();
+		getEntity().setCustomer(getLoginUser().getCustomer());
+		getEntity().setRole(Role.管理員);
 
 		if (getEntity().getStatus() == null) {
 			errorMessages.add("狀態錯誤");
@@ -103,16 +100,6 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			errorMessages.add("用戶姓名不得空白");
 		}
 
-		if (getLoginUser().getRole().equals(Role.管理員)) {
-			getEntity().setCustomer(getLoginUser().getCustomer());
-		} else {
-			if (!hasCustomer()) {
-				errorMessages.add("用戶名稱必選");
-			} else {
-				getEntity().setCustomer(customer);
-			}
-		}
-
 		if (!isEmail(getEntity().getEmail())) {
 			errorMessages.add("email格式不正確");
 		}
@@ -124,36 +111,25 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		if (!hasEntity()) {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			List<Role> roleList = getLegalRoles();
+			getLegalRoles();
+			getEntity().setCustomer(getLoginUser().getCustomer());
+			getEntity().setRole(accountNumber.getRole());
 
-			if (!roleList.contains(accountNumberService.getBySerNo(
-					getEntity().getSerNo()).getRole())) {
-				errorMessages.add("權限不足");
-				getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
+			if (getEntity().getStatus() == null) {
+				errorMessages.add("狀態錯誤");
 			}
 
-			if (errorMessages.size() == 0) {
-				if (getEntity().getRole() == null
-						|| !roleList.contains(getEntity().getRole())) {
-					errorMessages.add("角色錯誤");
-				}
+			if (StringUtils.isBlank(getEntity().getUserName())) {
+				errorMessages.add("用戶姓名不得空白");
+			}
 
-				if (getEntity().getStatus() == null) {
-					errorMessages.add("狀態錯誤");
-				}
-
-				if (StringUtils.isBlank(getEntity().getUserName())) {
-					errorMessages.add("用戶姓名不得空白");
-				}
-
-				if (getLoginUser().getRole().equals(Role.管理員)) {
-					getEntity().setCustomer(getLoginUser().getCustomer());
+			if (getLoginUser().getRole().equals(Role.管理員)) {
+				getEntity().setCustomer(getLoginUser().getCustomer());
+			} else {
+				if (!hasCustomer()) {
+					errorMessages.add("用戶名稱必選");
 				} else {
-					if (!hasCustomer()) {
-						errorMessages.add("用戶名稱必選");
-					} else {
-						getEntity().setCustomer(customer);
-					}
+					getEntity().setCustomer(customer);
 				}
 			}
 
@@ -165,8 +141,15 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	protected void validateDelete() throws Exception {
-		// TODO Auto-generated method stub
-
+		if (!getEntity().hasSerNo()) {
+			errorMessages.add("請選擇一筆資料");
+		} else {
+			if (getEntity().getSerNo() < 1
+					|| getEntity().getSerNo() == 9
+					|| accountNumberService.getBySerNo(getEntity().getSerNo()) == null) {
+				addActionError("有錯誤流水號");
+			}
+		}
 	}
 
 	@Override
@@ -174,12 +157,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		getLegalRoles();
 
 		DataSet<AccountNumber> ds = initDataSet();
-		if (getLoginUser().getRole().equals(Role.管理員)) {
-			ds.getDatas().put(getLoginUser().getCustomer().getName(),
-					getLoginUser().getCustomer().getSerNo());
-		} else {
-			ds.setDatas(customerService.getCusDatas());
-		}
+		ds.getDatas().put(getLoginUser().getCustomer().getName(),
+				getLoginUser().getCustomer().getSerNo());
 
 		setDs(ds);
 		return ADD;
@@ -188,41 +167,20 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
-			List<Role> roleList = getLegalRoles();
-
-			boolean isLegalRole = false;
-			if (roleList.contains(accountNumber.getRole())) {
-				isLegalRole = true;
-			}
-
-			if (isLegalRole) {
-				if (getLoginUser().getRole().equals(Role.管理員)) {
-					if (accountNumber.getCustomer().equals(
-							getLoginUser().getCustomer())) {
-						setEntity(accountNumber);
-					} else {
-						getResponse().sendError(
-								HttpServletResponse.SC_FORBIDDEN);
-					}
-				} else {
-					setEntity(accountNumber);
-				}
-
-			} else {
+			if (accountNumber.getRole().equals(Role.系統管理員)
+					&& !getLoginUser().getRole().equals(Role.系統管理員)) {
 				getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
 			}
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 
+		getLegalRoles();
 		DataSet<AccountNumber> ds = initDataSet();
-		if (getLoginUser().getRole().equals(Role.管理員)) {
-			ds.getDatas().put(getLoginUser().getCustomer().getName(),
-					getLoginUser().getCustomer().getSerNo());
-		} else {
-			ds.setDatas(customerService.getCusDatas());
-		}
+		ds.getDatas().put(getLoginUser().getCustomer().getName(),
+				getLoginUser().getCustomer().getSerNo());
 
+		setEntity(accountNumber);
 		setDs(ds);
 		return EDIT;
 	}
@@ -261,12 +219,8 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			setEntity(getEntity());
 
 			DataSet<AccountNumber> ds = initDataSet();
-			if (getLoginUser().getRole().equals(Role.管理員)) {
-				ds.getDatas().put(getLoginUser().getCustomer().getName(),
-						getLoginUser().getCustomer().getSerNo());
-			} else {
-				ds.setDatas(customerService.getCusDatas());
-			}
+			ds.getDatas().put(getLoginUser().getCustomer().getName(),
+					getLoginUser().getCustomer().getSerNo());
 
 			setDs(ds);
 			return ADD;
@@ -318,8 +272,19 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 	@Override
 	public String delete() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		validateDelete();
+		setActionErrors(errorMessages);
+
+		if (!hasActionErrors()) {
+			accountNumberService.deleteBySerNo(getEntity().getSerNo());
+
+			list();
+			addActionMessage("刪除成功");
+			return LIST;
+		} else {
+			list();
+			return LIST;
+		}
 	}
 
 	public String deauthorize() throws Exception {
@@ -485,7 +450,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 			}
 		}
 
-		if (!hasActionErrors()) {// TODO
+		if (!hasActionErrors()) {
 			List<String> cellNames = new ArrayList<String>();
 			List<String> errorList = Lists.newArrayList();
 
@@ -528,13 +493,13 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 
 					String status = "";
 					if (StringUtils.isBlank(row[6])) {
-						status = Status.審核中.getStatus();
+						status = Status.不生效.getStatus();
 					} else {
 						Object object = toEnum(row[6].trim(), Status.class);
 						if (object != null) {
 							status = row[6].trim();
 						} else {
-							status = Status.審核中.getStatus();
+							status = Status.不生效.getStatus();
 						}
 					}
 
@@ -985,11 +950,7 @@ public class AccountNumberAction extends GenericWebActionFull<AccountNumber> {
 		List<Role> tempList = new ArrayList<Role>();
 		roleList.remove(roleList.size() - 1);
 
-		int roleCode = roleList.indexOf(getLoginUser().getRole());
-
-		for (int i = 0; i < roleCode; i++) {
-			tempList.add(roleList.get(i));
-		}
+		tempList.add(Role.系統管理員);
 
 		roleList.removeAll(tempList);
 		ActionContext.getContext().getValueStack().set("roleList", roleList);

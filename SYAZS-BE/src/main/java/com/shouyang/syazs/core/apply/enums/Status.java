@@ -7,9 +7,6 @@ package com.shouyang.syazs.core.apply.enums;
  */
 public enum Status {
 
-	/** 審核中. */
-	審核中("審核中"),
-	
 	/** 生效. */
 	生效("生效"),
 

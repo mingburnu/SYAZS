@@ -40,18 +40,10 @@
 				<td><s:textfield name="entity.userName" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">用戶名稱<span class="required">(&#8226;)</span></th>
-				<td><c:choose>
-						<c:when test="${login.role.role == '管理員' }">
-							<s:select name="entity.customer.serNo" cssClass="input_text"
-								list="ds.datas" listKey="value" listValue="key" />
-						</c:when>
-						<c:otherwise>
-							<s:select headerValue="--用戶名稱--" headerKey="0"
-								name="entity.customer.serNo" cssClass="input_text"
-								list="ds.datas" listKey="value" listValue="key" />
-						</c:otherwise>
-					</c:choose></td>
+				<th width="130">用戶名稱</th>
+				<td><s:select name="entity.customer.serNo"
+						cssClass="input_text" list="ds.datas" listKey="value"
+						listValue="key" disabled="true" /></td>
 			</tr>
 			<tr>
 				<th width="130">Email</th>
@@ -59,8 +51,16 @@
 			</tr>
 			<tr>
 				<th width="130">帳戶角色</th>
-				<td><s:select name="entity.role" list="roleList"
-						listKey="name()" listValue="role" cssClass="input_text" /></td>
+				<td><c:choose>
+						<c:when test="${entity.role.role !='系統管理員' }">
+							<s:select name="entity.role" list='roleList' listKey="name()"
+								listValue="role" cssClass="input_text" disabled="true" />
+						</c:when>
+						<c:otherwise>
+							<s:select name="entity.role" list="%{'系統管理員'}"
+								cssClass="input_text" disabled="true" />
+						</c:otherwise>
+					</c:choose></td>
 			</tr>
 			<tr>
 				<th width="130">狀態</th>

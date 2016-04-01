@@ -11,13 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.shouyang.syazs.core.apply.customer.CustomerService;
-import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
-import com.shouyang.syazs.core.util.EncryptorUtil;
+import com.shouyang.syazs.core.util.EncryptorUtils;
 
 /**
  * 使用者 Service
@@ -69,7 +68,7 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 
 		entity.initInsert(user);
 		if (StringUtils.isNotEmpty(entity.getUserPw())) { // 密碼非空則進行加密
-			final String encryptedPassword = EncryptorUtil.encrypt(entity
+			final String encryptedPassword = EncryptorUtils.encrypt(entity
 					.getUserPw());
 			entity.setUserPw(encryptedPassword);
 		}
@@ -87,7 +86,7 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 
 		entity.initUpdate(user);
 		if (StringUtils.isNotEmpty(entity.getUserPw())) {
-			final String encryptedPassword = EncryptorUtil.encrypt(entity
+			final String encryptedPassword = EncryptorUtils.encrypt(entity
 					.getUserPw());
 			entity.setUserPw(encryptedPassword);
 		}
@@ -115,8 +114,6 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 
 		DsRestrictions restrictions = getDsRestrictions();
 		restrictions.eq("userId", entity.getUserId());
-		restrictions.ne("role", Role.使用者);
-		restrictions.ne("status", Status.審核中);
 		restrictions.ne("status", Status.不生效);
 		List<AccountNumber> secUsers = dao.findByRestrictions(restrictions);
 		if (CollectionUtils.isEmpty(secUsers)) {
@@ -139,7 +136,7 @@ public class AccountNumberService extends GenericServiceFull<AccountNumber> {
 		}
 		AccountNumber secUser = secUsers.get(0);
 
-		return EncryptorUtil.checkPassword(entity.getUserPw(),
+		return EncryptorUtils.checkPassword(entity.getUserPw(),
 				secUser.getUserPw());
 	}
 

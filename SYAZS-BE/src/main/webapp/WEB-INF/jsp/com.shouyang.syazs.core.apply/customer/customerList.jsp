@@ -21,14 +21,24 @@
 	<fmt:formatNumber type="number" pattern="#"
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
-<script type="text/javascript">
-	//切換查詢項目
-	$(document).ready(function() {
-		$("select#listForm_searchCondition").change(function() {
-			$("input#search").attr("name", $(this).val());
+<c:if test="${entity.option != 'done'}">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			goURL("<c:url value = '/'/>crud/apply.customer.list.action");
 		});
-	});
+	</script>
+</c:if>
+<style type="text/css">
+.tabs-box .tabs-items-hover-span {
+	display: none;
+}
 
+.tabs-box .tabs-items-hover {
+	background: none;
+	background-color: transparent;
+}
+</style>
+<script type="text/javascript">
 	function goSearch() {
 		goMain("<c:url value = '/'/>crud/apply.customer.list.action",
 				"#apply_customer_list", "");
@@ -150,65 +160,17 @@
 				<a id="tabs-items_A" class="tabs-items-hover"><span
 					class="tabs-items-hover-span">查詢</span></a>
 			</div>
-			<div id="TabsContain_A" class="tabs-contain">
-				<table border="0" cellspacing="4" cellpadding="0">
-
-					<tbody>
-						<tr>
-							<td align="left"><s:select name="entity.option"
-									id="listForm_searchCondition"
-									list="#{'entity.name':'用戶名稱','entity.engName':'英文名稱'}"></s:select>
-							</td>
-							<c:choose>
-								<c:when test="${entity.option=='entity.engName' }">
-									<td align="left"><s:textfield name="entity.engName"
-											id="search" cssClass="input_text" /></td>
-								</c:when>
-								<c:otherwise>
-									<td align="left"><s:textfield name="entity.name"
-											id="search" cssClass="input_text" /></td>
-								</c:otherwise>
-							</c:choose>
-							<td align="left"><a class="state-default"
-								onclick="goSearch();">查詢</a></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
 		</div>
 		<div id="div_nav">
 			目前位置：<span>客戶管理</span> &gt; <span>基本設定</span>
 		</div>
 		<div class="list-box">
-			<div class="list-buttons">
-				<c:choose>
-					<c:when
-						test="${(not empty ds.pager.totalRecord)&& (0 ne ds.pager.totalRecord) }">
-						<c:if test="${login.role =='系統管理員'}">
-							<a class="state-default" onclick="allSelect(1);">全選</a>
-							<a class="state-default" onclick="allSelect(0);">取消</a>
-						</c:if>
-						<a class="state-default" onclick="goAdd();">新增</a>
-						<c:if test="${login.role =='系統管理員'}">
-							<a class="state-default" onclick="goDelete();">刪除</a>
-						</c:if>
-						<a class="state-default" onclick="goImport()">匯入</a>
-					</c:when>
-					<c:otherwise>
-						<a class="state-default" onclick="goAdd();">新增</a>
-						<a class="state-default" onclick="goImport()">匯入</a>
-					</c:otherwise>
-				</c:choose>
-			</div>
 			<table cellspacing="1" class="list-table">
 				<tbody>
 					<tr>
 						<td colspan="5" class="topic">基本設定</td>
 					</tr>
 					<tr>
-						<c:if test="${login.role =='系統管理員'}">
-							<th width="50" align="center">&nbsp;</th>
-						</c:if>
 						<th>用戶名稱</th>
 						<th>電話</th>
 						<th>地址</th>
@@ -216,72 +178,15 @@
 					</tr>
 					<c:forEach var="item" items="${ds.results}" varStatus="status">
 						<tr>
-							<c:if test="${login.role =='系統管理員'}">
-								<td align="center" class="td_first" nowrap><c:choose>
-										<c:when test="${9 eq  item.serNo }"></c:when>
-										<c:otherwise>
-											<input type="checkbox" class="checkbox"
-												name="entity.checkItem" value="${item.serNo}">
-										</c:otherwise>
-									</c:choose></td>
-							</c:if>
 							<td>${item.name}</td>
 							<td align="center">${item.tel }</td>
 							<td><esapi:encodeForHTML>${item.address }</esapi:encodeForHTML></td>
 							<td align="center"><a class="state-default2"
-								onclick="goView('${item.serNo }')"><span
-									class="icon-default icon-view"></span>檢視</a> <c:choose>
-									<c:when test="${9 eq item.serNo }">
-										<c:if test="${login.role =='系統管理員' }">
-											<a class="state-default2" onclick="goUpdate('${item.serNo}')"><span
-												class="icon-default icon-edit"></span>修改</a>
-										</c:if>
-									</c:when>
-									<c:otherwise>
-										<a class="state-default2" onclick="goUpdate('${item.serNo}');"><span
-											class="icon-default icon-edit"></span>修改</a>
-									</c:otherwise>
-								</c:choose> <c:if test="${(login.role =='系統管理員')&&(9 ne item.serNo) }">
-									<a class="state-default2" onclick="goDel('${item.serNo}')"><span
-										class="icon-default icon-delete"></span>刪除</a>
-								</c:if> <a class="state-default2"
-								onclick="goIpRangeManager('${item.serNo}')">IP Range管理</a> <a
-								class="state-default2" onclick="goGroupManager('${item.serNo}')">群組管理</a>
-							</td>
+								onclick="goUpdate('${item.serNo}');"><span
+									class="icon-default icon-edit"></span>修改</a></td>
 					</c:forEach>
 				</tbody>
 			</table>
-			<div class="page-box" align="right">
-				<table border="0" cellspacing="0" cellpadding="0">
-					<tbody>
-
-						<c:if test="${ds.pager.totalRecord > 0 }">
-							<tr>
-								<td><jsp:include page="/WEB-INF/jsp/layout/pagination.jsp">
-										<jsp:param name="namespace" value="/crud" />
-										<jsp:param name="action" value="apply.customer.list" />
-										<jsp:param name="pager" value="${ds.pager}" />
-										<jsp:param name="detail" value="0" />
-									</jsp:include></td>
-								<td>每頁顯示 <select id="listForm_pageSize"
-									name="pager.recordPerPage"
-									onchange="changePageSize(this.value)">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-								</select> 筆紀錄, 第 <input id="listForm_currentPageHeader"
-									value="${ds.pager.currentPage }" type="number" min="1"
-									max="${totalPage }" onchange="gotoPage(this.value)"> 頁,
-									共<span class="totalNum">${totalPage }</span>頁
-								</td>
-							</tr>
-						</c:if>
-					</tbody>
-				</table>
-			</div>
 			<div class="detail_note">
 				<div class="detail_note_title">Note</div>
 				<div class="detail_note_content">

@@ -3,7 +3,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="esapi"
 	uri="http://www.owasp.org/index.php/Category:OWASP_Enterprise_Security_API"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -34,7 +34,6 @@
 			var box = $(this).attr("checked");
 			$("input#dat").attr("checked", false);
 			$(this).attr("checked", box);
-			setResField();
 		});
 	});
 
@@ -53,30 +52,14 @@
 			var value = datBox.val();
 			$("input[name='entity.database.serNo']").val(value).trigger(
 					'change');
-			$("input#datName").val(datBox.prev().val());
-			$("input[name='entity.resourcesBuyers.startDate']")
-					.val(
-							datBox.next().next().find("#startDate").html()
-									.split("：")[1].trim());
-			$("input[name='entity.resourcesBuyers.maturityDate']").val(
-					datBox.next().next().find("#maturityDate").html()
-							.split("：")[1].trim());
+
 			$("input[name='entity.resourcesBuyers.category']").filter(
 					'[value='
 							+ datBox.next().next().find("#category").html()
 									.split("：")[1].trim() + ']').attr(
 					'checked', true);
-			allSelect_referenceOwners(0);
-			checkData();
-			var allOwners = datBox.next().next().find("#owners").find("input");
-			for (var i = 0; i < allOwners.length; i++) {
-				var serNo = $(allOwners[i]).val();
-				$("input#referenceOwner_unit").filter('[value=' + serNo + ']')
-						.attr("checked", true);
-				$("input#unit").filter('[value=' + serNo + ']').attr("name",
-						"entity.refSerNo");
-				$("input#unit").filter('[value=' + serNo + ']').parent().show();
-			}
+
+			$("input#datName").val(datBox.prev().val());
 		} else {
 			$("input[name='entity.database.serNo']").val("").trigger('change');
 			$("input#datName").val("");
@@ -91,7 +74,6 @@
 		$("input#dat").attr("checked", false);
 		$("input#datName").val("");
 		$("input[name='entity.database.serNo']").val("").trigger('change');
-		setResField();
 	}
 
 	function clearResDbs() {
@@ -121,27 +103,16 @@ div#resDbRow {
 					<label>UUID</label>：${item.uuIdentifier }
 				</div>
 				<div id="startDate">
-					<label>起始日</label>：${fn:split(item.resourcesBuyers.startDate, 'T')[0]}
+					<label>起始日</label>：${fn:split(item.startDate, 'T')[0]}
 				</div>
 				<div id="maturityDate">
-					<label>到期日</label>：${fn:split(item.resourcesBuyers.maturityDate, 'T')[0]}
+					<label>到期日</label>：${fn:split(item.maturityDate, 'T')[0]}
 				</div>
 				<div id="category">
 					<label>資源類別</label>：${item.resourcesBuyers.category }
 				</div>
 				<div id="type">
 					<label>資源種類</label>：${item.type }
-				</div>
-				<div id="owners">
-					<label>購買單位</label>：
-					<c:forEach var="owner" items="${item.referenceOwners }"
-						varStatus="index">
-						<input type="hidden" value="${owner.serNo }" id="ownerSerNo" />
-						<c:choose>
-							<c:when test="${!index.last }">${owner.name }、</c:when>
-							<c:otherwise>${owner.name }</c:otherwise>
-						</c:choose>
-					</c:forEach>
 				</div>
 			</div>
 		</div>

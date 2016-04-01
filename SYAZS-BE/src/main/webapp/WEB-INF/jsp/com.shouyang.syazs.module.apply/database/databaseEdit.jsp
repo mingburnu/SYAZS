@@ -10,40 +10,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
-	$(document)
-			.ready(
-					function() {
-						var contain = $("#div_Detail_2 .content .header .title")
-								.html();
-						if (contain != '擁有人-新增') {
-							goReferenceOwners(
-									"<c:url value = '/'/>crud/apply.referenceOwner.box.action",
-									'擁有人-新增');
-						}
-					});
-
-	$(document)
-			.ready(
-					function() {
-						$("#div_Detail .content .header .close")
-								.html(
-										'<a href="#" onclick="clearReferenceOwners();closeDetail();">關閉</a>');
-					});
-
-	$(document).ready(function() {
-		$("img#minus").click(function() {
-			value = $(this).next().val();
-			$(this).next().attr("name", "");
-			$(this).parent().hide();
-
-			$("input#referenceOwner_unit").each(function() {
-				if ($(this).val() == value) {
-					$(this).attr("checked", false);
-				}
-			});
-		});
-	});
-
 	$(document).ready(function() {
 		checkTitle();
 	});
@@ -66,7 +32,6 @@
 	function submitData() {
 		var data = $('#apply_database_update').serialize();
 		closeDetail();
-		clearReferenceOwners();
 		goDetail(
 				"<c:url value = '/'/>crud/apply.database.update.action?entity.serNo=${entity.serNo}",
 				'資料庫-修改', data);
@@ -106,25 +71,21 @@ textarea#apply_database_update_entity_content {
 <body>
 	<%
 		String startDate = "";
-		if (request.getParameter("entity.resourcesBuyers.startDate") != null) {
-			startDate = request
-					.getParameter("entity.resourcesBuyers.startDate");
+		if (request.getParameter("entity.startDate") != null) {
+			startDate = request.getParameter("entity.startDate");
 		} else {
-			if (request.getAttribute("entity.resourcesBuyers.startDate") != null) {
-				startDate = request
-						.getAttribute("entity.resourcesBuyers.startDate")
+			if (request.getAttribute("entity.startDate") != null) {
+				startDate = request.getAttribute("entity.startDate")
 						.toString().split("T")[0];
 			}
 		}
 
 		String maturityDate = "";
-		if (request.getParameter("entity.resourcesBuyers.maturityDate") != null) {
-			maturityDate = request
-					.getParameter("entity.resourcesBuyers.maturityDate");
+		if (request.getParameter("entity.maturityDate") != null) {
+			maturityDate = request.getParameter("entity.maturityDate");
 		} else {
-			if (request.getAttribute("entity.resourcesBuyers.maturityDate") != null) {
-				maturityDate = request
-						.getAttribute("entity.resourcesBuyers.maturityDate")
+			if (request.getAttribute("entity.maturityDate") != null) {
+				maturityDate = request.getAttribute("entity.maturityDate")
 						.toString().split("T")[0];
 			}
 		}
@@ -137,7 +98,7 @@ textarea#apply_database_update_entity_content {
 					id="span-title-name-tip" class="tip"></span></td>
 			</tr>
 			<tr>
-				<th width="130">出版社</th>
+				<th width="130">出版社<span class="required">(&#8226;)</span></th>
 				<td><s:textfield name="entity.publishName"
 						cssClass="input_text" /></td>
 			</tr>
@@ -175,25 +136,22 @@ textarea#apply_database_update_entity_content {
 					id="span-url-tip" class="tip">http://www.sydt.com.tw或https://www.sydt.com.tw</span></td>
 			</tr>
 			<tr>
-				<th width="130">全文取得授權刊期</th>
+				<th width="130">全文取得授權刊期(embargo period)</th>
 				<td><s:textfield name="entity.embargo" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">起始日</th>
-				<td><input type="text" name="entity.resourcesBuyers.startDate"
+				<td><input type="text" name="entity.startDate"
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(startDate)%>"
-					id="apply_database_update_entity_resourcesBuyers_startDate"
-					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
+					id="apply_database_update_entity_startDate" class="input_text">&nbsp;<span
+					id="span-date-tip" class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">到期日</th>
-				<td><input type="text"
-					name="entity.resourcesBuyers.maturityDate"
+				<td><input type="text" name="entity.maturityDate"
 					value="<%=ESAPI.encoder().encodeForHTMLAttribute(maturityDate)%>"
-					id="apply_database_update_entity_resourcesBuyers_maturityDate"
-					class="input_text">&nbsp;<span id="span-date-tip"
-					class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
+					id="apply_database_update_entity_maturityDate" class="input_text">&nbsp;<span
+					id="span-date-tip" class="tip">yyyy-mm-dd或yyyy/mm/dd</span></td>
 			</tr>
 			<tr>
 				<th width="130">資源類型</th>
@@ -240,35 +198,10 @@ textarea#apply_database_update_entity_content {
 						</c:otherwise>
 					</c:choose></td>
 			</tr>
-			<tr>
-				<th width="130">購買單位<span class="required">(&#8226;)</span></th>
-				<td><input type="text" id="referenceOwner_name"
-					class="input_text" disabled="disabled" value="增加單位"><img
-					id="add" src="<c:url value = '/'/>resources/images/add.png"
-					onclick="addReferenceOwner();"> <c:forEach var="item"
-						items="${entity.owners}" varStatus="status2">
-						<div style="">
-							<input class="input_text" disabled="disabled"
-								value="${item.name}"><img id="minus"
-								src="<c:url value = '/'/>resources/images/minus.png"><input
-								id="unit" type="hidden" value="${item.serNo }"
-								name="entity.refSerNo">
-						</div>
-					</c:forEach> <c:forEach var="item" items="${uncheckReferenceOwners}"
-						varStatus="status">
-						<div style="display: none;">
-							<input class="input_text" disabled="disabled"
-								value="${item.name}"><img id="minus"
-								src="<c:url value = '/'/>resources/images/minus.png"><input
-								id="unit" type="hidden" value="${item.serNo }">
-						</div>
-					</c:forEach></td>
-			</tr>
 		</table>
 		<div class="button_box">
 			<div class="detail-func-button">
-				<a class="state-default"
-					onclick="clearReferenceOwners();closeDetail();">取消</a> &nbsp;<a
+				<a class="state-default" onclick="closeDetail();">取消</a> &nbsp;<a
 					class="state-default" onclick="resetData();">重設</a>&nbsp; <a
 					class="state-default" onclick="submitData();">確認</a>
 			</div>

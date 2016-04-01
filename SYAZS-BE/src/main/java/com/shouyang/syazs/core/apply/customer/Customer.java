@@ -12,8 +12,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.apply.group.Group;
-import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
 
 @Entity
@@ -53,12 +51,6 @@ public class Customer extends GenericEntityFull {
 
 	@OneToMany(mappedBy = "customer", orphanRemoval = true)
 	private Set<AccountNumber> accountNumbers;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<Group> groups;
-
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<IpRange> ipRanges;
 
 	/**
 	 * @return the name
@@ -155,20 +147,6 @@ public class Customer extends GenericEntityFull {
 	 */
 	public Set<AccountNumber> getAccountNumbers() {
 		return accountNumbers;
-	}
-
-	/**
-	 * @return the groups
-	 */
-	public Set<Group> getGroups() {
-		return groups;
-	}
-
-	/**
-	 * @return the ipRanges
-	 */
-	public Set<IpRange> getIpRanges() {
-		return ipRanges;
 	}
 
 	public Customer() {

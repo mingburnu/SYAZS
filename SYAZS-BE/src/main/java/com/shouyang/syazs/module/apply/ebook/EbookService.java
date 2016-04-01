@@ -1,6 +1,5 @@
 package com.shouyang.syazs.module.apply.ebook;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,16 +17,12 @@ import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 import com.shouyang.syazs.module.apply.database.Database;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 
 @Service
 public class EbookService extends GenericServiceFull<Ebook> {
 
 	@Autowired
 	private Ebook entity;
-
-	@Autowired
-	private ReferenceOwner referenceOwner;
 
 	@Autowired
 	private EbookDao dao;
@@ -119,25 +114,15 @@ public class EbookService extends GenericServiceFull<Ebook> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Object[]> getResOwners(long serNo) {
+	public List<Long> getByTitlePublishName(String bookName, String publishName)
+			throws Exception {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
 		queryLanguage
-				.setHql("SELECT er.serNo, er.name FROM Ebook e JOIN e.referenceOwners er WHERE e.serNo = :serNo");
-		queryLanguage.addParameter("serNo", serNo);
-		return (List<Object[]>) dao.findByHQL(queryLanguage);
-	}
-
-	public List<ReferenceOwner> getcheckOwners(long serNo) throws Exception {
-		List<Object[]> checks = getResOwners(serNo);
-		List<ReferenceOwner> checkOwners = new ArrayList<ReferenceOwner>();
-		for (int i = 0; i < checks.size(); i++) {
-			referenceOwner = new ReferenceOwner();
-			referenceOwner.setSerNo((Long) checks.get(i)[0]);
-			referenceOwner.setName(checks.get(i)[1].toString());
-			checkOwners.add(referenceOwner);
-		}
-
-		return checkOwners;
+				.setHql("SELECT serNo FROM Ebook WHERE LOWER(bookName) = :bookName AND LOWER(publishName) = :publishName");
+		queryLanguage.addParameter("bookName", bookName.trim().toLowerCase());
+		queryLanguage.addParameter("publishName", publishName.trim()
+				.toLowerCase());
+		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 
 	public boolean isUnusedUUID(String uuid) throws Exception {

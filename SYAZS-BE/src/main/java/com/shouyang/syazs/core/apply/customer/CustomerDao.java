@@ -61,5 +61,4 @@ public class CustomerDao extends ModuleDaoFull<Customer> {
 
 		return datas;
 	}
-
 }

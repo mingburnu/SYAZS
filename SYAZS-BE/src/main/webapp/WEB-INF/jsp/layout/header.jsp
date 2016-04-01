@@ -13,7 +13,7 @@
 					<div>&nbsp;</div>
 					<div>&nbsp;</div>
 					<div class="header_text">
-						<span>嗨,</span> <font face="verdana">${login.customer.name}&nbsp;${login.customer.contactUserName}</font>
+						<span>嗨,</span> <font face="verdana">${login.customer.name}</font>
 						| <a href='<s:url namespace="/authorization" action="logout" />'>登出</a>
 					</div>
 				</td>

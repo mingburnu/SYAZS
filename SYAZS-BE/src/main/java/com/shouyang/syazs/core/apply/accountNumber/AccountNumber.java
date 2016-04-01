@@ -1,11 +1,14 @@
 package com.shouyang.syazs.core.apply.accountNumber;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.struts2.json.annotations.JSON;
@@ -13,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.core.apply.beLogs.BeLogs;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
+import com.shouyang.syazs.module.apply.feLogs.FeLogs;
 
 /**
  * 使用者
@@ -79,6 +84,12 @@ public class AccountNumber extends GenericEntityFull {
 	@JoinColumn(name = "cus_serNo", nullable = false)
 	@Autowired
 	private Customer customer;
+
+	@OneToMany(mappedBy = "accountNumber", orphanRemoval = true)
+	private Set<BeLogs> beLogs;
+
+	@OneToMany(mappedBy = "accountNumber", orphanRemoval = true)
+	private Set<FeLogs> feLogs;
 
 	/**
 	 * @return the userId
@@ -177,6 +188,22 @@ public class AccountNumber extends GenericEntityFull {
 	 */
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+
+	/**
+	 * @param beLogs
+	 *            the beLogs to set
+	 */
+	public void setBeLogs(Set<BeLogs> beLogs) {
+		this.beLogs = beLogs;
+	}
+
+	/**
+	 * @param feLogs
+	 *            the feLogs to set
+	 */
+	public void setFeLogs(Set<FeLogs> feLogs) {
+		this.feLogs = feLogs;
 	}
 
 	public AccountNumber() {
