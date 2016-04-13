@@ -7,7 +7,7 @@
 <script type="text/javascript">
 	function view(serNo) {
 		var data = $("form:eq(0)").serialize() + "&entity.backURL="
-				+ "${list}${focus}${owner}${prefix}";
+				+ "${list}${prefix}";
 		var url = "<c:url value = '/'/>crud/apply.journal.view.action?entity.serNo="
 				+ serNo + "&pager.recordPoint=" + "${ds.pager.recordPoint}";
 		$.ajax({
@@ -26,16 +26,7 @@
 	}
 
 	function goBack() {
-		<c:choose>
-		<c:when test="${not empty list}">goURL("<c:url value='/' />page/query.action");
-		</c:when>
-		<c:when test="${not empty focus || not empty prefix}">goURL("<c:url value='/' />page/journal.action");
-		</c:when>
-		<c:otherwise>goURL("<c:url value='/' />crud/apply.referenceOwner.list.action?entity.indexTerm=<esapi:encodeForJavaScript>${entityRecord.indexTerm}</esapi:encodeForJavaScript>"
-				.replace(/\&/g, "%26")
-				+ "&pager.recordPoint=${pagerRecord.recordPoint}&pager.recordPerPage=${pagerRecord.recordPerPage}");
-		</c:otherwise>
-		</c:choose>
+		goURL("<c:url value='/' />page/journal.action");
 	}
 </script>
 <style>
@@ -49,64 +40,6 @@
 
 		<c:choose>
 			<c:when test="${not empty list}">
-				<div class="pager">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td align="left" class="p_01"><s:form
-									action="apply.journal.list.action">
-									共 <strong>${ds.pager.totalRecord}</strong>
-												筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_journal_list_action_recordPerPage"
-										onchange="upperChangeSize(this.value);">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-									</select>
-									<s:hidden name="entity.indexTerm" />
-								</s:form></td>
-							<td align="right" class="p_02"><jsp:include
-									page="/WEB-INF/jsp/layout/pagination.jsp">
-									<jsp:param name="namespace" value="/crud" />
-									<jsp:param name="action" value="apply.journal.list" />
-									<jsp:param name="pager" value="${ds.pager}" />
-								</jsp:include></td>
-						</tr>
-					</table>
-				</div>
-			</c:when>
-			<c:when test="${not empty owner}">
-				<div class="pager">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td align="left" class="p_01"><s:form
-									action="apply.journal.owner.action">
-									共 <strong>${ds.pager.totalRecord}</strong>
-												筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_journal_owner_action_recordPerPage"
-										onchange="upperChangeSize(this.value);">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-									</select>
-									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
-								</s:form></td>
-							<td align="right" class="p_02"><jsp:include
-									page="/WEB-INF/jsp/layout/pagination.jsp">
-									<jsp:param name="namespace" value="/crud" />
-									<jsp:param name="action" value="apply.journal.owner" />
-									<jsp:param name="pager" value="${ds.pager}" />
-								</jsp:include></td>
-						</tr>
-					</table>
-				</div>
-			</c:when>
-			<c:when test="${not empty focus}">
 				<div class="pager">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr>
@@ -229,64 +162,6 @@
 
 		<c:choose>
 			<c:when test="${not empty list}">
-				<div class="pager">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td align="left" class="p_01"><s:form
-									action="apply.journal.list.action">
-									共 <strong>${ds.pager.totalRecord}</strong>
-									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_journal_list_action_recordPerPage"
-										onchange="bottomChangeSize(this.value);">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-									</select>
-									<s:hidden name="entity.indexTerm" />
-								</s:form></td>
-							<td align="right" class="p_02"><jsp:include
-									page="/WEB-INF/jsp/layout/pagination.jsp">
-									<jsp:param name="namespace" value="/crud" />
-									<jsp:param name="action" value="apply.journal.list" />
-									<jsp:param name="pager" value="${ds.pager}" />
-								</jsp:include></td>
-						</tr>
-					</table>
-				</div>
-			</c:when>
-			<c:when test="${not empty owner}">
-				<div class="pager">
-					<table width="100%" border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td align="left" class="p_01"><s:form
-									action="apply.journal.owner.action">
-									共 <strong>${ds.pager.totalRecord}</strong>
-									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-										id="apply_journal_owner_action_recordPerPage"
-										onchange="bottomChangeSize(this.value);">
-										<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
-										<option value="5">5</option>
-										<option value="10">10</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-										<option value="100">100</option>
-									</select>
-									<s:hidden name="entity.refSerNo" value="%{ds.entity.refSerNo}" />
-								</s:form></td>
-							<td align="right" class="p_02"><jsp:include
-									page="/WEB-INF/jsp/layout/pagination.jsp">
-									<jsp:param name="namespace" value="/crud" />
-									<jsp:param name="action" value="apply.journal.owner" />
-									<jsp:param name="pager" value="${ds.pager}" />
-								</jsp:include></td>
-						</tr>
-					</table>
-				</div>
-			</c:when>
-			<c:when test="${not empty focus}">
 				<div class="pager">
 					<table width="100%" border="0" cellpadding="0" cellspacing="0">
 						<tr>

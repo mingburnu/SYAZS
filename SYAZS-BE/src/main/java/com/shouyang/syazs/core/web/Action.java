@@ -11,7 +11,7 @@ import com.shouyang.syazs.core.entity.Entity;
 public interface Action<T extends Entity> {
 
 	public final static String INDEX = "index";
-	
+
 	public final static String ADD = "add";
 
 	public final static String EDIT = "edit";
@@ -29,6 +29,8 @@ public interface Action<T extends Entity> {
 	public final static String XLSX = "xlsx";
 
 	public final static String IMPORT = "import";
-	
+
 	public final static String TIP = "tip";
+
+	public final static String PIC = "pic";
 }

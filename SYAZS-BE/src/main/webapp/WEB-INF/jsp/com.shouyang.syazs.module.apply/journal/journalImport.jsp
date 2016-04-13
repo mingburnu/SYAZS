@@ -15,15 +15,23 @@
 
 	//匯出範本
 	function goExample() {
-		var option = $("input[name='entity.option']:checked",
-				"form#apply_journal_queue").val();
-		var url = "<c:url value = '/'/>crud/apply.journal.example.action"
-				+ "?entity.option=" + option;
+		var url = "<c:url value = '/'/>crud/apply.journal.example.action";
 		window.open(url, "_top");
 	}
 
 	//Excel列表
 	function goQueue() {
+		var f = document.getElementById("file");
+		if (f.files.length == 0) {
+			goAlert("訊息", "請選擇檔案");
+			return;
+		}
+
+		if (f.files.item(0).size > 10485760) {
+			goAlert("訊息", "檔案超過10MB，請分批");
+			return;
+		}
+		
 		function getDoc(frame) {
 			var doc = null;
 
@@ -120,21 +128,6 @@
 		enctype="multipart/form-data" method="post">
 		<table cellspacing="1" class="detail-table">
 			<tr>
-				<th>匯入選項</th>
-				<td><c:choose>
-						<c:when test="${not empty entity.option }">
-							<s:radio
-								list="#@java.util.LinkedHashMap@{'package':'資料庫資源','individual':'個別資源'}"
-								name="entity.option" />
-						</c:when>
-						<c:otherwise>
-							<s:radio
-								list="#@java.util.LinkedHashMap@{'package':'資料庫資源','individual':'個別資源'}"
-								name="entity.option" value="'package'" />
-						</c:otherwise>
-					</c:choose></td>
-			</tr>
-			<tr>
 				<th width="130">匯入檔案<span class="required">(•)</span>(<a
 					href="#" onclick="goExample();">範例</a>)
 				</th>
@@ -152,8 +145,7 @@
 			<div class="detail_note_title">Note</div>
 			<div class="detail_note_content">
 				<span class="required">(&#8226;)</span>為必填欄位<br> <br> <span>開放近用(是
-					-1 , 否 - 0)<br>
-				<br>資料類型(賣斷 -1 , 租賃 - 2, 未註明 -0)
+					-1 , 否 - 0)<br> <br>資料類型(賣斷 -1 , 租賃 - 2, 未註明 -0)
 				</span>
 			</div>
 		</div>

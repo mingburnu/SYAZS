@@ -14,6 +14,7 @@
 	<!--allow upload file size -->
 	<constant name="struts.devMode" value="false" />
 
+	<!-- max:  10485760-->
 	<constant name="struts.multipart.maxSize" value="9223372036854775807" />
 
 	<package name="global" extends="struts-default">
@@ -127,7 +128,12 @@
 			</result>
 			<result name="xlsx" type="stream">
 				<param name="contentDisposition">attachment;filename="${entity.reportFile}"</param>
-				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="contentType">text/csv</param>
+				<param name="inputName">entity.inputStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+			<result name="pic" type="stream">
+				<param name="contentType">${entity.dataStatus}</param>
 				<param name="inputName">entity.inputStream</param>
 				<param name="bufferSize">1024</param>
 			</result>

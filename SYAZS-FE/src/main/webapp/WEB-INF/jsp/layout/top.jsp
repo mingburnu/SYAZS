@@ -44,16 +44,25 @@
 		<tr>
 			<td align="left">
 				<div class="logo_box">
-					<a href="<c:url value = '/'/>"><img
-						src="<c:url value = '/'/>resources/images/logo.png" width="240"
-						height="70"></a>
+					<a href="<c:url value = '/'/>"> <c:choose>
+							<c:when test="${not empty customer.logo }">
+								<img
+									src="<c:url value = '/'/>crud/apply.customer.show.action?entity.serNo=9"
+									width="240" height="70">
+							</c:when>
+							<c:otherwise>
+								<img src="<c:url value = '/'/>resources/images/logo.png"
+									width="240" height="70">
+							</c:otherwise>
+						</c:choose>
+
+					</a>
 				</div>
 			</td>
 			<td align="right">
 				<div class="bar_box">
 					<div>
-						電子館藏：<span></span> 書籍：<span></span> 期刊：<span></span>
-						資料庫：<span></span>
+						電子館藏：<span></span> 書籍：<span></span> 期刊：<span></span> 資料庫：<span></span>
 					</div>
 				</div>
 			</td>

@@ -60,7 +60,6 @@ public class CrudActionInterceptor extends RootInterceptor {
 					request.getSession().removeAttribute("normal");
 					request.getSession().removeAttribute("insert");
 					request.getSession().removeAttribute("checkItemSet");
-					request.getSession().removeAttribute("tip");
 					request.getSession().removeAttribute("allChecked");
 					request.getSession().removeAttribute("clazz");
 				}
@@ -74,7 +73,6 @@ public class CrudActionInterceptor extends RootInterceptor {
 					request.getSession().removeAttribute("normal");
 					request.getSession().removeAttribute("insert");
 					request.getSession().removeAttribute("checkItemSet");
-					request.getSession().removeAttribute("tip");
 					request.getSession().removeAttribute("allChecked");
 					request.getSession().removeAttribute("clazz");
 				}

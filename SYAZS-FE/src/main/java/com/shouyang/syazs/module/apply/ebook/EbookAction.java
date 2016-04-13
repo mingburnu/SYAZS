@@ -11,8 +11,6 @@ import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.database.DatabaseService;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -34,12 +32,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 	@Autowired
 	private DatabaseService databaseService;
-
-	@Autowired
-	private ReferenceOwner referenceOwner;
-
-	@Autowired
-	private ReferenceOwnerService referenceOwnerService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -90,13 +82,14 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		setDs(ds);
+
 		return LIST;
 	}
 
 	@Override
-	public String save() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public String save() throws Exception {//TODO
+ebookService.test(initDataSet());
+		return LIST;
 	}
 
 	@Override
@@ -109,47 +102,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String delete() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public String owner() throws Exception {
-		getRequest().setAttribute(
-				"owner",
-				getRequest().getContextPath()
-						+ "/crud/apply.ebook.owner.action");
-
-		DataSet<Ebook> ds = ebookService.getByOwner(initDataSet());
-
-		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
-					.doubleValue()
-					/ ds.getPager().getRecordPerPage().doubleValue());
-			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = ebookService.getByOwner(ds);
-		}
-
-		setDs(ds);
-		return LIST;
-	}
-
-	public String focus() throws Exception {
-		getRequest().setAttribute(
-				"focus",
-				getRequest().getContextPath()
-						+ "/crud/apply.ebook.focus.action");
-
-		DataSet<Ebook> ds = ebookService.getByOption(initDataSet());
-
-		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
-					.doubleValue()
-					/ ds.getPager().getRecordPerPage().doubleValue());
-			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = ebookService.getByOption(ds);
-		}
-
-		setDs(ds);
-
-		return LIST;
 	}
 
 	public String prefix() throws Exception {
@@ -176,7 +128,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			ebook.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
-			setOwners();
 			setEntity(ebook);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -192,18 +143,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	public String count() {
 		getRequest().setAttribute("count", ebookService.countToatal());
 		return COUNT;
-	}
-
-	protected void setOwners() {
-		if (ebook.getDatabase() != null && ebook.getDatabase().hasSerNo()) {
-			getRequest().setAttribute(
-					"referenceOwners",
-					databaseService
-							.getResOwners(ebook.getDatabase().getSerNo()));
-		} else {
-			getRequest().setAttribute("referenceOwners",
-					ebookService.getResOwners(ebook.getSerNo()));
-		}
 	}
 
 	protected boolean hasEntity() throws Exception {

@@ -1,12 +1,14 @@
 package com.shouyang.syazs.module.apply.classification;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -42,4 +44,12 @@ public class ClassificationService extends GenericServiceSerNo<Classification> {
 		return dao;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Long> getByName(String classname) {
+		DsQueryLanguage queryLanguage = getDsQueryLanguage();
+		queryLanguage
+				.setHql("SELECT serNo FROM Classification WHERE LOWER(classname) = :classname");
+		queryLanguage.addParameter("classname", classname.trim().toLowerCase());
+		return (List<Long>) dao.findByHQL(queryLanguage);
+	}
 }

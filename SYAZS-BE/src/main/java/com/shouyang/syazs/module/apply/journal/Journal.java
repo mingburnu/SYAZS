@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.classification.Classification;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.feLogs.FeLogs;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
@@ -71,10 +72,6 @@ public class Journal extends ModuleProperties {
 	@Column(name = "Publication")
 	private String publication;
 
-	// 國會分類號
-	@Column(name = "congressclassification")
-	private String congressClassification;
-
 	// 版本
 	@Column(name = "version")
 	private String version;
@@ -104,6 +101,16 @@ public class Journal extends ModuleProperties {
 	@JoinColumn(name = "dat_serNo")
 	@Autowired
 	private Database database;
+
+	// 分類法
+	@ManyToOne
+	@JoinColumn(name = "lcs_serNo")
+	@Autowired
+	private Classification classification;
+
+	// LCS code
+	@Column(name = "lcs_code")
+	private String lcsCode;
 
 	// Universally Unique Identifier
 	@Column(name = "uuIdentifier", updatable = false, unique = true)
@@ -269,21 +276,6 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
-	 * @return the congressClassification
-	 */
-	public String getCongressClassification() {
-		return congressClassification;
-	}
-
-	/**
-	 * @param congressClassification
-	 *            the congressClassification to set
-	 */
-	public void setCongressClassification(String congressClassification) {
-		this.congressClassification = congressClassification;
-	}
-
-	/**
 	 * @return the version
 	 */
 	public String getVersion() {
@@ -389,6 +381,36 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
+	 * @return the classification
+	 */
+	public Classification getClassification() {
+		return classification;
+	}
+
+	/**
+	 * @param classification
+	 *            the classification to set
+	 */
+	public void setClassification(Classification classification) {
+		this.classification = classification;
+	}
+
+	/**
+	 * @return the lcsCode
+	 */
+	public String getLcsCode() {
+		return lcsCode;
+	}
+
+	/**
+	 * @param lcsCode
+	 *            the lcsCode to set
+	 */
+	public void setLcsCode(String lcsCode) {
+		this.lcsCode = lcsCode;
+	}
+
+	/**
 	 * @return the uuIdentifier
 	 */
 	public String getUuIdentifier() {
@@ -426,10 +448,10 @@ public class Journal extends ModuleProperties {
 	public Journal(String title, String abbreviationTitle,
 			String titleEvolution, String issn, String languages,
 			String publishName, Short publishYear, String caption, String numB,
-			String publication, String congressClassification, String version,
-			String embargo, String url, Boolean openAccess,
-			LocalDateTime startDate, LocalDateTime maturityDate,
-			Database database, String uuIdentifier,
+			String publication, String version, String embargo, String url,
+			Boolean openAccess, LocalDateTime startDate,
+			LocalDateTime maturityDate, Database database,
+			Classification classification, String lcsCode, String uuIdentifier,
 			ResourcesBuyers resourcesBuyers) {
 		super();
 		this.title = title;
@@ -442,7 +464,6 @@ public class Journal extends ModuleProperties {
 		this.caption = caption;
 		this.numB = numB;
 		this.publication = publication;
-		this.congressClassification = congressClassification;
 		this.version = version;
 		this.embargo = embargo;
 		this.url = url;
@@ -450,6 +471,8 @@ public class Journal extends ModuleProperties {
 		this.startDate = startDate;
 		this.maturityDate = maturityDate;
 		this.database = database;
+		this.classification = classification;
+		this.lcsCode = lcsCode;
 		this.uuIdentifier = uuIdentifier;
 		this.resourcesBuyers = resourcesBuyers;
 	}

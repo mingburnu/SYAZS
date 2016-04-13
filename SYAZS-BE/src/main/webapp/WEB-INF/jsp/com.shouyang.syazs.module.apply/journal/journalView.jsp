@@ -105,8 +105,12 @@
 						<td><esapi:encodeForHTML>${entity.publication }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">國會分類號</th>
-						<td>${entity.congressClassification }</td>
+						<th width="130">分類法</th>
+						<td>${entity.classification.classname }</td>
+					</tr>
+					<tr>
+						<th width="130">分類碼</th>
+						<td>${entity.lcsCode }</td>
 					</tr>
 					<tr>
 						<th width="130">版本</th>

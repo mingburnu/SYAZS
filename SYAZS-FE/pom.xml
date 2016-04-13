@@ -318,6 +318,13 @@
 			<version>2.0</version>
 		</dependency>
 
+		<!-- tika -->
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.12</version>
+		</dependency>
+
 		<!-- ESAPI -->
 		<dependency>
 			<groupId>org.owasp.esapi</groupId>

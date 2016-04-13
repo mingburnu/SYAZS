@@ -53,7 +53,6 @@ public class PageActionInterceptor extends RootInterceptor {
 				session.remove("normal");
 				session.remove("insert");
 				session.remove("checkItemSet");
-				session.remove("tip");
 				session.remove("allChecked");
 				session.remove("clazz");
 			}
@@ -62,9 +61,7 @@ public class PageActionInterceptor extends RootInterceptor {
 		if (invocation.getAction().toString().contains("feLogs")) {
 			String option = request.getParameter("entity.option");
 			if (option != null) {
-				if (option.equals("logins")) {
-					request.setAttribute("logins", "logins");
-				} else if (option.equals("keywords")) {
+				if (option.equals("keywords")) {
 					request.setAttribute("keywords", "keywords");
 				} else if (option.equals("clicks")) {
 					request.setAttribute("clicks", "clicks");

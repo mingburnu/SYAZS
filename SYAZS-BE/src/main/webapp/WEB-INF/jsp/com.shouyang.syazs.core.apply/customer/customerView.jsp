@@ -13,7 +13,6 @@
 	<c:when test="${empty viewSerNo}">
 		<script type="text/javascript">
 			//關閉並更新上一層資料
-
 			function closeDetail_ToQuery() {
 				$("#div_Detail").hide();
 				UI_Resize();
@@ -88,6 +87,14 @@
 						<th width="130">電話</th>
 						<td>${entity.tel }</td>
 					</tr>
+					<tr>
+						<th width="130">備註</th>
+						<td>${entity.memo }</td>
+					</tr>
+					<tr>
+						<th width="130">LOGO</th>
+						<td><div id="logo"></div></td>
+					</tr>
 				</tbody>
 			</table>
 		</c:when>
@@ -102,5 +109,16 @@
 		</c:if>
 	</div>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
+	<c:if test="${not empty entity.logo }">
+		<script type="text/javascript">
+			var logo = $("<img />")
+					.attr(
+							"src",
+							'<c:url value="/"/>crud/apply.customer.show.action?entity.serNo=${entity.serNo}'
+									+ '&' + Math.random()).attr("width", "270")
+					.attr("height", "70");
+			$("div#logo").html(logo);
+		</script>
+	</c:if>
 </body>
 </html>

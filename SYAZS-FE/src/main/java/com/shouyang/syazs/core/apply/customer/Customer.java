@@ -6,14 +6,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
-import com.shouyang.syazs.core.apply.ipRange.IpRange;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
 
 @Entity
@@ -51,21 +49,13 @@ public class Customer extends GenericEntityFull {
 	@Type(type = "text")
 	private String memo;
 
+	// LOGO
+	@Column(name = "logo")
+	private String logo;
+
 	@OneToMany(mappedBy = "customer", orphanRemoval = true)
 	private Set<AccountNumber> accountNumbers;
 
-	@OneToMany(mappedBy = "customer", orphanRemoval = true)
-	private Set<IpRange> ipRanges;
-	
-	@Transient
-	private long dbAmount;
-
-	@Transient
-	private long ebookAmount;
-
-	@Transient
-	private long journalAmount;
-	
 	/**
 	 * @return the name
 	 */
@@ -157,59 +147,25 @@ public class Customer extends GenericEntityFull {
 	}
 
 	/**
+	 * @return the logo
+	 */
+	public String getLogo() {
+		return logo;
+	}
+
+	/**
+	 * @param logo
+	 *            the logo to set
+	 */
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
+
+	/**
 	 * @return the accountNumbers
 	 */
 	public Set<AccountNumber> getAccountNumbers() {
 		return accountNumbers;
-	}
-
-	/**
-	 * @return the ipRange
-	 */
-	public Set<IpRange> getIpRanges() {
-		return ipRanges;
-	}
-
-	/**
-	 * @return the dbAmount
-	 */
-	public long getDbAmount() {
-		return dbAmount;
-	}
-
-	/**
-	 * @param dbAmount the dbAmount to set
-	 */
-	public void setDbAmount(long dbAmount) {
-		this.dbAmount = dbAmount;
-	}
-
-	/**
-	 * @return the ebookAmount
-	 */
-	public long getEbookAmount() {
-		return ebookAmount;
-	}
-
-	/**
-	 * @param ebookAmount the ebookAmount to set
-	 */
-	public void setEbookAmount(long ebookAmount) {
-		this.ebookAmount = ebookAmount;
-	}
-
-	/**
-	 * @return the journalAmount
-	 */
-	public long getJournalAmount() {
-		return journalAmount;
-	}
-
-	/**
-	 * @param journalAmount the journalAmount to set
-	 */
-	public void setJournalAmount(long journalAmount) {
-		this.journalAmount = journalAmount;
 	}
 
 	public Customer() {

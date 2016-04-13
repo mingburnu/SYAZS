@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -26,12 +24,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 
 	@Autowired
 	private DatabaseService databaseService;
-
-	@Autowired
-	private ReferenceOwner referenceOwner;
-
-	@Autowired
-	private ReferenceOwnerService referenceOwnerService;
 
 	@Override
 	protected void validateSave() throws Exception {

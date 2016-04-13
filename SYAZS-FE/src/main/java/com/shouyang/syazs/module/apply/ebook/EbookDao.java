@@ -16,11 +16,10 @@ public class EbookDao extends ModuleDaoFull<Ebook> {
 		return (Long) criteria.list().get(0);
 	}
 
-	public long countByOwner(long ownerSerNo) {
+	public void test() {
 		Query query = getSession()
 				.createQuery(
-						"SELECT COUNT(*)+(SELECT COUNT(*) FROM Ebook e JOIN e.database ed JOIN ed.referenceOwners edr WHERE edr.serNo=:ownerSerNo) FROM Ebook e JOIN e.referenceOwners er WHERE er.serNo=:ownerSerNo");
-		query.setParameter("ownerSerNo", ownerSerNo);
-		return (long) query.list().get(0);
+						"SELECT distinct e, j FROM Ebook as e, Journal as j");
+		log.info(query.list().size());
 	}
 }

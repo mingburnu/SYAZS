@@ -1,23 +1,20 @@
 package com.shouyang.syazs.module.apply.journal;
 
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
+import com.shouyang.syazs.module.apply.classification.Classification;
 import com.shouyang.syazs.module.apply.database.Database;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
 import com.shouyang.syazs.module.apply.resourcesBuyers.ResourcesBuyers;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
@@ -51,7 +48,7 @@ public class Journal extends ModuleProperties {
 	@Column(name = "languages")
 	private String languages;
 
-	// 出版項
+	// 出版社
 	@Column(name = "publishname")
 	private String publishName;
 
@@ -71,15 +68,11 @@ public class Journal extends ModuleProperties {
 	@Column(name = "Publication")
 	private String publication;
 
-	// 國會分類號
-	@Column(name = "congressclassification")
-	private String congressClassification;
-
 	// 版本
 	@Column(name = "version")
-	private Integer version;
+	private String version;
 
-	// 出版時間差
+	// 全文取得授權刊期
 	@Column(name = "embargo")
 	private String embargo;
 
@@ -91,11 +84,29 @@ public class Journal extends ModuleProperties {
 	@Column(name = "openAccess")
 	private Boolean openAccess;
 
+	@Column(name = "startdate")
+	@org.hibernate.annotations.Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime startDate;
+
+	@Column(name = "maturitydate")
+	@org.hibernate.annotations.Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+	private LocalDateTime maturityDate;
+
 	// 來源資料庫
 	@ManyToOne
 	@JoinColumn(name = "dat_serNo")
 	@Autowired
 	private Database database;
+
+	// 分類法
+	@ManyToOne
+	@JoinColumn(name = "lcs_serNo")
+	@Autowired
+	private Classification classification;
+
+	// LCS code
+	@Column(name = "lcs_code")
+	private String lcsCode;
 
 	// Universally Unique Identifier
 	@Column(name = "uuIdentifier", updatable = false, unique = true)
@@ -106,11 +117,6 @@ public class Journal extends ModuleProperties {
 	@JoinColumn(name = "res_serNo", nullable = false)
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
-
-	// ReferenceOwner
-	@ManyToMany
-	@JoinTable(name = "ref_jou", joinColumns = @JoinColumn(name = "jou_SerNo"), inverseJoinColumns = @JoinColumn(name = "ref_SerNo"))
-	private Set<ReferenceOwner> referenceOwners;
 
 	/**
 	 * @return the title
@@ -263,24 +269,9 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
-	 * @return the congressClassification
-	 */
-	public String getCongressClassification() {
-		return congressClassification;
-	}
-
-	/**
-	 * @param congressClassification
-	 *            the congressClassification to set
-	 */
-	public void setCongressClassification(String congressClassification) {
-		this.congressClassification = congressClassification;
-	}
-
-	/**
 	 * @return the version
 	 */
-	public Integer getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
@@ -288,7 +279,7 @@ public class Journal extends ModuleProperties {
 	 * @param version
 	 *            the version to set
 	 */
-	public void setVersion(Integer version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -338,6 +329,36 @@ public class Journal extends ModuleProperties {
 	}
 
 	/**
+	 * @return the startDate
+	 */
+	public LocalDateTime getStartDate() {
+		return startDate;
+	}
+
+	/**
+	 * @param startDate
+	 *            the startDate to set
+	 */
+	public void setStartDate(LocalDateTime startDate) {
+		this.startDate = startDate;
+	}
+
+	/**
+	 * @return the maturityDate
+	 */
+	public LocalDateTime getMaturityDate() {
+		return maturityDate;
+	}
+
+	/**
+	 * @param maturityDate
+	 *            the maturityDate to set
+	 */
+	public void setMaturityDate(LocalDateTime maturityDate) {
+		this.maturityDate = maturityDate;
+	}
+
+	/**
 	 * @return the database
 	 */
 	public Database getDatabase() {
@@ -350,6 +371,36 @@ public class Journal extends ModuleProperties {
 	 */
 	public void setDatabase(Database database) {
 		this.database = database;
+	}
+
+	/**
+	 * @return the classification
+	 */
+	public Classification getClassification() {
+		return classification;
+	}
+
+	/**
+	 * @param classification
+	 *            the classification to set
+	 */
+	public void setClassification(Classification classification) {
+		this.classification = classification;
+	}
+
+	/**
+	 * @return the lcsCode
+	 */
+	public String getLcsCode() {
+		return lcsCode;
+	}
+
+	/**
+	 * @param lcsCode
+	 *            the lcsCode to set
+	 */
+	public void setLcsCode(String lcsCode) {
+		this.lcsCode = lcsCode;
 	}
 
 	/**
@@ -382,21 +433,6 @@ public class Journal extends ModuleProperties {
 		this.resourcesBuyers = resourcesBuyers;
 	}
 
-	/**
-	 * @return the referenceOwners
-	 */
-	public Set<ReferenceOwner> getReferenceOwners() {
-		return referenceOwners;
-	}
-
-	/**
-	 * @param referenceOwners
-	 *            the referenceOwners to set
-	 */
-	public void setReferenceOwners(Set<ReferenceOwner> referenceOwners) {
-		this.referenceOwners = referenceOwners;
-	}
-
 	public Journal() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -405,10 +441,11 @@ public class Journal extends ModuleProperties {
 	public Journal(String title, String abbreviationTitle,
 			String titleEvolution, String issn, String languages,
 			String publishName, Short publishYear, String caption, String numB,
-			String publication, String congressClassification, Integer version,
-			String embargo, String url, Boolean openAccess, Database database,
-			String uuIdentifier, ResourcesBuyers resourcesBuyers,
-			Set<ReferenceOwner> referenceOwners) {
+			String publication, String version, String embargo, String url,
+			Boolean openAccess, LocalDateTime startDate,
+			LocalDateTime maturityDate, Database database,
+			Classification classification, String lcsCode, String uuIdentifier,
+			ResourcesBuyers resourcesBuyers) {
 		super();
 		this.title = title;
 		this.abbreviationTitle = abbreviationTitle;
@@ -420,14 +457,16 @@ public class Journal extends ModuleProperties {
 		this.caption = caption;
 		this.numB = numB;
 		this.publication = publication;
-		this.congressClassification = congressClassification;
 		this.version = version;
 		this.embargo = embargo;
 		this.url = url;
 		this.openAccess = openAccess;
+		this.startDate = startDate;
+		this.maturityDate = maturityDate;
 		this.database = database;
+		this.classification = classification;
+		this.lcsCode = lcsCode;
 		this.uuIdentifier = uuIdentifier;
 		this.resourcesBuyers = resourcesBuyers;
-		this.referenceOwners = referenceOwners;
 	}
 }

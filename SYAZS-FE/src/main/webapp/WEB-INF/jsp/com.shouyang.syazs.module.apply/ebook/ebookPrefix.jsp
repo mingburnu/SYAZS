@@ -31,7 +31,7 @@
 	}
 
 	function form_submit() {
-		var url = "<c:url value = '/'/>crud/apply.ebook.focus.action?entity.option="
+		var url = "<c:url value = '/'/>crud/apply.ebook.list.action?entity.option="
 				+ $("input[name='entity.option']").val()
 				+ "&entity.indexTerm="
 				+ $("input[name='entity.indexTerm']").val();

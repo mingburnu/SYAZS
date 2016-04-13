@@ -21,7 +21,6 @@ import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.enums.Role;
 import com.shouyang.syazs.core.apply.enums.Status;
 import com.shouyang.syazs.core.entity.GenericEntityFull;
-import com.shouyang.syazs.module.apply.feLogs.FeLogs;
 
 /**
  * 使用者
@@ -87,9 +86,6 @@ public class AccountNumber extends GenericEntityFull {
 
 	@OneToMany(mappedBy = "accountNumber", orphanRemoval = true)
 	private Set<BeLogs> beLogs;
-
-	@OneToMany(mappedBy = "accountNumber", orphanRemoval = true)
-	private Set<FeLogs> feLogs;
 
 	/**
 	 * @return the userId
@@ -196,14 +192,6 @@ public class AccountNumber extends GenericEntityFull {
 	 */
 	public void setBeLogs(Set<BeLogs> beLogs) {
 		this.beLogs = beLogs;
-	}
-
-	/**
-	 * @param feLogs
-	 *            the feLogs to set
-	 */
-	public void setFeLogs(Set<FeLogs> feLogs) {
-		this.feLogs = feLogs;
 	}
 
 	public AccountNumber() {

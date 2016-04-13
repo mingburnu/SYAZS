@@ -1,6 +1,7 @@
-package com.shouyang.syazs.core.apply.ipRange;
+package com.shouyang.syazs.module.apply.classification;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,33 +10,36 @@ import org.springframework.util.Assert;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.service.GenericServiceFull;
+import com.shouyang.syazs.core.service.GenericServiceSerNo;
 
 @Service
-public class IpRangeService extends GenericServiceFull<IpRange> {
+public class ClassificationService extends GenericServiceSerNo<Classification> {
 
 	@Autowired
-	private IpRangeDao dao;
+	private Classification entity;
+
+	@Autowired
+	private ClassificationDao dao;
 
 	@Override
-	public DataSet<IpRange> getByRestrictions(DataSet<IpRange> ds)
+	public DataSet<Classification> getByRestrictions(DataSet<Classification> ds)
 			throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
+
 		DsRestrictions restrictions = getDsRestrictions();
 
 		return dao.findByRestrictions(restrictions, ds);
 	}
 
-	@Override
-	protected GenericDao<IpRange> getDao() {
-		// TODO Auto-generated method stub
-		return dao;
+	public Map<String, Object> getClsDatas() {
+		return dao.getMap(new HashMap<String, Object>());
 	}
 
-	public List<IpRange> getAllIpList() throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		return dao.findByRestrictions(restrictions);
+	@Override
+	protected GenericDao<Classification> getDao() {
+		// TODO Auto-generated method stub
+		return dao;
 	}
 
 }

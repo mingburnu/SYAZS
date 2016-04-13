@@ -195,9 +195,14 @@ input#referenceOwner_name {
 				<td><s:textfield name="entity.numB" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">國會分類號</th>
-				<td><s:textfield name="entity.congressClassification"
-						cssClass="input_text" /></td>
+				<th width="130">分類法</th>
+				<td><s:select name="entity.classification.serNo"
+						list="ds.datas" listKey="value" listValue="key" headerKey=""
+						headerValue="-分類法-" value="%{entity.classification.serNo}" /></td>
+			</tr>
+			<tr>
+				<th width="130">分類碼</th>
+				<td><s:textfield name="entity.lcsCode" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">版本</th>

@@ -2,16 +2,14 @@ package com.shouyang.syazs.module.apply.database;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,16 +21,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.owasp.esapi.ESAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -40,6 +28,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.enums.Category;
@@ -252,8 +242,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			getEntity().setDbTitle(getEntity().getDbTitle().trim());
-
 			database = databaseService.save(getEntity(), getLoginUser());
 			setEntity(database);
 			addActionMessage("新增成功");
@@ -295,8 +283,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				i++;
 			}
 
-			list();
 			addActionMessage("刪除成功");
+
+			list();
 			return LIST;
 		} else {
 			list();
@@ -304,7 +293,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 	}
 
-	public String view() throws NumberFormatException, Exception {
+	public String view() throws Exception {
 		if (hasEntity()) {
 			getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
 			setEntity(database);
@@ -333,286 +322,185 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		return IMPORT;
 	}
 
+	@SuppressWarnings("resource")
 	public String queue() throws Exception {
 		if (ArrayUtils.isEmpty(getEntity().getFile())
 				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
-				addActionError("檔案格式錯誤");
+			if (gtMaxSize(getRequest(), 1024 * 1024 * 10)) {
+				addActionError("檔案超過10MB，請分批");
+			} else {
+				if (!getFileMime(getEntity().getFile()[0],
+						getEntity().getFileFileName()[0]).equals("text/csv")) {
+					addActionError("檔案格式錯誤");
+				}
 			}
 		}
 
 		if (!hasActionErrors()) {
-			Workbook book = createWorkBook(new FileInputStream(getEntity()
-					.getFile()[0]));
-			Sheet sheet = book.createSheet();
-			if (book.getNumberOfSheets() != 0) {
-				sheet = book.getSheetAt(0);
-			}
-
-			Row firstRow = sheet.getRow(0);
-			if (firstRow == null) {
-				firstRow = sheet.createRow(0);
-			}
-
-			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[15];
-			int n = 0;
-			while (n < rowTitles.length) {
-				if (firstRow.getCell(n) == null) {
-					rowTitles[n] = "";
-				} else {
-					int typeInt = firstRow.getCell(n).getCellType();
-					switch (typeInt) {
-					case 0:
-						String tempNumeric = "";
-						tempNumeric = tempNumeric
-								+ firstRow.getCell(n).getNumericCellValue();
-						rowTitles[n] = tempNumeric;
-						break;
 
-					case 1:
-						rowTitles[n] = firstRow.getCell(n).getStringCellValue();
-						break;
+			LinkedHashSet<Database> originalData = new LinkedHashSet<Database>();
+			Map<String, Database> checkRepeatRow = new LinkedHashMap<String, Database>();
 
-					case 2:
-						rowTitles[n] = firstRow.getCell(n).getCellFormula();
-						break;
-
-					case 3:
-						rowTitles[n] = "";
-						break;
-
-					case 4:
-						String tempBoolean = "";
-						tempBoolean = ""
-								+ firstRow.getCell(n).getBooleanCellValue();
-						rowTitles[n] = tempBoolean;
-						break;
-
-					case 5:
-						String tempByte = "";
-						tempByte = tempByte
-								+ firstRow.getCell(n).getErrorCellValue();
-						rowTitles[n] = tempByte;
-						break;
-					}
-
-				}
-
-				cellNames.add(rowTitles[n]);
-				n++;
-			}
-
-			List<Database> originalData = new LinkedList<Database>();
-			List<String> titles = databaseService.getAllDbTitles();
-			Map<String, Integer> checkRepeatTitle = new HashMap<String, Integer>();
 			int normal = 0;
-			int tip = 0;
 
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					continue;
+			CSVReader reader = new CSVReader(new FileReader(getEntity()
+					.getFile()[0]), ',');
+
+			String[] row;
+			int rowLength = 15;
+			while ((row = reader.readNext()) != null) {
+				if (row.length < rowLength) {
+					String[] spaceArray = new String[rowLength - row.length];
+					row = ArrayUtils.addAll(row, spaceArray);
 				}
 
-				String[] rowValues = new String[15];
-				int k = 0;
-				while (k < rowValues.length) {
-					if (row.getCell(k) == null) {
-						rowValues[k] = "";
+				for (int i = 0; i < rowLength; i++) {
+					if (row[i] == null) {
+						row[i] = "";
+					}
+				}
+
+				if (reader.getRecordsRead() == 1) {
+					cellNames = Arrays.asList(row);
+				} else {
+					List<String> errorList = Lists.newArrayList();
+
+					Type type = null;
+					Object objType = toEnum(row[9].trim(), Type.class);
+					if (objType != null) {
+						type = (Type) objType;
 					} else {
-						int typeInt = row.getCell(k).getCellType();
-						switch (typeInt) {
-						case 0:
-							String tempNumeric = "";
-							tempNumeric = tempNumeric
-									+ row.getCell(k).getNumericCellValue();
-							rowValues[k] = tempNumeric;
-							break;
+						type = Type.資料庫;
+					}
 
-						case 1:
-							rowValues[k] = row.getCell(k).getStringCellValue();
-							break;
-
-						case 2:
-							rowValues[k] = row.getCell(k).getCellFormula();
-							break;
-
-						case 3:
-							rowValues[k] = "";
-							break;
-
-						case 4:
-							String tempBoolean = "";
-							tempBoolean = ""
-									+ row.getCell(k).getBooleanCellValue();
-							rowValues[k] = tempBoolean;
-							break;
-
-						case 5:
-							String tempByte = "";
-							tempByte = tempByte
-									+ row.getCell(k).getErrorCellValue();
-							rowValues[k] = tempByte;
-							break;
+					boolean openAccess = false;
+					if (StringUtils.isNotBlank(row[11])) {
+						if (row[11].equals("1")
+								|| row[11].toLowerCase().equals("yes")
+								|| row[11].toLowerCase().equals("true")
+								|| row[11].equals("是") || row[11].equals("真")) {
+							openAccess = true;
 						}
-
-					}
-					k++;
-				}
-
-				List<String> errorList = Lists.newArrayList();
-
-				Category category = null;
-
-				if (NumberUtils.isDigits(rowValues[14])) {
-					category = Category.getByToken(Integer
-							.parseInt(rowValues[14]));
-				} else {
-					category = (Category) toEnum(rowValues[14].trim(),
-							Category.class);
-				}
-
-				if (category == null) {
-					category = Category.未註明;
-				}
-
-				Type type = null;
-				Object objType = toEnum(rowValues[9].trim(), Type.class);
-				if (objType != null) {
-					type = (Type) objType;
-				} else {
-					type = Type.資料庫;
-				}
-
-				boolean openAccess = false;
-				if (StringUtils.isNotBlank(rowValues[11])) {
-					if (rowValues[11].equals("1")
-							|| rowValues[11].toLowerCase().equals("yes")
-							|| rowValues[11].toLowerCase().equals("true")
-							|| rowValues[11].equals("是")
-							|| rowValues[11].equals("真")) {
-						openAccess = true;
-					}
-				}
-
-				resourcesBuyers = new ResourcesBuyers(category);
-
-				database = new Database(rowValues[0].trim(), rowValues[1],
-						rowValues[2], rowValues[3], rowValues[4], rowValues[5],
-						rowValues[6], rowValues[7], rowValues[8], type,
-						rowValues[10], openAccess,
-						toLocalDateTime(rowValues[12].trim()),
-						toLocalDateTime(rowValues[13].trim()), null,
-						resourcesBuyers);
-				database.setTempNotes(new String[] { rowValues[12],
-						rowValues[13] });
-				database.getResourcesBuyers().setDataStatus("");
-
-				if (StringUtils.isNotEmpty(database.getTempNotes()[0])
-						&& database.getStartDate() == null) {
-					errorList.add("起始日錯誤");
-				}
-
-				if (StringUtils.isNotEmpty(database.getTempNotes()[1])
-						&& database.getMaturityDate() == null) {
-					errorList.add("到期日錯誤");
-				}
-
-				if (database.getStartDate() != null
-						&& database.getMaturityDate() != null) {
-					if (database.getStartDate().isAfter(
-							database.getMaturityDate())) {
-						errorList.add("到期日早於起始日");
-					}
-				}
-
-				if (StringUtils.isBlank(database.getDbTitle())) {
-					errorList.add("沒有資料庫名稱");
-				}
-
-				if (!isURL(database.getUrl())) {
-					errorList.add("url不正確");
-				}
-
-				if (titles.contains(database.getDbTitle().toLowerCase())) {
-					database.getResourcesBuyers().setDataStatus("同名資料庫已存在<br>");
-				}
-
-				if (StringUtils.isNotBlank(database.getDbTitle())) {
-					if (checkRepeatTitle.containsKey(database.getDbTitle())) {
-						String prevResStatus = (originalData
-								.get(checkRepeatTitle.get(database.getDbTitle()))
-								.getResourcesBuyers().getDataStatus() + "清單有同名資料庫<br>")
-								.replace("清單有同名資料庫<br>清單有同名資料庫<br>",
-										"清單有同名資料庫<br>");
-						originalData
-								.get(checkRepeatTitle.get(database.getDbTitle()))
-								.getResourcesBuyers()
-								.setDataStatus(prevResStatus);
-
-						String nextResStatus = database.getResourcesBuyers()
-								.getDataStatus() + "清單有同名資料庫<br>";
-						database.getResourcesBuyers().setDataStatus(
-								nextResStatus);
 					}
 
-					checkRepeatTitle.put(database.getDbTitle(),
-							originalData.size());
-				}
+					Category category = null;
+					if (NumberUtils.isDigits(row[14])) {
+						category = Category.getByToken(Integer
+								.parseInt(row[14]));
+					} else {
+						category = (Category) toEnum(row[14].trim(),
+								Category.class);
+					}
 
-				if (errorList.size() != 0) {
-					database.setDataStatus(errorList.toString()
-							.replace("[", "").replace("]", ""));
-				} else {
-					database.setDataStatus("正常");
-					++normal;
-				}
+					if (category == null) {
+						category = Category.未註明;
+					}
 
-				originalData.add(database);
-			}
+					resourcesBuyers = new ResourcesBuyers(category);
 
-			Iterator<Database> iterator = originalData.iterator();
-			while (iterator.hasNext()) {
-				database = iterator.next();
-				if (StringUtils.isNotBlank(database.getResourcesBuyers()
-						.getDataStatus())
-						&& database.getDataStatus().equals("正常")) {
-					++tip;
+					database = new Database(row[0], row[1], row[2], row[3],
+							row[4], row[5], row[6], row[7], row[8], type,
+							row[10], openAccess, toLocalDateTime(row[12]),
+							toLocalDateTime(row[13]), null, resourcesBuyers);
+
+					if (StringUtils.isNotBlank(row[12])
+							&& database.getStartDate() == null) {
+						errorList.add("起始日錯誤");
+					}
+
+					if (StringUtils.isNotBlank(row[13])
+							&& database.getMaturityDate() == null) {
+						errorList.add("到期日錯誤");
+					}
+
+					if (database.getStartDate() != null
+							&& database.getMaturityDate() != null) {
+						if (database.getStartDate().isAfter(
+								database.getMaturityDate())) {
+							errorList.add("到期日早於起始日");
+						}
+					}
+
+					if (StringUtils.isBlank(database.getDbTitle())) {
+						errorList.add("沒有資料庫名稱");
+					}
+
+					if (StringUtils.isBlank(database.getPublishName())) {
+						errorList.add("沒有出版社名稱");
+					}
+
+					if (StringUtils.isNotBlank(database.getDbTitle())
+							&& StringUtils
+									.isNotBlank(database.getPublishName())) {
+						if (hasRepeatDb(database.getDbTitle(),
+								database.getPublishName(), null)) {
+							errorList.add("資料庫重複");
+						}
+					}
+
+					if (!isURL(database.getUrl())) {
+						errorList.add("URL未填寫或不正確");
+					}
+
+					if (errorList.size() == 0) {
+						if (StringUtils.isNotBlank(database.getDbTitle())
+								&& StringUtils.isNotBlank(database
+										.getPublishName())) {
+							if (checkRepeatRow.containsKey(database
+									.getDbTitle().trim()
+									+ database.getPublishName().trim())) {
+								errorList.add("清單資源重複");
+							} else {
+								checkRepeatRow.put(database.getDbTitle().trim()
+										+ database.getPublishName().trim(),
+										database);
+							}
+						}
+					}
+
+					if (errorList.size() == 0) {
+						database.setDataStatus("正常");
+						++normal;
+					} else {
+						database.setDataStatus(errorList.toString()
+								.replace("[", "").replace("]", ""));
+					}
+
+					originalData.add(database);
 				}
 			}
 
-			List<Database> excelData = new ArrayList<Database>(originalData);
+			List<Database> csvData = new ArrayList<Database>(originalData);
 
 			DataSet<Database> ds = initDataSet();
-			ds.getPager().setTotalRecord((long) excelData.size());
+			ds.getPager().setTotalRecord((long) csvData.size());
 
-			if (excelData.size() < ds.getPager().getRecordPerPage()) {
+			if (csvData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
-				while (i < excelData.size()) {
-					ds.getResults().add(excelData.get(i));
+				while (i < csvData.size()) {
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					ds.getResults().add(excelData.get(i));
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			}
 
 			getSession().put("cellNames", cellNames);
-			getSession().put("importList", excelData);
-			getSession().put("total", excelData.size());
+			getSession().put("importList", csvData);
+			getSession().put("total", csvData.size());
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
-			getSession().put("tip", tip);
 			getSession().put("clazz", this.getClass());
 
 			setDs(ds);
+
 			return QUEUE;
 		} else {
 			return IMPORT;
@@ -839,225 +727,43 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 	}
 
-	public String backErrors() throws Exception {
-		List<?> importList = (List<?>) getSession().get("importList");
-		if (importList == null) {
-			return IMPORT;
-		}
-
-		if (StringUtils.isBlank(getEntity().getOption())) {
-			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-		} else if (getEntity().getOption().equals("errors")) {
-			getEntity().setReportFile("database_error.xlsx");
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet spreadsheet = workbook.createSheet("database_error");
-			XSSFCellStyle cellStyle = workbook.createCellStyle();
-			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-			for (int i = 0; i < 30; i++) {
-				spreadsheet.setDefaultColumnStyle(i, cellStyle);
-			}
-
-			XSSFRow row;
-
-			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-			Integer mark = 1;
-			empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
-					"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用",
-					"起始日", "到期日", "資源類型", "訂閱單位", "錯誤提示", "其他提示" });
-
-			int i = 0;
-			while (i < importList.size()) {
-				database = (Database) importList.get(i);
-				if (!database.getDataStatus().equals("正常")
-						&& !database.getDataStatus().equals("已匯入")) {
-
-					String tips = database.getResourcesBuyers().getDataStatus()
-							.replace("<br>", ",");
-					if (tips.length() > 0) {
-						tips = tips.substring(0, tips.length() - 1);
-					}
-
-					mark = mark + 1;
-					empinfo.put(
-							mark.toString(),
-							new Object[] {
-									database.getDbTitle(),
-									database.getLanguages(),
-									database.getIncludedSpecies(),
-									database.getPublishName(),
-									database.getContent(),
-									database.getTopic(),
-									database.getClassification(),
-									database.getIndexedYears(),
-									database.getEmbargo(),
-									database.getType().getType(),
-									database.getUrl(),
-									database.getOpenAccess().toString(),
-									database.getTempNotes()[0],
-									database.getTempNotes()[1],
-									database.getResourcesBuyers().getCategory()
-											.getCategory(),
-									database.getDataStatus(), tips });
-				}
-				i++;
-			}
-
-			Set<String> keyid = empinfo.keySet();
-			int rowid = 0;
-			for (String key : keyid) {
-				row = spreadsheet.createRow(rowid++);
-				Object[] objectArr = empinfo.get(key);
-				int cellid = 0;
-				for (Object obj : objectArr) {
-					Cell cell = row.createCell(cellid++);
-					cell.setCellValue(obj.toString());
-				}
-			}
-
-			ByteArrayOutputStream boas = new ByteArrayOutputStream();
-			workbook.write(boas);
-			getEntity().setInputStream(
-					new ByteArrayInputStream(boas.toByteArray()));
-		} else if (getEntity().getOption().equals("tips")) {
-			getEntity().setReportFile("database_tip.xlsx");
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet spreadsheet = workbook.createSheet("database_tip");
-			XSSFCellStyle cellStyle = workbook.createCellStyle();
-			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-			for (int i = 0; i < 30; i++) {
-				spreadsheet.setDefaultColumnStyle(i, cellStyle);
-			}
-
-			XSSFRow row;
-
-			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-			Integer mark = 1;
-			empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
-					"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用",
-					"起始日", "到期日", "資源類型", "訂閱單位", "物件狀態", "其他提示" });
-
-			int i = 0;
-			while (i < importList.size()) {
-				database = (Database) importList.get(i);
-				if (database.getDataStatus().equals("正常")
-						|| database.getDataStatus().equals("已匯入")) {
-					String tips = database.getResourcesBuyers().getDataStatus()
-							.replace("<br>", ",");
-					if (tips.length() > 0) {
-						tips = tips.substring(0, tips.length() - 1);
-					}
-
-					mark = mark + 1;
-					empinfo.put(
-							mark.toString(),
-							new Object[] {
-									database.getDbTitle(),
-									database.getLanguages(),
-									database.getIncludedSpecies(),
-									database.getPublishName(),
-									database.getContent(),
-									database.getTopic(),
-									database.getClassification(),
-									database.getIndexedYears(),
-									database.getEmbargo(),
-									database.getType().getType(),
-									database.getUrl(),
-									database.getOpenAccess().toString(),
-									database.getTempNotes()[0],
-									database.getTempNotes()[1],
-									database.getResourcesBuyers().getCategory()
-											.getCategory(),
-									database.getDataStatus(), tips });
-				}
-				i++;
-			}
-
-			Set<String> keyid = empinfo.keySet();
-			int rowid = 0;
-			for (String key : keyid) {
-				row = spreadsheet.createRow(rowid++);
-				Object[] objectArr = empinfo.get(key);
-				int cellid = 0;
-				for (Object obj : objectArr) {
-					Cell cell = row.createCell(cellid++);
-					cell.setCellValue(obj.toString());
-				}
-			}
-
-			ByteArrayOutputStream boas = new ByteArrayOutputStream();
-			workbook.write(boas);
-			getEntity().setInputStream(
-					new ByteArrayInputStream(boas.toByteArray()));
-		} else {
-			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-		}
-
-		return XLSX;
-	}
-
 	public String example() throws Exception {
-		getEntity().setReportFile("database_sample.xlsx");
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet spreadsheet = workbook.createSheet("database");
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-		for (int i = 0; i < 30; i++) {
-			spreadsheet.setDefaultColumnStyle(i, cellStyle);
-		}
-
-		XSSFRow row;
-
-		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-		empinfo.put("1", new Object[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容",
-				"主題", "分類", "收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用", "起始日",
-				"到期日", "資源類型" });
-
-		empinfo.put(
-				"2",
-				new Object[] {
-						"遠足台灣(台灣行旅)電子書",
-						"中文",
-						"電子書",
-						"碩亞數碼",
-						"本選輯專為台灣地理空間、人文風情與歷史社會風貌打造的平台檢索系統，精心挑選遠足文化出版社最具代表性的出版品，並經由台灣百餘位學界教授、地方文史工作者、公部門專業研究員共同編撰，以豐富的數位內容與專業平台檢索系統的結合，引領讀者按圖索驥，開啟「台灣學」新視野。 @內容皆採全文本(pure –efile)格式製作，可支援關鍵字全文檢索。@提供讀者二大閱讀模式：(1)【下載】離線閱讀授權範圍內下載並安裝”L&B專屬之SMART Reader閱讀器”至您的桌機/筆電，即使無法網際網路連線，也能進行閱讀、管理下載書目(離線閱讀檔案共可使用30天)。運用章節標引導航、全文檢索、文字引用及底線等標註多樣化常用文具，為使用者節省並增加資訊檢索的正確率，有效提升學術研究、主題討論之品質。(2)【線上閱讀】連線閱讀：Flash翻頁式電子書@本平臺之電子書不限制同時使用人數，目前提供約60本電子書。",
-						"台灣行旅", "地理、人文、歷史 、社會", "N/A", "N/A", "電子書",
-						"http://lb20.tpml.libraryandbook.net/FE", "否",
-						"2015-05-10", "", "0" });
-		empinfo.put("3", new Object[] { "Tesuka Manga手塚治虫系列漫畫電子書", "中文", "漫畫",
+		List<String[]> rows = new ArrayList<String[]>();
+		rows.add(new String[] { "資料庫題名", "語文", "收錄種類", "出版社", "內容", "主題", "分類",
+				"收錄年代", "全文取得授權刊期", "資源種類", "URL", "開放近用", "起始日", "到期日", "資源類型" });
+		rows.add(new String[] {
+				"遠足台灣(台灣行旅)電子書",
+				"中文",
+				"電子書",
+				"碩亞數碼",
+				"本選輯專為台灣地理空間、人文風情與歷史社會風貌打造的平台檢索系統，精心挑選遠足文化出版社最具代表性的出版品，並經由台灣百餘位學界教授、地方文史工作者、公部門專業研究員共同編撰，以豐富的數位內容與專業平台檢索系統的結合，引領讀者按圖索驥，開啟「台灣學」新視野。 @內容皆採全文本(pure –efile)格式製作，可支援關鍵字全文檢索。@提供讀者二大閱讀模式：(1)【下載】離線閱讀授權範圍內下載並安裝”L&B專屬之SMART Reader閱讀器”至您的桌機/筆電，即使無法網際網路連線，也能進行閱讀、管理下載書目(離線閱讀檔案共可使用30天)。運用章節標引導航、全文檢索、文字引用及底線等標註多樣化常用文具，為使用者節省並增加資訊檢索的正確率，有效提升學術研究、主題討論之品質。(2)【線上閱讀】連線閱讀：Flash翻頁式電子書@本平臺之電子書不限制同時使用人數，目前提供約60本電子書。",
+				"台灣行旅", "地理、人文、歷史 、社會", "N/A", "N/A", "電子書",
+				"http://lb20.tpml.libraryandbook.net/FE", "1", "2015-05-10",
+				"", "0" });
+		rows.add(new String[] { "Tesuka Manga手塚治虫系列漫畫電子書", "中文", "漫畫",
 				"iGroup", "繁體中文12種157冊、日文15種377冊、英文6種55冊", "手塚治虫系列漫畫", "N/A",
-				"N/A", "N/A", "電子書", "http://www.mymanga365.com/tezuka/", "否",
+				"N/A", "N/A", "電子書", "http://www.mymanga365.com/tezuka/", "0",
 				"", "2015-10-15", "1" });
-		empinfo.put("4", new Object[] { "Nature Publish Group", "英文", "期刊",
+		rows.add(new String[] { "Nature Publish Group", "英文", "期刊",
 				"nature.com", "", "Science & Medicine Journal", "N/A", "N/A",
-				"N/A", "期刊", "http://www.nature.com/", "否", "", "2015-10-15",
+				"N/A", "期刊", "http://www.nature.com/", "0", "", "2015-10-15",
 				"2" });
-		empinfo.put("5", new Object[] { "台灣地理線上百科資料庫 ", "中文", "多媒體", "SYDT",
-				"", "台灣地理", "N/A", "N/A", "N/A", "資料庫",
-				"http://geo.twonline.libraryandbook.net/main.action", "否", "",
+		rows.add(new String[] { "台灣地理線上百科資料庫 ", "中文", "多媒體", "SYDT", "",
+				"台灣地理", "N/A", "N/A", "N/A", "資料庫",
+				"http://geo.twonline.libraryandbook.net/main.action", "0", "",
 				"2015-10-15", "1" });
 
-		Set<String> keyid = empinfo.keySet();
-		int rowid = 0;
-		for (String key : keyid) {
-			row = spreadsheet.createRow(rowid++);
-			Object[] objectArr = empinfo.get(key);
-			int cellid = 0;
-			for (Object obj : objectArr) {
-				Cell cell = row.createCell(cellid++);
-				cell.setCellValue(obj.toString());
-			}
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.NO_ESCAPE_CHARACTER, "\n");
 
-		ByteArrayOutputStream boas = new ByteArrayOutputStream();
-		workbook.write(boas);
+		writer.writeAll(rows);
+		writer.close();
+
+		getEntity().setReportFile("database_sample.csv");
 		getEntity()
-				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
+				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
 		return XLSX;
 	}
@@ -1123,16 +829,5 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		}
 
 		return false;
-	}
-
-	// 判斷文件類型
-	protected Workbook createWorkBook(InputStream is) throws IOException {
-		try {
-			return WorkbookFactory.create(is);
-		} catch (InvalidFormatException e) {
-			return null;
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
 	}
 }

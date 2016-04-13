@@ -31,6 +31,8 @@ public interface Action<T extends Entity> {
 	public final static String IMPORT = "import";
 
 	public final static String PREFIX = "prefix";
-	
+
 	public final static String COUNT = "count";
+
+	public final static String PIC = "pic";
 }

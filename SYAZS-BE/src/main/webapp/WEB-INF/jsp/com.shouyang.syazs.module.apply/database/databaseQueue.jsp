@@ -112,16 +112,6 @@
 				});
 	}
 
-	function getErrors() {
-		var url = "<c:url value = '/'/>crud/apply.database.backErrors.action?entity.option=errors";
-		window.open(url, "_top");
-	}
-
-	function getTips() {
-		var url = "<c:url value = '/'/>crud/apply.database.backErrors.action?entity.option=tips";
-		window.open(url, "_top");
-	}
-
 	function checkData() {
 		//檢查資料是否已被勾選
 		//進行動作
@@ -139,14 +129,17 @@
 	function closeDetail() {
 		$("#div_Detail").hide();
 		UI_Resize();
-		$.ajax({
-			type : "POST",
-			url : "<c:url value = '/'/>page/copyright.action",
-			dataType : "html",
-			success : function(message) {
-
+		var insert = "${insert}";
+		if (parseInt(insert) > 0) {
+			if ($("form#apply_journal_list input#listForm_currentPageHeader")
+					.val() != null) {
+				gotoPage($(
+						"form#apply_journal_list input#listForm_currentPageHeader")
+						.val());
+			} else {
+				goSearch();
 			}
-		});
+		}
 
 		resetCloseDetail();
 	}
@@ -175,7 +168,6 @@
 					<th><esapi:encodeForHTML>${cellNames[12]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[13]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[14]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[15]}</esapi:encodeForHTML></th>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -202,8 +194,7 @@
 									<input type="checkbox" disabled="disabled">
 								</c:otherwise>
 							</c:choose></td>
-						<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML><br>
-							<span id="span-queue-tip" class="tip">${item.resourcesBuyers.dataStatus }</span></td>
+						<td><esapi:encodeForHTML>${item.dbTitle }</esapi:encodeForHTML></td>
 						<td>${item.topic }</td>
 						<td>${item.type }</td>
 						<td>${item.url }</td>
@@ -211,14 +202,9 @@
 								<c:when test="${true eq item.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
 							</c:choose></td>
-						<td>${item.tempNotes[0] }</td>
-						<td>${item.tempNotes[1] }</td>
+						<td>${fn:split(item.startDate, 'T')[0] }</td>
+						<td>${fn:split(item.maturityDate, 'T')[0] }</td>
 						<td>${item.resourcesBuyers.category }</td>
-						<td align="center"><c:forEach var="owner"
-								items="${item.referenceOwners }">
-								<esapi:encodeForHTML>${owner.name }</esapi:encodeForHTML>
-								<br>
-							</c:forEach></td>
 						<td align="center">${fn:replace(item.dataStatus, ',', '<br>')}</td>
 					</tr>
 				</c:forEach>
@@ -264,23 +250,8 @@
 		</div>
 		<div class="detail_note">
 			<div class="detail_note_title">Note</div>
-			<div class="detail_note_content">
-				共${total }筆記錄(正常筆數 : ${normal } ;異常筆數 :
-				<c:choose>
-					<c:when test="${total-normal>0 }">
-						<a class="error number" onclick="getErrors()">${total-normal }</a>
-					</c:when>
-					<c:otherwise>0</c:otherwise>
-				</c:choose>
-				;已匯入 : ${insert } ;其他提示 :
-				<c:choose>
-					<c:when test="${tip>0 }">
-						<a class="error number" onclick="getTips()">${tip }</a>
-					</c:when>
-					<c:otherwise>0</c:otherwise>
-				</c:choose>
-				)
-			</div>
+			<div class="detail_note_content">共${total }筆記錄(正常筆數 : ${normal }
+				;異常筆數 : ${total-normal } ;已匯入 : ${insert })</div>
 		</div>
 	</s:form>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />

@@ -49,6 +49,10 @@ public class Customer extends GenericEntityFull {
 	@Type(type = "text")
 	private String memo;
 
+	// LOGO
+	@Column(name = "logo")
+	private String logo;
+
 	@OneToMany(mappedBy = "customer", orphanRemoval = true)
 	private Set<AccountNumber> accountNumbers;
 
@@ -140,6 +144,21 @@ public class Customer extends GenericEntityFull {
 	 */
 	public void setMemo(String memo) {
 		this.memo = memo;
+	}
+
+	/**
+	 * @return the logo
+	 */
+	public String getLogo() {
+		return logo;
+	}
+
+	/**
+	 * @param logo
+	 *            the logo to set
+	 */
+	public void setLogo(String logo) {
+		this.logo = logo;
 	}
 
 	/**

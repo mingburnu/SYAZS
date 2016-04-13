@@ -90,5 +90,4 @@ public abstract class GenericEntitySerNo extends FileIoProperties {
 		return ReflectionToStringBuilder.toString(this,
 				ToStringStyle.DEFAULT_STYLE);
 	}
-
 }

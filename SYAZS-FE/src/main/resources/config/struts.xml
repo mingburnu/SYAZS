@@ -39,37 +39,12 @@
 		</global-exception-mappings>
 	</package>
 
-	<package name="authorizationAction" namespace="/authorization"
-		extends="struts-default">
-		<interceptors>
-			<interceptor name="loginLogInterceptor"
-				class="com.shouyang.syazs.core.interceptor.LoginLogInterceptor" />
-
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="loginLogInterceptor" />
-				<interceptor-ref name="defaultStack" />
-			</interceptor-stack>
-		</interceptors>
-
-		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="input">/login.jsp</result>
-			<result name="login">/WEB-INF/jsp/index.jsp</result>
-		</global-results>
-		<action name="login" class="authorizationAction" method="login" />
-		<action name="logout" class="authorizationAction" method="logout" />
-		<action name="userEntry" class="authorizationAction" method="userEntry" />
-	</package>
-
 	<package name="pageAction" namespace="/page" extends="global">
 		<interceptors>
-			<interceptor name="loginSessionInterceptor"
-				class="com.shouyang.syazs.core.interceptor.LoginSessionInterceptor" />
 			<interceptor name="SearchActionInterceptor"
 				class="com.shouyang.syazs.core.interceptor.SearchActionInterceptor" />
 
 			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="loginSessionInterceptor" />
 				<interceptor-ref name="SearchActionInterceptor" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
@@ -94,14 +69,11 @@
 	</package>
 
 	<package name="crudAction" namespace="/crud" extends="global">
-		<interceptors>
-			<interceptor name="loginSessionInterceptor"
-				class="com.shouyang.syazs.core.interceptor.LoginSessionInterceptor" />
+		<interceptors>			
 			<interceptor name="SearchActionInterceptor"
 				class="com.shouyang.syazs.core.interceptor.SearchActionInterceptor" />
 
 			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="loginSessionInterceptor" />
 				<interceptor-ref name="SearchActionInterceptor" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
@@ -114,6 +86,11 @@
 			<result name="prefix">${entity.location}{1}/{1}Prefix.jsp</result>
 			<result name="list">${entity.location}{1}/{1}List.jsp</result>
 			<result name="view">${entity.location}{1}/{1}View.jsp</result>
+			<result name="pic" type="stream">
+				<param name="contentType">${entity.dataStatus}</param>
+				<param name="inputName">entity.inputStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
 			<result name="*"></result>
 		</action>
 	</package>

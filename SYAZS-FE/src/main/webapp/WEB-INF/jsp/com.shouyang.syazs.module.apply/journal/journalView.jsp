@@ -82,10 +82,10 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.publication }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty entity.congressClassification}">
+			<c:if test="${not empty entity.classification}">
 				<tr>
-					<td class="t_01">國會分類號</td>
-					<td class="t_02">${entity.congressClassification }</td>
+					<td class="t_01">${entity.classification.name }</td>
+					<td class="t_02">${entity.lcsCode}</td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.caption}">
@@ -100,43 +100,24 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.numB }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:choose>
-				<c:when test="${not empty entity.database}">
-					<tr>
-						<td class="t_01">資料庫</td>
-						<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
-					</tr>
-					<c:if
-						test="${(not empty entity.database.resourcesBuyers.startDate)||(not empty entity.database.resourcesBuyers.maturityDate)}">
-						<tr>
-							<td class="t_01">起訂日期</td>
-							<td class="t_02"><s:property
-									value="entity.database.resourcesBuyers.startDate" />~<s:property
-									value="entity.database.resourcesBuyers.maturityDate" /></td>
-						</tr>
-					</c:if>
-				</c:when>
-				<c:otherwise>
-					<c:if
-						test="${(not empty entity.resourcesBuyers.startDate)||(not empty entity.resourcesBuyers.maturityDate)}">
-						<tr>
-							<td class="t_01">起訂日期</td>
-							<td class="t_02"><s:property
-									value="entity.resourcesBuyers.startDate" />~<s:property
-									value="entity.resourcesBuyers.maturityDate" /></td>
-						</tr>
-					</c:if>
-				</c:otherwise>
-			</c:choose>
+			<c:if test="${not empty entity.database}">
+				<tr>
+					<td class="t_01">資料庫</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
+				</tr>
+
+			</c:if>
+			<c:if
+				test="${(not empty entity.startDate)||(not empty entity.maturityDate)}">
+				<tr>
+					<td class="t_01">起訂日期</td>
+					<td class="t_02"><s:property value="entity.startDate" />~<s:property
+							value="entity.maturityDate" /></td>
+				</tr>
+			</c:if>
 			<tr>
-				<td class="t_01">館藏</td>
-				<td class="t_02"><c:forEach items="${referenceOwners }"
-						var="owner" varStatus="status">
-						<c:choose>
-							<c:when test="${!status.last }">${owner[1]}、</c:when>
-							<c:otherwise>${owner[1]}</c:otherwise>
-						</c:choose>
-					</c:forEach></td>
+				<td class="t_01">資源類型</td>
+				<td class="t_02">${entity.resourcesBuyers.category}</td>
 			</tr>
 		</table>
 

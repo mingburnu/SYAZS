@@ -14,6 +14,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
@@ -169,6 +172,34 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 
 		FileUtils.deleteDirectory(new File(parentDir));
 		return mime;
+	}
+
+	protected boolean gtMaxSize(HttpServletRequest request, int sizeMax)
+			throws FileUploadException {
+		DiskFileItemFactory factory = new DiskFileItemFactory();
+
+		// Add here your own limit
+		factory.setSizeThreshold(sizeMax);
+
+		ServletFileUpload upload = new ServletFileUpload(factory);
+
+		// Add here your own limit
+		upload.setSizeMax(sizeMax);
+
+		try {
+			upload.parseRequest(request);
+		} catch (Exception e) {
+			if (e.getMessage().startsWith(
+					"the request was rejected because its size")) {
+				return true;
+			}
+		}
+
+		if (request.getContentLength() > sizeMax * 2) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@SuppressWarnings("rawtypes")

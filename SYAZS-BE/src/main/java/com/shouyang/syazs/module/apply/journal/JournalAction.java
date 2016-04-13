@@ -2,15 +2,14 @@ package com.shouyang.syazs.module.apply.journal;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,16 +21,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.owasp.esapi.ESAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -39,8 +28,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.google.common.collect.Lists;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionFull;
+import com.shouyang.syazs.module.apply.classification.Classification;
+import com.shouyang.syazs.module.apply.classification.ClassificationService;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.database.DatabaseService;
 import com.shouyang.syazs.module.apply.enums.Category;
@@ -62,6 +55,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	private Database database;
 
 	@Autowired
+	private Classification classification;
+
+	@Autowired
 	private JournalService journalService;
 
 	@Autowired
@@ -69,6 +65,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Autowired
 	private ResourcesBuyers resourcesBuyers;
+
+	@Autowired
+	private ClassificationService classificationService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -104,30 +103,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 		}
 
-		if (!getEntity().getDatabase().hasSerNo()) {
-			if (StringUtils.isNotEmpty(getRequest().getParameter(
-					"entity.startDate"))) {
-				if (getEntity().getStartDate() == null) {
-					errorMessages.add("起始日不正確");
-				}
-			}
-
-			if (StringUtils.isNotEmpty(getRequest().getParameter(
-					"entity.maturityDate"))) {
-				if (getEntity().getMaturityDate() == null) {
-					errorMessages.add("到期日不正確");
-				}
-			}
-
-			if (getEntity().getStartDate() != null
-					&& getEntity().getMaturityDate() != null) {
-				if (getEntity().getStartDate().isAfter(
-						getEntity().getMaturityDate())) {
-					errorMessages.add("到期日早於起始日");
-				}
-			}
-
-		} else {
+		if (getEntity().getDatabase().hasSerNo()) {
 			database = databaseService.getBySerNo(getEntity().getDatabase()
 					.getSerNo());
 			if (database == null) {
@@ -135,6 +111,40 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			} else {
 				getEntity().setDatabase(database);
 			}
+		}
+
+		if (StringUtils.isNotEmpty(getRequest()
+				.getParameter("entity.startDate"))) {
+			if (getEntity().getStartDate() == null) {
+				errorMessages.add("起始日不正確");
+			}
+		}
+
+		if (StringUtils.isNotEmpty(getRequest().getParameter(
+				"entity.maturityDate"))) {
+			if (getEntity().getMaturityDate() == null) {
+				errorMessages.add("到期日不正確");
+			}
+		}
+
+		if (getEntity().getStartDate() != null
+				&& getEntity().getMaturityDate() != null) {
+			if (getEntity().getStartDate().isAfter(
+					getEntity().getMaturityDate())) {
+				errorMessages.add("到期日早於起始日");
+			}
+		}
+
+		if (getEntity().getClassification().hasSerNo()) {
+			classification = classificationService.getBySerNo(getEntity()
+					.getClassification().getSerNo());
+			if (classification == null) {
+				errorMessages.add("不可利用的分類法流水號");
+			} else {
+				getEntity().setClassification(classification);
+			}
+		} else {
+			getEntity().setClassification(null);
 		}
 
 		if (getEntity().getResourcesBuyers().getCategory() == null) {
@@ -176,30 +186,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				errorMessages.add("URL必須填寫");
 			}
 
-			if (!getEntity().getDatabase().hasSerNo()) {
-				if (StringUtils.isNotEmpty(getRequest().getParameter(
-						"entity.startDate"))) {
-					if (getEntity().getStartDate() == null) {
-						errorMessages.add("起始日不正確");
-					}
-				}
-
-				if (StringUtils.isNotEmpty(getRequest().getParameter(
-						"entity.maturityDate"))) {
-					if (getEntity().getMaturityDate() == null) {
-						errorMessages.add("到期日不正確");
-					}
-				}
-
-				if (getEntity().getStartDate() != null
-						&& getEntity().getMaturityDate() != null) {
-					if (getEntity().getStartDate().isAfter(
-							getEntity().getMaturityDate())) {
-						errorMessages.add("到期日早於起始日");
-					}
-				}
-
-			} else {
+			if (getEntity().getDatabase().hasSerNo()) {
 				database = databaseService.getBySerNo(getEntity().getDatabase()
 						.getSerNo());
 				if (database == null) {
@@ -207,6 +194,40 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				} else {
 					getEntity().setDatabase(database);
 				}
+			}
+
+			if (StringUtils.isNotEmpty(getRequest().getParameter(
+					"entity.startDate"))) {
+				if (getEntity().getStartDate() == null) {
+					errorMessages.add("起始日不正確");
+				}
+			}
+
+			if (StringUtils.isNotEmpty(getRequest().getParameter(
+					"entity.maturityDate"))) {
+				if (getEntity().getMaturityDate() == null) {
+					errorMessages.add("到期日不正確");
+				}
+			}
+
+			if (getEntity().getStartDate() != null
+					&& getEntity().getMaturityDate() != null) {
+				if (getEntity().getStartDate().isAfter(
+						getEntity().getMaturityDate())) {
+					errorMessages.add("到期日早於起始日");
+				}
+			}
+
+			if (getEntity().getClassification().hasSerNo()) {
+				classification = classificationService.getBySerNo(getEntity()
+						.getClassification().getSerNo());
+				if (classification == null) {
+					errorMessages.add("不可利用的分類法流水號");
+				} else {
+					getEntity().setClassification(classification);
+				}
+			} else {
+				getEntity().setClassification(null);
 			}
 
 			if (getEntity().getResourcesBuyers().getCategory() == null) {
@@ -245,6 +266,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Override
 	public String add() throws Exception {
+		DataSet<Journal> ds = initDataSet();
+		ds.setDatas(classificationService.getClsDatas());
+		setEntity(journal);
+		setDs(ds);
+
 		setEntity(journal);
 		return ADD;
 	}
@@ -252,7 +278,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	@Override
 	public String edit() throws Exception {
 		if (hasEntity()) {
+			DataSet<Journal> ds = initDataSet();
+			ds.setDatas(classificationService.getClsDatas());
 			setEntity(journal);
+			setDs(ds);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -317,7 +346,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			addActionMessage("新增成功");
 			return VIEW;
 		} else {
+			DataSet<Journal> ds = initDataSet();
+			ds.setDatas(classificationService.getClsDatas());
 			setEntity(getEntity());
+			setDs(ds);
 			return ADD;
 		}
 	}
@@ -343,7 +375,10 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			addActionMessage("修改成功");
 			return VIEW;
 		} else {
+			DataSet<Journal> ds = initDataSet();
+			ds.setDatas(classificationService.getClsDatas());
 			setEntity(getEntity());
+			setDs(ds);
 			return EDIT;
 		}
 	}
@@ -415,179 +450,79 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		return IMPORT;
 	}
 
+	@SuppressWarnings("resource")
 	public String queue() throws Exception {
 		if (ArrayUtils.isEmpty(getEntity().getFile())
 				|| !getEntity().getFile()[0].isFile()) {
 			addActionError("請選擇檔案");
 		} else {
-			if (createWorkBook(new FileInputStream(getEntity().getFile()[0])) == null) {
-				addActionError("檔案格式錯誤");
+			if (gtMaxSize(getRequest(), 1024 * 1024 * 10)) {
+				addActionError("檔案超過10MB，請分批");
+			} else {
+				if (!getFileMime(getEntity().getFile()[0],
+						getEntity().getFileFileName()[0]).equals("text/csv")) {
+					addActionError("檔案格式錯誤");
+				}
 			}
 		}
 
 		if (!hasActionErrors()) {
-			if (StringUtils.isNotBlank(getEntity().getOption())) {
-				if (!getEntity().getOption().equals("package")
-						&& !getEntity().getOption().equals("individual")) {
-					getEntity().setOption("package");
-				}
-			} else {
-				getEntity().setOption("package");
-			}
-
-			int length = 0;
-			if (getEntity().getOption().equals("package")) {
-				length = 16;
-			} else {
-				length = 19;
-			}
-
-			Workbook book = createWorkBook(new FileInputStream(getEntity()
-					.getFile()[0]));
-			Sheet sheet = book.createSheet();
-			if (book.getNumberOfSheets() != 0) {
-				sheet = book.getSheetAt(0);
-			}
-
-			Row firstRow = sheet.getRow(0);
-			if (firstRow == null) {
-				firstRow = sheet.createRow(0);
-			}
-
-			// 保存列名
 			List<String> cellNames = new ArrayList<String>();
-			String[] rowTitles = new String[length];
-			int n = 0;
-			while (n < rowTitles.length) {
-				if (firstRow.getCell(n) == null) {
-					rowTitles[n] = "";
-				} else {
-					int typeInt = firstRow.getCell(n).getCellType();
-					switch (typeInt) {
-					case 0:
-						String tempNumeric = "";
-						tempNumeric = tempNumeric
-								+ firstRow.getCell(n).getNumericCellValue();
-						rowTitles[n] = tempNumeric;
-						break;
 
-					case 1:
-						rowTitles[n] = firstRow.getCell(n).getStringCellValue();
-						break;
-
-					case 2:
-						rowTitles[n] = firstRow.getCell(n).getCellFormula();
-						break;
-
-					case 3:
-						rowTitles[n] = "";
-						break;
-
-					case 4:
-						String tempBoolean = "";
-						tempBoolean = ""
-								+ firstRow.getCell(n).getBooleanCellValue();
-						rowTitles[n] = tempBoolean;
-						break;
-
-					case 5:
-						String tempByte = "";
-						tempByte = tempByte
-								+ firstRow.getCell(n).getErrorCellValue();
-						rowTitles[n] = tempByte;
-						break;
-					}
-
-				}
-
-				cellNames.add(rowTitles[n]);
-				n++;
-			}
-
-			List<Journal> originalData = new ArrayList<Journal>();
-			Map<String, Integer> checkRepeatIssn = new HashMap<String, Integer>();
-			Map<String, Integer> checkRepeatTitle = new HashMap<String, Integer>();
+			LinkedHashSet<Journal> originalData = new LinkedHashSet<Journal>();
+			Map<String, Journal> checkRepeatRow = new LinkedHashMap<String, Journal>();
+			Map<String, Object> clsMap = classificationService.getClsDatas();
 
 			int normal = 0;
-			int tip = 0;
 
-			for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					continue;
+			CSVReader reader = new CSVReader(new FileReader(getEntity()
+					.getFile()[0]), ',');
+
+			String[] row;
+			int rowLength = 20;
+			while ((row = reader.readNext()) != null) {
+				if (row.length < rowLength) {
+					String[] spaceArray = new String[rowLength - row.length];
+					row = ArrayUtils.addAll(row, spaceArray);
 				}
 
-				String[] rowValues = new String[length];
-				int k = 0;
-				while (k < rowValues.length) {
-					if (row.getCell(k) == null) {
-						rowValues[k] = "";
-					} else {
-						int typeInt = row.getCell(k).getCellType();
-						switch (typeInt) {
-						case 0:
-							String tempNumeric = "";
-							tempNumeric = tempNumeric
-									+ row.getCell(k).getNumericCellValue();
-							rowValues[k] = tempNumeric;
-							break;
+				for (int i = 0; i < rowLength; i++) {
+					if (row[i] == null) {
+						row[i] = "";
+					}
+				}
 
-						case 1:
-							rowValues[k] = row.getCell(k).getStringCellValue()
-									.trim();
-							break;
+				if (reader.getRecordsRead() == 1) {
+					cellNames = Arrays.asList(row);
+				} else {
+					List<String> errorList = Lists.newArrayList();
 
-						case 2:
-							rowValues[k] = row.getCell(k).getCellFormula()
-									.trim();
-							break;
+					Short publsihYear = (Short) toNumber(row[6], Short.class);
 
-						case 3:
-							rowValues[k] = "";
-							break;
-
-						case 4:
-							String tempBoolean = "";
-							tempBoolean = ""
-									+ row.getCell(k).getBooleanCellValue();
-							rowValues[k] = tempBoolean;
-							break;
-
-						case 5:
-							String tempByte = "";
-							tempByte = tempByte
-									+ row.getCell(k).getErrorCellValue();
-							rowValues[k] = tempByte;
-							break;
+					boolean openAccess = false;
+					if (StringUtils.isNotBlank(row[15])) {
+						if (row[15].equals("1")
+								|| row[15].toLowerCase().equals("yes")
+								|| row[15].toLowerCase().equals("true")
+								|| row[15].equals("是") || row[15].equals("真")) {
+							openAccess = true;
 						}
-
 					}
-					k++;
-				}
 
-				List<String> errorList = Lists.newArrayList();
-				StringBuilder resStatus = new StringBuilder();
-
-				boolean openAccess = false;
-				if (StringUtils.isNotBlank(rowValues[14])) {
-					if (rowValues[11].equals("1")
-							|| rowValues[14].toLowerCase().equals("yes")
-							|| rowValues[14].toLowerCase().equals("true")
-							|| rowValues[14].equals("是")
-							|| rowValues[14].equals("真")) {
-						openAccess = true;
-					}
-				}
-
-				Short publsihYear = (Short) toNumber(rowValues[6], Short.class);
-
-				if (length > 16) {
-					Category category = null;
-					if (NumberUtils.isDigits(rowValues[17])) {
-						category = Category.getByToken(Integer
-								.parseInt(rowValues[17]));
+					if (StringUtils.isNotBlank(row[16])) {
+						database = databaseService.getByUUID(row[16].trim());
 					} else {
-						category = (Category) toEnum(rowValues[17].trim(),
+						database = null;
+					}
+
+					classification = new Classification(row[10]);
+
+					Category category = null;
+					if (NumberUtils.isDigits(row[19])) {
+						category = Category.getByToken(Integer
+								.parseInt(row[19]));
+					} else {
+						category = (Category) toEnum(row[19].trim(),
 								Category.class);
 					}
 
@@ -597,12 +532,55 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 					resourcesBuyers = new ResourcesBuyers(category);
 
-					if (StringUtils.isNotEmpty(rowValues[15])
+					journal = new Journal(row[0], row[1], row[2], row[3],
+							row[4], row[5], publsihYear, row[7], row[8],
+							row[9], row[12], row[13], row[14], openAccess,
+							toLocalDateTime(row[17]), toLocalDateTime(row[18]),
+							database, classification, row[11], null,
+							resourcesBuyers);
+
+					if (StringUtils.isBlank(journal.getTitle())) {
+						errorList.add("刊名不得空白");
+					}
+
+					if (StringUtils.isBlank(journal.getPublishName())) {
+						errorList.add("沒有出版社名稱");
+					}
+
+					if (StringUtils.isNotBlank(journal.getTitle())
+							&& StringUtils.isNotBlank(journal.getPublishName())) {
+						if (hasRepeatJou(journal.getTitle(),
+								journal.getPublishName(), null)) {
+							errorList.add("電子期刊重複");
+						}
+					}
+
+					if (StringUtils.isNotEmpty(journal.getIssn())) {
+						if (!ISSN_Validator.isIssn(journal.getIssn())) {
+							errorList.add("ISSN不正確");
+						}
+					}
+
+					if (!isURL(journal.getUrl())) {
+						errorList.add("URL未填寫或不正確");
+					}
+
+					if (StringUtils.isNotBlank(row[6])) {
+						if (journal.getPublishYear() == null) {
+							errorList.add("出版年不正確");
+						}
+					}
+
+					if (StringUtils.isNotBlank(row[16]) && database == null) {
+						errorList.add("資料庫代碼錯誤");
+					}
+
+					if (StringUtils.isNotBlank(row[17])
 							&& journal.getStartDate() == null) {
 						errorList.add("起始日錯誤");
 					}
 
-					if (StringUtils.isNotEmpty(rowValues[16])
+					if (StringUtils.isNotBlank(row[18])
 							&& journal.getMaturityDate() == null) {
 						errorList.add("到期日錯誤");
 					}
@@ -615,175 +593,68 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						}
 					}
 
-					journal = new Journal(rowValues[0], rowValues[1],
-							rowValues[2], rowValues[3].trim(), rowValues[4],
-							rowValues[5], publsihYear, rowValues[7],
-							rowValues[8], rowValues[9], rowValues[10],
-							rowValues[11], rowValues[12], rowValues[13],
-							openAccess, toLocalDateTime(rowValues[15].trim()),
-							toLocalDateTime(rowValues[16].trim()), null, null,
-							resourcesBuyers);
-					journal.getResourcesBuyers().setDataStatus("");
-					journal.setTempNotes(new String[] { rowValues[6],
-							rowValues[15], rowValues[16] });
-				} else {
-					journal = new Journal(rowValues[0], rowValues[1],
-							rowValues[2], rowValues[3].trim(), rowValues[4],
-							rowValues[5], publsihYear, rowValues[7],
-							rowValues[8], rowValues[9], rowValues[10],
-							rowValues[11], rowValues[12], rowValues[13],
-							openAccess, toLocalDateTime(rowValues[15].trim()),
-							toLocalDateTime(rowValues[16].trim()), null, null,
-							new ResourcesBuyers());
-					journal.getResourcesBuyers().setDataStatus("");
-					journal.setTempNotes(new String[] { rowValues[6] });
+					if (StringUtils.isNotBlank(journal.getClassification()
+							.getClassname())) {
+						journal.getClassification().setSerNo(
+								(Long) clsMap.get(journal.getClassification()
+										.getClassname().trim()));
 
-					if (StringUtils.isNotBlank(rowValues[15])) {
-						database = databaseService.getByUUID(rowValues[15]
-								.trim());
-						if (database != null) {
-							journal.setDatabase(database);
-						} else {
-							errorList.add("資料庫代碼錯誤");
-							database = new Database();
-							database.setUuIdentifier(rowValues[15]);
-							journal.setDatabase(database);
+						if (!journal.getClassification().hasSerNo()) {
+							errorList.add("系統無此分類法");
 						}
+					}
+
+					if (errorList.size() == 0) {
+						if (StringUtils.isNotBlank(journal.getTitle())
+								&& StringUtils.isNotBlank(journal
+										.getPublishName())) {
+							if (checkRepeatRow.containsKey(journal.getTitle()
+									.trim() + journal.getPublishName().trim())) {
+								errorList.add("清單資源重複");
+							} else {
+								checkRepeatRow.put(journal.getTitle().trim()
+										+ journal.getPublishName().trim(),
+										journal);
+							}
+						}
+					}
+
+					if (errorList.size() == 0) {
+						journal.setDataStatus("正常");
+						++normal;
 					} else {
-						errorList.add("資料庫代碼空白");
-						database = new Database();
-						database.setUuIdentifier(rowValues[15]);
-						journal.setDatabase(database);
+						journal.setDataStatus(errorList.toString()
+								.replace("[", "").replace("]", ""));
 					}
-				}
 
-				if (StringUtils.isBlank(journal.getTitle())) {
-					errorList.add("標題空白");
-				}
-
-				if (!isURL(journal.getUrl())) {
-					errorList.add("url不正確");
-				}
-
-				if (StringUtils.isNotEmpty(rowValues[6])
-						&& journal.getPublishYear() == null) {
-					errorList.add("出版年(西元)錯誤");
-				}
-
-				if (StringUtils.isNotEmpty(journal.getIssn())) {
-					if (ISSN_Validator.isIssn(journal.getIssn())) {
-						String issn = journal.getIssn().replace("-", "")
-								.toUpperCase();
-						if (hasRepeatIssn(issn, null)) {
-							resStatus.append("已有相同ISSN<br>");
-						}
-
-						if (dbHasRepeatIssn(issn, null, journal.getDatabase())) {
-							resStatus.append("DB有相同ISSN<br>");
-						}
-
-						if (checkRepeatIssn.containsKey(issn)) {
-							resStatus.append("清單有同ISSN資源<br>");
-
-							String status = originalData
-									.get(checkRepeatIssn.get(issn))
-									.getResourcesBuyers().getDataStatus()
-									+ "清單有同ISSN資源<br>";
-							originalData
-									.get(checkRepeatIssn.get(issn))
-									.getResourcesBuyers()
-									.setDataStatus(
-											status.replace(
-													"清單有同ISSN資源<br>清單有同ISSN資源<br>",
-													"清單有同ISSN資源<br>"));
-						}
-
-						checkRepeatIssn.put(issn, originalData.size());
-					} else {
-						errorList.add("ISSN不正確<br>");
-					}
-				} else {
-					if (StringUtils.isNotBlank(journal.getTitle())) {
-						if (hasRepeatTitle(journal.getTitle(), null)) {
-							resStatus.append("已有無ISSN同名資源<br>");
-						}
-
-						if (dbHasRepeatTitle(journal.getTitle(), null,
-								journal.getDatabase())) {
-							resStatus.append("Db有無ISSN同名資源<br>");
-						}
-
-						if (checkRepeatTitle.containsKey(journal.getTitle())) {
-							resStatus.append("清單有無ISSN同名資源<br>");
-
-							String status = originalData
-									.get(checkRepeatTitle.get(journal
-											.getTitle())).getResourcesBuyers()
-									.getDataStatus()
-									+ "清單有無ISSN同名資源<br>";
-							originalData
-									.get(checkRepeatTitle.get(journal
-											.getTitle()))
-									.getResourcesBuyers()
-									.setDataStatus(
-											status.replace(
-													"清單有無ISSN同名資源<br>清單有無ISSN同名資源<br>",
-													"清單有無ISSN同名資源<br>"));
-						}
-
-						checkRepeatTitle.put(journal.getTitle(),
-								originalData.size());
-					}
-				}
-
-				journal.getResourcesBuyers()
-						.setDataStatus(resStatus.toString());
-				if (errorList.size() != 0) {
-					journal.setDataStatus(errorList.toString().replace("[", "")
-							.replace("]", ""));
-				} else {
-					journal.setDataStatus("正常");
-					++normal;
-				}
-
-				originalData.add(journal);
-			}
-
-			Iterator<Journal> iterator = originalData.iterator();
-			while (iterator.hasNext()) {
-				journal = iterator.next();
-				if (StringUtils.isNotBlank(journal.getResourcesBuyers()
-						.getDataStatus())
-						&& journal.getDataStatus().equals("正常")) {
-					++tip;
+					originalData.add(journal);
 				}
 			}
 
-			List<Journal> excelData = new ArrayList<Journal>(originalData);
+			List<Journal> csvData = new ArrayList<Journal>(originalData);
 
 			DataSet<Journal> ds = initDataSet();
-			ds.getPager().setTotalRecord((long) excelData.size());
+			ds.getPager().setTotalRecord((long) csvData.size());
 
-			if (excelData.size() < ds.getPager().getRecordPerPage()) {
+			if (csvData.size() < ds.getPager().getRecordPerPage()) {
 				int i = 0;
-				while (i < excelData.size()) {
-					ds.getResults().add(excelData.get(i));
+				while (i < csvData.size()) {
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			} else {
 				int i = 0;
 				while (i < ds.getPager().getRecordPerPage()) {
-					ds.getResults().add(excelData.get(i));
+					ds.getResults().add(csvData.get(i));
 					i++;
 				}
 			}
 
 			getSession().put("cellNames", cellNames);
-			getSession().put("importList", excelData);
-			getSession().put("total", excelData.size());
+			getSession().put("importList", csvData);
+			getSession().put("total", csvData.size());
 			getSession().put("normal", normal);
 			getSession().put("insert", 0);
-			getSession().put("tip", tip);
 			getSession().put("clazz", this.getClass());
 
 			return QUEUE;
@@ -1016,382 +887,49 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 	}
 
-	public String backErrors() throws Exception {
-		List<?> importList = (List<?>) getSession().get("importList");
-		if (importList == null) {
-			return IMPORT;
-		}
-
-		if (StringUtils.isBlank(getEntity().getOption())) {
-			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-		} else if (getEntity().getOption().equals("errors")) {
-			getEntity().setReportFile("journal_error.xlsx");
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet spreadsheet = workbook.createSheet("journal_error");
-			XSSFCellStyle cellStyle = workbook.createCellStyle();
-			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-			for (int i = 0; i < 30; i++) {
-				spreadsheet.setDefaultColumnStyle(i, cellStyle);
-			}
-
-			XSSFRow row;
-
-			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-			Integer mark = 1;
-			List<?> cellNames = (List<?>) getSession().get("cellNames");
-
-			if (cellNames.size() == 16) {
-				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
-						"語文", "出版項", "出版年(西元)", "標題", "編號", "刊別", "國會分類號",
-						"版本", "全文取得授權刊期", "URL", "開放近用", "資料庫UUID", "錯誤提示",
-						"其他提示" });
-
-				int i = 0;
-				while (i < importList.size()) {
-					journal = (Journal) importList.get(i);
-					if (!journal.getDataStatus().equals("正常")
-							&& !journal.getDataStatus().equals("已匯入")) {
-
-						String tips = journal.getResourcesBuyers()
-								.getDataStatus().replace("<br>", ",");
-						if (tips.length() > 0) {
-							tips = tips.substring(0, tips.length() - 1);
-						}
-
-						mark = mark + 1;
-						empinfo.put(
-								mark.toString(),
-								new Object[] {
-										journal.getTitle(),
-										journal.getAbbreviationTitle(),
-										journal.getTitleEvolution(),
-										journal.getIssn(),
-										journal.getLanguages(),
-										journal.getPublishName(),
-										journal.getTempNotes()[0],
-										journal.getCaption(),
-										journal.getNumB(),
-										journal.getPublication(),
-										journal.getCongressClassification(),
-										journal.getVersion(),
-										journal.getEmbargo(),
-										journal.getUrl(),
-										journal.getOpenAccess().toString(),
-										journal.getDatabase().getUuIdentifier(),
-										journal.getDataStatus(), tips });
-					}
-					i++;
-				}
-
-			} else {
-				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
-						"語文", "出版項", "出版年(西元)", "標題", "編號", "刊別", "國會分類號",
-						"版本", "全文取得授權刊期", "URL", "開放近用", "起始日", "到期日", "資源類型",
-						"訂閱單位", "錯誤提示", "其他提示" });
-
-				int i = 0;
-				while (i < importList.size()) {
-					journal = (Journal) importList.get(i);
-					if (!journal.getDataStatus().equals("正常")
-							&& !journal.getDataStatus().equals("已匯入")) {
-						String tips = journal.getResourcesBuyers()
-								.getDataStatus().replace("<br>", ",");
-						if (tips.length() > 0) {
-							tips = tips.substring(0, tips.length() - 1);
-						}
-
-						mark = mark + 1;
-						empinfo.put(
-								mark.toString(),
-								new Object[] {
-										journal.getTitle(),
-										journal.getAbbreviationTitle(),
-										journal.getTitleEvolution(),
-										journal.getIssn(),
-										journal.getLanguages(),
-										journal.getPublishName(),
-										journal.getTempNotes()[0],
-										journal.getCaption(),
-										journal.getNumB(),
-										journal.getPublication(),
-										journal.getCongressClassification(),
-										journal.getVersion(),
-										journal.getEmbargo(),
-										journal.getUrl(),
-										journal.getOpenAccess().toString(),
-										journal.getTempNotes()[1],
-										journal.getTempNotes()[2],
-										journal.getResourcesBuyers()
-												.getCategory().getCategory(),
-										journal.getDataStatus(), tips });
-					}
-					i++;
-				}
-			}
-
-			Set<String> keyid = empinfo.keySet();
-			int rowid = 0;
-			for (String key : keyid) {
-				row = spreadsheet.createRow(rowid++);
-				Object[] objectArr = empinfo.get(key);
-				int cellid = 0;
-				for (Object obj : objectArr) {
-					Cell cell = row.createCell(cellid++);
-					cell.setCellValue(obj.toString());
-				}
-			}
-
-			ByteArrayOutputStream boas = new ByteArrayOutputStream();
-			workbook.write(boas);
-			getEntity().setInputStream(
-					new ByteArrayInputStream(boas.toByteArray()));
-
-		} else if (getEntity().getOption().equals("tips")) {
-			getEntity().setReportFile("journal_tip.xlsx");
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet spreadsheet = workbook.createSheet("journal_tip");
-			XSSFCellStyle cellStyle = workbook.createCellStyle();
-			cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
-
-			for (int i = 0; i < 30; i++) {
-				spreadsheet.setDefaultColumnStyle(i, cellStyle);
-			}
-
-			XSSFRow row;
-
-			Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-			Integer mark = 1;
-			List<?> cellNames = (List<?>) getSession().get("cellNames");
-
-			if (cellNames.size() == 16) {
-				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
-						"語文", "出版項", "出版年(西元)", "標題", "編號", "刊別", "國會分類號",
-						"版本", "全文取得授權刊期", "URL", "開放近用", "資料庫UUID", "物件狀態",
-						"其他提示" });
-
-				int i = 0;
-				while (i < importList.size()) {
-					journal = (Journal) importList.get(i);
-					if (journal.getDataStatus().equals("正常")
-							|| journal.getDataStatus().equals("已匯入")) {
-
-						String tips = journal.getResourcesBuyers()
-								.getDataStatus().replace("<br>", ",");
-						if (tips.length() > 0) {
-							tips = tips.substring(0, tips.length() - 1);
-						}
-
-						mark = mark + 1;
-						empinfo.put(
-								mark.toString(),
-								new Object[] {
-										journal.getTitle(),
-										journal.getAbbreviationTitle(),
-										journal.getTitleEvolution(),
-										journal.getIssn(),
-										journal.getLanguages(),
-										journal.getPublishName(),
-										journal.getTempNotes()[0],
-										journal.getCaption(),
-										journal.getNumB(),
-										journal.getPublication(),
-										journal.getCongressClassification(),
-										journal.getVersion(),
-										journal.getEmbargo(),
-										journal.getUrl(),
-										journal.getOpenAccess().toString(),
-										journal.getDatabase().getUuIdentifier(),
-										journal.getDataStatus(), tips });
-					}
-					i++;
-				}
-			} else {
-				empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
-						"語文", "出版項", "出版年(西元)", "標題", "編號", "刊別", "國會分類號",
-						"版本", "全文取得授權刊期", "URL", "開放近用", "起始日", "到期日", "資源類型",
-						"物件狀態", "其他提示" });
-
-				int i = 0;
-				while (i < importList.size()) {
-					journal = (Journal) importList.get(i);
-					if (journal.getDataStatus().equals("正常")
-							|| journal.getDataStatus().equals("已匯入")) {
-						String tips = journal.getResourcesBuyers()
-								.getDataStatus().replace("<br>", ",");
-						if (tips.length() > 0) {
-							tips = tips.substring(0, tips.length() - 1);
-						}
-
-						mark = mark + 1;
-						empinfo.put(
-								mark.toString(),
-								new Object[] {
-										journal.getTitle(),
-										journal.getAbbreviationTitle(),
-										journal.getTitleEvolution(),
-										journal.getIssn(),
-										journal.getLanguages(),
-										journal.getPublishName(),
-										journal.getTempNotes()[0],
-										journal.getCaption(),
-										journal.getNumB(),
-										journal.getPublication(),
-										journal.getCongressClassification(),
-										journal.getVersion(),
-										journal.getEmbargo(),
-										journal.getUrl(),
-										journal.getOpenAccess().toString(),
-										journal.getStartDate(),
-										journal.getMaturityDate(),
-										journal.getResourcesBuyers()
-												.getCategory().getCategory(),
-										journal.getDataStatus(), tips });
-					}
-					i++;
-				}
-			}
-
-			Set<String> keyid = empinfo.keySet();
-			int rowid = 0;
-			for (String key : keyid) {
-				row = spreadsheet.createRow(rowid++);
-				Object[] objectArr = empinfo.get(key);
-				int cellid = 0;
-				for (Object obj : objectArr) {
-					Cell cell = row.createCell(cellid++);
-					cell.setCellValue(obj.toString());
-				}
-			}
-
-			ByteArrayOutputStream boas = new ByteArrayOutputStream();
-			workbook.write(boas);
-			getEntity().setInputStream(
-					new ByteArrayInputStream(boas.toByteArray()));
-
-		} else {
-			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-		}
-		return XLSX;
-	}
-
 	public String example() throws Exception {
-		getEntity().setReportFile("journal_sample.xlsx");
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet spreadsheet = workbook.createSheet("journal");
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setDataFormat(workbook.createDataFormat().getFormat("@"));
+		List<String[]> rows = new ArrayList<String[]>();
+		rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文", "出版項",
+				"出版年(西元)", "標題", "編號", "刊別", "分類法", "分類碼", "版本", "全文取得授權刊期",
+				"URL", "開放近用", "資料庫UUID", "起始日", "到期日", "資源類型" });
+		rows.add(new String[] {
+				"The New England Journal of Medicine",
+				"N. Engl. j. med.",
+				"＜Boston medical and surgical journal 0096-6762",
+				"15334406",
+				"eng",
+				"Boston, Massachusetts Medical Society.",
+				"1928",
+				"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
+				"000955", "Weekly", "美國國會圖書館圖書分類法", "R11", "N/A", "N/A",
+				"http://www.nejm.org/", "1", "", "2010-11-10", "2020-11-30",
+				"1" });
+		rows.add(new String[] { "Cell", "Cell", "", "00928674", "eng",
+				"Cambridge, Mass. : MIT Press.", "1974",
+				"Cytology--Periodicals ; Virology--Periodicals", "002064",
+				"Biweekly", "美國國會圖書館圖書分類法", "QH573", "N/A", "N/A",
+				"http://www.cell.com/", "0", "", "2010-11-10", "2020-11-30",
+				"2" });
+		rows.add(new String[] {
+				"American Journal of Cancer Research",
+				"AJCR",
+				"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
+				"2156-6976", "eng", "	[Lancaster, Pa., Lancaster Press]",
+				"1931", "", "C00201", "", "美國國會圖書館圖書分類法", "RC261.A1A55", "N/A",
+				"N/A", "http://www.ajcr.us/", "0", "", "2010-11-10",
+				"2020-11-30", "0" });
 
-		for (int i = 0; i < 30; i++) {
-			spreadsheet.setDefaultColumnStyle(i, cellStyle);
-		}
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
+				CSVWriter.DEFAULT_QUOTE_CHARACTER,
+				CSVWriter.NO_ESCAPE_CHARACTER, "\n");
 
-		XSSFRow row;
+		writer.writeAll(rows);
+		writer.close();
 
-		Map<String, Object[]> empinfo = new LinkedHashMap<String, Object[]>();
-
-		if (StringUtils.isNotBlank(getEntity().getOption())) {
-			if (!getEntity().getOption().equals("package")
-					&& !getEntity().getOption().equals("individual")) {
-				getEntity().setOption("package");
-			}
-		} else {
-			getEntity().setOption("package");
-		}
-
-		if (getEntity().getOption().equals("package")) {
-			empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
-					"語文", "出版項", "出版年(西元)", "標題", "編號", "刊別", "國會分類號", "版本",
-					"全文取得授權刊期", "URL", "開放近用", "資料庫UUID" });
-
-			empinfo.put(
-					"2",
-					new Object[] {
-							"The New England Journal of Medicine",
-							"N. Engl. j. med.",
-							"＜Boston medical and surgical journal 0096-6762",
-							"15334406",
-							"eng",
-							"Boston, Massachusetts Medical Society.",
-							"1928",
-							"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
-							"000955", "Weekly", "R11", "N/A", "N/A",
-							"http://www.nejm.org/", "1",
-							"afa7bfd4-7571-4e71-a5d4-c93bbe671e06" });
-
-			empinfo.put("3", new Object[] { "Cell", "Cell", "", "00928674",
-					"eng", "Cambridge, Mass. : MIT Press.", "1974",
-					"Cytology--Periodicals ; Virology--Periodicals", "002064",
-					"Biweekly", "QH573", "N/A", "N/A", "http://www.cell.com/",
-					"0", "afa7bfd4-7571-4e71-a5d4-c93bbe671e06" });
-			empinfo.put(
-					"4",
-					new Object[] {
-							"American Journal of Cancer Research",
-							"AJCR",
-							"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
-							"2156-6976", "eng",
-							"	[Lancaster, Pa., Lancaster Press]", "1931", "",
-							"C00201", "", "RC261.A1A55", "N/A", "N/A",
-							"http://www.ajcr.us/", "0",
-							"afa7bfd4-7571-4e71-a5d4-c93bbe671e06" });
-		} else {
-			empinfo.put("1", new Object[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN",
-					"語文", "出版項", "出版年(西元)", "標題", "編號", "刊別", "國會分類號", "版本",
-					"全文取得授權刊期", "URL", "開放近用", "起始日", "到期日", "資源類型" });
-
-			empinfo.put(
-					"2",
-					new Object[] {
-							"The New England Journal of Medicine",
-							"N. Engl. j. med.",
-							"＜Boston medical and surgical journal 0096-6762",
-							"15334406",
-							"eng",
-							"Boston, Massachusetts Medical Society.",
-							"1928",
-							"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
-							"000955", "Weekly", "R11", "N/A", "N/A",
-							"http://www.nejm.org/", "1", "2000-12-12",
-							"2005-11-11", "1" });
-
-			empinfo.put("3", new Object[] { "Cell", "Cell", "", "00928674",
-					"eng", "Cambridge, Mass. : MIT Press.", "1974",
-					"Cytology--Periodicals ; Virology--Periodicals", "002064",
-					"Biweekly", "QH573", "N/A", "N/A", "http://www.cell.com/",
-					"0", "2000-12-12", "2020-12-12", "2" });
-			empinfo.put(
-					"4",
-					new Object[] {
-							"American Journal of Cancer Research",
-							"AJCR",
-							"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
-							"2156-6976", "eng",
-							"	[Lancaster, Pa., Lancaster Press]", "1931", "",
-							"C00201", "", "RC261.A1A55", "N/A", "N/A",
-							"http://www.ajcr.us/", "0", "1999-2-5", "2011-2-8",
-							"0" });
-		}
-
-		Set<String> keyid = empinfo.keySet();
-		int rowid = 0;
-		for (String key : keyid) {
-			row = spreadsheet.createRow(rowid++);
-			Object[] objectArr = empinfo.get(key);
-			int cellid = 0;
-			for (Object obj : objectArr) {
-				Cell cell = row.createCell(cellid++);
-				cell.setCellValue(obj.toString());
-			}
-		}
-
-		ByteArrayOutputStream boas = new ByteArrayOutputStream();
-		workbook.write(boas);
+		getEntity().setReportFile("journal_sample.csv");
 		getEntity()
-				.setInputStream(new ByteArrayInputStream(boas.toByteArray()));
-
+				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 		return XLSX;
 	}
 
@@ -1504,23 +1042,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		return false;
-	}
-
-	// 判斷文件類型
-	protected Workbook createWorkBook(InputStream is) throws IOException {
-		try {
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xls")) {
-				return new HSSFWorkbook(is);
-			}
-
-			if (getEntity().getFileFileName()[0].toLowerCase().endsWith("xlsx")) {
-				return new XSSFWorkbook(is);
-			}
-		} catch (InvalidOperationException e) {
-			return null;
-		}
-
-		return null;
 	}
 
 	protected boolean hasEntity() throws Exception {

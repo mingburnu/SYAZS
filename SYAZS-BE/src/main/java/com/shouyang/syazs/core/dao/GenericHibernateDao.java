@@ -1,7 +1,6 @@
 package com.shouyang.syazs.core.dao;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -28,6 +27,7 @@ import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.entity.Entity;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.model.Pager;
+import com.shouyang.syazs.core.util.EntityUtils;
 
 /**
  * GenericHibernateDao
@@ -124,9 +124,9 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 	}
 
 	@Override
-	public T save(T entity) throws IllegalAccessException,
-			InvocationTargetException {
+	public T save(T entity) throws Exception {
 		Assert.notNull(entity);
+		EntityUtils.trimAllStrings(entity);
 		Serializable serNo = getSession().save(entity);
 		BeanUtils.setProperty(entity, "serNo", serNo);
 		return entity;
@@ -135,12 +135,14 @@ public abstract class GenericHibernateDao<T extends Entity> extends
 	@Override
 	public void update(T entity) throws Exception {
 		Assert.notNull(entity);
+		EntityUtils.trimAllStrings(entity);
 		getSession().update(entity);
 	}
 
 	@Override
 	public void merge(T entity) throws Exception {
 		Assert.notNull(entity);
+		EntityUtils.trimAllStrings(entity);
 		getSession().merge(entity);
 	}
 

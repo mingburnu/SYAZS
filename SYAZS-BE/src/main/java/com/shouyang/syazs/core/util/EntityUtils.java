@@ -12,7 +12,7 @@ public class EntityUtils {
 			Method[] methods = null;
 
 			try {
-				methods = beanObject.getClass().getMethods();
+				methods = beanObject.getClass().getDeclaredMethods();
 			} catch (SecurityException e) {
 				throw new Exception(e);
 			}
@@ -50,7 +50,6 @@ public class EntityUtils {
 							}
 
 							if (returnedValue != null) {
-
 								StringBuilder setterMethodName = new StringBuilder();
 								setterMethodName.append("set");
 								setterMethodName.append(commonMethodName);
@@ -62,6 +61,7 @@ public class EntityUtils {
 											.getMethod(
 													setterMethodName.toString(),
 													String.class);
+
 									if (setterMethod != null) {
 										if (returnedValue.isEmpty()) {
 											Object o = null;

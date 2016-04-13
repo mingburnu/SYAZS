@@ -12,8 +12,6 @@ import com.shouyang.syazs.core.web.GenericWebActionFull;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.database.DatabaseService;
 import com.shouyang.syazs.module.apply.journal.Journal;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwner;
-import com.shouyang.syazs.module.apply.referenceOwner.ReferenceOwnerService;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -35,12 +33,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	@Autowired
 	private Database database;
-
-	@Autowired
-	private ReferenceOwner referenceOwner;
-
-	@Autowired
-	private ReferenceOwnerService referenceOwnerService;
 
 	@Override
 	protected void validateSave() throws Exception {
@@ -90,6 +82,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		setDs(ds);
+
 		return LIST;
 	}
 
@@ -109,47 +102,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	public String delete() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public String owner() throws Exception {
-		getRequest().setAttribute(
-				"owner",
-				getRequest().getContextPath()
-						+ "/crud/apply.journal.owner.action");
-
-		DataSet<Journal> ds = journalService.getByOwner(initDataSet());
-
-		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
-					.doubleValue()
-					/ ds.getPager().getRecordPerPage().doubleValue());
-			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = journalService.getByOwner(ds);
-		}
-
-		setDs(ds);
-		return LIST;
-	}
-
-	public String focus() throws Exception {
-		getRequest().setAttribute(
-				"focus",
-				getRequest().getContextPath()
-						+ "/crud/apply.journal.focus.action");
-
-		DataSet<Journal> ds = journalService.getByOption(initDataSet());
-
-		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
-			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
-					.doubleValue()
-					/ ds.getPager().getRecordPerPage().doubleValue());
-			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = journalService.getByOption(ds);
-		}
-
-		setDs(ds);
-
-		return LIST;
 	}
 
 	public String prefix() throws Exception {
@@ -176,7 +128,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			journal.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
-			setOwners();
 			setEntity(journal);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -187,18 +138,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 	public void click() {
 
-	}
-
-	protected void setOwners() {
-		if (journal.getDatabase() != null && journal.getDatabase().hasSerNo()) {
-			getRequest().setAttribute(
-					"referenceOwners",
-					databaseService.getResOwners(journal.getDatabase()
-							.getSerNo()));
-		} else {
-			getRequest().setAttribute("referenceOwners",
-					journalService.getResOwners(journal.getSerNo()));
-		}
 	}
 
 	public String count() {

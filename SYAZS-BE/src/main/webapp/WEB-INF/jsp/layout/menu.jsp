@@ -48,16 +48,17 @@
 				<a
 					onclick="goURL('<%=request.getContextPath()%>/page/database.action');">資料庫</a>
 			</div>
+
+			<div class="menu-items">
+				<a
+					onclick="goURL('<%=request.getContextPath()%>/page/classification.action');">分類法</a>
+			</div>
 		</div>
 
 		<div id="menu-titles_5" class="menu-titles">
 			<a onclick="showMenuItems('5');"><span class="menu-icon">統計資訊</span></a>
 		</div>
 		<div id="menu_items_5" style="display: none;">
-			<div class="menu-items">
-				<a
-					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action?entity.option=logins');">登入次數統計</a>
-			</div>
 			<div class="menu-items">
 				<a
 					onclick="goURL('<%=request.getContextPath()%>/page/feLogs.action?entity.option=keywords');">關鍵字檢索統計</a>

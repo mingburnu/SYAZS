@@ -1,18 +1,35 @@
 package com.shouyang.syazs.core.web;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.HttpHeaders;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaMetadataKeys;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -126,6 +143,28 @@ public abstract class GenericAction<T extends Entity> extends ActionSupport
 		String[] values = new String[] { value };
 		return (LocalDateTime) jodaTimeConverter.convertFromString(null,
 				values, LocalDateTime.class);
+	}
+
+	protected String getFileMime(File file, String fileName)
+			throws IOException, SAXException, TikaException {
+		String parentDir = "/" + UUID.randomUUID().toString();
+		File destFile = new File(parentDir, UUID.randomUUID().toString() + "-"
+				+ fileName);
+		FileUtils.copyFile(file, destFile);
+
+		AutoDetectParser parser = new AutoDetectParser();
+		parser.setParsers(new HashMap<MediaType, Parser>());
+
+		Metadata metadata = new Metadata();
+		metadata.add(TikaMetadataKeys.RESOURCE_NAME_KEY, destFile.getName());
+
+		InputStream stream = new FileInputStream(destFile);
+		parser.parse(stream, new DefaultHandler(), metadata, new ParseContext());
+		stream.close();
+		String mime = metadata.get(HttpHeaders.CONTENT_TYPE);
+
+		FileUtils.deleteDirectory(new File(parentDir));
+		return mime;
 	}
 
 	@SuppressWarnings("rawtypes")

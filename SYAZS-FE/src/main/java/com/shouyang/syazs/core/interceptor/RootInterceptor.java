@@ -25,6 +25,9 @@ public abstract class RootInterceptor extends AbstractInterceptor {
 		invocation.getInvocationContext().getParameters().remove("ds.datas");
 		invocation.getInvocationContext().getParameters().remove("pager");
 		invocation.getInvocationContext().getParameters().remove("entity");
+		invocation.getInvocationContext().getParameters().remove("entity.file");
+		invocation.getInvocationContext().getParameters()
+				.remove("entity.inputStream");
 	}
 
 	public boolean isUsableMethod(ActionInvocation invocation)

@@ -13,8 +13,7 @@
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
 				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
-						.replace(/\&/g, "%26") + "&entity.refSerNo="
-				+ "${ds.entity.refSerNo}" + "&pager.recordPoint="
+						.replace(/\&/g, "%26") + "&pager.recordPoint="
 				+ "${ds.pager.recordPoint}" + "&pager.recordPerPage="
 				+ "${ds.pager.recordPerPage}";
 		$.ajax({
@@ -97,51 +96,18 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.languages}</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty entity.bookInfoIntegral}">
+			<c:if test="${not empty entity.classification}">
 				<tr>
-					<td class="t_01">美國國家<BR />圖書館分類
-					</td>
-					<td class="t_02">${entity.bookInfoIntegral}</td>
+					<td class="t_01">${entity.classification.name }</td>
+					<td class="t_02">${entity.lcsCode}</td>
 				</tr>
 			</c:if>
-			<c:choose>
-				<c:when test="${not empty entity.database}">
-					<tr>
-						<td class="t_01">資料庫</td>
-						<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
-					</tr>
-					<c:if
-						test="${(not empty entity.database.resourcesBuyers.startDate)||(not empty entity.database.resourcesBuyers.maturityDate)}">
-						<tr>
-							<td class="t_01">起訂日期</td>
-							<td class="t_02"><s:property
-									value="entity.database.resourcesBuyers.startDate" />~<s:property
-									value="entity.database.resourcesBuyers.maturityDate" /></td>
-						</tr>
-					</c:if>
-				</c:when>
-				<c:otherwise>
-					<c:if
-						test="${(not empty entity.resourcesBuyers.startDate)||(not empty entity.resourcesBuyers.maturityDate)}">
-						<tr>
-							<td class="t_01">起訂日期</td>
-							<td class="t_02"><s:property
-									value="entity.resourcesBuyers.startDate" />~<s:property
-									value="entity.resourcesBuyers.maturityDate" /></td>
-						</tr>
-					</c:if>
-				</c:otherwise>
-			</c:choose>
-			<tr>
-				<td class="t_01">館藏</td>
-				<td class="t_02"><c:forEach items="${referenceOwners }"
-						var="owner" varStatus="status">
-						<c:choose>
-							<c:when test="${!status.last }">${owner[1]}、</c:when>
-							<c:otherwise>${owner[1]}</c:otherwise>
-						</c:choose>
-					</c:forEach></td>
-			</tr>
+			<c:if test="${not empty entity.database}">
+				<tr>
+					<td class="t_01">資料庫</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
+				</tr>
+			</c:if>
 		</table>
 
 		<div align="center">
