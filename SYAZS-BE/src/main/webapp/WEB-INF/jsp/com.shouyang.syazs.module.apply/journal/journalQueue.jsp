@@ -163,10 +163,11 @@
 					<th><esapi:encodeForHTML>${cellNames[0]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[1]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[3]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[10]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[15]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[17]}</esapi:encodeForHTML></th>
 					<th><esapi:encodeForHTML>${cellNames[18]}</esapi:encodeForHTML></th>
-					<th><esapi:encodeForHTML>${cellNames[19]}</esapi:encodeForHTML></th>
+					<th><esapi:encodeForHTML>${cellNames[16]}</esapi:encodeForHTML></th>
 					<th></th>
 				</tr>
 				<c:forEach var="item" items="${ds.results}" varStatus="status">
@@ -196,13 +197,38 @@
 						<td><esapi:encodeForHTML>${item.title }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.abbreviationTitle }</esapi:encodeForHTML></td>
 						<td><esapi:encodeForHTML>${item.issn }</esapi:encodeForHTML><br>
+						<td><c:if test="${not empty item.classification.serNo }">
+								<div>分類法ID : ${item.classification.serNo }</div>
+							</c:if> <c:if test="${not empty item.classification.classname }">
+								<div>
+									<esapi:encodeForHTML>名稱 : ${item.classification.classname }</esapi:encodeForHTML>
+								</div>
+							</c:if> <c:if test="${not empty item.classification.classname }">
+								<div>
+									<esapi:encodeForHTML>分類碼 : ${item.lcsCode }</esapi:encodeForHTML>
+								</div>
+							</c:if></td>
 						<td><c:choose>
 								<c:when test="${true eq item.openAccess}">是</c:when>
 								<c:otherwise>否</c:otherwise>
 							</c:choose></td>
 						<td>${fn:split(item.startDate, 'T')[0] }</td>
 						<td>${fn:split(item.maturityDate, 'T')[0] }</td>
-						<td>${item.resourcesBuyers.category }</td>
+						<td><c:choose>
+								<c:when test="${not empty item.database }">
+									<div>
+										UUID:
+										<esapi:encodeForHTML>${item.database.uuIdentifier }</esapi:encodeForHTML>
+									</div>
+									<c:if test="${not empty item.database.dbTitle }">
+										<div>
+											名稱:
+											<esapi:encodeForHTML>${item.database.dbTitle }</esapi:encodeForHTML>
+										</div>
+									</c:if>
+								</c:when>
+								<c:otherwise>${item.resourcesBuyers.category }</c:otherwise>
+							</c:choose></td>
 						<td align="center">${fn:replace(item.dataStatus, ',', '<br>')}</td>
 					</tr>
 				</c:forEach>

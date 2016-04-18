@@ -1,6 +1,5 @@
 package com.shouyang.syazs.module.apply.classification;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -8,6 +7,8 @@ import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericWebActionSerNo;
+import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -53,19 +54,19 @@ public class ClassificationAction extends GenericWebActionSerNo<Classification> 
 
 	@Override
 	public String list() throws Exception {
-		DataSet<Classification> ds = classificationService
-				.getByRestrictions(initDataSet());
+		getRequest().setAttribute(
+				"list",
+				getRequest().getContextPath()
+						+ "/crud/apply.classification.list.action");
 
-		ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
+		DataSet<ModuleProperties> ds = new DataSet<>();
+		ModuleProperties entity = new Database();
+		ds.setEntity(entity);
+		ds.getEntity().setIndexTerm(getEntity().getIndexTerm());
+		ds.setPager(initDataSet().getPager());
 
-		ds = classificationService.getByRestrictions(ds);
-
-		if (StringUtils.isBlank(getEntity().getDataStatus())) {
-			getEntity().setDataStatus("done");
-		}
-
-		setDs(ds);
-
+		ds = classificationService.queryModuleProperties(ds);
+		getRequest().setAttribute("ds", ds);
 		return LIST;
 	}
 
@@ -86,5 +87,4 @@ public class ClassificationAction extends GenericWebActionSerNo<Classification> 
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

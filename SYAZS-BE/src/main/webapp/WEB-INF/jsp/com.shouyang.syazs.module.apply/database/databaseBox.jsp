@@ -20,14 +20,22 @@
 	});
 
 	//載入選項
-	$(document).ready(function() {
-		var value = $("input[name='entity.database.serNo']").val();
-		$("input#dat").each(function() {
-			if (value == $(this).val()) {
-				$(this).attr("checked", true);
-			}
-		});
-	});
+	$(document)
+			.ready(
+					function() {
+						var value = $("input[name='entity.database.serNo']")
+								.val();
+						$("input#dat")
+								.each(
+										function() {
+											if (value == $(this).val()) {
+												$(this).attr("checked", true);
+												$(
+														"input[name='entity.resourcesBuyers.category']")
+														.attr("disabled", true);
+											}
+										});
+					});
 
 	$(document).ready(function() {
 		$("input#dat").click(function() {
@@ -58,11 +66,15 @@
 							+ datBox.next().next().find("#category").html()
 									.split("：")[1].trim() + ']').attr(
 					'checked', true);
+			$("input[name='entity.resourcesBuyers.category']").attr("disabled",
+					true);
 
 			$("input#datName").val(datBox.prev().val());
 		} else {
 			$("input[name='entity.database.serNo']").val("").trigger('change');
 			$("input#datName").val("");
+			$("input[name='entity.resourcesBuyers.category']").attr("disabled",
+					false);
 		}
 	}
 
@@ -74,6 +86,8 @@
 		$("input#dat").attr("checked", false);
 		$("input#datName").val("");
 		$("input[name='entity.database.serNo']").val("").trigger('change');
+		$("input[name='entity.resourcesBuyers.category']").attr("disabled",
+				false);
 	}
 
 	function clearResDbs() {

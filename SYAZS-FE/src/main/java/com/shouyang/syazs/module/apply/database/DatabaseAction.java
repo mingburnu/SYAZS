@@ -94,31 +94,22 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 		return null;
 	}
 
-	public String owner() throws Exception {
+	public String prefix() throws Exception {
 		getRequest().setAttribute(
-				"owner",
+				"prefix",
 				getRequest().getContextPath()
-						+ "/crud/apply.database.owner.action");
-
-		DataSet<Database> ds = databaseService.getByOwner(initDataSet());
+						+ "/crud/apply.database.prefix.action");
+		DataSet<Database> ds = databaseService.getByPrefix(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
 			Double lastPage = Math.ceil(ds.getPager().getTotalRecord()
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = databaseService.getByOwner(ds);
+			ds = databaseService.getByPrefix(ds);
 		}
 
 		setDs(ds);
-		return LIST;
-	}
-
-	public String all() throws Exception {
-		DataSet<Database> ds = initDataSet();
-		ds.setResults(databaseService.getAllDb());
-		setDs(ds);
-
 		return LIST;
 	}
 
@@ -127,7 +118,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			database.setBackURL(getEntity().getBackURL());
 
 			setDs(initDataSet());
-			setOwners();
 			setEntity(database);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -143,11 +133,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 	public String count() {
 		getRequest().setAttribute("count", databaseService.countToatal());
 		return COUNT;
-	}
-
-	protected void setOwners() {
-		getRequest().setAttribute("referenceOwners",
-				databaseService.getResOwners(database.getSerNo()));
 	}
 
 	protected boolean hasEntity() throws Exception {

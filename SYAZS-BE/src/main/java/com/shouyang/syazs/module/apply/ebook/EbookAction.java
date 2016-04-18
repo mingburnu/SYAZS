@@ -17,7 +17,9 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -111,6 +113,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				errorMessages.add("不可利用的資料庫流水號");
 			} else {
 				getEntity().setDatabase(database);
+				getEntity().setResourcesBuyers(database.getResourcesBuyers());
 			}
 		} else {
 			getEntity().setDatabase(null);
@@ -184,6 +187,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					errorMessages.add("不可利用的資料庫流水號");
 				} else {
 					getEntity().setDatabase(database);
+					getEntity().setResourcesBuyers(
+							database.getResourcesBuyers());
 				}
 			} else {
 				getEntity().setDatabase(null);
@@ -455,12 +460,22 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		}
 
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getEntity().setOption("package");
+		} else {
+			if (!getEntity().getOption().equals("package")
+					&& !getEntity().getOption().equals("individual")) {
+				getEntity().setOption("package");
+			}
+		}
+
 		if (!hasActionErrors()) {
 			List<String> cellNames = new ArrayList<String>();
 
 			LinkedHashSet<Ebook> originalData = new LinkedHashSet<Ebook>();
 			Map<String, Ebook> checkRepeatRow = new LinkedHashMap<String, Ebook>();
-			Map<String, Object> clsMap = classificationService.getClsDatas();
+			BidiMap clsMap = new DualHashBidiMap(
+					classificationService.getClsDatas());
 
 			int normal = 0;
 
@@ -468,7 +483,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					.getFile()[0]), ',');
 
 			String[] row;
-			int rowLength = 17;
+			int rowLength = 16;
 			while ((row = reader.readNext()) != null) {
 				if (row.length < rowLength) {
 					String[] spaceArray = new String[rowLength - row.length];
@@ -478,6 +493,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				for (int i = 0; i < rowLength; i++) {
 					if (row[i] == null) {
 						row[i] = "";
+					} else {
+						row[i] = row[i].trim();
 					}
 				}
 
@@ -508,28 +525,64 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						}
 					}
 
+					classification = new Classification();
+
+					if (StringUtils.isNotBlank(row[9])) {
+						if (NumberUtils.isDigits(row[9])) {
+							classification.setSerNo(Long.parseLong(row[9]));
+
+							if (clsMap.containsValue(classification.getSerNo())) {
+								classification.setClassname((String) clsMap
+										.getKey(classification.getSerNo()));
+							} else {
+								errorList.add("分類法ID錯誤");
+							}
+						} else {
+							classification.setClassname(row[9]);
+
+							if (clsMap.containsKey(classification
+									.getClassname())) {
+								classification.setSerNo((Long) clsMap
+										.get(classification.getClassname()));
+							} else {
+								errorList.add("無此分類法");
+							}
+						}
+					}
+
 					if (StringUtils.isNotBlank(row[15])) {
-						database = databaseService.getByUUID(row[15].trim());
+						if (getEntity().getOption().equals("package")) {
+							database = databaseService.getByUUID(row[15]);
+
+							if (database != null) {
+								resourcesBuyers = database.getResourcesBuyers();
+							} else {
+								database = new Database();
+								database.setUuIdentifier(row[15]);
+								errorList.add("資料庫代碼錯誤");
+							}
+						} else {
+							database = null;
+							Category category = null;
+							if (NumberUtils.isDigits(row[15])) {
+								category = Category.getByToken(Integer
+										.parseInt(row[15]));
+							} else {
+								category = (Category) toEnum(row[15],
+										Category.class);
+							}
+
+							if (category == null) {
+								category = Category.未註明;
+							}
+
+							resourcesBuyers = new ResourcesBuyers(category);
+						}
 					} else {
-						database = null;
+						if (getEntity().getOption().equals("package")) {
+							errorList.add("資料庫代碼未填");
+						}
 					}
-
-					classification = new Classification(row[9]);
-
-					Category category = null;
-					if (NumberUtils.isDigits(row[16])) {
-						category = Category.getByToken(Integer
-								.parseInt(row[16]));
-					} else {
-						category = (Category) toEnum(row[16].trim(),
-								Category.class);
-					}
-
-					if (category == null) {
-						category = Category.未註明;
-					}
-
-					resourcesBuyers = new ResourcesBuyers(category);
 
 					ebook = new Ebook(row[0], isbn, row[2], row[3], row[4],
 							row[5], toLocalDateTime(row[6]), row[7], row[8],
@@ -556,24 +609,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						errorList.add("URL未填寫或不正確");
 					}
 
-					if (StringUtils.isNotBlank(row[15]) && database == null) {
-						errorList.add("資料庫代碼錯誤");
-					}
-
 					if (StringUtils.isNotBlank(row[6])
 							&& ebook.getPubDate() == null) {
 						errorList.add("出版日不正確");
-					}
-
-					if (StringUtils.isNotBlank(ebook.getClassification()
-							.getClassname())) {
-						ebook.getClassification().setSerNo(
-								(Long) clsMap.get(ebook.getClassification()
-										.getClassname().trim()));
-
-						if (!ebook.getClassification().hasSerNo()) {
-							errorList.add("系統無此分類法");
-						}
 					}
 
 					if (errorList.size() == 0) {
@@ -581,11 +619,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 								&& StringUtils.isNotBlank(ebook
 										.getPublishName())) {
 							if (checkRepeatRow.containsKey(ebook.getBookName()
-									.trim() + ebook.getPublishName().trim())) {
+									+ ebook.getPublishName())) {
 								errorList.add("清單資源重複");
 							} else {
-								checkRepeatRow.put(ebook.getBookName().trim()
-										+ ebook.getPublishName().trim(), ebook);
+								checkRepeatRow
+										.put(ebook.getBookName()
+												+ ebook.getPublishName(), ebook);
 							}
 						}
 					}
@@ -860,27 +899,62 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	public String example() throws Exception {
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getEntity().setOption("package");
+		} else {
+			if (!getEntity().getOption().equals("package")
+					&& !getEntity().getOption().equals("individual")) {
+				getEntity().setOption("package");
+			}
+		}
+
 		List<String[]> rows = new ArrayList<String[]>();
-		rows.add(new String[] { "書名", "ISBN", "出版社", "第一作者", "次要作者", "系列叢書名",
-				"出版日期", "語文", "版本", "分類法", "分類碼", "URL", "類型", "出版地", "開放近用",
-				"資料庫UUID", "資源類型" });
-		rows.add(new String[] {
-				"Ophthalmic clinical procedures：a multimedia guide",
-				"978-0-08-044978-4", "Elsevier(ClinicalKey)", "Frank Eperjesi",
-				"Hannah Bartlett & Mark Dunne", "N/A", "2008-2-7", "eng", "1",
-				"美國國會圖書館圖書分類法", "Q",
-				"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
-				"Netherlands", "1", "", "0" });
-		rows.add(new String[] { "C嘉魔法彩繪", "978-9-88-807293-4", "青森文化", "陳嘉慧",
-				"N/A", "N/A", "2011-5-5", "cht", "N/A", "中文圖書分類法", "900",
-				"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
-				"藝術", "Taiwan", "0", "", "1" });
-		rows.add(new String[] { "Topics in Pathology for Hong Kong",
-				"9789622093362", "Hong Kong University Press",
-				"	Faith C.S. Ho", "P.C. Wu", "N/A", "1995-4-4", "eng", "N/A",
-				"美國國會圖書館圖書分類法", "R",
-				"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
-				"醫學", "HK", "0", "", "2" });
+
+		if (getEntity().getOption().equals("package")) {
+			rows.add(new String[] { "書名", "ISBN", "出版社", "第一作者", "次要作者",
+					"系列叢書名", "出版日期", "語文", "版本", "分類法", "分類碼", "URL", "類型",
+					"出版地", "開放近用", "資料庫UUID" });
+			rows.add(new String[] {
+					"Ophthalmic clinical procedures：a multimedia guide",
+					"978-0-08-044978-4", "Elsevier(ClinicalKey)",
+					"Frank Eperjesi", "Hannah Bartlett & Mark Dunne", "N/A",
+					"2008-2-7", "eng", "1", "1", "Q",
+					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
+					"Netherlands", "1", "sd3erw" });
+			rows.add(new String[] { "C嘉魔法彩繪", "978-9-88-807293-4", "青森文化",
+					"陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A", "中文圖書分類法",
+					"900",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"藝術", "Taiwan", "0", "sd3erw" });
+			rows.add(new String[] { "Topics in Pathology for Hong Kong",
+					"9789622093362", "Hong Kong University Press",
+					"	Faith C.S. Ho", "P.C. Wu", "N/A", "1995-4-4", "eng",
+					"N/A", "1", "R",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"醫學", "HK", "0", "sd3erw" });
+		} else {
+			rows.add(new String[] { "書名", "ISBN", "出版社", "第一作者", "次要作者",
+					"系列叢書名", "出版日期", "語文", "版本", "分類法", "分類碼", "URL", "類型",
+					"出版地", "開放近用", "資源類型" });
+			rows.add(new String[] {
+					"Ophthalmic clinical procedures：a multimedia guide",
+					"978-0-08-044978-4", "Elsevier(ClinicalKey)",
+					"Frank Eperjesi", "Hannah Bartlett & Mark Dunne", "N/A",
+					"2008-2-7", "eng", "1", "1", "Q",
+					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
+					"Netherlands", "1", "0" });
+			rows.add(new String[] { "C嘉魔法彩繪", "978-9-88-807293-4", "青森文化",
+					"陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A", "中文圖書分類法",
+					"900",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"藝術", "Taiwan", "0", "1" });
+			rows.add(new String[] { "Topics in Pathology for Hong Kong",
+					"9789622093362", "Hong Kong University Press",
+					"	Faith C.S. Ho", "P.C. Wu", "N/A", "1995-4-4", "eng",
+					"N/A", "美國國會圖書館圖書分類法", "R",
+					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
+					"醫學", "HK", "0", "2" });
+		}
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
@@ -890,7 +964,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		writer.writeAll(rows);
 		writer.close();
 
-		getEntity().setReportFile("ebook_sample.csv");
+		getEntity().setReportFile(
+				"ebook_" + getEntity().getOption() + "_sample.csv");
 		getEntity()
 				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 

@@ -17,7 +17,9 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -110,6 +112,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				errorMessages.add("不可利用的流水號");
 			} else {
 				getEntity().setDatabase(database);
+				getEntity().setResourcesBuyers(database.getResourcesBuyers());
 			}
 		}
 
@@ -193,6 +196,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					errorMessages.add("不可利用的流水號");
 				} else {
 					getEntity().setDatabase(database);
+					getEntity().setResourcesBuyers(
+							database.getResourcesBuyers());
 				}
 			}
 
@@ -466,12 +471,22 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 		}
 
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getEntity().setOption("package");
+		} else {
+			if (!getEntity().getOption().equals("package")
+					&& !getEntity().getOption().equals("individual")) {
+				getEntity().setOption("package");
+			}
+		}
+
 		if (!hasActionErrors()) {
 			List<String> cellNames = new ArrayList<String>();
 
 			LinkedHashSet<Journal> originalData = new LinkedHashSet<Journal>();
 			Map<String, Journal> checkRepeatRow = new LinkedHashMap<String, Journal>();
-			Map<String, Object> clsMap = classificationService.getClsDatas();
+			BidiMap clsMap = new DualHashBidiMap(
+					classificationService.getClsDatas());
 
 			int normal = 0;
 
@@ -479,7 +494,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					.getFile()[0]), ',');
 
 			String[] row;
-			int rowLength = 20;
+			int rowLength = 19;
 			while ((row = reader.readNext()) != null) {
 				if (row.length < rowLength) {
 					String[] spaceArray = new String[rowLength - row.length];
@@ -489,6 +504,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				for (int i = 0; i < rowLength; i++) {
 					if (row[i] == null) {
 						row[i] = "";
+					} else {
+						row[i] = row[i].trim();
 					}
 				}
 
@@ -509,28 +526,64 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						}
 					}
 
+					classification = new Classification();
+
+					if (StringUtils.isNotBlank(row[10])) {
+						if (NumberUtils.isDigits(row[10])) {
+							classification.setSerNo(Long.parseLong(row[10]));
+
+							if (clsMap.containsValue(classification.getSerNo())) {
+								classification.setClassname((String) clsMap
+										.getKey(classification.getSerNo()));
+							} else {
+								errorList.add("分類法ID錯誤");
+							}
+						} else {
+							classification.setClassname(row[10]);
+
+							if (clsMap.containsKey(classification
+									.getClassname())) {
+								classification.setSerNo((Long) clsMap
+										.get(classification.getClassname()));
+							} else {
+								errorList.add("無此分類法");
+							}
+						}
+					}
+
 					if (StringUtils.isNotBlank(row[16])) {
-						database = databaseService.getByUUID(row[16].trim());
+						if (getEntity().getOption().equals("package")) {
+							database = databaseService.getByUUID(row[16]);
+
+							if (database != null) {
+								resourcesBuyers = database.getResourcesBuyers();
+							} else {
+								database = new Database();
+								database.setUuIdentifier(row[16]);
+								errorList.add("資料庫代碼錯誤");
+							}
+						} else {
+							database = null;
+							Category category = null;
+							if (NumberUtils.isDigits(row[16])) {
+								category = Category.getByToken(Integer
+										.parseInt(row[16]));
+							} else {
+								category = (Category) toEnum(row[16],
+										Category.class);
+							}
+
+							if (category == null) {
+								category = Category.未註明;
+							}
+
+							resourcesBuyers = new ResourcesBuyers(category);
+						}
 					} else {
-						database = null;
+						if (getEntity().getOption().equals("package")) {
+							errorList.add("資料庫代碼未填");
+						}
 					}
-
-					classification = new Classification(row[10]);
-
-					Category category = null;
-					if (NumberUtils.isDigits(row[19])) {
-						category = Category.getByToken(Integer
-								.parseInt(row[19]));
-					} else {
-						category = (Category) toEnum(row[19].trim(),
-								Category.class);
-					}
-
-					if (category == null) {
-						category = Category.未註明;
-					}
-
-					resourcesBuyers = new ResourcesBuyers(category);
 
 					journal = new Journal(row[0], row[1], row[2], row[3],
 							row[4], row[5], publsihYear, row[7], row[8],
@@ -571,10 +624,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						}
 					}
 
-					if (StringUtils.isNotBlank(row[16]) && database == null) {
-						errorList.add("資料庫代碼錯誤");
-					}
-
 					if (StringUtils.isNotBlank(row[17])
 							&& journal.getStartDate() == null) {
 						errorList.add("起始日錯誤");
@@ -593,27 +642,17 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 						}
 					}
 
-					if (StringUtils.isNotBlank(journal.getClassification()
-							.getClassname())) {
-						journal.getClassification().setSerNo(
-								(Long) clsMap.get(journal.getClassification()
-										.getClassname().trim()));
-
-						if (!journal.getClassification().hasSerNo()) {
-							errorList.add("系統無此分類法");
-						}
-					}
-
 					if (errorList.size() == 0) {
 						if (StringUtils.isNotBlank(journal.getTitle())
 								&& StringUtils.isNotBlank(journal
 										.getPublishName())) {
 							if (checkRepeatRow.containsKey(journal.getTitle()
-									.trim() + journal.getPublishName().trim())) {
+									+ journal.getPublishName())) {
 								errorList.add("清單資源重複");
 							} else {
-								checkRepeatRow.put(journal.getTitle().trim()
-										+ journal.getPublishName().trim(),
+								checkRepeatRow.put(
+										journal.getTitle()
+												+ journal.getPublishName(),
 										journal);
 							}
 						}
@@ -888,36 +927,78 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 	}
 
 	public String example() throws Exception {
+		if (StringUtils.isBlank(getEntity().getOption())) {
+			getEntity().setOption("package");
+		} else {
+			if (!getEntity().getOption().equals("package")
+					&& !getEntity().getOption().equals("individual")) {
+				getEntity().setOption("package");
+			}
+		}
+
 		List<String[]> rows = new ArrayList<String[]>();
-		rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文", "出版項",
-				"出版年(西元)", "標題", "編號", "刊別", "分類法", "分類碼", "版本", "全文取得授權刊期",
-				"URL", "開放近用", "資料庫UUID", "起始日", "到期日", "資源類型" });
-		rows.add(new String[] {
-				"The New England Journal of Medicine",
-				"N. Engl. j. med.",
-				"＜Boston medical and surgical journal 0096-6762",
-				"15334406",
-				"eng",
-				"Boston, Massachusetts Medical Society.",
-				"1928",
-				"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
-				"000955", "Weekly", "美國國會圖書館圖書分類法", "R11", "N/A", "N/A",
-				"http://www.nejm.org/", "1", "", "2010-11-10", "2020-11-30",
-				"1" });
-		rows.add(new String[] { "Cell", "Cell", "", "00928674", "eng",
-				"Cambridge, Mass. : MIT Press.", "1974",
-				"Cytology--Periodicals ; Virology--Periodicals", "002064",
-				"Biweekly", "美國國會圖書館圖書分類法", "QH573", "N/A", "N/A",
-				"http://www.cell.com/", "0", "", "2010-11-10", "2020-11-30",
-				"2" });
-		rows.add(new String[] {
-				"American Journal of Cancer Research",
-				"AJCR",
-				"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
-				"2156-6976", "eng", "	[Lancaster, Pa., Lancaster Press]",
-				"1931", "", "C00201", "", "美國國會圖書館圖書分類法", "RC261.A1A55", "N/A",
-				"N/A", "http://www.ajcr.us/", "0", "", "2010-11-10",
-				"2020-11-30", "0" });
+
+		if (getEntity().getOption().equals("package")) {
+			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
+					"出版項", "出版年(西元)", "標題", "編號", "刊別", "分類法", "分類碼", "版本",
+					"全文取得授權刊期", "URL", "開放近用", "資料庫UUID", "起始日", "到期日" });
+			rows.add(new String[] {
+					"The New England Journal of Medicine",
+					"N. Engl. j. med.",
+					"＜Boston medical and surgical journal 0096-6762",
+					"15334406",
+					"eng",
+					"Boston, Massachusetts Medical Society.",
+					"1928",
+					"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
+					"000955", "Weekly", "1", "R11", "N/A", "N/A",
+					"http://www.nejm.org/", "1", "78qwrw", "2010-11-10",
+					"2020-11-30", "1" });
+			rows.add(new String[] { "Cell", "Cell", "", "00928674", "eng",
+					"Cambridge, Mass. : MIT Press.", "1974",
+					"Cytology--Periodicals ; Virology--Periodicals", "002064",
+					"Biweekly", "1", "QH573", "N/A", "N/A",
+					"http://www.cell.com/", "0", "78qwrw", "2010-11-10",
+					"2020-11-30" });
+			rows.add(new String[] {
+					"American Journal of Cancer Research",
+					"AJCR",
+					"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
+					"2156-6976", "eng", "	[Lancaster, Pa., Lancaster Press]",
+					"1931", "", "C00201", "", "1", "RC261.A1A55", "N/A", "N/A",
+					"http://www.ajcr.us/", "0", "78qwrw", "2010-11-10",
+					"2020-11-30" });
+		} else {
+			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
+					"出版項", "出版年(西元)", "標題", "編號", "刊別", "分類法", "分類碼", "版本",
+					"全文取得授權刊期", "URL", "開放近用", "資源類型", "起始日", "到期日" });
+			rows.add(new String[] {
+					"The New England Journal of Medicine",
+					"N. Engl. j. med.",
+					"＜Boston medical and surgical journal 0096-6762",
+					"15334406",
+					"eng",
+					"Boston, Massachusetts Medical Society.",
+					"1928",
+					"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
+					"000955", "Weekly", "美國國會圖書館圖書分類法", "R11", "N/A", "N/A",
+					"http://www.nejm.org/", "1", "1", "2010-11-10",
+					"2020-11-30" });
+			rows.add(new String[] { "Cell", "Cell", "", "00928674", "eng",
+					"Cambridge, Mass. : MIT Press.", "1974",
+					"Cytology--Periodicals ; Virology--Periodicals", "002064",
+					"Biweekly", "美國國會圖書館圖書分類法", "QH573", "N/A", "N/A",
+					"http://www.cell.com/", "0", "2", "2010-11-10",
+					"2020-11-30" });
+			rows.add(new String[] {
+					"American Journal of Cancer Research",
+					"AJCR",
+					"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
+					"2156-6976", "eng", "	[Lancaster, Pa., Lancaster Press]",
+					"1931", "", "C00201", "", "美國國會圖書館圖書分類法", "RC261.A1A55",
+					"N/A", "N/A", "http://www.ajcr.us/", "0", "0",
+					"2010-11-10", "2020-11-30" });
+		}
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		CSVWriter writer = new CSVWriter(new OutputStreamWriter(baos), ',',
@@ -927,7 +1008,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		writer.writeAll(rows);
 		writer.close();
 
-		getEntity().setReportFile("journal_sample.csv");
+		getEntity().setReportFile(
+				"journal_" + getEntity().getOption() + "_sample.csv");
 		getEntity()
 				.setInputStream(new ByteArrayInputStream(baos.toByteArray()));
 		return XLSX;

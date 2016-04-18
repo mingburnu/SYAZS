@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ValidationAware;
-import com.shouyang.syazs.core.apply.accountNumber.AccountNumber;
 import com.shouyang.syazs.core.apply.customer.Customer;
 import com.shouyang.syazs.core.apply.customer.CustomerService;
 import com.shouyang.syazs.core.apply.enums.Act;
@@ -36,9 +35,6 @@ public class SearchActionInterceptor extends RootInterceptor {
 	 * 
 	 */
 	private static final long serialVersionUID = -5107110044080126585L;
-
-	@Autowired
-	private AccountNumber accountNumber;
 
 	@Autowired
 	private Customer customer;
@@ -99,50 +95,38 @@ public class SearchActionInterceptor extends RootInterceptor {
 		}
 
 		String method = invocation.getProxy().getMethod();
-		accountNumber = (AccountNumber) session.get("login");
-
-		if (method.equals("????")) {// TODO
-			String item = request.getServletPath().replace("/crud/apply.", "")
-					.replace(".list.action", "");
-			if (StringUtils.isBlank(request.getParameter("entity.indexTerm"))) {
-				addActionError(invocation, "．請輸入關鍵字。");
-			}
-
-			if (session.get("entityRecord") != null) {
-				session.remove("entityRecord");
-				session.remove("pagerRecord");
-			}
-
-			if (!hasActionErrors(invocation)) {
-				if (request.getParameter("pager.recordPerPage") == null
-						&& request.getParameter("pager.recordPoint") == null) {
-					feLogsService.save(
-							new FeLogs(Act.查詢, request
-									.getParameter("entity.indexTerm"), null,
-									null, null), accountNumber);
-				}
-			} else {
-				invocation.getInvocationContext().getValueStack()
-						.set("item", item);
-				return "query";
-			}
-		}
 
 		if (method.equals("list")) {
+			boolean saveLog = true;
 			String item = request.getServletPath().replace("/crud/apply.", "")
 					.replace(".list.action", "");
 			String indexTerm = request.getParameter("entity.indexTerm");
 			String option = request.getParameter("entity.option");
-			if (StringUtils.isBlank(indexTerm)) {
-				addActionError(invocation, "．請輸入關鍵字。");
-			}
 
 			if (session.get("entityRecord") != null) {
 				session.remove("entityRecord");
 				session.remove("pagerRecord");
 			}
 
+			if (item.equals("database")) {
+				if (StringUtils.isBlank(indexTerm)) {
+					addActionError(invocation, "．請輸入關鍵字。");
+				}
+
+				if (StringUtils.isBlank(option)) {
+					addActionError(invocation, "．請輸入選項。");
+					option = "標題開頭為";
+				} else if (!option.equals("標題開頭為") && !option.equals("標題包含文字")) {
+					addActionError(invocation, "．請輸入選項。");
+					option = "標題開頭為";
+				}
+			}
+
 			if (item.equals("ebook")) {
+				if (StringUtils.isBlank(indexTerm)) {
+					addActionError(invocation, "．請輸入關鍵字。");
+				}
+
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
@@ -155,6 +139,10 @@ public class SearchActionInterceptor extends RootInterceptor {
 			}
 
 			if (item.equals("journal")) {
+				if (StringUtils.isBlank(indexTerm)) {
+					addActionError(invocation, "．請輸入關鍵字。");
+				}
+
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
@@ -166,12 +154,20 @@ public class SearchActionInterceptor extends RootInterceptor {
 				}
 			}
 
+			if (item.equals("classification")) {
+				if (StringUtils.isBlank(indexTerm)) {
+					saveLog = false;
+				}
+			}
+
 			if (!hasActionErrors(invocation)) {
-				if (request.getParameter("pager.recordPerPage") == null) {
-					feLogsService.save(
-							new FeLogs(Act.查詢, request
-									.getParameter("entity.indexTerm"), null,
-									null, null), accountNumber);
+				if (saveLog) {
+					if (request.getParameter("pager.recordPerPage") == null) {
+						feLogsService.save(
+								new FeLogs(Act.查詢, request
+										.getParameter("entity.indexTerm"),
+										null, null, null), null);
+					}
 				}
 			} else {
 				invocation.getInvocationContext().getValueStack()
@@ -203,7 +199,7 @@ public class SearchActionInterceptor extends RootInterceptor {
 							&& StringUtils.isNotBlank((String) url.get(0))) {
 						feLogsService.save(
 								new FeLogs(Act.點擊, null, Long.parseLong(serNo),
-										null, null), accountNumber);
+										null, null), null);
 
 						response.sendRedirect((String) url.get(0));
 					} else {
@@ -217,9 +213,9 @@ public class SearchActionInterceptor extends RootInterceptor {
 
 					if (CollectionUtils.isNotEmpty(url)
 							&& StringUtils.isNotBlank((String) url.get(0))) {
-						feLogsService
-								.save(new FeLogs(Act.點擊, null, null, Long
-										.parseLong(serNo), null), accountNumber);
+						feLogsService.save(
+								new FeLogs(Act.點擊, null, null, Long
+										.parseLong(serNo), null), null);
 
 						response.sendRedirect((String) url.get(0));
 					} else {
@@ -234,7 +230,7 @@ public class SearchActionInterceptor extends RootInterceptor {
 					if (CollectionUtils.isNotEmpty(url)
 							&& StringUtils.isNotBlank((String) url.get(0))) {
 						feLogsService.save(new FeLogs(Act.點擊, null, null, null,
-								Long.parseLong(serNo)), accountNumber);
+								Long.parseLong(serNo)), null);
 
 						response.sendRedirect((String) url.get(0));
 					} else {

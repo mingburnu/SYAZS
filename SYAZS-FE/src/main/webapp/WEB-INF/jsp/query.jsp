@@ -5,7 +5,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 <script type="text/javascript">
-	
 	function form_sumbit() {
 		var url = $("form").attr("action") + "?" + $("form").serialize();
 		$.ajax({
@@ -18,8 +17,8 @@
 	}
 </script>
 <!-- container 開始 -->
-<s:form action="apply.database.list" namespace="/crud" method="post"
-	onsubmit="return false;">
+<s:form action="apply.classification.list" namespace="/crud"
+	method="post" onsubmit="return false;">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0"
 		class="table_01">
 		<tr valign="middle">

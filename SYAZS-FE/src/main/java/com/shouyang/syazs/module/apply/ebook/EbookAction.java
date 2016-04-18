@@ -87,9 +87,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 	}
 
 	@Override
-	public String save() throws Exception {//TODO
-ebookService.test(initDataSet());
-		return LIST;
+	public String save() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -57,10 +58,13 @@ public class JournalService extends GenericServiceFull<Journal> {
 					.size()]);
 
 			if (!ArrayUtils.isEmpty(wordArray)) {
+				Conjunction and = Restrictions.and();
 				for (int i = 0; i < wordArray.length; i++) {
-					restrictions.likeIgnoreCase("title", indexTerm,
-							MatchMode.ANYWHERE);
+					and.add(Restrictions.ilike("title", wordArray[i],
+							MatchMode.ANYWHERE));
 				}
+
+				restrictions.customCriterion(and);
 			} else {
 				Pager pager = ds.getPager();
 				pager.setTotalRecord(0L);

@@ -10,5 +10,4 @@ import com.shouyang.syazs.core.entity.GenericEntityFull;
  */
 public class ModuleDaoFull<T extends GenericEntityFull> extends
 		GenericHibernateDao<T> {
-
 }

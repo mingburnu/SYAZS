@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import com.shouyang.syazs.module.apply.ebook.ISBN_Validator;
@@ -70,7 +71,7 @@ public class Test {
 		System.out.println("978-986-181-728-6".trim().replace("-", "")
 				.substring(3, 12));
 
-		System.out.println(Math.pow(35, 6));
+		System.out.println(NumberUtils.isDigits("2"));
 	}
 
 	private static boolean check(String s) {

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -31,7 +32,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 
 	@Autowired
 	private HashMap<String, String> hanziMap;
-
+	
 	@Override
 	public DataSet<Ebook> getByRestrictions(DataSet<Ebook> ds) throws Exception {
 		Assert.notNull(ds);
@@ -56,10 +57,13 @@ public class EbookService extends GenericServiceFull<Ebook> {
 					.size()]);
 
 			if (!ArrayUtils.isEmpty(wordArray)) {
+				Conjunction and = Restrictions.and();
 				for (int i = 0; i < wordArray.length; i++) {
-					restrictions.likeIgnoreCase("bookName", indexTerm,
-							MatchMode.ANYWHERE);
+					and.add(Restrictions.ilike("bookName", wordArray[i],
+							MatchMode.ANYWHERE));
 				}
+
+				restrictions.customCriterion(and);
 			} else {
 				Pager pager = ds.getPager();
 				pager.setTotalRecord(0L);
@@ -89,7 +93,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		// TODO Auto-generated method stub
 		return dao;
 	}
-
+	
 	public DataSet<Ebook> getByPrefix(DataSet<Ebook> ds) throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());
@@ -132,10 +136,5 @@ public class EbookService extends GenericServiceFull<Ebook> {
 
 	public long countToatal() {
 		return dao.countAll();
-	}
-
-	public DataSet<Ebook> test(DataSet<Ebook> ds) throws Exception {
-		dao.test();
-		return null;
 	}
 }

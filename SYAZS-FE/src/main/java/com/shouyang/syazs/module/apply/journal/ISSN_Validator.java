@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ISSN_Validator {
 
-	protected static boolean isIssn(String issn) {
+	public static boolean isIssn(String issn) {
 		Pattern pattern = Pattern.compile("(\\d{4})(\\-?)(\\d{3})[\\dX]");
 		issn = issn.trim().toUpperCase();
 

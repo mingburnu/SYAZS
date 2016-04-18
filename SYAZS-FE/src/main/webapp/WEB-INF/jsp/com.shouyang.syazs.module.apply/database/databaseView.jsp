@@ -11,8 +11,7 @@
 				+ "<esapi:encodeForJavaScript>${ds.entity.option}</esapi:encodeForJavaScript>"
 				+ "&entity.indexTerm="
 				+ "<esapi:encodeForJavaScript>${ds.entity.indexTerm}</esapi:encodeForJavaScript>"
-						.replace(/\&/g, "%26") + "&entity.refSerNo="
-				+ "${ds.entity.refSerNo}" + "&pager.recordPoint="
+						.replace(/\&/g, "%26") + "&pager.recordPoint="
 				+ "${ds.pager.recordPoint}" + "&pager.recordPerPage="
 				+ "${ds.pager.recordPerPage}";
 		$.ajax({
@@ -69,12 +68,11 @@
 				</tr>
 			</c:if>
 			<c:if
-				test="${(not empty entity.resourcesBuyers.startDate)||(not empty entity.resourcesBuyers.maturityDate)}">
+				test="${(not empty entity.startDate)||(not empty entity.maturityDate)}">
 				<tr>
 					<td class="t_01">起訂日期</td>
-					<td class="t_02"><s:property
-							value="entity.resourcesBuyers.startDate" />~<s:property
-							value="entity.resourcesBuyers.maturityDate" /></td>
+					<td class="t_02"><s:property value="entity.startDate" />~<s:property
+							value="entity.maturityDate" /></td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.topic}">
@@ -83,22 +81,6 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.topic }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${not empty entity.classification}">
-				<tr>
-					<td class="t_01">分類</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.classification }</esapi:encodeForHTML></td>
-				</tr>
-			</c:if>
-			<tr>
-				<td class="t_01">館藏</td>
-				<td class="t_02"><c:forEach items="${referenceOwners }"
-						var="owner" varStatus="status">
-						<c:choose>
-							<c:when test="${!status.last }">${owner[1]}、</c:when>
-							<c:otherwise>${owner[1]}</c:otherwise>
-						</c:choose>
-					</c:forEach></td>
-			</tr>
 		</table>
 
 		<div align="center">

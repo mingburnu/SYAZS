@@ -1,18 +1,20 @@
 package com.shouyang.syazs.module.apply.database;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.shouyang.syazs.core.dao.DsQueryLanguage;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
@@ -28,6 +30,9 @@ public class DatabaseService extends GenericServiceFull<Database> {
 	@Autowired
 	private DatabaseDao dao;
 
+	@Autowired
+	private HashMap<String, String> hanziMap;
+
 	@Override
 	public DataSet<Database> getByRestrictions(DataSet<Database> ds)
 			throws Exception {
@@ -36,25 +41,36 @@ public class DatabaseService extends GenericServiceFull<Database> {
 
 		DsRestrictions restrictions = getDsRestrictions();
 		Database entity = ds.getEntity();
-
+		String option = entity.getOption();
 		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
-				.trim(), "０１２３４５６７８９", "0123456789");
-		indexTerm = indexTerm.replaceAll(
-				"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
-		Set<String> keywordSet = new HashSet<String>(Arrays.asList(indexTerm
-				.split(" ")));
-		String[] wordArray = keywordSet.toArray(new String[keywordSet.size()]);
+				.trim(), "－０１２３４５６７８９", "-0123456789");
 
-		if (!ArrayUtils.isEmpty(wordArray)) {
-			for (int i = 0; i < wordArray.length; i++) {
-				restrictions.likeIgnoreCase("dbTitle", wordArray[i],
-						MatchMode.ANYWHERE);
+		if (option.equals("標題開頭為")) {
+			restrictions.likeIgnoreCase("dbTitle", indexTerm, MatchMode.START);
+		} else if (option.equals("標題包含文字")) {
+			indexTerm = indexTerm.replaceAll(
+					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
+			Set<String> keywordSet = new HashSet<String>(
+					Arrays.asList(indexTerm.split(" ")));
+			String[] wordArray = keywordSet.toArray(new String[keywordSet
+					.size()]);
+
+			if (!ArrayUtils.isEmpty(wordArray)) {
+				Conjunction and = Restrictions.and();
+				for (int i = 0; i < wordArray.length; i++) {
+					and.add(Restrictions.ilike("dbTitle", wordArray[i],
+							MatchMode.ANYWHERE));
+				}
+
+				restrictions.customCriterion(and);
+			} else {
+				Pager pager = ds.getPager();
+				pager.setTotalRecord(0L);
+				ds.setPager(pager);
+				return ds;
 			}
-		} else {
-			Pager pager = ds.getPager();
-			pager.setTotalRecord(0L);
-			ds.setPager(pager);
-			return ds;
+		} else if(option.equals("出版社")){
+			
 		}
 
 		return dao.findByRestrictions(restrictions, ds);
@@ -66,32 +82,47 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		return dao;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Object[]> getResOwners(long serNo) {
-		DsQueryLanguage queryLanguage = getDsQueryLanguage();
-		queryLanguage
-				.setHql("SELECT dr.serNo, dr.name FROM Database d JOIN d.referenceOwners dr WHERE d.serNo = :serNo");
-		queryLanguage.addParameter("serNo", serNo);
-		return (List<Object[]>) dao.findByHQL(queryLanguage);
-	}
+	public DataSet<Database> getByPrefix(DataSet<Database> ds) throws Exception {
+		Assert.notNull(ds);
+		Assert.notNull(ds.getEntity());
 
-	public List<Database> getAllDb() throws Exception {
 		DsRestrictions restrictions = getDsRestrictions();
-		return dao.findByRestrictions(restrictions);
+		Database entity = ds.getEntity();
+		String option = entity.getOption();
+
+		Junction or = Restrictions.disjunction();
+		int intCode = option.charAt(0);
+
+		if (option.equals("0-9")) {
+			int i = 0;
+			while (i < 10) {
+				or.add(Restrictions.ilike("dbTitle",
+						Character.toString((char) (i + 48)), MatchMode.START));
+				i++;
+			}
+		} else if ((intCode > 64 && intCode < 91)
+				|| (intCode > 96 && intCode < 123)) {
+			or.add(Restrictions.ilike("dbTitle",
+					Character.toString((char) intCode), MatchMode.START));
+		} else if (intCode > 12548 && intCode < 12577) {
+			String words = hanziMap.get(Character.toString((char) intCode));
+			int i = 0;
+			while (i < words.length()) {
+				or.add(Restrictions.ilike("dbTitle",
+						Character.toString(words.charAt(i)), MatchMode.START));
+				i++;
+			}
+		} else {
+			or.add(Restrictions
+					.sqlRestriction("dbTitle REGEXP '^[^0-9a-zA-Z０-９ａ-ｚＡ-Ｚ\u4e00-\u9fa5]'"));
+		}
+
+		restrictions.customCriterion(or);
+
+		return dao.findByRestrictions(restrictions, ds);
 	}
 
 	public long countToatal() {
 		return dao.countAll();
-	}
-
-	public long countByOwner(long ownerSerNo) {
-		return dao.countByOwner(ownerSerNo);
-	}
-
-	public DataSet<Database> getByOwner(DataSet<Database> ds) throws Exception {
-		DsRestrictions restrictions = getDsRestrictions();
-		restrictions.createAlias("referenceOwners", "dr");
-		restrictions.eq("dr.serNo", ds.getEntity().getRefSerNo());
-		return dao.findByRestrictions(restrictions, ds);
 	}
 }

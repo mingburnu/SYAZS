@@ -360,6 +360,8 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 				for (int i = 0; i < rowLength; i++) {
 					if (row[i] == null) {
 						row[i] = "";
+					} else {
+						row[i] = row[i].trim();
 					}
 				}
 
@@ -369,7 +371,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					List<String> errorList = Lists.newArrayList();
 
 					Type type = null;
-					Object objType = toEnum(row[9].trim(), Type.class);
+					Object objType = toEnum(row[9], Type.class);
 					if (objType != null) {
 						type = (Type) objType;
 					} else {
@@ -391,8 +393,7 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 						category = Category.getByToken(Integer
 								.parseInt(row[14]));
 					} else {
-						category = (Category) toEnum(row[14].trim(),
-								Category.class);
+						category = (Category) toEnum(row[14], Category.class);
 					}
 
 					if (category == null) {
@@ -450,13 +451,11 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 								&& StringUtils.isNotBlank(database
 										.getPublishName())) {
 							if (checkRepeatRow.containsKey(database
-									.getDbTitle().trim()
-									+ database.getPublishName().trim())) {
+									.getDbTitle() + database.getPublishName())) {
 								errorList.add("清單資源重複");
 							} else {
-								checkRepeatRow.put(database.getDbTitle().trim()
-										+ database.getPublishName().trim(),
-										database);
+								checkRepeatRow.put(database.getDbTitle()
+										+ database.getPublishName(), database);
 							}
 						}
 					}
