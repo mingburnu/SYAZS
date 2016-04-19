@@ -3,9 +3,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <script type="text/javascript">
 	$(document).ready(function() {
-		var totalEbk = "<c:url value = '/'/>crud/apply.ebook.count.action";
-		var totalJou = "<c:url value = '/'/>crud/apply.journal.count.action";
-		var totalDat = "<c:url value = '/'/>crud/apply.database.count.action";
+		var totalEbk = "<c:url value = '/crud/apply.ebook.count.action'/>";
+		var totalJou = "<c:url value = '/crud/apply.journal.count.action'/>";
+		var totalDat = "<c:url value = '/crud/apply.database.count.action'/>";
 		var ebk = 0;
 		var jou = 0;
 		var dat = 0;
@@ -47,11 +47,11 @@
 					<a href="<c:url value = '/'/>"> <c:choose>
 							<c:when test="${not empty customer.logo }">
 								<img
-									src="<c:url value = '/'/>crud/apply.customer.show.action?entity.serNo=9"
+									src="<c:url value = '/crud/apply.customer.show.action?entity.serNo=9'/>"
 									width="240" height="70">
 							</c:when>
 							<c:otherwise>
-								<img src="<c:url value = '/'/>resources/images/logo.png"
+								<img src="<c:url value = '/resources/images/logo.png'/>"
 									width="240" height="70">
 							</c:otherwise>
 						</c:choose>
@@ -62,7 +62,7 @@
 			<td align="right">
 				<div class="bar_box">
 					<div>
-						電子館藏：<span></span> 書籍：<span></span> 期刊：<span></span> 資料庫：<span></span>
+						電子館藏：<span></span> 電子書：<span></span> 電子期刊：<span></span> 資料庫：<span></span>
 					</div>
 				</div>
 			</td>

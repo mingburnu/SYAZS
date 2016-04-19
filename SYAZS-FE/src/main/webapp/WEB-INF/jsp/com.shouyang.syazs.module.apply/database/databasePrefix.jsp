@@ -68,6 +68,7 @@
 					<ul>
 						<li><a href="javascript:void(0);" onClick="clickItem(this);">標題開頭為</a></li>
 						<li><a href="javascript:void(0);" onClick="clickItem(this);">標題包含文字</a></li>
+						<li><a href="javascript:void(0);" onClick="clickItem(this);">出版社</a></li>
 					</ul>
 				</div>
 			</td>
@@ -88,7 +89,7 @@
 		</c:forEach>
 	</div>
 	<div class="query_list">
-		<c:forEach begin="12549" end="12576" varStatus="loop">
+		<c:forEach begin="12549" end="12585" varStatus="loop">
 			<a class="btn_04" onclick="queryByPrefix('${'&#'}${loop.index };')">${'&#'}${loop.index };</a>
 		</c:forEach>
 		<a class="btn_04" onclick="queryByPrefix('其他')">其他</a>

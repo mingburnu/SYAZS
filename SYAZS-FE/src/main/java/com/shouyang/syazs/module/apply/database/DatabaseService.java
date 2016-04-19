@@ -1,13 +1,6 @@
 package com.shouyang.syazs.module.apply.database;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -18,7 +11,6 @@ import org.springframework.util.Assert;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 
 @Service
@@ -42,35 +34,16 @@ public class DatabaseService extends GenericServiceFull<Database> {
 		DsRestrictions restrictions = getDsRestrictions();
 		Database entity = ds.getEntity();
 		String option = entity.getOption();
-		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
-				.trim(), "－０１２３４５６７８９", "-0123456789");
+		String indexTerm = entity.getIndexTerm().trim();
 
 		if (option.equals("標題開頭為")) {
 			restrictions.likeIgnoreCase("dbTitle", indexTerm, MatchMode.START);
 		} else if (option.equals("標題包含文字")) {
-			indexTerm = indexTerm.replaceAll(
-					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
-			Set<String> keywordSet = new HashSet<String>(
-					Arrays.asList(indexTerm.split(" ")));
-			String[] wordArray = keywordSet.toArray(new String[keywordSet
-					.size()]);
-
-			if (!ArrayUtils.isEmpty(wordArray)) {
-				Conjunction and = Restrictions.and();
-				for (int i = 0; i < wordArray.length; i++) {
-					and.add(Restrictions.ilike("dbTitle", wordArray[i],
-							MatchMode.ANYWHERE));
-				}
-
-				restrictions.customCriterion(and);
-			} else {
-				Pager pager = ds.getPager();
-				pager.setTotalRecord(0L);
-				ds.setPager(pager);
-				return ds;
-			}
-		} else if(option.equals("出版社")){
-			
+			restrictions.likeIgnoreCase("dbTitle", indexTerm,
+					MatchMode.ANYWHERE);
+		} else if (option.equals("出版社")) {
+			restrictions.likeIgnoreCase("publishName", indexTerm,
+					MatchMode.ANYWHERE);
 		}
 
 		return dao.findByRestrictions(restrictions, ds);

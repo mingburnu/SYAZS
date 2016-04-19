@@ -17,8 +17,6 @@ import com.shouyang.syazs.core.dao.ModuleDaoSerNo;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.ebook.Ebook;
-import com.shouyang.syazs.module.apply.ebook.ISBN_Validator;
-import com.shouyang.syazs.module.apply.journal.ISSN_Validator;
 import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
@@ -48,44 +46,32 @@ public class ClassificationDao extends ModuleDaoSerNo<Classification> {
 			Criteria criteriaEbk = getSession().createCriteria(Ebook.class);
 			Criteria criteriaJou = getSession().createCriteria(Journal.class);
 
-			if (ISSN_Validator.isIssn(indexTerm)) {
-				criteriaJou.add(Restrictions.eq("issn",
-						indexTerm.replace("-", "").toUpperCase()));
-				list.addAll(criteriaJou.list());
-			} else if (ISBN_Validator.isIsbn10(indexTerm)) {
-				criteriaEbk.add(Restrictions.eq("isbn",
-						Long.parseLong(ISBN_Validator.toIsbn13(indexTerm))));
-			} else if (ISBN_Validator.isIsbn13(indexTerm)) {
-				criteriaEbk.add(Restrictions.eq("isbn",
-						Long.parseLong(indexTerm)));
-				list.addAll(criteriaEbk.list());
-			} else {
-				Set<String> keywordSet = new HashSet<String>(
-						Arrays.asList(indexTerm.split(" ")));
-				String[] wordArray = keywordSet.toArray(new String[keywordSet
-						.size()]);
+			Set<String> keywordSet = new HashSet<String>(
+					Arrays.asList(indexTerm.split(" ")));
+			String[] wordArray = keywordSet.toArray(new String[keywordSet
+					.size()]);
 
-				Conjunction datAnd = Restrictions.and();
-				Conjunction ebkAnd = Restrictions.and();
-				Conjunction jouAnd = Restrictions.and();
+			Conjunction datAnd = Restrictions.and();
+			Conjunction ebkAnd = Restrictions.and();
+			Conjunction jouAnd = Restrictions.and();
 
-				for (int i = 0; i < wordArray.length; i++) {
-					datAnd.add(Restrictions.ilike("dbTitle", wordArray[i],
-							MatchMode.ANYWHERE));
-					ebkAnd.add(Restrictions.ilike("bookName", wordArray[i],
-							MatchMode.ANYWHERE));
-					jouAnd.add(Restrictions.ilike("title", wordArray[i],
-							MatchMode.ANYWHERE));
-				}
-
-				criteriaDat.add(datAnd);
-				criteriaEbk.add(ebkAnd);
-				criteriaJou.add(jouAnd);
-
-				list.addAll(criteriaDat.list());
-				list.addAll(criteriaEbk.list());
-				list.addAll(criteriaJou.list());
+			for (int i = 0; i < wordArray.length; i++) {
+				datAnd.add(Restrictions.ilike("dbTitle", wordArray[i],
+						MatchMode.ANYWHERE));
+				ebkAnd.add(Restrictions.ilike("bookName", wordArray[i],
+						MatchMode.ANYWHERE));
+				jouAnd.add(Restrictions.ilike("title", wordArray[i],
+						MatchMode.ANYWHERE));
 			}
+
+			criteriaDat.add(datAnd);
+			criteriaEbk.add(ebkAnd);
+			criteriaJou.add(jouAnd);
+
+			list.addAll(criteriaDat.list());
+			list.addAll(criteriaEbk.list());
+			list.addAll(criteriaJou.list());
+
 		}
 
 		long totalRecord = list.size() + 0L;

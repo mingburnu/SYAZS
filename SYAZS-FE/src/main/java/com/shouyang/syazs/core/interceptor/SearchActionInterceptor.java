@@ -116,7 +116,8 @@ public class SearchActionInterceptor extends RootInterceptor {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
-				} else if (!option.equals("標題開頭為") && !option.equals("標題包含文字")) {
+				} else if (!option.equals("標題開頭為") && !option.equals("標題包含文字")
+						&& !option.equals("出版社")) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
 				}
@@ -130,9 +131,10 @@ public class SearchActionInterceptor extends RootInterceptor {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
-				} else if (!option.equals("標題開頭為") && !option.equals("標題等於")
-						&& !option.equals("標題包含文字")
-						&& !option.equals("ISBN 等於")) {
+				} else if (!option.equals("標題開頭為") && !option.equals("標題包含文字")
+						&& !option.equals("ISBN 等於") && !option.equals("出版社")
+						&& !option.equals("第一作者") && !option.equals("次要作者")
+						&& !option.equals("分類號")) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
 				}
@@ -146,9 +148,9 @@ public class SearchActionInterceptor extends RootInterceptor {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
-				} else if (!option.equals("標題開頭為") && !option.equals("標題等於")
-						&& !option.equals("標題包含文字")
-						&& !option.equals("ISSN 等於")) {
+				} else if (!option.equals("標題開頭為") && !option.equals("標題包含文字")
+						&& !option.equals("ISSN 等於") && !option.equals("出版社")
+						&& !option.equals("分類號")) {
 					addActionError(invocation, "．請輸入選項。");
 					option = "標題開頭為";
 				}

@@ -19,23 +19,23 @@
 	}
 </script>
 <div id="header">
-	<img src="<c:url value = '/'/>resources/images/header.png" width="900"
+	<img src="<c:url value = '/resources/images/header.png'/>" width="900"
 		height="190">
 </div>
 <div id="menu_box">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td><a class="a_hover"
-				href="javascript:goURL('<c:url value = '/'/>page/query.action')"
+				href="javascript:goURL('<c:url value = '/page/query.action'/>')"
 				onclick="switchMenu(this)">查 詢</a></td>
 			<td><a
-				href="javascript:goURL('<c:url value = '/'/>page/journal.action')"
+				href="javascript:goURL('<c:url value = '/page/journal.action'/>')"
 				onclick="switchMenu(this)">電 子 期 刊</a></td>
 			<td><a
-				href="javascript:goURL('<c:url value = '/'/>page/ebook.action')"
+				href="javascript:goURL('<c:url value = '/page/ebook.action'/>')"
 				onclick="switchMenu(this)">電 子 書</a></td>
 			<td><a
-				href="javascript:goURL('<c:url value = '/'/>page/database.action')"
+				href="javascript:goURL('<c:url value = '/page/database.action'/>')"
 				onclick="switchMenu(this)">資 料 庫</a></td>
 		</tr>
 	</table>

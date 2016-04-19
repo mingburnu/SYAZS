@@ -5,7 +5,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />
 <script type="text/javascript">
-	function form_sumbit() {
+	function form_reset() {
+		document.form_01.reset();
+	}
+
+	function form_submit() {
 		var url = $("form").attr("action") + "?" + $("form").serialize();
 		$.ajax({
 			url : url,
@@ -17,8 +21,8 @@
 	}
 </script>
 <!-- container 開始 -->
-<s:form action="apply.classification.list" namespace="/crud"
-	method="post" onsubmit="return false;">
+<s:form name="form_01" action="apply.classification.list"
+	namespace="/crud" method="post" onsubmit="return false;">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0"
 		class="table_01">
 		<tr valign="middle">
@@ -33,13 +37,10 @@
 		</tr>
 		<tr valign="middle">
 			<td class="t_03" colspan="2" align="center"><a class="btn_01"
-				href="#" onClick="form_sumbit();">開 始 查 詢</a></td>
+				href="javascript:void(0);" onclick="form_reset();">重 新 填 寫</a> <a
+				class="btn_01" href="javascript:void(0);" onclick="form_submit();">開
+					始 查 詢</a></td>
 		</tr>
 	</table>
 </s:form>
-<div class="note">
-	<div>&nbsp;</div>
-	<div>&nbsp;</div>
-	<div>&nbsp;</div>
-</div>
 <!-- container 結束 -->

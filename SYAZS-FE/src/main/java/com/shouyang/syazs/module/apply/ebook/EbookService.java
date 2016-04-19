@@ -1,13 +1,6 @@
 package com.shouyang.syazs.module.apply.ebook;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -32,7 +25,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 
 	@Autowired
 	private HashMap<String, String> hanziMap;
-	
+
 	@Override
 	public DataSet<Ebook> getByRestrictions(DataSet<Ebook> ds) throws Exception {
 		Assert.notNull(ds);
@@ -41,35 +34,16 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		DsRestrictions restrictions = getDsRestrictions();
 		Ebook entity = ds.getEntity();
 		String option = entity.getOption();
-		String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
-				.trim(), "－０１２３４５６７８９", "-0123456789");
+		String indexTerm = entity.getIndexTerm().trim();
 
 		if (option.equals("標題開頭為")) {
 			restrictions.likeIgnoreCase("bookName", indexTerm, MatchMode.START);
-		} else if (option.equals("標題等於")) {
-			restrictions.likeIgnoreCase("bookName", indexTerm, MatchMode.EXACT);
 		} else if (option.equals("標題包含文字")) {
-			indexTerm = indexTerm.replaceAll(
-					"[^0-9\\p{Ll}\\p{Lm}\\p{Lo}\\p{Lt}\\p{Lu}]", " ");
-			Set<String> keywordSet = new HashSet<String>(
-					Arrays.asList(indexTerm.split(" ")));
-			String[] wordArray = keywordSet.toArray(new String[keywordSet
-					.size()]);
-
-			if (!ArrayUtils.isEmpty(wordArray)) {
-				Conjunction and = Restrictions.and();
-				for (int i = 0; i < wordArray.length; i++) {
-					and.add(Restrictions.ilike("bookName", wordArray[i],
-							MatchMode.ANYWHERE));
-				}
-
-				restrictions.customCriterion(and);
-			} else {
-				Pager pager = ds.getPager();
-				pager.setTotalRecord(0L);
-				ds.setPager(pager);
-				return ds;
-			}
+			restrictions.likeIgnoreCase("bookName", indexTerm,
+					MatchMode.ANYWHERE);
+		} else if (option.equals("出版社")) {
+			restrictions.likeIgnoreCase("publishName", indexTerm,
+					MatchMode.ANYWHERE);
 		} else if (option.equals("ISBN 等於")) {
 			if (ISBN_Validator.isIsbn13(indexTerm)) {
 				restrictions.eq("isbn",
@@ -83,6 +57,15 @@ public class EbookService extends GenericServiceFull<Ebook> {
 				ds.setPager(pager);
 				return ds;
 			}
+		} else if (option.equals("第一作者")) {
+			restrictions.likeIgnoreCase("autherName", indexTerm,
+					MatchMode.ANYWHERE);
+		} else if (option.equals("次要作者")) {
+			restrictions.likeIgnoreCase("authers", indexTerm,
+					MatchMode.ANYWHERE);
+		} else if (option.equals("分類號")) {
+			restrictions.likeIgnoreCase("lcsCode", indexTerm,
+					MatchMode.ANYWHERE);
 		}
 
 		return dao.findByRestrictions(restrictions, ds);
@@ -93,7 +76,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		// TODO Auto-generated method stub
 		return dao;
 	}
-	
+
 	public DataSet<Ebook> getByPrefix(DataSet<Ebook> ds) throws Exception {
 		Assert.notNull(ds);
 		Assert.notNull(ds.getEntity());

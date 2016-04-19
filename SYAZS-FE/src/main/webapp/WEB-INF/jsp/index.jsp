@@ -7,12 +7,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>碩陽電子資源檢索</title>
-<jsp:include page="/WEB-INF/jsp/layout/css.jsp" />
 <script type="text/javascript"
-	src="<c:url value = '/'/>resources/js/jquery-1.7.2.min.js"></script>
+	src="<c:url value = '/resources/js/jquery-1.7.2.min.js'/>"></script>
+<jsp:include page="/WEB-INF/jsp/layout/css.jsp" />
 <script type="text/javascript">
 	$(document).ready(function() {
-		goURL("<c:url value = '/'/>page/query.action");
+		goURL("<c:url value = '/page/query.action'/>");
 	});
 </script>
 </head>
