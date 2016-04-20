@@ -79,28 +79,6 @@ public class CrudActionInterceptor extends RootInterceptor {
 			}
 		}
 
-		if (invocation.getAction().toString().contains("ipRange")) {
-			Map<String, Object> session = ActionContext.getContext()
-					.getSession();
-			accountNumber = (AccountNumber) session.get("login");
-
-			if (accountNumber.getRole().equals(Role.管理員)) {
-				response.sendError(HttpServletResponse.SC_FORBIDDEN);
-				return "list";
-			}
-		}
-
-		if (invocation.getAction().toString().contains("group")) {
-			Map<String, Object> session = ActionContext.getContext()
-					.getSession();
-			accountNumber = (AccountNumber) session.get("login");
-
-			if (accountNumber.getRole().equals(Role.管理員)) {
-				response.sendError(HttpServletResponse.SC_FORBIDDEN);
-				return "list";
-			}
-		}
-
 		if (invocation.getAction().toString().contains("customer")) {
 			Map<String, Object> session = ActionContext.getContext()
 					.getSession();
