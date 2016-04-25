@@ -17,18 +17,6 @@
 	<constant name="struts.multipart.maxSize" value="9223372036854775807" />
 
 	<package name="global" extends="struts-default">
-		<interceptors>
-			<interceptor name="loginSessionInterceptor"
-				class="com.shouyang.syazs.core.interceptor.LoginSessionInterceptor" />
-
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="loginSessionInterceptor" />
-				<interceptor-ref name="defaultStack" />
-			</interceptor-stack>
-		</interceptors>
-
-		<default-interceptor-ref name="defaultInterceptor" />
-
 		<global-results>
 			<result name="input">/WEB-INF/jsp/sessionTimeOut.jsp</result>
 			<result name="exception">/WEB-INF/jsp/error.jsp</result>
