@@ -54,6 +54,10 @@
 	src="<c:url value = '/'/>resources/js/calendar-big5-utf8.js">
 	
 </script>
+<script type="text/javascript"
+	src="<c:url value = '/'/>resources/js/jquery.history.js">
+	
+</script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		showMenuItems('1');
@@ -90,13 +94,38 @@
 
 	//全選之函式
 	function allSelect(action) {
-		for (var i = 0; i < $("[name='entity.checkItem']").length; i++) {
+		for ( var i = 0; i < $("[name='entity.checkItem']").length; i++) {
 			if (action == 1) {
 				$("[name='entity.checkItem']").get(i).checked = true;
 			} else {
 				$("[name='entity.checkItem']").get(i).checked = false;
 			}
 		}
+	}
+
+	$(document).ready(function() {
+		var url = "<c:url value = '/'/>";
+		if (typeof (history.pushState) == "undefined") {
+			History.pushState({
+				"page" : url,
+				"data" : ""
+			}, url, url);
+		} else {
+			history.pushState({
+				page : url,
+				data : ""
+			}, url, url);
+		}
+	});
+
+	if (typeof (history.pushState) == "undefined") {
+		window.onhashchange = function() {
+			history.forward();
+		};
+	} else {
+		window.addEventListener("popstate", function(e) {
+			history.forward();
+		});
 	}
 </script>
 <jsp:include page="/WEB-INF/jsp/layout/css.jsp" />

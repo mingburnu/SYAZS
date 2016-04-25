@@ -255,16 +255,18 @@ public class SearchActionInterceptor extends RootInterceptor {
 				session.remove("pagerRecord");
 			}
 
-			if (item.equals("ebook") || item.equals("journal")) {
+			if (item.equals("database") || item.equals("ebook")
+					|| item.equals("journal")) {
 				if (StringUtils.isBlank(option)) {
 					addActionError(invocation, "．請選擇字首。");
 				} else if (option.equals("0-9") || option.equals("其他")) {
 					log.info(option);
 				} else if (option.length() == 1
-						&& option.replaceAll("[a-zA-Z\u3105-\u3126]", "")
+						&& option.replaceAll("[a-zA-Z\u3105-\u3129]", "")
 								.length() == 0) {
 					log.info(option);
 				} else {
+					log.info(option);
 					addActionError(invocation, "．請選擇正確字首。");
 				}
 			}

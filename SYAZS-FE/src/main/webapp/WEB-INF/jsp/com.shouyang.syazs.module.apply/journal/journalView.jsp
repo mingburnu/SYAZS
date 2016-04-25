@@ -84,7 +84,7 @@
 			</c:if>
 			<c:if test="${not empty entity.classification}">
 				<tr>
-					<td class="t_01">${entity.classification.name }</td>
+					<td class="t_01">${entity.classification.classname }</td>
 					<td class="t_02">${entity.lcsCode}</td>
 				</tr>
 			</c:if>

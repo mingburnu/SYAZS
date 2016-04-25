@@ -54,7 +54,7 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.publishName}</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${entity.version > 0}">
+			<c:if test="${not empty entity.version}">
 				<tr>
 					<td class="t_01">版本</td>
 					<td class="t_02"><esapi:encodeForHTML>${entity.version}</esapi:encodeForHTML></td>
@@ -98,7 +98,7 @@
 			</c:if>
 			<c:if test="${not empty entity.classification}">
 				<tr>
-					<td class="t_01">${entity.classification.name }</td>
+					<td class="t_01">${entity.classification.classname }</td>
 					<td class="t_02">${entity.lcsCode}</td>
 				</tr>
 			</c:if>
