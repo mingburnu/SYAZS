@@ -2,60 +2,74 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <script type="text/javascript">
-	$(document).ready(function() {
-		var totalEbk = "<c:url value = '/crud/apply.ebook.count.action'/>";
-		var totalJou = "<c:url value = '/crud/apply.journal.count.action'/>";
-		var totalDat = "<c:url value = '/crud/apply.database.count.action'/>";
-		var ebk = 0;
-		var jou = 0;
-		var dat = 0;
+	$(document)
+			.ready(
+					function() {
+						var logo = "<c:url value = '/crud/apply.customer.show.action?entity.serNo=9'/>";
 
-		$.ajax({
-			url : totalEbk,
-			success : function(result) {
-				$("div.bar_box div span:eq(1)").html(result);
-				ebk = parseInt(result);
-			}
-		});
+						$
+								.ajax({
+									url : logo,
+									success : function(result) {
+										$("div.logo_box a img")
+												.attr("src",
+														"<c:url value = '/crud/apply.customer.show.action?entity.serNo=9'/>");
 
-		$.ajax({
-			url : totalJou,
-			success : function(result) {
-				$("div.bar_box div span:eq(2)").html(result);
-				jou = parseInt(result);
-			}
-		});
+									},
 
-		$.ajax({
-			url : totalDat,
-			success : function(result) {
-				$("div.bar_box div span:eq(3)").html(result);
-				dat = parseInt(result);
-			}
-		});
+									error : function(xhr, ajaxOptions,
+											thrownError) {
+										if (xhr.status == 404) {
+											$("div.logo_box a img")
+													.attr("src",
+															"<c:url value = '/resources/images/logo.png'/>");
+										}
+									}
+								});
 
-		$("div.bar_box div span:eq(0)").ajaxComplete(function() {
-			$(this).html(ebk + jou + dat);
-		});
-	});
+						var totalEbk = "<c:url value = '/crud/apply.ebook.count.action'/>";
+						var totalJou = "<c:url value = '/crud/apply.journal.count.action'/>";
+						var totalDat = "<c:url value = '/crud/apply.database.count.action'/>";
+						var ebk = 0;
+						var jou = 0;
+						var dat = 0;
+
+						$.ajax({
+							url : totalEbk,
+							success : function(result) {
+								$("div.bar_box div span:eq(1)").html(result);
+								ebk = parseInt(result);
+							}
+						});
+
+						$.ajax({
+							url : totalJou,
+							success : function(result) {
+								$("div.bar_box div span:eq(2)").html(result);
+								jou = parseInt(result);
+							}
+						});
+
+						$.ajax({
+							url : totalDat,
+							success : function(result) {
+								$("div.bar_box div span:eq(3)").html(result);
+								dat = parseInt(result);
+							}
+						});
+
+						$("div.bar_box div span:eq(0)").ajaxComplete(
+								function() {
+									$(this).html(ebk + jou + dat);
+								});
+					});
 </script>
 <div id="top">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td align="left">
 				<div class="logo_box">
-					<a href="<c:url value = '/'/>"> <c:choose>
-							<c:when test="${not empty customer.logo }">
-								<img
-									src="<c:url value = '/crud/apply.customer.show.action?entity.serNo=9'/>"
-									width="240" height="70">
-							</c:when>
-							<c:otherwise>
-								<img src="<c:url value = '/resources/images/logo.png'/>"
-									width="240" height="70">
-							</c:otherwise>
-						</c:choose>
-
+					<a href="<c:url value = '/'/>"> <img width="240" height="70">
 					</a>
 				</div>
 			</td>
