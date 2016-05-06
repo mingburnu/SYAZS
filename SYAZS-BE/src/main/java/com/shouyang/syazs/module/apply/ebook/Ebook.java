@@ -38,7 +38,7 @@ public class Ebook extends ModuleProperties {
 
 	// ISBN
 	@Column(name = "ISBN")
-	private Long isbn;
+	private String isbn;
 
 	// 出版社
 	@Column(name = "publishname")
@@ -132,7 +132,7 @@ public class Ebook extends ModuleProperties {
 	/**
 	 * @return the isbn
 	 */
-	public Long getIsbn() {
+	public String getIsbn() {
 		return isbn;
 	}
 
@@ -140,7 +140,7 @@ public class Ebook extends ModuleProperties {
 	 * @param issn
 	 *            the issn to set
 	 */
-	public void setIsbn(Long isbn) {
+	public void setIsbn(String isbn) {
 		this.isbn = isbn;
 	}
 
@@ -389,7 +389,7 @@ public class Ebook extends ModuleProperties {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Ebook(String bookName, Long isbn, String publishName,
+	public Ebook(String bookName, String isbn, String publishName,
 			String autherName, String authers, String uppeName,
 			LocalDateTime pubDate, String languages, String version,
 			String style, String publication, String url, Boolean openAccess,

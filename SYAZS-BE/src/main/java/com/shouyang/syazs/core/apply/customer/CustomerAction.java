@@ -75,10 +75,10 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 			if (StringUtils.isBlank(getEntity().getName())) {
 				errorMessages.add("用戶名稱不可空白");
 			} else {
-				if (getEntity().getName()
-						.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "").length() != 0) {
-					errorMessages.add("用戶名稱必須是英、數或漢字");
-				}
+//				if (getEntity().getName()
+//						.replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "").length() != 0) {
+//					errorMessages.add("用戶名稱必須是英、數或漢字");
+//				}
 			}
 
 			if (StringUtils.isNotEmpty(getEntity().getTel())) {

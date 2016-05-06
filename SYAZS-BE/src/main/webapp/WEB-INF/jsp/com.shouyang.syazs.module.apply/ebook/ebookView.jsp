@@ -72,14 +72,8 @@
 						<td><esapi:encodeForHTML>${entity.bookName }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">ISBN/13碼<span class="required">(&#8226;)</span></th>
-						<td>${fn:substring(entity.isbn, 0, 13)}</td>
-					</tr>
-					<tr>
-						<th width="130">ISBN/10碼<span class="required">(&#8226;)</span></th>
-						<td><c:if test="${not empty entity.isbn }">
-								<%=ISBN_Validator.toIsbn10(request.getAttribute(
-								"entity.isbn").toString())%></c:if></td>
+						<th width="130">ISBN<span class="required">(&#8226;)</span></th>
+						<td><esapi:encodeForHTML>${entity.isbn }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">出版社<span class="required">(&#8226;)</span></th>

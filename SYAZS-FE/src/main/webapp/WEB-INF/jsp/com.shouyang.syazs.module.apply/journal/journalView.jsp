@@ -78,7 +78,7 @@
 			</c:if>
 			<c:if test="${not empty entity.publication}">
 				<tr>
-					<td class="t_01">刊別</td>
+					<td class="t_01">刊期</td>
 					<td class="t_02"><esapi:encodeForHTML>${entity.publication }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
@@ -96,7 +96,7 @@
 			</c:if>
 			<c:if test="${not empty entity.numB}">
 				<tr>
-					<td class="t_01">編號</td>
+					<td class="t_01">卷期編次</td>
 					<td class="t_02"><esapi:encodeForHTML>${entity.numB }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>

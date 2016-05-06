@@ -45,7 +45,16 @@
 				test="${(not empty entity.autherName) || (not empty entity.authers) }">
 				<tr>
 					<td class="t_01">作者</td>
-					<td class="t_02"><esapi:encodeForHTML>${entity.autherName}</esapi:encodeForHTML>,<esapi:encodeForHTML>${entity.authers}</esapi:encodeForHTML></td>
+					<td class="t_02"><c:choose>
+							<c:when
+								test="${(not empty entity.autherName) && (not empty entity.authers) }">
+								<esapi:encodeForHTML>${entity.autherName}</esapi:encodeForHTML>,<esapi:encodeForHTML>${entity.authers}</esapi:encodeForHTML>
+							</c:when>
+							<c:otherwise>
+								<esapi:encodeForHTML>${entity.autherName}</esapi:encodeForHTML>
+								<esapi:encodeForHTML>${entity.authers}</esapi:encodeForHTML>
+							</c:otherwise>
+						</c:choose></td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.publishName}">
@@ -63,13 +72,7 @@
 			<c:if test="${not empty entity.isbn}">
 				<tr>
 					<td class="t_01">ISBN/13</td>
-					<td class="t_02">${fn:substring(entity.isbn, 0, 13)}</td>
-				</tr>
-				<tr>
-					<td class="t_01">ISBN/10</td>
-					<td class="t_02"><%=ISBN_Validator.toIsbn10(request.getAttribute(
-						"entity.isbn").toString())%></td>
-
+					<td class="t_02"><esapi:encodeForHTML>${entity.isbn }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.style}">

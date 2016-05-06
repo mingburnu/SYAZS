@@ -42,7 +42,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		}
 
 		if (entity.getOption().equals("entity.isbn")) {
-			if (entity.getIsbn() != null) {
+			if (StringUtils.isNotBlank(entity.getIsbn())) {
 				restrictions.eq("isbn", entity.getIsbn());
 			}
 		}
@@ -61,17 +61,6 @@ public class EbookService extends GenericServiceFull<Ebook> {
 		DsQueryLanguage queryLanguage = getDsQueryLanguage();
 		queryLanguage.setHql("SELECT serNo FROM Ebook WHERE isbn = :isbn");
 		queryLanguage.addParameter("isbn", isbn);
-		return (List<Long>) dao.findByHQL(queryLanguage);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Long> getSerNosInDbByIsbn(long isbn, Database database)
-			throws Exception {
-		DsQueryLanguage queryLanguage = getDsQueryLanguage();
-		queryLanguage
-				.setHql("SELECT serNo FROM Ebook WHERE isbn = :isbn AND database.serNo = :datSerNo");
-		queryLanguage.addParameter("isbn", isbn);
-		queryLanguage.addParameter("datSerNo", database.getSerNo());
 		return (List<Long>) dao.findByHQL(queryLanguage);
 	}
 

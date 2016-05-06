@@ -11,7 +11,6 @@ import org.springframework.util.Assert;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 
 @Service
@@ -45,18 +44,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 			restrictions.likeIgnoreCase("publishName", indexTerm,
 					MatchMode.ANYWHERE);
 		} else if (option.equals("ISBN 等於")) {
-			if (ISBN_Validator.isIsbn13(indexTerm)) {
-				restrictions.eq("isbn",
-						Long.parseLong(indexTerm.replace("-", "")));
-			} else if (ISBN_Validator.isIsbn10(indexTerm)) {
-				restrictions.eq("isbn",
-						Long.parseLong(ISBN_Validator.toIsbn13(indexTerm)));
-			} else {
-				Pager pager = ds.getPager();
-				pager.setTotalRecord(0L);
-				ds.setPager(pager);
-				return ds;
-			}
+			restrictions.eq("isbn", indexTerm);
 		} else if (option.equals("第一作者")) {
 			restrictions.likeIgnoreCase("autherName", indexTerm,
 					MatchMode.ANYWHERE);

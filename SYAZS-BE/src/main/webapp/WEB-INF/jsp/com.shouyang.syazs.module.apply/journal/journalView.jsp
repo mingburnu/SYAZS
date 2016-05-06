@@ -97,11 +97,11 @@
 						<td><esapi:encodeForHTML>${entity.caption }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">編號</th>
+						<th width="130">卷期編次</th>
 						<td><esapi:encodeForHTML>${entity.numB }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">刊別</th>
+						<th width="130">刊期</th>
 						<td><esapi:encodeForHTML>${entity.publication }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
@@ -117,7 +117,7 @@
 						<td><esapi:encodeForHTML>${entity.version }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">全文取得授權刊期(embargo period)</th>
+						<th width="130">出版時間差(embargo period)</th>
 						<td><esapi:encodeForHTML>${entity.embargo }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>

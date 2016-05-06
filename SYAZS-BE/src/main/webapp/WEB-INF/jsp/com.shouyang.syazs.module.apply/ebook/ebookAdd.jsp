@@ -31,32 +31,11 @@
 						}
 					});
 
-	$(document).ready(function() {
-		checkIsbn();
-		checkName();
-	});
-
-	$(document).ready(function() {
-		$("input#apply_ebook_save_entity_isbn").bind('input', function() {
-			checkIsbn();
-			checkName();
-		});
-
-		$("input[name='entity.database.serNo']").change(function() {
-			checkIsbn();
-			checkName();
-		});
-
-		$("input#apply_ebook_save_entity_bookName").bind('input', function() {
-			checkName();
-		});
-	});
-
 	//重設所有欄位(清空)
 	function resetData() {
 		$("[id^='apply_ebook_save_entity'][type!='radio']").val("");
 
-		for (var i = 0; i < $("input[type='radio']").length; i++) {
+		for ( var i = 0; i < $("input[type='radio']").length; i++) {
 			$("input[type='radio']:eq(" + i + ")").val(
 					$("input[type='radio']:eq(" + i + ")").next().html());
 		}
@@ -74,28 +53,6 @@
 		clearResDbs();
 		goDetail("<c:url value = '/'/>crud/apply.ebook.save.action", '電子書-新增',
 				data);
-	}
-
-	function checkIsbn() {
-		var isbn = $("input#apply_ebook_save_entity_isbn").val();
-		var datSerNo = $("input#apply_ebook_save_entity_database_serNo").val();
-
-		if (isbn != null && isbn.trim() != "") {
-			goNumTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.isbn='
-					+ isbn + '&entity.database.serNo=' + datSerNo);
-		}
-	}
-
-	function checkName() {
-		var name = $("input#apply_ebook_save_entity_bookName").val();
-		var isbn = $("input#apply_ebook_save_entity_isbn").val();
-		var datSerNo = $("input#apply_ebook_save_entity_database_serNo").val();
-		if (isbn == null || isbn.trim() == "") {
-			goTitleNameTip('<c:url value = "/"/>crud/apply.ebook.tip.action?entity.bookName='
-					+ name + '&entity.database.serNo=' + datSerNo);
-		} else {
-			$("#span-title-name-tip").html("");
-		}
 	}
 </script>
 <style type="text/css">
@@ -116,11 +73,6 @@ input[type="text"]:disabled {
 </head>
 <body>
 	<%
-		String isbn = "";
-		if (request.getParameter("entity.isbn") != null) {
-			isbn = request.getParameter("entity.isbn");
-		}
-
 		String pubDate = "";
 		if (request.getParameter("entity.pubDate") != null) {
 			pubDate = request.getParameter("entity.pubDate");
@@ -130,15 +82,11 @@ input[type="text"]:disabled {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">書名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.bookName" cssClass="input_text" />&nbsp;<span
-					id="span-title-name-tip" class="tip"></span></td>
+				<td><s:textfield name="entity.bookName" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">ISBN</th>
-				<td><input type="text" name="entity.isbn" class="input_text"
-					id="apply_ebook_save_entity_isbn"
-					value="<%=ESAPI.encoder().encodeForHTMLAttribute(isbn)%>">&nbsp;<span
-					id="span-num-tip" class="tip"></span></td>
+				<td><s:textfield name="entity.isbn" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">出版社<span class="required">(&#8226;)</span></th>

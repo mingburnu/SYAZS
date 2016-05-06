@@ -273,23 +273,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			getEntity().setOption("entity.bookName");
 		}
 
-		if (getEntity().getOption().equals("entity.isbn")) {
-			String isbn = getRequest().getParameter("entity.isbn");
-			if (StringUtils.isNotEmpty(isbn)) {
-				if (ISBN_Validator.isIsbn13(isbn.trim())) {
-					getEntity().setIsbn(
-							Long.parseLong(isbn.trim().replaceAll("-", "")));
-				} else if (ISBN_Validator.isIsbn10(isbn.trim())) {
-					getEntity()
-							.setIsbn(
-									Long.parseLong(ISBN_Validator.toIsbn13(isbn
-											.trim())));
-				} else {
-					getEntity().setIsbn(Long.MIN_VALUE);
-				}
-			}
-		}
-
 		DataSet<Ebook> ds = ebookService.getByRestrictions(initDataSet());
 
 		if (ds.getResults().size() == 0 && ds.getPager().getCurrentPage() > 1) {
@@ -310,16 +293,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			String isbn = getRequest().getParameter("entity.isbn");
-			if (StringUtils.isNotBlank(isbn)) {
-				if (ISBN_Validator.isIsbn10(isbn)) {
-					isbn = ISBN_Validator.toIsbn13(isbn);
-				}
-
-				getEntity().setIsbn(
-						Long.parseLong(isbn.trim().replace("-", "")));
-			}
-
 			ebook = ebookService.save(getEntity(), getLoginUser());
 
 			setEntity(ebook);
@@ -340,16 +313,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
-			String isbn = getRequest().getParameter("entity.isbn");
-			if (StringUtils.isNotBlank(isbn)) {
-				if (ISBN_Validator.isIsbn10(isbn)) {
-					isbn = ISBN_Validator.toIsbn13(isbn);
-				}
-
-				getEntity().setIsbn(
-						Long.parseLong(isbn.trim().replace("-", "")));
-			}
-
 			ebook = ebookService.update(getEntity(), getLoginUser());
 			setEntity(ebook);
 			addActionMessage("修改成功");
@@ -393,51 +356,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		}
 
 		return VIEW;
-	}
-
-	public String tip() throws Exception {
-		Long serNo = getEntity().getSerNo();
-		String isbn = getRequest().getParameter("entity.isbn");
-		Long datserNo = getEntity().getDatabase().getSerNo();
-		if (datserNo != null) {
-			database = databaseService.getBySerNo(datserNo);
-		}
-
-		if (StringUtils.isNotBlank(isbn)) {
-			if (ISBN_Validator.isIsbn13(isbn)) {
-				if (hasRepeatIsbn(isbn, serNo)) {
-					getRequest().setAttribute("tip", "已有相同ISBN");
-				}
-
-				if (dbHasRepeatIsbn(isbn, serNo, database)) {
-					getRequest().setAttribute("repeat", "資料庫有重複資源");
-				}
-			}
-
-			if (ISBN_Validator.isIsbn10(isbn)) {
-				log.info(isbn);
-				if (hasRepeatIsbn(ISBN_Validator.toIsbn13(isbn), serNo)) {
-					getRequest().setAttribute("tip", "已有相同ISBN");
-				}
-
-				if (dbHasRepeatIsbn(ISBN_Validator.toIsbn13(isbn), serNo,
-						database)) {
-					getRequest().setAttribute("repeat", "資料庫有重複資源");
-				}
-			}
-		} else {
-			if (StringUtils.isNotBlank(getEntity().getBookName())) {
-				if (hasRepeatName(getEntity().getBookName(), serNo)) {
-					getRequest().setAttribute("tip", "相同名稱且無ISBN資源存在");
-				}
-
-				if (dbHasRepeatName(getEntity().getBookName(), serNo, database)) {
-					getRequest().setAttribute("repeat", "資料庫有相同名稱且無ISBN資源存在");
-				}
-			}
-		}
-
-		return TIP;
 	}
 
 	public String imports() {
@@ -502,18 +420,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					cellNames = Arrays.asList(row);
 				} else {
 					List<String> errorList = Lists.newArrayList();
-
-					Long isbn = null;
-					if (StringUtils.isNotBlank(row[1])) {
-						if (ISBN_Validator.isIsbn10(row[1])) {
-							isbn = Long.parseLong(ISBN_Validator
-									.toIsbn13(row[1]));
-						} else if (ISBN_Validator.isIsbn13(row[1])) {
-							isbn = Long.parseLong(row[1].replace("-", ""));
-						} else {
-							errorList.add(row[1] + "不是ISBN");
-						}
-					}
 
 					boolean openAccess = false;
 					if (StringUtils.isNotBlank(row[14])) {
@@ -584,7 +490,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 						}
 					}
 
-					ebook = new Ebook(row[0], isbn, row[2], row[3], row[4],
+					ebook = new Ebook(row[0], row[1], row[2], row[3], row[4],
 							row[5], toLocalDateTime(row[6]), row[7], row[8],
 							row[12], row[13], row[11], openAccess, database,
 							classification, row[10], null, resourcesBuyers);
@@ -875,12 +781,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				int index = (Integer) iterator.next();
 				ebook = (Ebook) importList.get(index);
 
-				if (ebook.getIsbn() == null
-						&& StringUtils.isNotBlank(ebook.getTempNotes()[0])) {
-					ebook.setIsbn(Long.parseLong(ebook.getTempNotes()[0].trim()
-							.replace("-", "")));
-				}
-
 				ebookService.save(ebook, getLoginUser());
 				ebook.setDataStatus("已匯入");
 				++successCount;
@@ -922,8 +822,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
 					"Netherlands", "1", "sd3erw" });
 			rows.add(new String[] { "C嘉魔法彩繪", "978-9-88-807293-4", "青森文化",
-					"陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A", "中文圖書分類法",
-					"900",
+					"陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A", "1", "900",
 					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
 					"藝術", "Taiwan", "0", "sd3erw" });
 			rows.add(new String[] { "Topics in Pathology for Hong Kong",
@@ -944,8 +843,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					"https://lib3.cgmh.org.tw/cgi-bin/er4/browse.cgi", "醫學",
 					"Netherlands", "1", "0" });
 			rows.add(new String[] { "C嘉魔法彩繪", "978-9-88-807293-4", "青森文化",
-					"陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A", "中文圖書分類法",
-					"900",
+					"陳嘉慧", "N/A", "N/A", "2011-5-5", "cht", "N/A", "1", "900",
 					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
 					"藝術", "Taiwan", "0", "1" });
 			rows.add(new String[] { "Topics in Pathology for Hong Kong",
@@ -1008,28 +906,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		} else {
 			if (CollectionUtils.isNotEmpty(results)) {
 				return true;
-			}
-		}
-
-		return false;
-	}
-
-	protected boolean dbHasRepeatIsbn(String isbn, Long serNo, Database db)
-			throws Exception {
-		if (db != null && db.hasSerNo()) {
-			List<Long> results = ebookService.getSerNosInDbByIsbn(
-					Long.parseLong(isbn.trim().replace("-", "")), db);
-			if (serNo != null) {
-				if (CollectionUtils.isNotEmpty(results)) {
-					results.remove(serNo);
-					if (results.size() != 0) {
-						return true;
-					}
-				}
-			} else {
-				if (CollectionUtils.isNotEmpty(results)) {
-					return true;
-				}
 			}
 		}
 

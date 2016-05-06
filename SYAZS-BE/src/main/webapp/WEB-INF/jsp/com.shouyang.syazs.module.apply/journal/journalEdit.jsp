@@ -186,12 +186,12 @@ input#referenceOwner_name {
 					id="span-year-tip" class="tip">yyyy</span></td>
 			</tr>
 			<tr>
-				<th width="130">刊別</th>
+				<th width="130">刊期</th>
 				<td><s:textfield name="entity.publication"
 						cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">編號</th>
+				<th width="130">卷期編次</th>
 				<td><s:textfield name="entity.numB" cssClass="input_text" /></td>
 			</tr>
 			<tr>
@@ -209,7 +209,7 @@ input#referenceOwner_name {
 				<td><s:textfield name="entity.version" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">全文取得授權刊期(embargo period)</th>
+				<th width="130">出版時間差(embargo period)</th>
 				<td><s:textfield name="entity.embargo" cssClass="input_text" /></td>
 			</tr>
 			<tr>

@@ -940,8 +940,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (getEntity().getOption().equals("package")) {
 			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
-					"出版項", "出版年(西元)", "標題", "編號", "刊別", "分類法", "分類碼", "版本",
-					"全文取得授權刊期", "URL", "開放近用", "資料庫UUID", "起始日", "到期日" });
+					"出版項", "出版年(西元)", "標題", "卷期編次", "刊期", "分類法", "分類碼", "版本",
+					"出版時間差", "URL", "開放近用", "資料庫UUID", "起始日", "到期日" });
 			rows.add(new String[] {
 					"The New England Journal of Medicine",
 					"N. Engl. j. med.",
@@ -953,7 +953,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
 					"000955", "Weekly", "1", "R11", "N/A", "N/A",
 					"http://www.nejm.org/", "1", "78qwrw", "2010-11-10",
-					"2020-11-30", "1" });
+					"2020-11-30" });
 			rows.add(new String[] { "Cell", "Cell", "", "00928674", "eng",
 					"Cambridge, Mass. : MIT Press.", "1974",
 					"Cytology--Periodicals ; Virology--Periodicals", "002064",
@@ -970,8 +970,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					"2020-11-30" });
 		} else {
 			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
-					"出版項", "出版年(西元)", "標題", "編號", "刊別", "分類法", "分類碼", "版本",
-					"全文取得授權刊期", "URL", "開放近用", "資源類型", "起始日", "到期日" });
+					"出版項", "出版年(西元)", "標題", "卷期編次", "刊期", "分類法", "分類碼", "版本",
+					"出版時間差", "URL", "開放近用", "資源類型", "起始日", "到期日" });
 			rows.add(new String[] {
 					"The New England Journal of Medicine",
 					"N. Engl. j. med.",

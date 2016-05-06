@@ -189,7 +189,7 @@
 								</c:otherwise>
 							</c:choose></td>
 						<td><esapi:encodeForHTML>${item.bookName }</esapi:encodeForHTML></td>
-						<td>${item.isbn }</td>
+						<td><esapi:encodeForHTML>${item.isbn }</esapi:encodeForHTML></td>
 						<td><c:if test="${not empty item.classification.serNo }">
 								<div>分類法ID : ${item.classification.serNo }</div>
 							</c:if> <c:if test="${not empty item.classification.classname }">
@@ -259,7 +259,7 @@
 		</div>
 		<div class="button_box">
 			<div class="detail-func-button">
-				<a class="state-default" onclick="allRow(1)">全選</a> <a
+				<a class="state-default" onclick="allRow(1)">本頁全選</a> <a
 					class="state-default" onclick="allRow(0)">重置</a> <a
 					class="state-default" onclick="closeDetail();">關閉</a> <a
 					class="state-default" onclick="checkData()">確認</a>

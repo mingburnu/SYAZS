@@ -243,9 +243,6 @@ public abstract class GenericEntityFull extends FileIoProperties {
 	@Transient
 	private Long[] checkItem;
 
-	@Transient
-	private String[] tempNotes;
-
 	/**
 	 * @return the option
 	 */
@@ -289,20 +286,5 @@ public abstract class GenericEntityFull extends FileIoProperties {
 	 */
 	public void setCheckItem(Long[] checkItem) {
 		this.checkItem = checkItem;
-	}
-
-	/**
-	 * @return the tempNotes
-	 */
-	public String[] getTempNotes() {
-		return tempNotes;
-	}
-
-	/**
-	 * @param tempNotes
-	 *            the tempNotes to set
-	 */
-	public void setTempNotes(String[] tempNotes) {
-		this.tempNotes = tempNotes;
 	}
 }

@@ -242,7 +242,7 @@
 		</div>
 		<div class="button_box">
 			<div class="detail-func-button">
-				<a class="state-default" onclick="allRow(1)">全選</a> <a
+				<a class="state-default" onclick="allRow(1)">本頁全選</a> <a
 					class="state-default" onclick="allRow(0)">重置</a> <a
 					class="state-default" onclick="closeDetail();">關閉</a> <a
 					class="state-default" onclick="checkData()">確認</a>
