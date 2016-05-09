@@ -93,7 +93,7 @@
 						<td><esapi:encodeForHTML>${entity.publishYear }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
-						<th width="130">標題</th>
+						<th width="130">主題類別</th>
 						<td><esapi:encodeForHTML>${entity.caption }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>

@@ -89,8 +89,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		}
 
 		if (StringUtils.isNotEmpty(getEntity().getIssn())) {
-			if (!ISSN_Validator.isIssn(getEntity().getIssn())) {
-				errorMessages.add("ISSN不正確");
+			if (getEntity().getIssn().trim().length() > 10) {
+				errorMessages.add("isbn長度超過10");
 			}
 		}
 
@@ -180,8 +180,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 
 			if (StringUtils.isNotEmpty(getEntity().getIssn())) {
-				if (!ISSN_Validator.isIssn(getEntity().getIssn())) {
-					errorMessages.add("ISSN不正確");
+				if (getEntity().getIssn().trim().length() > 10) {
+					errorMessages.add("ISSN長度超過10");
 				}
 			}
 
@@ -346,6 +346,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 				getEntity().setDatabase(null);
 			}
 
+			if (StringUtils.isNotBlank(getEntity().getIssn())) {
+				getEntity().setIssn(
+						getEntity().getIssn().replace("-", "").toUpperCase());
+			}
+
 			journal = journalService.save(getEntity(), getLoginUser());
 			setEntity(journal);
 			addActionMessage("新增成功");
@@ -373,6 +378,11 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 			if (!getEntity().getDatabase().hasSerNo()) {
 				getEntity().setDatabase(null);
+			}
+
+			if (StringUtils.isNotBlank(getEntity().getIssn())) {
+				getEntity().setIssn(
+						getEntity().getIssn().replace("-", "").toUpperCase());
 			}
 
 			journal = journalService.update(getEntity(), getLoginUser());
@@ -609,8 +619,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					}
 
 					if (StringUtils.isNotEmpty(journal.getIssn())) {
-						if (!ISSN_Validator.isIssn(journal.getIssn())) {
-							errorList.add("ISSN不正確");
+						if (journal.getIssn().trim().length() > 10) {
+							errorList.add("ISSN長度超過10");
 						}
 					}
 
@@ -940,7 +950,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (getEntity().getOption().equals("package")) {
 			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
-					"出版項", "出版年(西元)", "標題", "卷期編次", "刊期", "分類法", "分類碼", "版本",
+					"出版項", "出版年(西元)", "主題類別", "卷期編次", "刊期", "分類法", "分類碼", "版本",
 					"出版時間差", "URL", "開放近用", "資料庫UUID", "起始日", "到期日" });
 			rows.add(new String[] {
 					"The New England Journal of Medicine",
@@ -970,7 +980,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					"2020-11-30" });
 		} else {
 			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
-					"出版項", "出版年(西元)", "標題", "卷期編次", "刊期", "分類法", "分類碼", "版本",
+					"出版項", "出版年(西元)", "主題類別", "卷期編次", "刊期", "分類法", "分類碼", "版本",
 					"出版時間差", "URL", "開放近用", "資源類型", "起始日", "到期日" });
 			rows.add(new String[] {
 					"The New England Journal of Medicine",
@@ -981,13 +991,13 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					"Boston, Massachusetts Medical Society.",
 					"1928",
 					"Medicine--Periodicals ; Surgery--Periodicals ; Medicine--periodicals",
-					"000955", "Weekly", "美國國會圖書館圖書分類法", "R11", "N/A", "N/A",
+					"000955", "Weekly", "1", "R11", "N/A", "N/A",
 					"http://www.nejm.org/", "1", "1", "2010-11-10",
 					"2020-11-30" });
 			rows.add(new String[] { "Cell", "Cell", "", "00928674", "eng",
 					"Cambridge, Mass. : MIT Press.", "1974",
 					"Cytology--Periodicals ; Virology--Periodicals", "002064",
-					"Biweekly", "美國國會圖書館圖書分類法", "QH573", "N/A", "N/A",
+					"Biweekly", "1", "QH573", "N/A", "N/A",
 					"http://www.cell.com/", "0", "2", "2010-11-10",
 					"2020-11-30" });
 			rows.add(new String[] {
@@ -995,9 +1005,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					"AJCR",
 					"＜Journal of cancer research ;＞Cancer research (Chicago, Ill.) 0008-5472",
 					"2156-6976", "eng", "	[Lancaster, Pa., Lancaster Press]",
-					"1931", "", "C00201", "", "美國國會圖書館圖書分類法", "RC261.A1A55",
-					"N/A", "N/A", "http://www.ajcr.us/", "0", "0",
-					"2010-11-10", "2020-11-30" });
+					"1931", "", "C00201", "", "1", "RC261.A1A55", "N/A", "N/A",
+					"http://www.ajcr.us/", "0", "0", "2010-11-10", "2020-11-30" });
 		}
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

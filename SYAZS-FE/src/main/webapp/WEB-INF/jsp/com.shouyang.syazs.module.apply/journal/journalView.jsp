@@ -90,7 +90,7 @@
 			</c:if>
 			<c:if test="${not empty entity.caption}">
 				<tr>
-					<td class="t_01">標題</td>
+					<td class="t_01">主題類別</td>
 					<td class="t_02"><esapi:encodeForHTML>${entity.caption }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>

@@ -11,7 +11,6 @@ import org.springframework.util.Assert;
 import com.shouyang.syazs.core.dao.DsRestrictions;
 import com.shouyang.syazs.core.dao.GenericDao;
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.model.Pager;
 import com.shouyang.syazs.core.service.GenericServiceFull;
 
 @Service
@@ -45,15 +44,7 @@ public class JournalService extends GenericServiceFull<Journal> {
 			restrictions.likeIgnoreCase("publishName", indexTerm,
 					MatchMode.ANYWHERE);
 		} else if (option.equals("ISSN 等於")) {
-			if (ISSN_Validator.isIssn(indexTerm)) {
-				restrictions.eq("issn", indexTerm.toUpperCase()
-						.replace("-", ""));
-			} else {
-				Pager pager = ds.getPager();
-				pager.setTotalRecord(0L);
-				ds.setPager(pager);
-				return ds;
-			}
+			restrictions.eq("issn", indexTerm.replace("-", "").toUpperCase());
 		} else if (option.equals("分類號")) {
 			restrictions.likeIgnoreCase("lcsCode", indexTerm,
 					MatchMode.ANYWHERE);

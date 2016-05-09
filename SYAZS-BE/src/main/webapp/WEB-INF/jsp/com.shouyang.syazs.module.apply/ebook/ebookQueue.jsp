@@ -152,9 +152,11 @@
 							<c:when test="${allChecked }">
 								<input type="checkbox" class="all box" onclick="allBox()"
 									checked="checked">
+								<span class="required">(&#00042;)</span>
 							</c:when>
 							<c:otherwise>
 								<input type="checkbox" class="all box" onclick="allBox()">
+								<span class="required">(&#00042;)</span>
 							</c:otherwise>
 						</c:choose></th>
 					<th><esapi:encodeForHTML>${cellNames[0]}</esapi:encodeForHTML></th>
@@ -267,8 +269,10 @@
 		</div>
 		<div class="detail_note">
 			<div class="detail_note_title">Note</div>
-			<div class="detail_note_content">共${total }筆記錄(正常筆數 : ${normal }
-				;異常筆數 : ${total-normal } ;已匯入 : ${insert })</div>
+			<div class="detail_note_content">
+				共${total }筆記錄(正常筆數 : ${normal } ;異常筆數 : ${total-normal } ;已匯入 :
+				${insert })<br>* 匯入資料全選
+			</div>
 		</div>
 	</s:form>
 	<jsp:include page="/WEB-INF/jsp/layout/msg.jsp" />

@@ -88,11 +88,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		}
 
-		if (StringUtils.isNotBlank(getRequest().getParameter("entity.isbn"))) {
-			String isbn = getRequest().getParameter("entity.isbn");
-			if (!ISBN_Validator.isIsbn13(isbn)
-					&& !ISBN_Validator.isIsbn10(isbn)) {
-				errorMessages.add("ISBN不正確");
+		if (StringUtils.isNotBlank(getEntity().getIsbn())) {
+			if (getEntity().getIsbn().trim().length() > 20) {
+				errorMessages.add("ISBN長度超過20");
 			}
 		}
 
@@ -160,12 +158,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				}
 			}
 
-			if (StringUtils
-					.isNotBlank(getRequest().getParameter("entity.isbn"))) {
-				String isbn = getRequest().getParameter("entity.isbn");
-				if (!ISBN_Validator.isIsbn13(isbn)
-						&& !ISBN_Validator.isIsbn10(isbn)) {
-					errorMessages.add("ISBN不正確");
+			if (StringUtils.isNotBlank(getEntity().getIsbn())) {
+				if (getEntity().getIsbn().trim().length() > 20) {
+					errorMessages.add("ISBN長度超過20");
 				}
 			}
 
@@ -293,6 +288,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
+			if (StringUtils.isNotBlank(getEntity().getIsbn())) {
+				getEntity().setIsbn(
+						getEntity().getIsbn().replace("-", "").toUpperCase());
+			}
 			ebook = ebookService.save(getEntity(), getLoginUser());
 
 			setEntity(ebook);
@@ -313,6 +312,10 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		setActionErrors(errorMessages);
 
 		if (!hasActionErrors()) {
+			if (StringUtils.isNotBlank(getEntity().getIsbn())) {
+				getEntity().setIsbn(
+						getEntity().getIsbn().replace("-", "").toUpperCase());
+			}
 			ebook = ebookService.update(getEntity(), getLoginUser());
 			setEntity(ebook);
 			addActionMessage("修改成功");
@@ -501,6 +504,12 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 					if (StringUtils.isBlank(ebook.getPublishName())) {
 						errorList.add("沒有出版社名稱");
+					}
+
+					if (StringUtils.isNotBlank(ebook.getIsbn())) {
+						if (ebook.getIsbn().length() > 20) {
+							errorList.add("ISBN長度超過20");
+						}
 					}
 
 					if (StringUtils.isNotBlank(ebook.getBookName())
@@ -781,6 +790,11 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 				int index = (Integer) iterator.next();
 				ebook = (Ebook) importList.get(index);
 
+				if (StringUtils.isNotBlank(ebook.getIsbn())) {
+					ebook.setIsbn(ebook.getIsbn().replace("-", "")
+							.toUpperCase());
+				}
+
 				ebookService.save(ebook, getLoginUser());
 				ebook.setDataStatus("已匯入");
 				++successCount;
@@ -849,7 +863,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			rows.add(new String[] { "Topics in Pathology for Hong Kong",
 					"9789622093362", "Hong Kong University Press",
 					"	Faith C.S. Ho", "P.C. Wu", "N/A", "1995-4-4", "eng",
-					"N/A", "美國國會圖書館圖書分類法", "R",
+					"N/A", "1", "R",
 					"http://tpml.ebook.hyread.com.tw/bookDetail.jsp?id=40258",
 					"醫學", "HK", "0", "2" });
 		}

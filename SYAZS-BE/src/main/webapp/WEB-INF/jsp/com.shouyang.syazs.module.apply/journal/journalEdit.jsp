@@ -170,7 +170,7 @@ input#referenceOwner_name {
 				<td><s:textfield name="entity.languages" cssClass="input_text" /></td>
 			</tr>
 			<tr>
-				<th width="130">標題</th>
+				<th width="130">主題類別</th>
 				<td><s:textfield name="entity.caption" cssClass="input_text" /></td>
 			</tr>
 			<tr>

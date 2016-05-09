@@ -44,7 +44,7 @@ public class EbookService extends GenericServiceFull<Ebook> {
 			restrictions.likeIgnoreCase("publishName", indexTerm,
 					MatchMode.ANYWHERE);
 		} else if (option.equals("ISBN 等於")) {
-			restrictions.eq("isbn", indexTerm);
+			restrictions.eq("isbn", indexTerm.replace("-", "").toUpperCase());
 		} else if (option.equals("第一作者")) {
 			restrictions.likeIgnoreCase("autherName", indexTerm,
 					MatchMode.ANYWHERE);
