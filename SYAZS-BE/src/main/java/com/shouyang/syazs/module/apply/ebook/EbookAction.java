@@ -90,7 +90,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 		if (StringUtils.isNotBlank(getEntity().getIsbn())) {
 			if (getEntity().getIsbn().trim().length() > 20) {
-				errorMessages.add("ISBN長度超過20");
+				errorMessages.add("ISBN長度超過");
 			}
 		}
 
@@ -160,7 +160,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 			if (StringUtils.isNotBlank(getEntity().getIsbn())) {
 				if (getEntity().getIsbn().trim().length() > 20) {
-					errorMessages.add("ISBN長度超過20");
+					errorMessages.add("ISBN長度超過");
 				}
 			}
 
@@ -508,7 +508,7 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 
 					if (StringUtils.isNotBlank(ebook.getIsbn())) {
 						if (ebook.getIsbn().length() > 20) {
-							errorList.add("ISBN長度超過20");
+							errorList.add("ISBN長度超過");
 						}
 					}
 

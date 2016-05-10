@@ -31,27 +31,6 @@
 						}
 					});
 
-	$(document).ready(function() {
-		checkIssn();
-		checkTitle();
-	});
-
-	$(document).ready(function() {
-		$("input#apply_journal_update_entity_issn").bind('input', function() {
-			checkIssn();
-			checkTitle();
-		});
-
-		$("input[name='entity.database.serNo']").change(function() {
-			checkIssn();
-			checkTitle();
-		});
-
-		$("input#apply_journal_update_entity_title").bind('input', function() {
-			checkTitle();
-		});
-	});
-
 	//重設所有欄位(清空)
 	function resetData() {
 		goDetail("<c:url value = '/'/>crud/apply.journal.edit.action?"
@@ -65,34 +44,6 @@
 		goDetail(
 				"<c:url value = '/'/>crud/apply.journal.update.action?entity.serNo=${entity.serNo}",
 				'期刊-修改', data);
-	}
-
-	function checkIssn() {
-		var issn = $("input#apply_journal_update_entity_issn").val();
-		var datSerNo = $("input#apply_journal_update_entity_database_serNo")
-				.val();
-
-		if (issn != null && issn.trim() != "") {
-			if (isValidISSN(issn.trim())) {
-				goNumTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.serNo=${entity.serNo}&entity.issn='
-						+ issn + '&entity.database.serNo=' + datSerNo);
-			} else {
-				$("#span-num-tip").html("ISSN不正確");
-			}
-		}
-	}
-
-	function checkTitle() {
-		var title = $("input#apply_journal_update_entity_title").val();
-		var issn = $("input#apply_journal_update_entity_issn").val();
-		var datSerNo = $("input#apply_journal_update_entity_database_serNo")
-				.val();
-		if (issn == null || issn.trim() == "") {
-			goTitleNameTip('<c:url value = "/"/>crud/apply.journal.tip.action?entity.serNo=${entity.serNo}&entity.title='
-					+ title + '&entity.database.serNo=' + datSerNo);
-		} else {
-			$("#span-title-name-tip").html("");
-		}
 	}
 </script>
 <style type="text/css">
@@ -147,8 +98,7 @@ input#referenceOwner_name {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">刊名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.title" cssClass="input_text" />&nbsp;<span
-					id="span-title-name-tip" class="tip"></span></td>
+				<td><s:textfield name="entity.title" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">英文縮寫刊名</th>
@@ -162,8 +112,7 @@ input#referenceOwner_name {
 			</tr>
 			<tr>
 				<th width="130">ISSN</th>
-				<td><s:textfield name="entity.issn" cssClass="input_text" />&nbsp;<span
-					id="span-num-tip" class="tip"></span></td>
+				<td><s:textfield name="entity.issn" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">語文</th>

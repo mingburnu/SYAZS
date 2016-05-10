@@ -90,7 +90,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (StringUtils.isNotEmpty(getEntity().getIssn())) {
 			if (getEntity().getIssn().trim().length() > 10) {
-				errorMessages.add("isbn長度超過10");
+				errorMessages.add("ISSN長度超過");
 			}
 		}
 
@@ -181,7 +181,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 			if (StringUtils.isNotEmpty(getEntity().getIssn())) {
 				if (getEntity().getIssn().trim().length() > 10) {
-					errorMessages.add("ISSN長度超過10");
+					errorMessages.add("ISSN長度超過");
 				}
 			}
 
@@ -620,7 +620,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 					if (StringUtils.isNotEmpty(journal.getIssn())) {
 						if (journal.getIssn().trim().length() > 10) {
-							errorList.add("ISSN長度超過10");
+							errorList.add("ISSN長度超過");
 						}
 					}
 
