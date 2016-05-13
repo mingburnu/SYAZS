@@ -10,18 +10,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <script type="text/javascript">
-	$(document).ready(function() {
-		checkTitle();
-	});
-
-	$(document).ready(
-			function() {
-				$("input#apply_database_update_entity_dbTitle").bind('input',
-						function() {
-							checkTitle();
-						});
-			});
-
 	//重設所有欄位(清空)
 	function resetData() {
 		goDetail("<c:url value = '/'/>/crud/apply.database.edit.action?"
@@ -37,15 +25,6 @@
 				'資料庫-修改', data);
 	}
 
-	function checkTitle() {
-		var dbTitle = $("input#apply_database_update_entity_dbTitle").val();
-		if (dbTitle == null || dbTitle.trim() == "") {
-			$("#span-title-name-tip").html("");
-		} else {
-			goTitleNameTip('<c:url value = "/"/>crud/apply.database.tip.action?entity.serNo=${entity.serNo}&entity.dbTitle='
-					+ dbTitle);
-		}
-	}
 </script>
 <style type="text/css">
 #div_Detail_2 {
@@ -94,8 +73,7 @@ textarea#apply_database_update_entity_content {
 		<table cellspacing="1" class="detail-table">
 			<tr>
 				<th width="130">資料庫題名<span class="required">(&#8226;)</span></th>
-				<td><s:textfield name="entity.dbTitle" cssClass="input_text" />&nbsp;<span
-					id="span-title-name-tip" class="tip"></span></td>
+				<td><s:textfield name="entity.dbTitle" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">出版社<span class="required">(&#8226;)</span></th>
@@ -118,7 +96,7 @@ textarea#apply_database_update_entity_content {
 			</tr>
 			<tr>
 				<th width="130">主題</th>
-				<td><s:textfield name="entity.topics" cssClass="input_text" /></td>
+				<td><s:textfield name="entity.topic" cssClass="input_text" /></td>
 			</tr>
 			<tr>
 				<th width="130">分類</th>

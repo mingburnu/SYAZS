@@ -559,6 +559,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 								errorList.add("無此分類法");
 							}
 						}
+					} else {
+						classification = null;
 					}
 
 					if (StringUtils.isNotBlank(row[16])) {
@@ -950,7 +952,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 
 		if (getEntity().getOption().equals("package")) {
 			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
-					"出版項", "出版年(西元)", "主題類別", "卷期編次", "刊期", "分類法", "分類碼", "版本",
+					"出版社", "出版年(西元)", "主題類別", "卷期編次", "刊期", "分類法", "分類碼", "版本",
 					"出版時間差", "URL", "開放近用", "資料庫UUID", "起始日", "到期日" });
 			rows.add(new String[] {
 					"The New England Journal of Medicine",
@@ -980,7 +982,7 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					"2020-11-30" });
 		} else {
 			rows.add(new String[] { "刊名", "英文縮寫刊名", "刊名演變", "ISSN", "語文",
-					"出版項", "出版年(西元)", "主題類別", "卷期編次", "刊期", "分類法", "分類碼", "版本",
+					"出版社", "出版年(西元)", "主題類別", "卷期編次", "刊期", "分類法", "分類碼", "版本",
 					"出版時間差", "URL", "開放近用", "資源類型", "起始日", "到期日" });
 			rows.add(new String[] {
 					"The New England Journal of Medicine",

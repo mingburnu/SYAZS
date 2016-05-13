@@ -8,4 +8,15 @@
 input.pp {
 	width: 47px;
 }
+
+textarea#content {
+	border: 0 none white;
+	background-color: white;
+	color: black;
+	outline: none;
+	padding: 0;
+	width: 100%;
+	overflow: hidden;
+	resize: none;	
+}
 </style>

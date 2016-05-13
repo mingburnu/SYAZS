@@ -46,10 +46,16 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.abbreviationTitle }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
+			<c:if test="${not empty entity.titleEvolution}">
+				<tr>
+					<td class="t_01">刊名演變</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.titleEvolution }</esapi:encodeForHTML></td>
+				</tr>
+			</c:if>
 			<c:if test="${not empty entity.issn}">
 				<tr>
 					<td class="t_01">ISSN</td>
-					<td class="t_02">${fn:substring(entity.issn, 0, 4)}-${fn:substring(entity.issn, 4, 8)}</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.issn }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty entity.publishName}">
@@ -106,6 +112,12 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
 				</tr>
 
+			</c:if>
+			<c:if test="${not empty entity.embargo }">
+				<tr>
+					<td class="t_01">全文取得授權刊期(embargo period)</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.embargo }</esapi:encodeForHTML></td>
+				</tr>
 			</c:if>
 			<c:if
 				test="${(not empty entity.startDate)||(not empty entity.maturityDate)}">

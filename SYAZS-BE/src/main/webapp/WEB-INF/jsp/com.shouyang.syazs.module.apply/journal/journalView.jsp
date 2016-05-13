@@ -78,7 +78,7 @@
 					</tr>
 					<tr>
 						<th width="130">ISSN<span class="required">(&#8226;)</span></th>
-						<td>${fn:substring(entity.issn, 0, 4)}${fn:substring(entity.issn, 4, 8)}</td>
+						<td><esapi:encodeForHTML>${entity.issn }</esapi:encodeForHTML></td>
 					</tr>
 					<tr>
 						<th width="130">語文</th>

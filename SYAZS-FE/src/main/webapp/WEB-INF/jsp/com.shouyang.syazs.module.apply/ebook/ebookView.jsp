@@ -63,6 +63,12 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.publishName}</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
+			<c:if test="${not empty entity.uppeName}">
+				<tr>
+					<td class="t_01">系列叢書名</td>
+					<td class="t_02"><esapi:encodeForHTML>${entity.uppeName}</esapi:encodeForHTML></td>
+				</tr>
+			</c:if>
 			<c:if test="${not empty entity.version}">
 				<tr>
 					<td class="t_01">版本</td>
@@ -71,7 +77,7 @@
 			</c:if>
 			<c:if test="${not empty entity.isbn}">
 				<tr>
-					<td class="t_01">ISBN/13</td>
+					<td class="t_01">ISBN</td>
 					<td class="t_02"><esapi:encodeForHTML>${entity.isbn }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
@@ -111,6 +117,17 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.database.dbTitle }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
+			<tr>
+				<td class="t_01">資源類型</td>
+				<td class="t_02">${entity.resourcesBuyers.category}</td>
+			</tr>
+			<tr>
+				<td class="t_01">開放近用</td>
+				<td class="t_02"><c:choose>
+						<c:when test="${true eq entity.openAccess}">是</c:when>
+						<c:otherwise>否</c:otherwise>
+					</c:choose></td>
+			</tr>
 		</table>
 
 		<div align="center">

@@ -81,13 +81,13 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 				// }
 			}
 
-			if (StringUtils.isNotEmpty(getEntity().getTel())) {
-				String tel = getEntity().getTel().replaceAll("[/()+-]", "")
-						.replace(" ", "");
-				if (!NumberUtils.isDigits(tel)) {
-					errorMessages.add("電話格式不正確");
-				}
-			}
+			// if (StringUtils.isNotEmpty(getEntity().getTel())) {
+			// String tel = getEntity().getTel().replaceAll("[/()+-]", "")
+			// .replace(" ", "");
+			// if (!NumberUtils.isDigits(tel)) {
+			// errorMessages.add("電話格式不正確");
+			// }
+			// }
 
 			if (gtMaxSize(getRequest(), 1024 * 1024 * 2)) {
 				errorMessages.add("檔案太大");

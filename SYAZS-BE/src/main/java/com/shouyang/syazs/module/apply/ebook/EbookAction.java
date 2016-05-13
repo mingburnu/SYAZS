@@ -457,6 +457,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 								errorList.add("無此分類法");
 							}
 						}
+					} else {
+						classification = null;
 					}
 
 					if (StringUtils.isNotBlank(row[15])) {

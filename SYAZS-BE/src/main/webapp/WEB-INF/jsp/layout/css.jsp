@@ -16,12 +16,14 @@ span.tip {
 }
 
 textarea#content {
-	border: 0px;
+	border: 0 none white;
 	background-color: white;
 	color: black;
-	padding: 0px;
+	outline: none;
+	padding: 0;
 	width: 100%;
-	resize: none;
+	overflow: hidden;
+	resize: none;	
 }
 
 input#datName {
