@@ -4,7 +4,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>跨司署電子資料庫索引查詢平台</title>
+<title>碩陽電子資源檢索</title>
 <script type="text/javascript">
 	window.top.location.href = "<c:url value = '/'/>";
 </script>
