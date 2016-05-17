@@ -7,7 +7,7 @@
 <script type="text/javascript">
 	function view(serNo, item) {
 		var data = $("form:eq(0)").serialize() + "&entity.backURL=" + "${list}";
-		var url = "<c:url value = '/'/>crud/apply." + item
+		var url = "${pageContext.request.contextPath}/crud/apply." + item
 				+ ".view.action?entity.serNo=" + serNo + "&pager.recordPoint="
 				+ "${ds.pager.recordPoint}";
 		$.ajax({
@@ -20,13 +20,13 @@
 	}
 
 	function link(serNo, item) {
-		var url = "<c:url value = '/'/>crud/apply." + item
+		var url = "${pageContext.request.contextPath}/crud/apply." + item
 				+ ".click.action?entity.serNo=" + serNo;
 		window.open(url);
 	}
 
 	function goBack() {
-		goURL("<c:url value='/' />page/query.action");
+		goURL("${pageContext.request.contextPath}/page/query.action");
 	}
 </script>
 <style>

@@ -13,6 +13,9 @@ public enum Category {
 	/** 租賃. */
 	租賃("租賃"),
 
+	/** 免費提供閱讀. */
+	免費提供閱讀("免費提供閱讀"),
+
 	/** 未註明. */
 	未註明("");
 
@@ -39,6 +42,9 @@ public enum Category {
 
 		case 2:
 			return Category.租賃;
+
+		case 3:
+			return Category.免費提供閱讀;
 		}
 
 		return Category.未註明;

@@ -26,7 +26,7 @@
 	}
 
 	function link(serNo) {
-		var url = "<c:url value = '/'/>crud/apply.journal.click.action?entity.serNo="
+		var url = "${pageContext.request.contextPath}/crud/apply.journal.click.action?entity.serNo="
 				+ serNo;
 		window.open(url);
 	}
@@ -64,7 +64,7 @@
 					<td class="t_02"><esapi:encodeForHTML>${entity.publishName }</esapi:encodeForHTML></td>
 				</tr>
 			</c:if>
-			<c:if test="${entity.version > 0 }">
+			<c:if test="${not empty entity.version }">
 				<tr>
 					<td class="t_01">版本</td>
 					<td class="t_02">${entity.version }</td>
