@@ -163,8 +163,8 @@
 			<div class="detail_note_title">Note</div>
 			<div class="detail_note_content">
 				<span class="required">(&#8226;)</span>為必填欄位<br> <br> <span>開放近用(是
-					-1 , 否 - 0)<br> <br> 資料類型(賣斷 -1 , 租賃 - 2, 未註明 -0) <br>
-					<br>分類法請使用ID
+					-1 , 否 - 0)<br> <br> 資料類型(賣斷 -1 , 租賃 - 2, 免費提供閱讀 - 3, 未註明
+					-0) <br> <br>分類法請使用ID
 				</span>
 			</div>
 		</div>

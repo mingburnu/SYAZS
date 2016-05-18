@@ -193,9 +193,8 @@ input#referenceOwner_name {
 		</table>
 		<div class="button_box">
 			<div class="detail-func-button">
-				<a class="state-default"
-					onclick="clearReferenceOwners();closeDetail();">取消</a> &nbsp;<a
-					class="state-default" onclick="resetData();">重設</a>&nbsp; <a
+				<a class="state-default" onclick="clearResDbs();closeDetail();">取消</a>
+				&nbsp;<a class="state-default" onclick="resetData();">重設</a>&nbsp; <a
 					class="state-default" onclick="submitData();">確認</a>
 			</div>
 		</div>
