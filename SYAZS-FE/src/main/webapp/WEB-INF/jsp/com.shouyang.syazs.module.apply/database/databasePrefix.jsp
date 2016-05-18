@@ -45,7 +45,7 @@
 
 	function queryByPrefix(prefix) {
 		var url = "<c:url value = '/'/>crud/apply.database.prefix.action?entity.option="
-			+ prefix;
+				+ prefix;
 		$.ajax({
 			url : url,
 			success : function(result) {
@@ -81,17 +81,7 @@
 		</tr>
 	</table>
 
-	<div class="title">依標題瀏覽資料庫</div>
-	<div class="query_list">
-		<a class="btn_04" onclick="queryByPrefix('0-9')">0-9</a>
-		<c:forEach begin="65" end="90" varStatus="loop">
-			<a class="btn_04" onclick="queryByPrefix('${'&#'}${loop.index };')">${'&#'}${loop.index };</a>
-		</c:forEach>
-	</div>
-	<div class="query_list">
-		<c:forEach begin="12549" end="12585" varStatus="loop">
-			<a class="btn_04" onclick="queryByPrefix('${'&#'}${loop.index };')">${'&#'}${loop.index };</a>
-		</c:forEach>
-		<a class="btn_04" onclick="queryByPrefix('其他')">其他</a>
-	</div>
+	<jsp:include page="/WEB-INF/jsp/layout/prefix.jsp">
+		<jsp:param name="prefix" value="依標題瀏覽資料庫" />
+	</jsp:include>
 </form>

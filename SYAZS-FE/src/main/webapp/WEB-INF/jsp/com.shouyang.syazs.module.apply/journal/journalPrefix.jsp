@@ -68,7 +68,8 @@
 					<ul>
 						<li><a href="javascript:void(0);" onClick="clickItem(this);">標題開頭為</a></li>
 						<li><a href="javascript:void(0);" onClick="clickItem(this);">標題包含文字</a></li>
-						<li><a href="javascript:void(0);" onClick="clickItem(this);">ISSN 等於</a></li>
+						<li><a href="javascript:void(0);" onClick="clickItem(this);">
+								ISSN 等於</a></li>
 						<li><a href="javascript:void(0);" onClick="clickItem(this);">出版社</a></li>
 						<li><a href="javascript:void(0);" onClick="clickItem(this);">分類號</a></li>
 					</ul>
@@ -83,17 +84,7 @@
 		</tr>
 	</table>
 
-	<div class="title">依標題瀏覽電子期刊</div>
-	<div class="query_list">
-		<a class="btn_04" onclick="queryByPrefix('0-9')">0-9</a>
-		<c:forEach begin="65" end="90" varStatus="loop">
-			<a class="btn_04" onclick="queryByPrefix('${'&#'}${loop.index };')">${'&#'}${loop.index };</a>
-		</c:forEach>
-	</div>
-	<div class="query_list">
-		<c:forEach begin="12549" end="12585" varStatus="loop">
-			<a class="btn_04" onclick="queryByPrefix('${'&#'}${loop.index };')">${'&#'}${loop.index };</a>
-		</c:forEach>
-		<a class="btn_04" onclick="queryByPrefix('其他')">其他</a>
-	</div>
+	<jsp:include page="/WEB-INF/jsp/layout/prefix.jsp">
+		<jsp:param name="title" value="依標題瀏覽電子期刊" />
+	</jsp:include>
 </form>
