@@ -34,7 +34,9 @@
 <div id="main_b_box">
 	<!-- 內容開始 -->
 	<div class="detail">
-
+		<div>
+			<a class="btn_01" href="javascript:goBack();">回 上 一 層</a>
+		</div>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0"
 			class="table_03">
 			<tr>
@@ -130,8 +132,8 @@
 			</tr>
 		</table>
 
-		<div align="center">
-			<a class="btn_01" href="javascript:goBack();">回 上 一 頁</a>
+		<div>
+			<a class="btn_01" href="javascript:goBack();">回 上 一 層</a>
 		</div>
 	</div>
 	<!-- 內容結束 -->

@@ -82,6 +82,6 @@
 	</table>
 
 	<jsp:include page="/WEB-INF/jsp/layout/prefix.jsp">
-		<jsp:param name="prefix" value="依標題瀏覽資料庫" />
+		<jsp:param name="title" value="依標題瀏覽資料庫" />
 	</jsp:include>
 </form>

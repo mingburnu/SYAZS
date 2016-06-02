@@ -17,17 +17,6 @@
 		value="${pageFactor+(1-(pageFactor%1))%1}" />
 </c:set>
 <script type="text/javascript">
-	$(document).ready(
-			function() {
-				$('input#customerName').click(
-						function() {
-							$('input[name="entity.customer.serNo"]:eq(0)')
-									.attr("checked", '');
-							$('input[name="entity.customer.serNo"]:eq(1)')
-									.attr("checked", true);
-						});
-			});
-
 	<c:choose>
 	<c:when test="${not empty keywords }">
 	function goSearch() {
@@ -63,7 +52,7 @@
 	<c:when test="${not empty clicks }">
 	function goSearch() {
 		goMain("<c:url value = '/'/>crud/apply.feLogs.link.action",
-				"#apply_feLogs_list", "");
+				"#apply_feLogs_link", "");
 	}
 
 	//匯出

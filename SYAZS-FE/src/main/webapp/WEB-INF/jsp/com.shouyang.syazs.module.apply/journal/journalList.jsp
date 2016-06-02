@@ -37,7 +37,10 @@
 <div id="main_b_box">
 	<!-- 內容開始 -->
 	<div class="result">
-
+		<div>
+			<a class="btn_02" href="javascript:goBack();"><span>回 上 一
+					層</span></a>
+		</div>
 		<c:choose>
 			<c:when test="${not empty list}">
 				<div class="pager">
@@ -221,9 +224,9 @@
 				</div>
 			</c:when>
 		</c:choose>
-		<div class="bottom">
+		<div>
 			<a class="btn_02" href="javascript:goBack();"><span>回 上 一
-					頁</span></a>
+					層</span></a>
 		</div>
 	</div>
 	<!-- 內容結束 -->
