@@ -1,4 +1,4 @@
-package com.shouyang.syazs.module.apply.classification;
+package com.shouyang.syazs.module.apply.complex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import com.shouyang.syazs.core.dao.ModuleDaoSerNo;
+import com.shouyang.syazs.core.dao.ModuleDaoModel;
 import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.module.apply.database.Database;
 import com.shouyang.syazs.module.apply.ebook.Ebook;
@@ -21,7 +21,7 @@ import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Repository
-public class ClassificationDao extends ModuleDaoSerNo<Classification> {
+public class ComplexDao extends ModuleDaoModel<ModuleProperties> {
 
 	@SuppressWarnings("unchecked")
 	public DataSet<ModuleProperties> query(DataSet<ModuleProperties> ds) {

@@ -21,7 +21,7 @@
 	}
 </script>
 <!-- container 開始 -->
-<s:form name="form_01" action="apply.classification.list"
+<s:form name="form_01" action="apply.complex.list"
 	namespace="/crud" method="post" onsubmit="return false;">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0"
 		class="table_01">

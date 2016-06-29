@@ -1,4 +1,4 @@
-package com.shouyang.syazs.module.apply.classification;
+package com.shouyang.syazs.module.apply.complex;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -6,13 +6,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import com.shouyang.syazs.core.model.DataSet;
-import com.shouyang.syazs.core.web.GenericWebActionSerNo;
-import com.shouyang.syazs.module.apply.database.Database;
+import com.shouyang.syazs.core.web.GenericWebActionModel;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ClassificationAction extends GenericWebActionSerNo<Classification> {
+public class ComplexAction extends GenericWebActionModel<Complex> {
 
 	/**
 	 * 
@@ -20,8 +19,8 @@ public class ClassificationAction extends GenericWebActionSerNo<Classification> 
 	private static final long serialVersionUID = -2472341597272275749L;
 
 	@Autowired
-	private ClassificationService classificationService;
-
+	private ComplexService complexService;
+	
 	@Override
 	protected void validateSave() throws Exception {
 		// TODO Auto-generated method stub
@@ -54,18 +53,23 @@ public class ClassificationAction extends GenericWebActionSerNo<Classification> 
 
 	@Override
 	public String list() throws Exception {
-		getRequest().setAttribute(
-				"list",
-				getRequest().getContextPath()
-						+ "/crud/apply.classification.list.action");
+		getRequest().setAttribute("list",
+				getRequest().getContextPath() + "/crud/apply.complex.list.action");
 
 		DataSet<ModuleProperties> ds = new DataSet<>();
-		ModuleProperties entity = new Database();
+		ModuleProperties entity = new ModuleProperties() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -629872792458489256L;
+		};
+
 		ds.setEntity(entity);
 		ds.getEntity().setIndexTerm(getEntity().getIndexTerm());
 		ds.setPager(initDataSet().getPager());
 
-		ds = classificationService.queryModuleProperties(ds);
+		ds = complexService.getByRestrictions(ds);
 		getRequest().setAttribute("ds", ds);
 		return LIST;
 	}

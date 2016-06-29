@@ -45,10 +45,10 @@
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td align="left" class="p_01"><s:form
-							action="apply.classification.list.action">
+							action="apply.complex.list.action">
 									共 <strong>${ds.pager.totalRecord}</strong>
 									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-								id="apply_classification_list_action_recordPerPage"
+								id="apply_box_list_action_recordPerPage"
 								onchange="upperChangeSize(this.value);">
 								<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 								<option value="5">5</option>
@@ -62,7 +62,7 @@
 					<td align="right" class="p_02"><jsp:include
 							page="/WEB-INF/jsp/layout/pagination.jsp">
 							<jsp:param name="namespace" value="/crud" />
-							<jsp:param name="action" value="apply.classification.list" />
+							<jsp:param name="action" value="apply.complex.list" />
 							<jsp:param name="pager" value="${ds.pager}" />
 						</jsp:include></td>
 				</tr>
@@ -169,10 +169,10 @@
 			<table width="100%" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td align="left" class="p_01"><s:form
-							action="apply.classification.list.action">
+							action="apply.box.list.action">
 									共 <strong>${ds.pager.totalRecord}</strong>
 									筆記錄， 每頁顯示筆數 <select name="pager.recordPerPage"
-								id="apply_journal_classification_action_recordPerPage"
+								id="apply_journal_box_action_recordPerPage"
 								onchange="bottomChangeSize(this.value);">
 								<option value="${ds.pager.recordPerPage}">${ds.pager.recordPerPage}</option>
 								<option value="5">5</option>
@@ -186,7 +186,7 @@
 					<td align="right" class="p_02"><jsp:include
 							page="/WEB-INF/jsp/layout/pagination.jsp">
 							<jsp:param name="namespace" value="/crud" />
-							<jsp:param name="action" value="apply.classification.list" />
+							<jsp:param name="action" value="apply.complex.list" />
 							<jsp:param name="pager" value="${ds.pager}" />
 						</jsp:include></td>
 				</tr>

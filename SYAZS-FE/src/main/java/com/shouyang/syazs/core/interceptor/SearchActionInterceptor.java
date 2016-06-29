@@ -156,7 +156,7 @@ public class SearchActionInterceptor extends RootInterceptor {
 				}
 			}
 
-			if (item.equals("classification")) {
+			if (item.equals("complex")) {
 				if (StringUtils.isBlank(indexTerm)) {
 					saveLog = false;
 				}
