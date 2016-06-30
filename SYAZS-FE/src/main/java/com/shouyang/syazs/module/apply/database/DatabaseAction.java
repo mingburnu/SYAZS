@@ -69,10 +69,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = databaseService.getByRestrictions(ds);
+			databaseService.getByRestrictions(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 
@@ -106,10 +105,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = databaseService.getByPrefix(ds);
+			databaseService.getByPrefix(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 

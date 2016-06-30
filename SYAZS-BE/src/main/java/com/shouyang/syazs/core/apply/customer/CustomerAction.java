@@ -74,20 +74,7 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 			if (StringUtils.isBlank(getEntity().getName())) {
 				errorMessages.add("用戶名稱不可空白");
-			} else {
-				// if (getEntity().getName()
-				// .replaceAll("[a-zA-Z0-9\u4e00-\u9fa5]", "").length() != 0) {
-				// errorMessages.add("用戶名稱必須是英、數或漢字");
-				// }
 			}
-
-			// if (StringUtils.isNotEmpty(getEntity().getTel())) {
-			// String tel = getEntity().getTel().replaceAll("[/()+-]", "")
-			// .replace(" ", "");
-			// if (!NumberUtils.isDigits(tel)) {
-			// errorMessages.add("電話格式不正確");
-			// }
-			// }
 
 			if (gtMaxSize(getRequest(), 1024 * 1024 * 2)) {
 				errorMessages.add("檔案太大");
@@ -160,33 +147,20 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = customerService.getByRestrictions(ds);
+			customerService.getByRestrictions(ds);
 		}
 
 		if (StringUtils.isBlank(getEntity().getOption())) {
 			getEntity().setOption("done");
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 
 	@Override
 	public String save() throws Exception {
+		// TODO Auto-generated method stub
 		return null;
-		// validateSave();
-		// setActionErrors(errorMessages);
-		//
-		// if (!hasActionErrors()) {
-		// customer = customerService.save(getEntity(), getLoginUser());
-		//
-		// setEntity(customer);
-		//
-		// addActionMessage("新增成功");
-		// return VIEW;
-		// } else {
-		// return ADD;
-		// }
 	}
 
 	@Override
@@ -247,37 +221,9 @@ public class CustomerAction extends GenericWebActionFull<Customer> {
 
 	@Override
 	public String delete() throws Exception {
+		// TODO Auto-generated method stub
 		return null;
-		// validateDelete();
-		// setActionErrors(errorMessages);
-		//
-		// if (!hasActionErrors()) {
-		// int i = 0;
-		// while (i < getEntity().getCheckItem().length) {
-		// String name = customerService.getBySerNo(
-		// getEntity().getCheckItem()[i]).getName();
-		// customerService.deleteBySerNo(getEntity().getCheckItem()[i]);
-		// addActionMessage(name + "刪除成功");
-		// i++;
-		// }
-		//
-		// list();
-		// return LIST;
-		// } else {
-		// list();
-		// return LIST;
-		// }
 	}
-
-	// public String view() throws Exception {
-	// if (hasEntity()) {
-	// getRequest().setAttribute("viewSerNo", getEntity().getSerNo());
-	// setEntity(customer);
-	// } else {
-	// getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
-	// }
-	// return VIEW;
-	// }
 
 	public String box() throws Exception {
 		getRequest().setAttribute("allCustomers",

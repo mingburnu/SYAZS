@@ -84,18 +84,14 @@ public class ClassificationAction extends GenericWebActionSerNo<Classification> 
 
 	@Override
 	public String list() throws Exception {
-		DataSet<Classification> ds = classificationService
-				.getByRestrictions(initDataSet());
-
+		DataSet<Classification> ds = initDataSet();
 		ds.getPager().setRecordPerPage(Integer.MAX_VALUE);
 
-		ds = classificationService.getByRestrictions(ds);
+		classificationService.getByRestrictions(ds);
 
 		if (StringUtils.isBlank(getEntity().getDataStatus())) {
 			getEntity().setDataStatus("done");
 		}
-
-		setDs(ds);
 
 		return LIST;
 	}

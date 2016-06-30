@@ -21,11 +21,11 @@ import com.shouyang.syazs.module.apply.journal.Journal;
 import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Repository
-public class ComplexDao extends ModuleDaoModel<ModuleProperties> {
+public class ComplexDao extends ModuleDaoModel<Complex> {
 
 	@SuppressWarnings("unchecked")
-	public DataSet<ModuleProperties> query(DataSet<ModuleProperties> ds) {
-		List<ModuleProperties> results = ds.getResults();
+	public DataSet<Complex> query(DataSet<Complex> ds) {
+		List<ModuleProperties> results = ds.getEntity().getResults();
 		List<ModuleProperties> list = new ArrayList<ModuleProperties>();
 
 		if (StringUtils.isBlank(ds.getEntity().getIndexTerm())) {
@@ -35,7 +35,7 @@ public class ComplexDao extends ModuleDaoModel<ModuleProperties> {
 			list = criteriaAll.list();
 
 		} else {
-			ModuleProperties entity = ds.getEntity();
+			Complex entity = ds.getEntity();
 			String indexTerm = StringUtils.replaceChars(entity.getIndexTerm()
 					.trim(), "－０１２３４５６７８９", "-0123456789");
 

@@ -5,9 +5,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import com.shouyang.syazs.core.model.DataSet;
 import com.shouyang.syazs.core.web.GenericAction;
-import com.shouyang.syazs.module.entity.ModuleProperties;
 
 @Controller
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -27,21 +25,8 @@ public class ComplexAction extends GenericAction<Complex> {
 				getRequest().getContextPath()
 						+ "/crud/apply.complex.list.action");
 
-		DataSet<ModuleProperties> ds = new DataSet<>();
-		ModuleProperties entity = new ModuleProperties() {
+		complexService.getByRestrictions(initDataSet());
 
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -629872792458489256L;
-		};
-
-		ds.setEntity(entity);
-		ds.getEntity().setIndexTerm(getEntity().getIndexTerm());
-		ds.setPager(initDataSet().getPager());
-
-		ds = complexService.getByRestrictions(ds);
-		getRequest().setAttribute("ds", ds);
 		return LIST;
 	}
 

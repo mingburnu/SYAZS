@@ -240,7 +240,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 		DataSet<Ebook> ds = initDataSet();
 		ds.setDatas(classificationService.getClsDatas());
 		setEntity(ebook);
-		setDs(ds);
 		return ADD;
 	}
 
@@ -250,7 +249,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			DataSet<Ebook> ds = initDataSet();
 			ds.setDatas(classificationService.getClsDatas());
 			setEntity(ebook);
-			setDs(ds);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -275,10 +273,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = ebookService.getByRestrictions(ds);
+			ebookService.getByRestrictions(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 
@@ -301,7 +298,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			DataSet<Ebook> ds = initDataSet();
 			ds.setDatas(classificationService.getClsDatas());
 			setEntity(getEntity());
-			setDs(ds);
 			return ADD;
 		}
 	}
@@ -324,7 +320,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			DataSet<Ebook> ds = initDataSet();
 			ds.setDatas(classificationService.getClsDatas());
 			setEntity(getEntity());
-			setDs(ds);
 			return EDIT;
 		}
 	}
@@ -631,7 +626,6 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 			}
 		}
 
-		setDs(ds);
 		return QUEUE;
 	}
 

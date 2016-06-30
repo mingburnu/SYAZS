@@ -77,10 +77,9 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = feLogsService.getByRestrictions(ds);
+			feLogsService.getByRestrictions(ds);
 		}
 
-		setDs(ds);
 		getRequest().setAttribute("keywords", "keywords");
 		return LIST;
 	}
@@ -115,11 +114,10 @@ public class FeLogsAction extends GenericWebActionLog<FeLogs> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = feLogsService.getByLink(ds);
+			feLogsService.getByLink(ds);
 		}
 
 		getRequest().setAttribute("clicks", "clicks");
-		setDs(ds);
 		return LIST;
 	}
 

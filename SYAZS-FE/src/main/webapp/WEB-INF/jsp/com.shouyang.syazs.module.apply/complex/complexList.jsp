@@ -79,7 +79,7 @@
 					<th width="38">詳細</th>
 					<th>種類</th>
 				</tr>
-				<c:forEach var="item" items="${ds.results}" varStatus="status">
+				<c:forEach var="item" items="${ds.entity.results}" varStatus="status">
 					<c:set var="num" scope="session" value="${(status.index+1)%2}" />
 					<c:set var="orderInt" scope="session"
 						value="${ds.pager.offset+(status.index+1)}" />

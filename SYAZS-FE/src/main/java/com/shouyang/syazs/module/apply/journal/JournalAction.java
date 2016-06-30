@@ -78,10 +78,8 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = journalService.getByRestrictions(ds);
+			journalService.getByRestrictions(ds);
 		}
-
-		setDs(ds);
 
 		return LIST;
 	}
@@ -116,10 +114,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = journalService.getByPrefix(ds);
+			journalService.getByPrefix(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 

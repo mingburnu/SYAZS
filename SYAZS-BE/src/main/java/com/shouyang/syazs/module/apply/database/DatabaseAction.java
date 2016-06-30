@@ -229,10 +229,9 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = databaseService.getByRestrictions(ds);
+			databaseService.getByRestrictions(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 
@@ -498,8 +497,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			getSession().put("insert", 0);
 			getSession().put("clazz", this.getClass());
 
-			setDs(ds);
-
 			return QUEUE;
 		} else {
 			return IMPORT;
@@ -547,7 +544,6 @@ public class DatabaseAction extends GenericWebActionFull<Database> {
 			}
 		}
 
-		setDs(ds);
 		return QUEUE;
 	}
 

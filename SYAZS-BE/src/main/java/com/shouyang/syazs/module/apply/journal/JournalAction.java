@@ -274,9 +274,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 		DataSet<Journal> ds = initDataSet();
 		ds.setDatas(classificationService.getClsDatas());
 		setEntity(journal);
-		setDs(ds);
-
-		setEntity(journal);
 		return ADD;
 	}
 
@@ -286,7 +283,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			DataSet<Journal> ds = initDataSet();
 			ds.setDatas(classificationService.getClsDatas());
 			setEntity(journal);
-			setDs(ds);
 		} else {
 			getResponse().sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -323,10 +319,9 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = journalService.getByRestrictions(ds);
+			journalService.getByRestrictions(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 
@@ -359,7 +354,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			DataSet<Journal> ds = initDataSet();
 			ds.setDatas(classificationService.getClsDatas());
 			setEntity(getEntity());
-			setDs(ds);
 			return ADD;
 		}
 	}
@@ -393,7 +387,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			DataSet<Journal> ds = initDataSet();
 			ds.setDatas(classificationService.getClsDatas());
 			setEntity(getEntity());
-			setDs(ds);
 			return EDIT;
 		}
 	}
@@ -755,7 +748,6 @@ public class JournalAction extends GenericWebActionFull<Journal> {
 			}
 		}
 
-		setDs(ds);
 		return QUEUE;
 	}
 

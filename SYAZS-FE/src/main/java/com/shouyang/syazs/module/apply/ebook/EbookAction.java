@@ -78,10 +78,8 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = ebookService.getByRestrictions(ds);
+			ebookService.getByRestrictions(ds);
 		}
-
-		setDs(ds);
 
 		return LIST;
 	}
@@ -116,10 +114,9 @@ public class EbookAction extends GenericWebActionFull<Ebook> {
 					.doubleValue()
 					/ ds.getPager().getRecordPerPage().doubleValue());
 			ds.getPager().setCurrentPage(lastPage.intValue());
-			ds = ebookService.getByPrefix(ds);
+			ebookService.getByPrefix(ds);
 		}
 
-		setDs(ds);
 		return LIST;
 	}
 
